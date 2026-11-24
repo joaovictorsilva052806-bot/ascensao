@@ -1,6 +1,16 @@
 // ---------- Perfil e geração de quests (onboarding) ----------
 const DN=["seg","ter","qua","qui","sex","sáb","dom"];
 const FOCI=[["estudos","Estudos"],["sono","Dormir melhor"],["corpo","Saúde e corpo"],["carreira","Carreira"],["dinheiro","Dinheiro"],["relac","Pessoas que amo"],["casa","Casa em ordem"],["remedio","Remédios no horário"],["agua","Beber água"]];
+const OCC=[["estudante","Estudante"],["clt","Trabalho fixo (CLT)"],["autonomo","Autônomo / Empreendedor"],["casa","Dono(a) de casa"],["motorista","Motorista / caminhoneiro"],["aposentado","Aposentado(a)"],["outro","Outro"]];
+const OCC_SET={estudante:{works:false,studies:true,focus:["estudos","sono","corpo"],hint:"Tarefas de estudo e provas."},
+  clt:{works:true,focus:["sono","corpo","dinheiro"],hint:"Tarefas que cabem antes, no almoço e depois do trabalho."},
+  autonomo:{works:false,transport:"casa",focus:["carreira","dinheiro","sono"],hint:"Bloco de foco no que dá dinheiro e controle de gastos."},
+  casa:{works:false,studies:false,transport:"casa",focus:["casa","corpo","relac"],hint:"Casa, saúde e um tempo só seu."},
+  motorista:{works:false,studies:false,transport:"carro",focus:["agua","corpo","relac"],hint:"Sem horário fixo: tarefas que cabem na estrada e nas paradas."},
+  aposentado:{works:false,studies:false,transport:"ape",focus:["corpo","relac","remedio"],hint:"Saúde, remédios e gente por perto."},outro:{hint:""}};
+function pickOcc(v,apply){[...$("o_occ").children].forEach(b=>b.classList.toggle("on",b.dataset.v===v));const s=OCC_SET[v]||{};$("o_occHint").textContent=s.hint||"";
+  if(!apply)return;if(s.works!=null)$("o_works").checked=s.works;if(s.studies!=null)$("o_studies").checked=s.studies;if(s.transport)$("o_transport").value=s.transport;
+  if(s.focus)toggles("o_focus",FOCI,s.focus,4);syncBoxes();}
 function toggles(id,items,sel,max){const box=$(id);box.textContent="";for(const [v,l] of items){const b=document.createElement("button");b.type="button";b.textContent=l;b.dataset.v=v;if(sel.includes(v))b.classList.add("on");
   b.addEventListener("click",()=>{if(!b.classList.contains("on")&&max&&box.querySelectorAll(".on").length>=max){$("o_msg").textContent="Escolha no máximo "+max+".";return;}b.classList.toggle("on");});box.append(b);}}
 const picked=id=>[...$(id).querySelectorAll(".on")].map(b=>b.dataset.v);
@@ -8,10 +18,11 @@ function fillOnb(a){a=a||{};const v=(id,x)=>{if(x!=null)$(id).value=x;};
   v("o_name",a.name);v("o_wake",a.wake);v("o_sleep",a.sleep);v("o_workStart",a.workStart);v("o_lunch",a.lunch);v("o_workEnd",a.workEnd);v("o_course",a.course);v("o_classStart",a.classStart);v("o_classEnd",a.classEnd);v("o_transport",a.transport);v("o_goal",a.goal);v("o_money",a.money);v("o_moneyDate",a.moneyDate);
   if(a.works!=null)$("o_works").checked=a.works;if(a.studies!=null)$("o_studies").checked=a.studies;if(a.faith!=null)$("o_faith").checked=a.faith;if(a.ping!=null)$("o_ping").checked=a.ping;
   const dd=DN.map((l,i)=>[String(i),l]);toggles("o_workDays",dd,(a.workDays||[0,1,2,3,4]).map(String));toggles("o_classDays",dd,(a.classDays||[0,1,2,3,4]).map(String));
-  toggles("o_focus",FOCI,a.focus||["sono","corpo"],4);syncBoxes();}
+  toggles("o_focus",FOCI,a.focus||["sono","corpo"],4);syncBoxes();
+  const ob=$("o_occ");ob.textContent="";for(const [v,l] of OCC){const b=document.createElement("button");b.type="button";b.textContent=l;b.dataset.v=v;b.addEventListener("click",()=>pickOcc(v,true));ob.append(b);}pickOcc(a.occ||"",false);}
 function syncBoxes(){$("o_workBox").hidden=!$("o_works").checked;$("o_studyBox").hidden=!$("o_studies").checked;}
 $("o_works").addEventListener("change",syncBoxes);$("o_studies").addEventListener("change",syncBoxes);
-function readOnb(){const g=id=>$(id).value.trim();return {name:g("o_name"),wake:g("o_wake")||"07:00",sleep:g("o_sleep")||"23:00",works:$("o_works").checked,workDays:picked("o_workDays").map(Number),workStart:g("o_workStart"),lunch:g("o_lunch"),workEnd:g("o_workEnd"),
+function readOnb(){const g=id=>$(id).value.trim();const oc=$("o_occ").querySelector(".on");return {occ:oc?oc.dataset.v:"",name:g("o_name"),wake:g("o_wake")||"07:00",sleep:g("o_sleep")||"23:00",works:$("o_works").checked,workDays:picked("o_workDays").map(Number),workStart:g("o_workStart"),lunch:g("o_lunch"),workEnd:g("o_workEnd"),
   studies:$("o_studies").checked,course:g("o_course"),classDays:picked("o_classDays").map(Number),classStart:g("o_classStart"),classEnd:g("o_classEnd"),transport:g("o_transport"),focus:picked("o_focus"),goal:g("o_goal"),money:g("o_money"),moneyDate:g("o_moneyDate"),faith:$("o_faith").checked,ping:$("o_ping").checked};}
 const hm=t=>{const [h,m]=(t||"0:0").split(":").map(Number);return h*60+(m||0);};
 const fm=m=>{m=((m%1440)+1440)%1440;return String(Math.floor(m/60)).padStart(2,"0")+"h"+(m%60?String(m%60).padStart(2,"0"):"");};
@@ -49,6 +60,24 @@ function buildCfg(a){const Q=[];let n=0;const add=q=>{q.id=q.id||("g"+(++n));Q.p
     add({id:"s_meta",title:"1 passo da meta: "+a.goal,xp:30,stat:"vendas",days:[6],minTitle:"10 min",ifThen:"Domingo à tarde, antes de planejar a semana."});}
   if(f("remedio"))add({id:"s_remed",title:"Tomar os remédios da manhã",xp:15,stat:"corpo",main:true,ifThen:"Quando levantar ("+fm(hm(a.wake))+"), tomo junto com o primeiro copo d'água."});
   if(f("agua"))add({id:"s_agua",title:"Beber 6 copos de água",xp:10,stat:"corpo",minTitle:"3 copos",ifThen:"A cada refeição, 1 copo antes de comer."});
+  const o=a.occ||"", drop=id=>{const i=Q.findIndex(q=>q.id===id);if(i>=0)Q.splice(i,1);};
+  if(o==="motorista"){drop("s_sono");drop("s_agua");drop("s_along");drop("s_treino");drop("s_almoco");
+    add({id:"s_agua",title:"1 garrafa de água a cada parada",xp:15,stat:"corpo",main:true,minTitle:"meia garrafa",ifThen:"Quando parar para abastecer ou comer, encho a garrafa antes de sair."});
+    add({id:"s_along",title:"Alongar 5 min na parada (pernas, costas e pescoço)",xp:15,stat:"corpo",main:true,minTitle:"1 min",ifThen:"Quando descer do caminhão na parada, alongo antes de entrar no posto."});
+    add({id:"s_familia",title:"Ligar ou mandar um áudio para a família",xp:15,stat:"foco",main:true,minTitle:"uma mensagem",ifThen:"Na primeira parada longa do dia, antes de comer."});
+    add({id:"s_sono",title:"Dormir pelo menos 7 h quando parar para descansar",xp:20,stat:"corpo",minTitle:"6 h",ifThen:"Quando estacionar para dormir, celular no carregador e alarme definido."});
+    const fe=Q.find(q=>q.id==="s_fech");if(fe)fe.ifThen="Quando parar para dormir, abro este app primeiro.";}
+  if(o==="casa"){drop("s_casa");
+    add({id:"s_eu",title:"20 min só pra mim (leitura, série, caminhada ou descanso)",xp:20,stat:"foco",main:true,minTitle:"10 min",ifThen:"Depois do almoço, quando a cozinha estiver em ordem."});
+    add({id:"s_casa",title:"15 min de arrumação em um cômodo",xp:15,stat:"foco",main:true,minTitle:"5 min",ifThen:"Logo depois do café da manhã."});
+    if(!Q.some(q=>q.id==="s_treino"))add({id:"s_treino",title:"Caminhada de 20 min",xp:20,stat:"corpo",minTitle:"10 min",ifThen:"No fim da tarde, quando o sol baixar."});}
+  if(o==="estudante")add({id:"s_provas",title:"Olhar as provas e entregas da semana (5 min)",xp:15,stat:"mente",days:[6],ifThen:"Domingo à noite, antes de dormir, abro o calendário da faculdade."});
+  if(o==="autonomo")add({id:"s_foco",title:"Bloco de 90 min no trabalho que dá dinheiro, antes de abrir mensagens",xp:40,stat:"vendas",main:true,minTitle:"25 min",days:[0,1,2,3,4],ifThen:"Logo depois do café, celular no modo não perturbe."});
+  if(o==="aposentado"){if(!Q.some(q=>q.id==="s_treino"))add({id:"s_treino",title:"Caminhada leve de 20 min",xp:20,stat:"corpo",main:true,minTitle:"10 min",ifThen:"De manhã, depois do café."});
+    if(!Q.some(q=>q.id==="s_amor"))add({id:"s_amor",title:"Conversar com alguém (ligação ou visita)",xp:10,stat:"foco",ifThen:"Depois do almoço, ligo para alguém."});}
+  // no máximo 3 principais contando o fechamento (remédio e tarefas da ocupação têm prioridade)
+  {const pri=q=>q.id==="s_remed"?0:["s_agua","s_along","s_familia","s_eu","s_casa","s_foco"].includes(q.id)&&o?1:2;let k=0;
+   for(const q of Q.filter(q=>q.main&&q.id!=="s_fech").sort((x,y)=>pri(x)-pri(y))){k++;if(k>2)q.main=false;}}
   // garante pelo menos 2 principais além do fechamento, seguindo a ordem dos focos
   let mains=Q.filter(q=>q.main).length;for(const q of Q){if(mains>=3)break;if(!q.main&&!q.once&&!q.days){q.main=true;mains++;}}
   const rk=q=>q.id==="s_remed"?0:q.id==="s_fech"?2:1;Q.sort((x,y)=>rk(x)-rk(y));
@@ -57,9 +86,17 @@ function buildCfg(a){const Q=[];let n=0;const add=q=>{q.id=q.id||("g"+(++n));Q.p
   const mv=parseFloat(String(a.money||"").replace(/\./g,"").replace(",","."));
   if(mv>0){const d=a.moneyDate||"";c.money={goal:mv,deadline:d||undefined,label:"Meta: R$ "+mv.toLocaleString("pt-BR")+(d?" até "+d.split("-").reverse().slice(0,2).join("/"):"")};}
   return c;}
+function showIntro(){$("intro").hidden=false;$("onb").hidden=true;document.body.classList.add("onboarding");$("slides").scrollTo({left:0});introDots();window.scrollTo(0,0);}
+function introIdx(){const s=$("slides");return Math.round(s.scrollLeft/Math.max(1,s.clientWidth));}
+function introDots(){const i=introIdx();[...$("dots").children].forEach((d,k)=>d.classList.toggle("on",k===i));$("introNext").textContent=i>=2?"Começar":"Próximo";}
+function endIntro(){try{localStorage.setItem("asc-u-intro","1");}catch(e){}$("intro").hidden=true;$("onb").hidden=false;window.scrollTo(0,0);}
+$("slides").addEventListener("scroll",()=>{clearTimeout(introDots._t);introDots._t=setTimeout(introDots,60);});
+$("introNext").addEventListener("click",()=>{const i=introIdx();if(i>=2)endIntro();else{const s=$("slides");s.scrollTo({left:(i+1)*s.clientWidth,behavior:"smooth"});}});
+$("introSkip").addEventListener("click",endIntro);
+$("introAgain").addEventListener("click",showIntro);
 function openOnb(){let a=(cfg&&cfg.profile)||null;
   if(!a){try{const m=location.hash.match(/p=([^&]+)/);if(m){$("o_pre").hidden=false;}if(m)a=JSON.parse(decodeURIComponent(escape(atob(m[1].replace(/-/g,"+").replace(/_/g,"/")))));}catch(e){a=null;}}
-  fillOnb(a);$("onb").hidden=false;document.body.classList.add("onboarding");$("o_cancel").hidden=!(cfg&&!cfg.blank);window.scrollTo(0,0);}
+  fillOnb(a);$("onb").hidden=false;document.body.classList.add("onboarding");let seen=false;try{seen=localStorage.getItem("asc-u-intro")==="1";}catch(e){}if(!seen&&!(cfg&&!cfg.blank)){showIntro();return;}$("o_cancel").hidden=!(cfg&&!cfg.blank);window.scrollTo(0,0);}
 function closeOnb(){$("onb").hidden=true;document.body.classList.remove("onboarding");}
 $("o_go").addEventListener("click",()=>{const a=readOnb();if(!a.name){$("o_msg").textContent="Coloque seu nome.";return;}
   cfg=buildCfg(a);

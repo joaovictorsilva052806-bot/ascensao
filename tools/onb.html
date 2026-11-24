@@ -1,8 +1,19 @@
+  <section class="intro" id="intro" hidden>
+    <div class="slides" id="slides">
+      <div class="slide"><div class="ring">XP</div><h2>Sua rotina vira um jogo</h2><p>Cada tarefa que você faz no dia vale pontos (XP). Os pontos sobem seu nível.</p></div>
+      <div class="slide"><div class="ring">3</div><h2>Como funciona</h2><p><b>3 tarefas principais</b> por dia, curtas e no seu horário.</p><p>Deu tudo? Toque em <b>Feito</b>. Dia corrido? <b>Mínimo</b> já conta.</p><p>🔥 Sequência de dias, 🎁 baú surpresa e ranks de E até S.</p></div>
+      <div class="slide"><div class="ring">S</div><h2>Por que "Ascensão"?</h2><p>Porque quem sobe de nível é você, na vida real. Pouco por dia, todo dia.</p><p class="muted">Tudo fica só no seu celular. Grátis.</p></div>
+    </div>
+    <div class="dots" id="dots"><i></i><i></i><i></i></div>
+    <div class="row"><button class="link" type="button" id="introSkip">Pular</button><button class="go" type="button" id="introNext">Próximo</button></div>
+  </section>
+
   <section class="panel onb" id="onb" hidden>
-    <h2>Monte seu jogo</h2>
+    <div class="qhead"><h2>Monte seu jogo</h2><button class="link" type="button" id="introAgain">O que é isso?</button></div>
     <div class="pre" id="o_pre" hidden>Já veio preenchido com a sua rotina. Confira os horários e toque em <b>Criar meu jogo</b>.</div>
     <p class="sm muted">Responda o que souber, leva 2 minutos. O app monta as tarefas do seu dia. Cada tarefa feita vale pontos (XP) e você sobe de nível. Tudo fica só no seu celular.</p>
     <label>Como quer ser chamado(a)?<input id="o_name" maxlength="30" autocomplete="off" placeholder="Seu nome ou apelido"></label>
+    <fieldset><legend>O que você faz hoje?</legend><div class="chips" id="o_occ"></div><div class="sm muted" id="o_occHint"></div></fieldset>
     <div class="two"><label>Acordo às<input type="time" id="o_wake" value="07:00"></label><label>Quero dormir às<input type="time" id="o_sleep" value="23:00"></label></div>
     <fieldset><legend>Trabalho</legend>
       <label class="chk"><input type="checkbox" id="o_works" checked> Eu trabalho fora ou tenho horário fixo</label>
