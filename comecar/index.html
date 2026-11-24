@@ -256,6 +256,7 @@ input,select,textarea{font-size:16px!important}
 .ring{width:110px;height:110px;border-radius:50%;display:grid;place-items:center;font-family:var(--f-hud);font-size:2.2rem;color:#e9feff;text-shadow:0 0 16px var(--accent);background:radial-gradient(circle,#06303f,#03121b 70%);box-shadow:0 0 0 3px var(--accent),0 0 30px rgba(0,212,255,.45);margin-bottom:8px}
 .dots{display:flex;justify-content:center;gap:8px}.dots i{width:8px;height:8px;border-radius:50%;background:var(--line);transition:.3s}.dots i.on{background:var(--accent);box-shadow:0 0 8px var(--accent);width:22px;border-radius:4px}
 .intro .row{justify-content:space-between}.intro .row>*{flex:0 1 auto}.intro #introNext{min-width:140px}
+.news{margin:6px 0 8px;padding-left:18px}.news li{margin:3px 0}
 </style></head><body>
 
 <div class="hudtop"><span>ASCENSÃO<i>//</i>SISTEMA ONLINE</span><span class="mono" id="clock">--:--</span></div>
@@ -299,6 +300,14 @@ input,select,textarea{font-size:16px!important}
     <label class="chk" id="o_pingRow"><input type="checkbox" id="o_ping"> 🏆 Entrar no ranking da semana (aparece só seu primeiro nome e seu XP)</label>
     <div class="row sticky"><button class="go" type="button" id="o_go">Criar meu jogo</button><button class="ghost" type="button" id="o_cancel" hidden>Cancelar</button></div>
     <div class="sm muted" id="o_msg"></div>
+  </section>
+
+  <section data-tab="hoje" class="panel tip" id="newsCard" hidden>
+    <h2>✨ Novidades no app</h2>
+    <ul class="sm news"><li>Perfil novo: idade, escola, faculdade, ENEM ou curso, com turno.</li><li>Tarefas novas: dever de casa, menos tela, leitura e mais.</li><li>Ranking com apelido, se você preferir.</li></ul>
+    <div class="sm muted">Atualize seu perfil para ganhar as tarefas novas. Seu XP, sequência e histórico continuam.</div>
+    <div class="row"><button class="go" type="button" id="newsRedo">Atualizar meu perfil</button><button class="ghost" type="button" id="newsIntro">Ver apresentação</button></div>
+    <button class="link" type="button" id="newsClose">Agora não</button>
   </section>
 
   <section data-tab="hoje" class="panel tip" id="pingCard" hidden>
@@ -454,12 +463,18 @@ input,select,textarea{font-size:16px!important}
 
   <section data-tab="mais" class="panel">
     <h2>Ajustes e backup</h2>
-    <div class="row"><button type="button" class="ghost" id="redo">Refazer meu perfil (recria as quests, mantém o XP)</button></div>
+    <div class="row"><button type="button" class="ghost" id="redo">Refazer meu perfil (troca as tarefas, mantém XP e histórico)</button></div>
+    <div class="row"><button type="button" class="link" id="introMais">Ver a apresentação de novo</button></div>
     <div class="sm muted" id="sync">Seu progresso fica só neste aparelho.</div>
     <details>
       <summary>Sincronizar com planilha (opcional)</summary>
       <label for="syncUrl" class="sm muted">Endereço do Apps Script /exec</label>
       <div class="add"><input id="syncUrl" placeholder="https://script.google.com/macros/s/.../exec" autocomplete="off"><button class="go" type="button" id="syncSave">Salvar</button></div>
+    </details>
+    <details>
+      <summary>Começar do zero</summary>
+      <p>Apaga perfil, tarefas, XP e histórico deste aparelho e mostra a apresentação de novo. Não dá para desfazer: copie o backup antes, se quiser guardar.</p>
+      <div class="row"><button type="button" class="ghost" id="wipe">Apagar tudo e começar do zero</button></div>
     </details>
     <details>
       <summary>Backup do progresso</summary>
@@ -918,14 +933,16 @@ function buildCfg(a){const Q=[];let n=0;const add=q=>{q.id=q.id||("g"+(++n));Q.p
   const mv=parseFloat(String(a.money||"").replace(/\./g,"").replace(",","."));
   if(mv>0){const d=a.moneyDate||"";c.money={goal:mv,deadline:d||undefined,label:"Meta: R$ "+mv.toLocaleString("pt-BR")+(d?" até "+d.split("-").reverse().slice(0,2).join("/"):"")};}
   return c;}
-function showIntro(){$("intro").hidden=false;$("onb").hidden=true;document.body.classList.add("onboarding");$("slides").scrollTo({left:0});introDots();window.scrollTo(0,0);}
+let introOnly=false;
+function showIntro(only){introOnly=!!only;$("intro").hidden=false;$("onb").hidden=true;document.body.classList.add("onboarding");$("slides").scrollTo({left:0});introDots();window.scrollTo(0,0);}
 function introIdx(){const s=$("slides");return Math.round(s.scrollLeft/Math.max(1,s.clientWidth));}
 function introDots(){const i=introIdx();[...$("dots").children].forEach((d,k)=>d.classList.toggle("on",k===i));$("introNext").textContent=i>=2?"Começar":"Próximo";}
-function endIntro(){try{localStorage.setItem("asc-u-intro","1");}catch(e){}$("intro").hidden=true;$("onb").hidden=false;window.scrollTo(0,0);}
+function endIntro(){try{localStorage.setItem("asc-u-intro","1");}catch(e){}
+  if(introOnly){introOnly=false;$("intro").hidden=true;document.body.classList.remove("onboarding");window.scrollTo(0,0);return;}$("intro").hidden=true;$("onb").hidden=false;window.scrollTo(0,0);}
 $("slides").addEventListener("scroll",()=>{clearTimeout(introDots._t);introDots._t=setTimeout(introDots,60);});
 $("introNext").addEventListener("click",()=>{const i=introIdx();if(i>=2)endIntro();else{const s=$("slides");s.scrollTo({left:(i+1)*s.clientWidth,behavior:"smooth"});}});
 $("introSkip").addEventListener("click",endIntro);
-$("introAgain").addEventListener("click",showIntro);
+$("introAgain").addEventListener("click",()=>showIntro(false));
 function openOnb(){let a=(cfg&&cfg.profile)||null;
   if(!a){try{const m=location.hash.match(/p=([^&]+)/);if(m){$("o_pre").hidden=false;}if(m)a=JSON.parse(decodeURIComponent(escape(atob(m[1].replace(/-/g,"+").replace(/_/g,"/")))));}catch(e){a=null;}}
   fillOnb(a);$("onb").hidden=false;document.body.classList.add("onboarding");let seen=false;try{seen=localStorage.getItem("asc-u-intro")==="1";}catch(e){}if(!seen&&!(cfg&&!cfg.blank)){showIntro();return;}$("o_cancel").hidden=!(cfg&&!cfg.blank);window.scrollTo(0,0);}
@@ -934,12 +951,26 @@ $("o_go").addEventListener("click",()=>{const a=readOnb();if(!a.name){$("o_msg")
   cfg=buildCfg(a);
   try{localStorage.setItem("asc-u-cfg",JSON.stringify(cfg));}catch(e){}
   if(location.hash)history.replaceState(null,"",location.pathname);
-  $("titleName").textContent=cfg.name;try{localStorage.setItem("asc-u-lang",(LANG_SIMPLE_OCC.includes(a.occ)||a.age==="senior")?"simples":"completo");}catch(e){}langUI();langFix(document.body);if(a.ping)setTimeout(()=>joinRank("cadastro"),0);else prog.rank=prog.rank||{on:false,asked:true};if(isMinorAge(a.age)&&prog.rank&&prog.rank.on&&!prog.rank.nick)leaveRank();closeOnb();save();render();goTab("hoje");showTip();toast("Pronto, "+cfg.name+"! "+cfg.quests.length+" quests criadas para o seu dia.");});
+  $("titleName").textContent=cfg.name;try{localStorage.setItem("asc-u-lang",(LANG_SIMPLE_OCC.includes(a.occ)||a.age==="senior")?"simples":"completo");}catch(e){}langUI();langFix(document.body);if(a.ping)setTimeout(()=>joinRank("cadastro"),0);else prog.rank=prog.rank||{on:false,asked:true};if(isMinorAge(a.age)&&prog.rank&&prog.rank.on&&!prog.rank.nick)leaveRank();try{localStorage.setItem("asc-u-news",NEWS_V);}catch(e){}closeOnb();save();render();goTab("hoje");showTip();toast("Pronto, "+cfg.name+"! "+cfg.quests.length+" quests criadas para o seu dia.");});
 $("o_cancel").addEventListener("click",closeOnb);
 $("redo").addEventListener("click",openOnb);
 function applyCopy(){const P=(cfg&&cfg.profile)||{};const o=P.occ||"",m=isMinorAge(P.age);
   const mit=P.level==="escola"||o==="escola"?"Ex.: terminar o trabalho de Ciências":o==="estudante"?"Ex.: entregar a lista da faculdade":o==="motorista"?"Ex.: ligar para casa na parada":o==="casa"?"Ex.: pagar a conta de luz":o==="aposentado"?"Ex.: marcar a consulta":o==="autonomo"?"Ex.: mandar o orçamento que está parado":"Ex.: a coisa mais importante de hoje";
   $("mit").placeholder=mit;$("fIntent").placeholder=m?"Ex.: apresentar o trabalho sem travar":"Ex.: pedir ajuda com aquilo que estou adiando";}
+// ---------- Novidades (1x por versão, para quem já tinha perfil) e fluxos de Mais ----------
+const NEWS_V="2";
+function showNews(){let seen="";try{seen=localStorage.getItem("asc-u-news")||"";}catch(e){}$("newsCard").hidden=!(cfg&&!cfg.blank&&seen!==NEWS_V);}
+function newsDone(){try{localStorage.setItem("asc-u-news",NEWS_V);}catch(e){}$("newsCard").hidden=true;}
+$("newsRedo").addEventListener("click",()=>{newsDone();openOnb();});
+$("newsIntro").addEventListener("click",()=>{showIntro(true);});
+$("newsClose").addEventListener("click",newsDone);
+$("introMais").addEventListener("click",()=>showIntro(true));
+let wipeArmed=0;
+$("wipe").addEventListener("click",()=>{const b=$("wipe");
+  if(Date.now()-wipeArmed>5000){wipeArmed=Date.now();b.textContent="Tem certeza? Toque de novo para apagar";return;}
+  try{Object.keys(localStorage).filter(k=>k.startsWith("asc-u-")).forEach(k=>localStorage.removeItem(k));}catch(e){}
+  location.replace(location.pathname);});
+setTimeout(showNews,0);
 // ---------- Sugestões (sai pelo WhatsApp; fica salva no aparelho) ----------
 $("fbSend").addEventListener("click",()=>{const t=$("fbText").value.trim();if(!t){$("fbMsg").textContent="Escreva a sugestão primeiro.";return;}
   prog.feedback=(prog.feedback||[]).concat([{t,d:new Date().toISOString()}]);save();
