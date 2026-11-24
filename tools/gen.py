@@ -14,8 +14,8 @@ rep('class="panel faith">','class="panel faith" id="faithPanel">')
 rep('<h2>Sincronizar com a Eva</h2>\n    <label for="syncUrl" class="sm muted">Endereço da planilha (a Eva te passa uma vez)</label>\n    <div class="add"><input id="syncUrl" placeholder="https://script.google.com/macros/s/.../exec" autocomplete="off"><button class="go" type="button" id="syncSave">Salvar</button></div>\n    <div class="sm muted" id="sync">Sem sincronização: o progresso fica só neste aparelho.</div>',
  '<h2>Ajustes e backup</h2>\n    <div class="row"><button type="button" class="ghost" id="redo">Refazer meu perfil (recria as quests, mantém o XP)</button></div>\n    <div class="sm muted" id="sync">Seu progresso fica só neste aparelho.</div>\n    <details>\n      <summary>Sincronizar com planilha (opcional)</summary>\n      <label for="syncUrl" class="sm muted">Endereço do Apps Script /exec</label>\n      <div class="add"><input id="syncUrl" placeholder="https://script.google.com/macros/s/.../exec" autocomplete="off"><button class="go" type="button" id="syncSave">Salvar</button></div>\n    </details>')
 rep('a Eva lê seu placar.','placar atualizado.')
-rep('<li><b>Chefe da semana:</b> abordagens e follow-ups tiram vida dele.','<li><b>Chefe da semana:</b> suas quests de estudo tiram vida dele.')
-rep('const STATS={foco:"Foco",vendas:"Vendas",mente:"Mente",corpo:"Corpo"};','const STATS={foco:"Foco",vendas:"Carreira",mente:"Mente",corpo:"Corpo"};')
+rep('<li><b>Chefe da semana:</b> abordagens e follow-ups tiram vida dele. Derrotou, ganha 100 XP.','<li><b>Chefe da semana:</b> suas quests principais tiram vida dele. Derrotou, ganha XP extra.')
+rep('const STATS={foco:"Foco",vendas:"Vendas",mente:"Mente",corpo:"Corpo"};','const STATS={foco:"Foco",vendas:"Metas",mente:"Mente",corpo:"Corpo"};')
 rep('[20,"A","Mestre de obra"],[30,"S","Lenda Bellardi"]','[20,"A","Mestre"],[30,"S","Lenda"]')
 rep('ou peça à Eva para montar as suas.','ou toque em Refazer meu perfil.')
 s=re.sub(r'Suas quests aparecem aqui assim que a Eva carregar\.','Responda o perfil para montar suas quests.',s)
@@ -44,5 +44,19 @@ rep('<button class="go" type="submit">Adicionar</button>\n    </form>','<button 
 rep('  <section data-tab="hoje" class="panel">\n    <div class="status">','  <section data-tab="hoje" class="panel tip" id="pingCard" hidden>\n    <h2>🏆 Ranking da semana</h2>\n    <div class="sm">Compare seu XP com quem também usa o Ascensão. Aparece só seu primeiro nome e seu XP. Nenhuma tarefa ou horário sai do seu celular.</div>\n    <div class="row"><button class="go" type="button" id="pingYes">Entrar no ranking</button><button class="ghost" type="button" id="pingNo">Agora não</button></div>\n  </section>\n\n  <section data-tab="hoje" class="panel tip" id="installTip" hidden>\n    <h2>Instale como app</h2>\n    <div class="sm" id="tipText">No Safari, toque em <b>Compartilhar</b> (quadrado com a seta) e depois em <b>Adicionar à Tela de Início</b>. Ele abre em tela cheia, como um app.</div>\n    <button class="go" type="button" id="tipInstall" hidden>Instalar agora</button>\n    <button class="link" type="button" id="tipClose">Entendi</button>\n  </section>\n\n  <section data-tab="hoje" class="panel">\n    <div class="status">')
 rep('render();\nsetInterval(','if(!cfg||cfg.blank||!cfg.quests||!cfg.quests.length)openOnb();\nrender();\nsetInterval(')
 rep("\nlet saveTimer=null, SYNC=\"\";",onb_js+fb_js+"\nlet saveTimer=null, SYNC=\"\";")
+# ---- conteúdo neutro (lema, 'Pix' e leads são do app do JV) ----
+rep('"Fé sobre o medo","7 dias com o painel de fé"','"Coração grato","7 dias com o painel de gratidão"')
+rep('<h2>Fé sobre o medo</h2>','<h2>Coragem e gratidão</h2>')
+rep('<div class="motto">Faith over fear</div>','<div class="motto">Feito com medo também vale</div>')
+rep('"Mais um degrau. Faith over fear."','"Mais um degrau. Pouco por dia, todo dia."')
+s=s.replace('Pix do mês','Meta de dinheiro')
+rep('{t:"Ascensão: estudo",h:"13:00",d:W,n:"25 min de estudo. Mínimo: 10 min."},{t:"Ascensão: follow-ups",h:"17:00",d:W,n:"Responder leads e follow-ups."},','')
+rep('const at=bus&&P.works?','const at=P.level==="escola"?(P.shift==="tarde"||P.shift==="noite"?hmm(P.wake)+90:hmm(P.classEnd)+75):bus&&P.works?')
+rep('  const so=q("s_sono");out.push(','''  const ALL=[0,1,2,3,4,5,6],re=q("s_remed");if(re)out.push({t:"Ascensão: remédios",h:f2(hmm(P.wake)+10),d:ALL,n:re.title});
+  if(!rev){const fq=(cfg.quests||[]).find(x=>x.main&&x.id!=="s_fech"&&x.id!=="s_remed"&&x.id!=="s_sono");if(fq)out.push({t:"Ascensão: tarefa principal",h:f2(P.works&&P.workStart?hmm(P.workStart)-60:hmm(P.wake)+60),d:fq.days||ALL,n:fq.title+(fq.minTitle?" (mínimo: "+fq.minTitle+")":"")});}
+  const so=q("s_sono");out.push(''')
+rep('<ol class="rk" id="rkList"></ol>\n','<ol class="rk" id="rkList"></ol>\n    <div class="sm muted" id="rkNote"></div>\n    <div class="add" id="rkNickRow"><input id="rkNick" maxlength="16" autocomplete="off" placeholder="Apelido no ranking (opcional)"><button class="ghost" type="button" id="rkNickSave">Salvar</button></div>\n')
+rep('$("faithPanel").hidden=!(cfg&&cfg.faith);','$("faithPanel").hidden=!(cfg&&cfg.faith);applyCopy();')
+rep('Compare seu XP com quem também usa o Ascensão. Aparece só seu primeiro nome e seu XP.','Opcional: compare seu XP com quem também usa o Ascensão. Aparece só seu primeiro nome (ou um apelido) e o XP da semana.')
 open('comecar/index.html','w').write(s)
 pass
