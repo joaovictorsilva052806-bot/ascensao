@@ -13,6 +13,7 @@
     <div class="pre" id="o_pre" hidden>Já veio preenchido com a sua rotina. Confira os horários e toque em <b>Criar meu jogo</b>.</div>
     <p class="sm muted">Responda o que souber, leva 2 minutos. O app monta as tarefas do seu dia. Cada tarefa feita vale pontos (XP) e você sobe de nível. Tudo fica só no seu celular.</p>
     <label>Como quer ser chamado(a)?<input id="o_name" maxlength="30" autocomplete="off" placeholder="Seu nome ou apelido"></label>
+    <fieldset><legend>Sua idade</legend><div class="chips" id="o_age"></div><div class="sm muted" id="o_ageHint"></div></fieldset>
     <fieldset><legend>O que você faz hoje?</legend><div class="chips" id="o_occ"></div><div class="sm muted" id="o_occHint"></div></fieldset>
     <div class="two"><label>Acordo às<input type="time" id="o_wake" value="07:00"></label><label>Quero dormir às<input type="time" id="o_sleep" value="23:00"></label></div>
     <fieldset><legend>Trabalho</legend>
@@ -21,17 +22,19 @@
       <div class="three"><label>Entro<input type="time" id="o_workStart" value="08:00"></label><label>Almoço<input type="time" id="o_lunch" value="12:00"></label><label>Saio<input type="time" id="o_workEnd" value="17:00"></label></div></div>
     </fieldset>
     <fieldset><legend>Estudo</legend>
-      <label class="chk"><input type="checkbox" id="o_studies"> Faço faculdade ou curso</label>
-      <div id="o_studyBox"><label>Curso<input id="o_course" maxlength="60" autocomplete="off" placeholder="Ex.: Engenharia"></label>
+      <label class="chk"><input type="checkbox" id="o_studies"> Eu estudo (escola, faculdade ou curso)</label>
+      <div id="o_studyBox"><div class="two"><label>Onde<select id="o_level"><option value="escola">Escola</option><option value="faculdade">Faculdade</option><option value="tecnico">Curso técnico</option><option value="enem">Cursinho / ENEM</option><option value="curso">Outro curso</option></select></label>
+      <label>Turno<select id="o_shift"><option value="manha">Manhã</option><option value="tarde">Tarde</option><option value="noite">Noite</option><option value="integral">Integral</option></select></label></div>
+      <label><span id="o_courseLbl">Curso</span><input id="o_course" maxlength="60" autocomplete="off" placeholder="Ex.: Engenharia"></label>
       <div class="dsel" id="o_classDays"></div>
       <div class="two"><label>Aula começa<input type="time" id="o_classStart" value="19:00"></label><label>Aula termina<input type="time" id="o_classEnd" value="22:30"></label></div></div>
     </fieldset>
-    <label>Como você se desloca?<select id="o_transport"><option value="onibus">Ônibus</option><option value="carro">Carro ou moto</option><option value="ape">A pé ou bicicleta</option><option value="casa">Trabalho/estudo de casa</option></select></label>
+    <label>Como você se desloca?<select id="o_transport"><option value="onibus">Ônibus</option><option value="carro">Carro ou moto</option><option value="ape">A pé ou bicicleta</option><option value="casa">Fico em casa / trabalho de casa</option></select></label>
     <fieldset><legend>O que mais importa agora? (até 4)</legend><div class="chips" id="o_focus"></div></fieldset>
-    <label>Uma meta grande para os próximos meses (opcional)<input id="o_goal" maxlength="80" autocomplete="off" placeholder="Ex.: conseguir estágio na área"></label>
-    <div class="two"><label>Meta de dinheiro R$ (opcional)<input id="o_money" inputmode="decimal" placeholder="Ex.: 1500"></label><label>Até<input type="date" id="o_moneyDate"></label></div>
-    <label class="chk"><input type="checkbox" id="o_faith"> Quero o painel de fé e gratidão</label>
-    <label class="chk"><input type="checkbox" id="o_ping"> 🏆 Entrar no ranking da semana (aparece só seu primeiro nome e seu XP)</label>
+    <label>Uma meta grande para os próximos meses (opcional)<input id="o_goal" maxlength="80" autocomplete="off" placeholder="Ex.: passar de ano com nota boa"></label>
+    <div class="two"><label>Juntar dinheiro R$ (opcional)<input id="o_money" inputmode="decimal" placeholder="Ex.: 1500"></label><label>Até<input type="date" id="o_moneyDate"></label></div>
+    <label class="chk"><input type="checkbox" id="o_faith"> Quero o painel de coragem e gratidão (tem espaço para fé, se quiser)</label>
+    <label class="chk" id="o_pingRow"><input type="checkbox" id="o_ping"> 🏆 Entrar no ranking da semana (aparece só seu primeiro nome e seu XP)</label>
     <div class="row sticky"><button class="go" type="button" id="o_go">Criar meu jogo</button><button class="ghost" type="button" id="o_cancel" hidden>Cancelar</button></div>
     <div class="sm muted" id="o_msg"></div>
   </section>

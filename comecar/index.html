@@ -275,6 +275,7 @@ input,select,textarea{font-size:16px!important}
     <div class="pre" id="o_pre" hidden>Já veio preenchido com a sua rotina. Confira os horários e toque em <b>Criar meu jogo</b>.</div>
     <p class="sm muted">Responda o que souber, leva 2 minutos. O app monta as tarefas do seu dia. Cada tarefa feita vale pontos (XP) e você sobe de nível. Tudo fica só no seu celular.</p>
     <label>Como quer ser chamado(a)?<input id="o_name" maxlength="30" autocomplete="off" placeholder="Seu nome ou apelido"></label>
+    <fieldset><legend>Sua idade</legend><div class="chips" id="o_age"></div><div class="sm muted" id="o_ageHint"></div></fieldset>
     <fieldset><legend>O que você faz hoje?</legend><div class="chips" id="o_occ"></div><div class="sm muted" id="o_occHint"></div></fieldset>
     <div class="two"><label>Acordo às<input type="time" id="o_wake" value="07:00"></label><label>Quero dormir às<input type="time" id="o_sleep" value="23:00"></label></div>
     <fieldset><legend>Trabalho</legend>
@@ -283,24 +284,26 @@ input,select,textarea{font-size:16px!important}
       <div class="three"><label>Entro<input type="time" id="o_workStart" value="08:00"></label><label>Almoço<input type="time" id="o_lunch" value="12:00"></label><label>Saio<input type="time" id="o_workEnd" value="17:00"></label></div></div>
     </fieldset>
     <fieldset><legend>Estudo</legend>
-      <label class="chk"><input type="checkbox" id="o_studies"> Faço faculdade ou curso</label>
-      <div id="o_studyBox"><label>Curso<input id="o_course" maxlength="60" autocomplete="off" placeholder="Ex.: Engenharia"></label>
+      <label class="chk"><input type="checkbox" id="o_studies"> Eu estudo (escola, faculdade ou curso)</label>
+      <div id="o_studyBox"><div class="two"><label>Onde<select id="o_level"><option value="escola">Escola</option><option value="faculdade">Faculdade</option><option value="tecnico">Curso técnico</option><option value="enem">Cursinho / ENEM</option><option value="curso">Outro curso</option></select></label>
+      <label>Turno<select id="o_shift"><option value="manha">Manhã</option><option value="tarde">Tarde</option><option value="noite">Noite</option><option value="integral">Integral</option></select></label></div>
+      <label><span id="o_courseLbl">Curso</span><input id="o_course" maxlength="60" autocomplete="off" placeholder="Ex.: Engenharia"></label>
       <div class="dsel" id="o_classDays"></div>
       <div class="two"><label>Aula começa<input type="time" id="o_classStart" value="19:00"></label><label>Aula termina<input type="time" id="o_classEnd" value="22:30"></label></div></div>
     </fieldset>
-    <label>Como você se desloca?<select id="o_transport"><option value="onibus">Ônibus</option><option value="carro">Carro ou moto</option><option value="ape">A pé ou bicicleta</option><option value="casa">Trabalho/estudo de casa</option></select></label>
+    <label>Como você se desloca?<select id="o_transport"><option value="onibus">Ônibus</option><option value="carro">Carro ou moto</option><option value="ape">A pé ou bicicleta</option><option value="casa">Fico em casa / trabalho de casa</option></select></label>
     <fieldset><legend>O que mais importa agora? (até 4)</legend><div class="chips" id="o_focus"></div></fieldset>
-    <label>Uma meta grande para os próximos meses (opcional)<input id="o_goal" maxlength="80" autocomplete="off" placeholder="Ex.: conseguir estágio na área"></label>
-    <div class="two"><label>Meta de dinheiro R$ (opcional)<input id="o_money" inputmode="decimal" placeholder="Ex.: 1500"></label><label>Até<input type="date" id="o_moneyDate"></label></div>
-    <label class="chk"><input type="checkbox" id="o_faith"> Quero o painel de fé e gratidão</label>
-    <label class="chk"><input type="checkbox" id="o_ping"> 🏆 Entrar no ranking da semana (aparece só seu primeiro nome e seu XP)</label>
+    <label>Uma meta grande para os próximos meses (opcional)<input id="o_goal" maxlength="80" autocomplete="off" placeholder="Ex.: passar de ano com nota boa"></label>
+    <div class="two"><label>Juntar dinheiro R$ (opcional)<input id="o_money" inputmode="decimal" placeholder="Ex.: 1500"></label><label>Até<input type="date" id="o_moneyDate"></label></div>
+    <label class="chk"><input type="checkbox" id="o_faith"> Quero o painel de coragem e gratidão (tem espaço para fé, se quiser)</label>
+    <label class="chk" id="o_pingRow"><input type="checkbox" id="o_ping"> 🏆 Entrar no ranking da semana (aparece só seu primeiro nome e seu XP)</label>
     <div class="row sticky"><button class="go" type="button" id="o_go">Criar meu jogo</button><button class="ghost" type="button" id="o_cancel" hidden>Cancelar</button></div>
     <div class="sm muted" id="o_msg"></div>
   </section>
 
   <section data-tab="hoje" class="panel tip" id="pingCard" hidden>
     <h2>🏆 Ranking da semana</h2>
-    <div class="sm">Compare seu XP com quem também usa o Ascensão. Aparece só seu primeiro nome e seu XP. Nenhuma tarefa ou horário sai do seu celular.</div>
+    <div class="sm">Opcional: compare seu XP com quem também usa o Ascensão. Aparece só seu primeiro nome (ou um apelido) e o XP da semana. Nenhuma tarefa ou horário sai do seu celular.</div>
     <div class="row"><button class="go" type="button" id="pingYes">Entrar no ranking</button><button class="ghost" type="button" id="pingNo">Agora não</button></div>
   </section>
 
@@ -325,7 +328,7 @@ input,select,textarea{font-size:16px!important}
   </section>
 
   <section data-tab="hoje" class="panel" id="moneyPanel" hidden>
-    <div class="qhead"><h2 id="moneyTitle">Pix do mês</h2><span class="sm muted mono" id="moneyDays"></span></div>
+    <div class="qhead"><h2 id="moneyTitle">Meta de dinheiro</h2><span class="sm muted mono" id="moneyDays"></span></div>
     <div class="bar money"><i id="moneyBar" style="width:0%"></i></div>
     <div class="sm mono" id="moneyText"></div>
     <div class="add"><input id="moneyIn" inputmode="decimal" placeholder="Entrou dinheiro? Ex.: 350" autocomplete="off"><button class="go" type="button" id="moneyAdd">Registrar</button></div>
@@ -373,8 +376,8 @@ input,select,textarea{font-size:16px!important}
   </section>
 
   <section data-tab="foco" class="panel faith" id="faithPanel">
-    <div class="qhead"><h2>Fé sobre o medo</h2><span class="xp">+10 XP por dia</span></div>
-    <div class="motto">Faith over fear</div>
+    <div class="qhead"><h2>Coragem e gratidão</h2><span class="xp">+10 XP por dia</span></div>
+    <div class="motto">Feito com medo também vale</div>
     <label for="fIntent">De manhã: qual medo eu encaro hoje?
       <input id="fIntent" maxlength="140" placeholder="Ex.: tirar minha dúvida com o professor"></label>
     <label for="fGrat">À noite: 3 coisas pelas quais eu agradeço (pode ser a Deus)
@@ -385,6 +388,8 @@ input,select,textarea{font-size:16px!important}
   <section data-tab="prog" class="panel" id="rankPanel">
     <div class="qhead"><h2>🏆 Ranking da semana</h2><span class="sm muted">zera toda segunda</span></div>
     <ol class="rk" id="rkList"></ol>
+    <div class="sm muted" id="rkNote"></div>
+    <div class="add" id="rkNickRow"><input id="rkNick" maxlength="16" autocomplete="off" placeholder="Apelido no ranking (opcional)"><button class="ghost" type="button" id="rkNickSave">Salvar</button></div>
     <div class="row"><button class="go" type="button" id="rkJoin">Entrar no ranking</button><button class="link" type="button" id="rkLeave" hidden>Sair do ranking</button></div>
   </section>
 
@@ -469,7 +474,7 @@ input,select,textarea{font-size:16px!important}
         <li><b>Feito</b> dá o XP inteiro. <b>Mínimo</b> dá metade e já conta como dia ativo.</li>
         <li><b>Dívida:</b> cada quest principal sem nem o mínimo custa 10 XP. Fez todas as principais no dia seguinte? A dívida de ontem é perdoada.</li>
         <li><b>Baú surpresa:</b> 1 chance em 5 de XP extra ao concluir uma quest.</li>
-        <li><b>Chefe da semana:</b> suas quests de estudo tiram vida dele. Derrotou, ganha 100 XP. Ele volta toda segunda.</li>
+        <li><b>Chefe da semana:</b> suas quests principais tiram vida dele. Derrotou, ganha XP extra. Ele volta toda segunda.</li>
         <li><b>Dia de descanso:</b> 1 por semana. Nesse dia nenhuma quest gera dívida. Use em dia de doença ou cansaço de verdade.</li>
         <li><b>Ranks:</b> E (nível 1), D (5), C (10), B (15), A (20), S (30).</li>
         <li><b>Por que assim:</b> plano "se-então" para cada quest, meta mínima e nada de zerar sequência. É o que a pesquisa sobre hábitos mostra que funciona.</li>
@@ -488,7 +493,7 @@ input,select,textarea{font-size:16px!important}
 
 <script>
 (function(){
-const STATS={foco:"Foco",vendas:"Carreira",mente:"Mente",corpo:"Corpo"};
+const STATS={foco:"Foco",vendas:"Metas",mente:"Mente",corpo:"Corpo"};
 const RANKS=[[1,"E","Aprendiz"],[5,"D","Iniciado"],[10,"C","Operador"],[15,"B","Especialista"],[20,"A","Mestre"],[30,"S","Lenda"]];
 let cfg=null, prog={log:{},extra:{},faith:{},energy:{},mit:{},reviews:{}}, writing=Promise.resolve();
 const $=id=>document.getElementById(id);
@@ -663,7 +668,7 @@ $("fSave").addEventListener("click",()=>{const tk=todayKey();prog.faith=prog.fai
 
 
 // ---------- Level-up ----------
-const LU_MSGS=["Constância vence intensidade.","Feito é melhor que perfeito.","Mais um degrau. Faith over fear.","Você está construindo o hábito, não só a tarefa."];
+const LU_MSGS=["Constância vence intensidade.","Feito é melhor que perfeito.","Mais um degrau. Pouco por dia, todo dia.","Você está construindo o hábito, não só a tarefa."];
 function levelUp(l){const r=rankOf(l);$("luLevel").textContent="Nível "+l;$("luRank").textContent="Rank "+r[1]+" · "+r[2];$("luMsg").textContent=LU_MSGS[l%LU_MSGS.length];$("levelup").hidden=false;}
 $("luClose").addEventListener("click",()=>{$("levelup").hidden=true;});
 function addXP(entry,msg){const before=levelOf(totalXP());pushEntry(entry,msg);const after=levelOf(totalXP());if(after>before)levelUp(after);}
@@ -732,7 +737,7 @@ $("bkRestore").addEventListener("click",()=>{try{const d=JSON.parse($("bkText").
 function brl(v){return "R$ "+Math.round(v).toLocaleString("pt-BR");}
 function renderMoney(){const m=cfg&&cfg.money;if(!m){$("moneyPanel").hidden=true;return;}$("moneyPanel").hidden=false;
   const tot=(prog.money||[]).reduce((a,x)=>a+(Number(x.v)||0),0);
-  $("moneyTitle").textContent=m.label||"Pix do mês";
+  $("moneyTitle").textContent=m.label||"Meta de dinheiro";
   $("moneyBar").style.width=Math.min(100,tot/m.goal*100)+"%";
   $("moneyText").textContent=brl(tot)+" de "+brl(m.goal)+(tot>=m.goal?" · META BATIDA!":"");
   if(m.deadline){const [y,mo,d]=m.deadline.split("-").map(Number);const days=Math.ceil((new Date(y,mo-1,d,23,59)-new Date())/864e5);$("moneyDays").textContent=days>=0?("faltam "+days+" dias"):"prazo encerrado";}}
@@ -762,21 +767,23 @@ let ACH=[];function achList(){return [
  ["a_boss","Caçador de chefes","Derrotar o chefe da semana",50,()=>entries().some(e=>String(e.q).startsWith("boss:"))],
  ["a_pix","Primeira entrada","Registrar o 1º valor da meta de dinheiro",50,()=>(prog.money||[]).length>0,()=>!!(cfg&&cfg.money)],
  ["a_review","Olhar de dono","1ª revisão da semana",20,()=>Object.keys(prog.reviews||{}).length>0],
- ["a_faith","Fé sobre o medo","7 dias com o painel de fé",40,()=>Object.keys(prog.faith||{}).length>=7,()=>!!(cfg&&cfg.faith)],
+ ["a_faith","Coração grato","7 dias com o painel de gratidão",40,()=>Object.keys(prog.faith||{}).length>=7,()=>!!(cfg&&cfg.faith)],
  ["a_once","Missão cumprida","Concluir todas as missões únicas",60,()=>{const o=((cfg&&cfg.quests)||[]).filter(q=>q.once);return o.length>0&&o.every(q=>entries().some(e=>e.q===q.id));}]].filter(a=>!a[5]||a[5]());}
 function activeDays(){return new Set(entries().filter(e=>!String(e.q).startsWith("ach:")).map(e=>e.date)).size;}
 function renderAch(){const box=$("achList");box.textContent="";prog.ach=prog.ach||{};let got=0;
   for(const [id,name,desc,xp] of (ACH=achList())){const on=!!prog.ach[id];if(on)got++;const d=document.createElement("div");d.className="badge"+(on?" on":"");const b=document.createElement("b");b.textContent=(on?"🏅 ":"🔒 ")+name;d.append(b,document.createTextNode(desc+" · +"+xp+" XP"));box.append(d);}
-  $("achCount").textContent=got+" / "+ACH.length;$("faithPanel").hidden=!(cfg&&cfg.faith);}
+  $("achCount").textContent=got+" / "+ACH.length;$("faithPanel").hidden=!(cfg&&cfg.faith);applyCopy();}
 function checkAch(){prog.ach=prog.ach||{};for(const [id,name,,xp,test] of (ACH=achList())){if(!prog.ach[id]&&test()){prog.ach[id]=todayKey();pushEntry({q:"ach:"+id,kind:"full",xp,stat:"foco",bonus:0,t:new Date().toISOString()},"Conquista: "+name+"! +"+xp+" XP");return true;}}return false;}
 // ---------- Lembretes na agenda (sem servidor: arquivo .ics ou Google Agenda) ----------
 const BYD=["MO","TU","WE","TH","FR","SA","SU"];
 function remPlan(){const P=cfg&&cfg.profile;const W=[0,1,2,3,4];
-  if(!P)return [{t:"Ascensão: 1ª quest do dia",h:"08:00",d:W,n:"Abra o app e faça a quest PRÓXIMA."},{t:"Ascensão: estudo",h:"13:00",d:W,n:"25 min de estudo. Mínimo: 10 min."},{t:"Ascensão: follow-ups",h:"17:00",d:W,n:"Responder leads e follow-ups."},{t:"Ascensão: fechamento",h:"22:30",d:[0,1,2,3,4,5,6],n:"Marcar as quests e escolher a nº 1 de amanhã."}];
+  if(!P)return [{t:"Ascensão: 1ª quest do dia",h:"08:00",d:W,n:"Abra o app e faça a quest PRÓXIMA."},{t:"Ascensão: fechamento",h:"22:30",d:[0,1,2,3,4,5,6],n:"Marcar as quests e escolher a nº 1 de amanhã."}];
   const hmm=t=>{const [h,m]=(t||"0:0").split(":").map(Number);return h*60+(m||0);},f2=m=>{m=((m%1440)+1440)%1440;return String(Math.floor(m/60)).padStart(2,"0")+":"+String(m%60).padStart(2,"0");};
   const out=[];const q=id=>(cfg.quests||[]).find(x=>x.id===id);
-  const rev=q("s_rev");if(rev){const bus=P.transport==="onibus";const at=bus&&P.works?hmm(P.workStart)-25:(P.works&&P.lunch?hmm(P.lunch)+30:hmm(P.wake)+60);out.push({t:"Ascensão: revisão",h:f2(at),d:rev.days||W,n:rev.title+" (mínimo: "+(rev.minTitle||"")+")"});}
+  const rev=q("s_rev");if(rev){const bus=P.transport==="onibus";const at=P.level==="escola"?(P.shift==="tarde"||P.shift==="noite"?hmm(P.wake)+90:hmm(P.classEnd)+75):bus&&P.works?hmm(P.workStart)-25:(P.works&&P.lunch?hmm(P.lunch)+30:hmm(P.wake)+60);out.push({t:"Ascensão: revisão",h:f2(at),d:rev.days||W,n:rev.title+" (mínimo: "+(rev.minTitle||"")+")"});}
   const bl=q("s_bloco");if(bl)out.push({t:"Ascensão: bloco de estudo",h:"09:00",d:[5],n:bl.title});
+  const ALL=[0,1,2,3,4,5,6],re=q("s_remed");if(re)out.push({t:"Ascensão: remédios",h:f2(hmm(P.wake)+10),d:ALL,n:re.title});
+  if(!rev){const fq=(cfg.quests||[]).find(x=>x.main&&x.id!=="s_fech"&&x.id!=="s_remed"&&x.id!=="s_sono");if(fq)out.push({t:"Ascensão: tarefa principal",h:f2(P.works&&P.workStart?hmm(P.workStart)-60:hmm(P.wake)+60),d:fq.days||ALL,n:fq.title+(fq.minTitle?" (mínimo: "+fq.minTitle+")":"")});}
   const so=q("s_sono");out.push({t:so?"Ascensão: hora de desligar":"Ascensão: fechamento",h:f2(hmm(P.sleep)-30),d:[0,1,2,3,4,5,6],n:(so?so.title+". ":"")+"Abra o app, marque as quests e escolha a nº 1 de amanhã."});
   return out;}
 function nextDate(h,days){const d=new Date();const [hh,mm]=h.split(":").map(Number);for(let i=0;i<8;i++){const x=new Date(d);x.setDate(d.getDate()+i);x.setHours(hh,mm,0,0);if(days.includes((x.getDay()+6)%7)&&x>d)return x;}return d;}
@@ -798,47 +805,69 @@ $("calIcs").addEventListener("click",()=>{const blob=new Blob([buildICS()],{type
   $("calMsg").textContent="Abriu a tela da agenda? Toque em \"Adicionar tudo\". Se nada abriu, use os botões do Google abaixo.";});
 // ---------- Perfil e geração de quests (onboarding) ----------
 const DN=["seg","ter","qua","qui","sex","sáb","dom"];
-const FOCI=[["estudos","Estudos"],["sono","Dormir melhor"],["corpo","Saúde e corpo"],["carreira","Carreira"],["dinheiro","Dinheiro"],["relac","Pessoas que amo"],["casa","Casa em ordem"],["remedio","Remédios no horário"],["agua","Beber água"]];
-const OCC=[["estudante","Estudante"],["clt","Trabalho fixo (CLT)"],["autonomo","Autônomo / Empreendedor"],["casa","Dono(a) de casa"],["motorista","Motorista / caminhoneiro"],["aposentado","Aposentado(a)"],["outro","Outro"]];
-const OCC_SET={estudante:{works:false,studies:true,focus:["estudos","sono","corpo"],hint:"Tarefas de estudo e provas."},
+const FOCI=[["estudos","Estudos"],["sono","Dormir melhor"],["corpo","Saúde e corpo"],["carreira","Carreira"],["dinheiro","Dinheiro"],["relac","Pessoas que amo"],["casa","Casa em ordem"],["remedio","Remédios no horário"],["agua","Beber água"],["tela","Menos tempo de tela"],["leitura","Ler mais"]];
+const AGE=[["kid","Até 13"],["teen","14 a 17"],["young","18 a 29"],["adult","30 a 59"],["senior","60 ou mais"]];
+const isMinorAge=v=>v==="kid"||v==="teen";
+const OCC=[["escola","Estudante (escola)"],["estudante","Faculdade / curso"],["clt","Trabalho fixo (CLT)"],["autonomo","Autônomo / Empreendedor"],["casa","Dono(a) de casa"],["motorista","Motorista / caminhoneiro"],["aposentado","Aposentado(a)"],["outro","Outro"]];
+const OCC_SET={escola:{works:false,studies:true,level:"escola",shift:"manha",transport:"ape",focus:["estudos","sono","tela"],hint:"Dever de casa, provas, sono e menos tempo de tela."},
+  estudante:{works:false,studies:true,level:"faculdade",shift:"noite",focus:["estudos","sono","corpo"],hint:"Revisão, provas e entregas da faculdade ou do curso."},
   clt:{works:true,focus:["sono","corpo","dinheiro"],hint:"Tarefas que cabem antes, no almoço e depois do trabalho."},
   autonomo:{works:false,transport:"casa",focus:["carreira","dinheiro","sono"],hint:"Bloco de foco no que dá dinheiro e controle de gastos."},
   casa:{works:false,studies:false,transport:"casa",focus:["casa","corpo","relac"],hint:"Casa, saúde e um tempo só seu."},
   motorista:{works:false,studies:false,transport:"carro",focus:["agua","corpo","relac"],hint:"Sem horário fixo: tarefas que cabem na estrada e nas paradas."},
   aposentado:{works:false,studies:false,transport:"ape",focus:["corpo","relac","remedio"],hint:"Saúde, remédios e gente por perto."},outro:{hint:""}};
 function pickOcc(v,apply){[...$("o_occ").children].forEach(b=>b.classList.toggle("on",b.dataset.v===v));const s=OCC_SET[v]||{};$("o_occHint").textContent=s.hint||"";
-  if(!apply)return;if(s.works!=null)$("o_works").checked=s.works;if(s.studies!=null)$("o_studies").checked=s.studies;if(s.transport)$("o_transport").value=s.transport;
+  if(!apply)return;if(s.works!=null)$("o_works").checked=s.works;if(s.studies!=null)$("o_studies").checked=s.studies;if(s.transport)$("o_transport").value=s.transport;if(s.level){$("o_level").value=s.level;levelUI();}if(s.shift){$("o_shift").value=s.shift;shiftTimes();}
   if(s.focus)toggles("o_focus",FOCI,s.focus,4);syncBoxes();}
+const SHIFT_T={manha:["07:00","12:20"],tarde:["13:00","17:30"],noite:["19:00","22:30"],integral:["07:00","16:30"]};
+function shiftTimes(){const t=SHIFT_T[$("o_shift").value];if(t){$("o_classStart").value=t[0];$("o_classEnd").value=t[1];}}
+function levelUI(){const l=$("o_level").value;$("o_courseLbl").textContent=l==="escola"?"Série":l==="enem"?"Curso que você quer":"Curso";
+  $("o_course").placeholder=l==="escola"?"Ex.: 9º ano ou 1º ano do médio":l==="enem"?"Ex.: Medicina":"Ex.: Engenharia";}
+$("o_level").addEventListener("change",levelUI);$("o_shift").addEventListener("change",shiftTimes);
+function curAge(){const b=$("o_age").querySelector(".on");return b?b.dataset.v:"";}
+function pickAge(v,apply){[...$("o_age").children].forEach(b=>b.classList.toggle("on",b.dataset.v===v));const m=isMinorAge(v);
+  $("o_pingRow").hidden=m;if(m)$("o_ping").checked=false;
+  $("o_ageHint").textContent=v==="kid"?"Peça para alguém da família ajudar a preencher. O ranking fica desligado.":m?"Menor de 18: o ranking começa desligado. Se quiser entrar depois, aparece só um apelido.":"";
+  $("o_goal").placeholder=m?"Ex.: passar de ano com nota boa":v==="senior"?"Ex.: caminhar 3 vezes por semana":"Ex.: conseguir um emprego melhor";
+  if(!apply)return;
+  if(m){if($("o_wake").value==="07:00")$("o_wake").value="06:30";if($("o_sleep").value==="23:00")$("o_sleep").value="22:00";if(!$("o_occ").querySelector(".on"))pickOcc("escola",true);}
+  if(v==="senior"&&!$("o_occ").querySelector(".on"))pickOcc("aposentado",true);}
 function toggles(id,items,sel,max){const box=$(id);box.textContent="";for(const [v,l] of items){const b=document.createElement("button");b.type="button";b.textContent=l;b.dataset.v=v;if(sel.includes(v))b.classList.add("on");
   b.addEventListener("click",()=>{if(!b.classList.contains("on")&&max&&box.querySelectorAll(".on").length>=max){$("o_msg").textContent="Escolha no máximo "+max+".";return;}b.classList.toggle("on");});box.append(b);}}
 const picked=id=>[...$(id).querySelectorAll(".on")].map(b=>b.dataset.v);
 function fillOnb(a){a=a||{};const v=(id,x)=>{if(x!=null)$(id).value=x;};
-  v("o_name",a.name);v("o_wake",a.wake);v("o_sleep",a.sleep);v("o_workStart",a.workStart);v("o_lunch",a.lunch);v("o_workEnd",a.workEnd);v("o_course",a.course);v("o_classStart",a.classStart);v("o_classEnd",a.classEnd);v("o_transport",a.transport);v("o_goal",a.goal);v("o_money",a.money);v("o_moneyDate",a.moneyDate);
+  v("o_name",a.name);v("o_wake",a.wake);v("o_sleep",a.sleep);v("o_workStart",a.workStart);v("o_lunch",a.lunch);v("o_workEnd",a.workEnd);v("o_course",a.course);v("o_classStart",a.classStart);v("o_classEnd",a.classEnd);v("o_transport",a.transport);$("o_level").value=a.level||(a.studies?"faculdade":"escola");$("o_shift").value=a.shift||(a.level==="escola"?"manha":"noite");levelUI();v("o_goal",a.goal);v("o_money",a.money);v("o_moneyDate",a.moneyDate);
   if(a.works!=null)$("o_works").checked=a.works;if(a.studies!=null)$("o_studies").checked=a.studies;if(a.faith!=null)$("o_faith").checked=a.faith;if(a.ping!=null)$("o_ping").checked=a.ping;
   const dd=DN.map((l,i)=>[String(i),l]);toggles("o_workDays",dd,(a.workDays||[0,1,2,3,4]).map(String));toggles("o_classDays",dd,(a.classDays||[0,1,2,3,4]).map(String));
   toggles("o_focus",FOCI,a.focus||["sono","corpo"],4);syncBoxes();
-  const ob=$("o_occ");ob.textContent="";for(const [v,l] of OCC){const b=document.createElement("button");b.type="button";b.textContent=l;b.dataset.v=v;b.addEventListener("click",()=>pickOcc(v,true));ob.append(b);}pickOcc(a.occ||"",false);}
+  const ob=$("o_occ");ob.textContent="";for(const [v,l] of OCC){const b=document.createElement("button");b.type="button";b.textContent=l;b.dataset.v=v;b.addEventListener("click",()=>pickOcc(v,true));ob.append(b);}pickOcc(a.occ||"",false);
+  const ab=$("o_age");ab.textContent="";for(const [v,l] of AGE){const b=document.createElement("button");b.type="button";b.textContent=l;b.dataset.v=v;b.addEventListener("click",()=>pickAge(v,true));ab.append(b);}pickAge(a.age||"",false);}
 function syncBoxes(){$("o_workBox").hidden=!$("o_works").checked;$("o_studyBox").hidden=!$("o_studies").checked;}
 $("o_works").addEventListener("change",syncBoxes);$("o_studies").addEventListener("change",syncBoxes);
-function readOnb(){const g=id=>$(id).value.trim();const oc=$("o_occ").querySelector(".on");return {occ:oc?oc.dataset.v:"",name:g("o_name"),wake:g("o_wake")||"07:00",sleep:g("o_sleep")||"23:00",works:$("o_works").checked,workDays:picked("o_workDays").map(Number),workStart:g("o_workStart"),lunch:g("o_lunch"),workEnd:g("o_workEnd"),
-  studies:$("o_studies").checked,course:g("o_course"),classDays:picked("o_classDays").map(Number),classStart:g("o_classStart"),classEnd:g("o_classEnd"),transport:g("o_transport"),focus:picked("o_focus"),goal:g("o_goal"),money:g("o_money"),moneyDate:g("o_moneyDate"),faith:$("o_faith").checked,ping:$("o_ping").checked};}
+function readOnb(){const g=id=>$(id).value.trim();const oc=$("o_occ").querySelector(".on");const ag=curAge();return {age:ag,level:$("o_studies").checked?$("o_level").value:"",shift:$("o_shift").value,occ:oc?oc.dataset.v:"",name:g("o_name"),wake:g("o_wake")||"07:00",sleep:g("o_sleep")||"23:00",works:$("o_works").checked,workDays:picked("o_workDays").map(Number),workStart:g("o_workStart"),lunch:g("o_lunch"),workEnd:g("o_workEnd"),
+  studies:$("o_studies").checked,course:g("o_course"),classDays:picked("o_classDays").map(Number),classStart:g("o_classStart"),classEnd:g("o_classEnd"),transport:g("o_transport"),focus:picked("o_focus"),goal:g("o_goal"),money:g("o_money"),moneyDate:g("o_moneyDate"),faith:$("o_faith").checked,ping:!isMinorAge(ag)&&$("o_ping").checked};}
 const hm=t=>{const [h,m]=(t||"0:0").split(":").map(Number);return h*60+(m||0);};
 const fm=m=>{m=((m%1440)+1440)%1440;return String(Math.floor(m/60)).padStart(2,"0")+"h"+(m%60?String(m%60).padStart(2,"0"):"");};
 function buildCfg(a){const Q=[];let n=0;const add=q=>{q.id=q.id||("g"+(++n));Q.push(q);return q;};
   const bus=a.transport==="onibus", busy=a.works&&a.studies, f=x=>a.focus.includes(x);
   const sleepH=((hm(a.wake)-hm(a.sleep)+1440)%1440)/60;
   const tech=/comput|sistem|software|dados|ti\b|informát|ciência da/i.test(a.course||"");
-  const studyIds=[];
+  const studyIds=[], minor=isMinorAge(a.age), school=a.studies&&a.level==="escola", enem=a.studies&&a.level==="enem";
   if(a.studies){
     const days=a.works&&a.workDays.length?a.workDays:(a.classDays.length?a.classDays:[0,1,2,3,4]);
     const anchor=bus?"Quando sentar no ônibus da ida, abro os flashcards antes de qualquer rede social."
       :(a.works&&a.lunch)?"Quando terminar de almoçar (por volta das "+fm(hm(a.lunch)+30)+"), abro o material e dou play no timer."
       :"Logo depois do café da manhã, abro o material da última aula.";
-    studyIds.push(add({id:"s_rev",title:(bus?"Revisão ativa no ônibus: ":"Revisão ativa: ")+"15 min de perguntas ou flashcards da última aula",xp:30,stat:"mente",main:true,minTitle:"5 cards",days,ifThen:anchor}).id);
-    if(a.classDays.length)add({id:"s_aula",title:"Na aula: anotar 1 dúvida e tirar com o professor ou o grupo",xp:15,stat:"mente",days:a.classDays,minTitle:"só anotar",ifThen:"Quando a aula começar ("+fm(hm(a.classStart))+"), abro a nota \"Dúvidas\" do celular."});
-    studyIds.push(add({id:"s_bloco",title:"Bloco de estudo de 50 min (lista, trabalho ou projeto)",xp:40,stat:"mente",main:true,minTitle:"25 min",days:[5],ifThen:"Sábado, depois do café, ligo o modo foco de 25 min duas vezes."}).id);
+    if(school){const sa=(a.shift==="tarde"||a.shift==="noite")?"Logo depois do café da manhã, abro o caderno antes de ligar o celular ou a TV.":a.shift==="integral"?"Quando chegar em casa e tomar banho, abro o caderno antes do celular.":"Quando chegar da escola e almoçar, abro o caderno antes do celular.";
+      studyIds.push(add({id:"s_rev",title:"Dever de casa + 15 min revisando a matéria do dia",xp:30,stat:"mente",main:true,minTitle:"só o dever",days:a.classDays.length?a.classDays:[0,1,2,3,4],ifThen:sa}).id);}
+    else if(enem)studyIds.push(add({id:"s_rev",title:"Resolver 10 questões e entender cada erro",xp:30,stat:"mente",main:true,minTitle:"3 questões",days,ifThen:anchor}).id);
+    else studyIds.push(add({id:"s_rev",title:(bus?"Revisão ativa no ônibus: ":"Revisão ativa: ")+"15 min de perguntas ou flashcards da última aula",xp:30,stat:"mente",main:true,minTitle:"5 cards",days,ifThen:anchor}).id);
+    if(a.classDays.length&&school)add({id:"s_aula",title:"Na aula: anotar 1 dúvida no caderno e perguntar ao professor",xp:15,stat:"mente",days:a.classDays,minTitle:"só anotar",ifThen:"Quando o professor terminar a explicação, escrevo a dúvida na última folha do caderno."});
+    else if(a.classDays.length)add({id:"s_aula",title:"Na aula: anotar 1 dúvida e tirar com o professor ou o grupo",xp:15,stat:"mente",days:a.classDays,minTitle:"só anotar",ifThen:"Quando a aula começar ("+fm(hm(a.classStart))+"), abro a nota \"Dúvidas\" do celular."});
+    studyIds.push(add({id:"s_bloco",title:school?"Bloco de 40 min estudando para a próxima prova":enem?"Simulado ou redação (50 min)":"Bloco de estudo de 50 min (lista, trabalho ou projeto)",xp:40,stat:"mente",main:!school,minTitle:school?"20 min":"25 min",days:[5],ifThen:"Sábado, depois do café, ligo o modo foco de 25 min "+(school?"e depois mais 15.":"duas vezes.")}).id);
+    if(school)add({id:"s_mochila",title:"Mochila e uniforme prontos para amanhã",xp:10,stat:"foco",days:(a.classDays.length?a.classDays:[0,1,2,3,4]).map(d=>(d+6)%7),ifThen:"Depois do jantar, antes de pegar o celular."});
   }
-  if(f("sono")||sleepH<7.5){
+  if(f("sono")||sleepH<(minor?8.5:7.5)){
     const pre=(a.studies&&a.classEnd&&hm(a.classEnd)>hm("20:00"))?"Quando chegar da faculdade: banho, roupa de amanhã separada e celular no carregador fora da cama.":"Às "+fm(hm(a.sleep)-30)+", celular no carregador fora da cama e luz baixa.";
     add({id:"s_sono",title:"Deitar até "+fm(hm(a.sleep))+", sem tela na cama",xp:25,stat:"corpo",main:true,minTitle:"celular longe da cama",ifThen:pre});
   }
@@ -852,14 +881,18 @@ function buildCfg(a){const Q=[];let n=0;const add=q=>{q.id=q.id||("g"+(++n));Q.p
   }
   if(a.works&&a.lunch&&(f("corpo")||busy))add({id:"s_almoco",title:"Almoço de verdade: 10 min sem celular e 5 min andando",xp:10,stat:"corpo",days:a.workDays,ifThen:"Quando sentar para almoçar ("+fm(hm(a.lunch))+"), celular no bolso."});
   if(f("dinheiro"))add({id:"s_gasto",title:"Anotar os gastos do dia (2 min)",xp:10,stat:"foco",ifThen:bus?"No ônibus da volta, anoto o que gastei.":"Antes do jantar, anoto o que gastei."});
-  if(f("relac"))add({id:"s_amor",title:"Mandar uma mensagem de carinho para alguém importante",xp:10,stat:"foco",ifThen:(a.works&&a.lunch)?"No almoço, depois de comer, mando 1 mensagem.":"Depois do café, mando 1 mensagem."});
-  if(f("casa"))add({id:"s_casa",title:"10 min de arrumação",xp:15,stat:"foco",days:[5,6],ifThen:"Fim de semana, antes de pegar o celular de manhã."});
+  if(f("tela"))add({id:"s_tela",title:"Primeira hora do dia sem redes sociais",xp:15,stat:"mente",minTitle:"30 min",ifThen:"Quando acordar, deixo o celular longe e só abro redes depois do café"+(school?" e de arrumar as coisas da escola.":".")});
+  if(f("leitura"))add({id:"s_ler",title:"Ler 10 páginas de um livro",xp:15,stat:"mente",minTitle:"2 páginas",ifThen:"Antes de dormir, no lugar do celular."});
+  if(f("relac")&&minor)add({id:"s_amor",title:"Conversar 10 min com alguém da família, sem celular na mão",xp:10,stat:"foco",ifThen:"Na hora do jantar, celular longe da mesa."});
+  else if(f("relac"))add({id:"s_amor",title:"Mandar uma mensagem de carinho para alguém importante",xp:10,stat:"foco",ifThen:(a.works&&a.lunch)?"No almoço, depois de comer, mando 1 mensagem.":"Depois do café, mando 1 mensagem."});
+  if(f("casa")&&minor)add({id:"s_casa",title:"Ajudar em casa 10 min (louça, quarto ou lixo)",xp:15,stat:"foco",ifThen:"Depois do jantar, antes do celular."});
+  else if(f("casa"))add({id:"s_casa",title:"10 min de arrumação",xp:15,stat:"foco",days:[5,6],ifThen:"Fim de semana, antes de pegar o celular de manhã."});
   if(a.goal){add({id:"s_meta1",title:"Escrever os 3 primeiros passos para: "+a.goal,xp:30,stat:"foco",once:true,ifThen:"No próximo fim de semana, depois do café, com papel e caneta."});
     add({id:"s_meta",title:"1 passo da meta: "+a.goal,xp:30,stat:"vendas",days:[6],minTitle:"10 min",ifThen:"Domingo à tarde, antes de planejar a semana."});}
   if(f("remedio"))add({id:"s_remed",title:"Tomar os remédios da manhã",xp:15,stat:"corpo",main:true,ifThen:"Quando levantar ("+fm(hm(a.wake))+"), tomo junto com o primeiro copo d'água."});
   if(f("agua"))add({id:"s_agua",title:"Beber 6 copos de água",xp:10,stat:"corpo",minTitle:"3 copos",ifThen:"A cada refeição, 1 copo antes de comer."});
   const o=a.occ||"", drop=id=>{const i=Q.findIndex(q=>q.id===id);if(i>=0)Q.splice(i,1);};
-  if(o==="motorista"){drop("s_sono");drop("s_agua");drop("s_along");drop("s_treino");drop("s_almoco");
+  if(o==="motorista"){drop("s_sono");drop("s_amor");drop("s_agua");drop("s_along");drop("s_treino");drop("s_almoco");
     add({id:"s_agua",title:"1 garrafa de água a cada parada",xp:15,stat:"corpo",main:true,minTitle:"meia garrafa",ifThen:"Quando parar para abastecer ou comer, encho a garrafa antes de sair."});
     add({id:"s_along",title:"Alongar 5 min na parada (pernas, costas e pescoço)",xp:15,stat:"corpo",main:true,minTitle:"1 min",ifThen:"Quando descer do caminhão na parada, alongo antes de entrar no posto."});
     add({id:"s_familia",title:"Ligar ou mandar um áudio para a família",xp:15,stat:"foco",main:true,minTitle:"uma mensagem",ifThen:"Na primeira parada longa do dia, antes de comer."});
@@ -869,7 +902,7 @@ function buildCfg(a){const Q=[];let n=0;const add=q=>{q.id=q.id||("g"+(++n));Q.p
     add({id:"s_eu",title:"20 min só pra mim (leitura, série, caminhada ou descanso)",xp:20,stat:"foco",main:true,minTitle:"10 min",ifThen:"Depois do almoço, quando a cozinha estiver em ordem."});
     add({id:"s_casa",title:"15 min de arrumação em um cômodo",xp:15,stat:"foco",main:true,minTitle:"5 min",ifThen:"Logo depois do café da manhã."});
     if(!Q.some(q=>q.id==="s_treino"))add({id:"s_treino",title:"Caminhada de 20 min",xp:20,stat:"corpo",minTitle:"10 min",ifThen:"No fim da tarde, quando o sol baixar."});}
-  if(o==="estudante")add({id:"s_provas",title:"Olhar as provas e entregas da semana (5 min)",xp:15,stat:"mente",days:[6],ifThen:"Domingo à noite, antes de dormir, abro o calendário da faculdade."});
+  if(o==="estudante"||o==="escola"||a.studies)add({id:"s_provas",title:school?"Olhar as provas e trabalhos da semana (5 min)":"Olhar as provas e entregas da semana (5 min)",xp:15,stat:"mente",days:[6],ifThen:"Domingo à noite, antes de dormir, abro "+(school?"a agenda da escola.":a.level==="enem"?"o cronograma de estudo.":"o calendário do curso.")});
   if(o==="autonomo")add({id:"s_foco",title:"Bloco de 90 min no trabalho que dá dinheiro, antes de abrir mensagens",xp:40,stat:"vendas",main:true,minTitle:"25 min",days:[0,1,2,3,4],ifThen:"Logo depois do café, celular no modo não perturbe."});
   if(o==="aposentado"){if(!Q.some(q=>q.id==="s_treino"))add({id:"s_treino",title:"Caminhada leve de 20 min",xp:20,stat:"corpo",main:true,minTitle:"10 min",ifThen:"De manhã, depois do café."});
     if(!Q.some(q=>q.id==="s_amor"))add({id:"s_amor",title:"Conversar com alguém (ligação ou visita)",xp:10,stat:"foco",ifThen:"Depois do almoço, ligo para alguém."});}
@@ -881,6 +914,7 @@ function buildCfg(a){const Q=[];let n=0;const add=q=>{q.id=q.id||("g"+(++n));Q.p
   const rk=q=>q.id==="s_remed"?0:q.id==="s_fech"?2:1;Q.sort((x,y)=>rk(x)-rk(y));
   const c={version:1,name:a.name||"Você",startDate:todayKey(),profile:a,faith:!!a.faith,quests:Q};
   if(studyIds.length)c.boss={name:"Constância nos estudos",deadline:"Renasce toda segunda",hp:10,fullHit:3,minHit:1,reward:80,questIds:studyIds,hint:"Cada revisão ou bloco de estudo tira 3 de vida; o mínimo tira 1."};
+  else{const mi=Q.filter(q=>q.main&&q.id!=="s_fech").map(q=>q.id);if(mi.length)c.boss={name:"Constância da semana",deadline:"Renasce toda segunda",hp:30,fullHit:3,minHit:1,reward:80,questIds:mi,hint:"Cada tarefa principal feita tira 3 de vida; o mínimo tira 1."};}
   const mv=parseFloat(String(a.money||"").replace(/\./g,"").replace(",","."));
   if(mv>0){const d=a.moneyDate||"";c.money={goal:mv,deadline:d||undefined,label:"Meta: R$ "+mv.toLocaleString("pt-BR")+(d?" até "+d.split("-").reverse().slice(0,2).join("/"):"")};}
   return c;}
@@ -900,9 +934,12 @@ $("o_go").addEventListener("click",()=>{const a=readOnb();if(!a.name){$("o_msg")
   cfg=buildCfg(a);
   try{localStorage.setItem("asc-u-cfg",JSON.stringify(cfg));}catch(e){}
   if(location.hash)history.replaceState(null,"",location.pathname);
-  $("titleName").textContent=cfg.name;try{localStorage.setItem("asc-u-lang",LANG_SIMPLE_OCC.includes(a.occ)?"simples":"completo");}catch(e){}langUI();langFix(document.body);if(a.ping)setTimeout(()=>joinRank("cadastro"),0);else prog.rank=prog.rank||{on:false,asked:true};closeOnb();save();render();goTab("hoje");showTip();toast("Pronto, "+cfg.name+"! "+cfg.quests.length+" quests criadas para o seu dia.");});
+  $("titleName").textContent=cfg.name;try{localStorage.setItem("asc-u-lang",(LANG_SIMPLE_OCC.includes(a.occ)||a.age==="senior")?"simples":"completo");}catch(e){}langUI();langFix(document.body);if(a.ping)setTimeout(()=>joinRank("cadastro"),0);else prog.rank=prog.rank||{on:false,asked:true};if(isMinorAge(a.age)&&prog.rank&&prog.rank.on&&!prog.rank.nick)leaveRank();closeOnb();save();render();goTab("hoje");showTip();toast("Pronto, "+cfg.name+"! "+cfg.quests.length+" quests criadas para o seu dia.");});
 $("o_cancel").addEventListener("click",closeOnb);
 $("redo").addEventListener("click",openOnb);
+function applyCopy(){const P=(cfg&&cfg.profile)||{};const o=P.occ||"",m=isMinorAge(P.age);
+  const mit=P.level==="escola"||o==="escola"?"Ex.: terminar o trabalho de Ciências":o==="estudante"?"Ex.: entregar a lista da faculdade":o==="motorista"?"Ex.: ligar para casa na parada":o==="casa"?"Ex.: pagar a conta de luz":o==="aposentado"?"Ex.: marcar a consulta":o==="autonomo"?"Ex.: mandar o orçamento que está parado":"Ex.: a coisa mais importante de hoje";
+  $("mit").placeholder=mit;$("fIntent").placeholder=m?"Ex.: apresentar o trabalho sem travar":"Ex.: pedir ajuda com aquilo que estou adiando";}
 // ---------- Sugestões (sai pelo WhatsApp; fica salva no aparelho) ----------
 $("fbSend").addEventListener("click",()=>{const t=$("fbText").value.trim();if(!t){$("fbMsg").textContent="Escreva a sugestão primeiro.";return;}
   prog.feedback=(prog.feedback||[]).concat([{t,d:new Date().toISOString()}]);save();
@@ -925,25 +962,33 @@ setTimeout(showTip,0);
 const RK_POST="https://docs.google.com/forms/d/e/1FAIpQLSeupI0e9q5NvzLgusfgD1CNKN7hGBx91xGD1jkEl1z2uxPUuw/formResponse";
 const RK_CSV="https://docs.google.com/spreadsheets/d/e/2PACX-1vTyr0ZbAqlFWbOWEZXpjcRPXPE04u9EfktPhrq5Mf_vnQ2YjeVEARfhqGrrpqVXxkIVsvnE_x8DMdpr/pub?gid=1002&single=true&output=csv";
 const firstName=()=>String((cfg&&cfg.name)||"").trim().split(/\s+/)[0].replace(/[|,;"<>]/g,"").slice(0,20)||"Anônimo";
+const ageNow=()=>(cfg&&cfg.profile&&cfg.profile.age)||"";
+const isMinor=()=>ageNow()==="kid"||ageNow()==="teen";
+const cleanNick=v=>String(v||"").trim().replace(/[|,;"<>]/g,"").replace(/\s+/g," ").slice(0,16);
+// Nome que vai para o ranking: o apelido, se houver; senão o 1º nome (só para maiores de 18)
+const rankName=()=>cleanNick(prog.rank&&prog.rank.nick)||(isMinor()?"":firstName());
 function weekXP(){const ws=weekStart(todayKey());let s=0;for(const e of entries())if(weekStart(e.date)===ws)s+=(e.xp||0)+(e.bonus||0);return s;}
 function sendRank(ev,force){const r=prog.rank;if(!r||!r.on)return;const xp=weekXP(),ws=weekStart(todayKey()).replace(/-/g,"");
   if(!force&&r.lastXp===xp&&r.lastWk===ws)return;
-  const dev=IOS?"iPhone":AND?"Android":"Computador";
-  const v=["R",r.uid,firstName(),dev,ws,xp,levelOf(totalXP()),ev].join("|");
+  const dev=isMinor()?"-":IOS?"iPhone":AND?"Android":"Computador";if(!rankName())return;
+  const v=["R",r.uid,rankName(),dev,ws,xp,levelOf(totalXP()),ev].join("|");
   try{fetch(RK_POST,{method:"POST",mode:"no-cors",keepalive:true,body:new URLSearchParams({"entry.807978446":v})}).catch(()=>{});}catch(e){}
   r.lastXp=xp;r.lastWk=ws;r.last=new Date().toISOString();save();}
-function joinRank(ev){prog.rank=Object.assign({uid:Math.random().toString(36).slice(2,10)},prog.rank||{},{on:true,asked:true});sendRank(ev||"entrou",true);loadRank();renderRankUI();}
+function joinRank(ev){if(ageNow()==="kid"){toast("O ranking é a partir de 14 anos.");return;}
+  if(isMinor()&&!cleanNick(prog.rank&&prog.rank.nick)){const n=cleanNick($("rkNick").value);if(!n){goTab("prog");$("rkNote").textContent="Escolha um apelido primeiro (não use seu nome real).";setTimeout(()=>$("rkNick").focus(),60);return;}prog.rank=Object.assign(prog.rank||{},{nick:n});}prog.rank=Object.assign({uid:Math.random().toString(36).slice(2,10)},prog.rank||{},{on:true,asked:true});sendRank(ev||"entrou",true);loadRank();renderRankUI();}
 function leaveRank(){prog.rank=Object.assign(prog.rank||{},{on:false,asked:true});save();renderRankUI();toast("Você saiu do ranking. Seu nome some na próxima semana.");}
 let rankRows=null;
 async function loadRank(){try{const t=await (await fetch(RK_CSV+"&t="+Date.now(),{credentials:"omit"})).text();
   rankRows=t.trim().split(/\r?\n/).slice(1).map(l=>l.split(",")).filter(r=>r[0]&&r[0]!=="nome").map(r=>({n:r[0],xp:+r[1]||0,lv:+r[2]||1}));}catch(e){rankRows=rankRows||null;}renderRankUI();}
 function renderRankUI(){const on=!!(prog.rank&&prog.rank.on);const asked=!!(prog.rank&&prog.rank.asked)||!!(prog.ping&&prog.ping.asked&&prog.rank);
-  $("pingCard").hidden=!(cfg&&!cfg.blank&&!prog.rank);
-  $("rkJoin").hidden=on;$("rkLeave").hidden=!on;
+  $("pingCard").hidden=!(cfg&&!cfg.blank&&!prog.rank)||isMinor();
+  const kid=ageNow()==="kid";$("rkJoin").hidden=on||kid;$("rkLeave").hidden=!on;$("rkNickRow").hidden=kid;
+  const nk=$("rkNick");if(document.activeElement!==nk)nk.value=(prog.rank&&prog.rank.nick)||"";nk.placeholder=isMinor()?"Apelido (não use seu nome real)":"Apelido no ranking (opcional)";
+  $("rkNote").textContent=kid?"O ranking é a partir de 14 anos. Seu progresso continua só no seu celular.":isMinor()?"Entrar é opcional. No ranking aparece só o seu apelido e o XP da semana. Nenhum nome, tarefa ou horário sai do seu celular.":"Entrar é opcional. Aparece seu primeiro nome (ou o apelido) e o XP da semana, e qualquer pessoa com o app vê a lista.";
   const ol=$("rkList");ol.textContent="";
   if(!rankRows){const li=document.createElement("li");li.className="muted";li.textContent="Carregando…";ol.append(li);return;}
   if(!rankRows.length){const li=document.createElement("li");li.className="muted";li.textContent="Ninguém pontuou ainda nesta semana. Seja o primeiro.";ol.append(li);return;}
-  const me=on?firstName():null;
+  const me=on?rankName():null;
   rankRows.forEach((r,i)=>{const li=document.createElement("li");if(me&&r.n===me)li.className="me";
     const p=document.createElement("b");p.textContent=(i<3?["🥇","🥈","🥉"][i]:"#"+(i+1));
     const n=document.createElement("span");n.textContent=r.n+" · nv "+r.lv;const x=document.createElement("i");x.textContent=r.xp+" XP";li.append(p,n,x);ol.append(li);});}
@@ -951,17 +996,18 @@ $("pingYes").addEventListener("click",()=>{joinRank("entrou");$("pingCard").hidd
 $("pingNo").addEventListener("click",()=>{prog.rank={on:false,asked:true};save();$("pingCard").hidden=true;});
 $("rkJoin").addEventListener("click",()=>{joinRank("entrou");toast("Você está no ranking da semana!");});
 $("rkLeave").addEventListener("click",leaveRank);
+$("rkNickSave").addEventListener("click",()=>{const n=cleanNick($("rkNick").value);prog.rank=Object.assign(prog.rank||{asked:true,on:false},{nick:n});save();if(prog.rank.on)sendRank("apelido",true);renderRankUI();toast(n?"Apelido salvo: "+n:"Apelido apagado.");});
 for(const b of document.querySelectorAll('#tabbar [data-go="prog"]'))b.addEventListener("click",loadRank);
 document.addEventListener("visibilitychange",()=>{if(document.hidden)sendRank("uso");});
 setTimeout(()=>{sendRank("abriu");loadRank();},0);
 
 // ---------- Linguagem: simples x completo (só neste aparelho) ----------
 const LANG_SIMPLE_OCC=["casa","motorista","aposentado"];
-function langMode(){try{const v=localStorage.getItem("asc-u-lang");if(v)return v;}catch(e){}const o=cfg&&cfg.profile&&cfg.profile.occ;return LANG_SIMPLE_OCC.includes(o)?"simples":"completo";}
+function langMode(){try{const v=localStorage.getItem("asc-u-lang");if(v)return v;}catch(e){}const o=cfg&&cfg.profile&&cfg.profile.occ;return (LANG_SIMPLE_OCC.includes(o)||ageNow()==="senior")?"simples":"completo";}
 function setLang(v,reload){try{localStorage.setItem("asc-u-lang",v);}catch(e){}if(reload)location.reload();}
 const LANG_RULES=[[/\bo XP inteiro\b/g,"todos os pontos"],[/\b([Oo]) XP\b/g,(m,o)=>o==="O"?"Os pontos":"os pontos"],[/\bseu XP\b/g,"seus pontos"],[/\bQuests\b/g,"Tarefas"],[/\bquests\b/g,"tarefas"],[/\bQuest\b/g,"Tarefa"],[/\bquest\b/g,"tarefa"],
-  [/\bXP\b/g,"pontos"],[/\bBoss\b/g,"Desafio"],[/\bboss\b/g,"desafio"],[/\bAtributos\b/g,"Áreas da vida"],[/\bRanks:/g,"Faixas:"],[/\bRank (?=[A-Z])/g,"Faixa "],[/\bcheck-in\b/gi,"registro"],[/\bstreak\b/gi,"sequência"],[/^Gatilho:/,"Quando fazer:"]];
-function langFix(root){if(langMode()!=="simples"||!root)return;const w=document.createTreeWalker(root,NodeFilter.SHOW_TEXT,{acceptNode:n=>{const p=n.parentElement;if(!p||/^(SCRIPT|STYLE|TEXTAREA|INPUT)$/.test(p.tagName)||p.closest(".ring,#langPanel"))return NodeFilter.FILTER_REJECT;return /XP|[Qq]uest|[Bb]oss|Atributos|Rank|check-in|streak|Gatilho/i.test(n.nodeValue)?NodeFilter.FILTER_ACCEPT:NodeFilter.FILTER_SKIP;}});
+  [/\bXP\b/g,"pontos"],[/\bBoss\b/g,"Desafio"],[/\bChefe\b/g,"Desafio"],[/\bchefes\b/g,"desafios"],[/\bchefe\b/g,"desafio"],[/\bboss\b/g,"desafio"],[/\bAtributos\b/g,"Áreas da vida"],[/\bRanks:/g,"Faixas:"],[/\bRank (?=[A-Z])/g,"Faixa "],[/\bcheck-in\b/gi,"registro"],[/\bstreak\b/gi,"sequência"],[/^Gatilho:/,"Quando fazer:"]];
+function langFix(root){if(langMode()!=="simples"||!root)return;const w=document.createTreeWalker(root,NodeFilter.SHOW_TEXT,{acceptNode:n=>{const p=n.parentElement;if(!p||/^(SCRIPT|STYLE|TEXTAREA|INPUT)$/.test(p.tagName)||p.closest(".ring,#langPanel"))return NodeFilter.FILTER_REJECT;return /XP|[Qq]uest|[Bb]oss|[Cc]hefe|Atributos|Rank|check-in|streak|Gatilho/i.test(n.nodeValue)?NodeFilter.FILTER_ACCEPT:NodeFilter.FILTER_SKIP;}});
   const ns=[];while(w.nextNode())ns.push(w.currentNode);for(const n of ns){let t=n.nodeValue;for(const [r,s] of LANG_RULES)t=t.replace(r,s);if(t!==n.nodeValue)n.nodeValue=t;}}
 function langUI(){const m=langMode();document.body.dataset.lang=m;[...$("langPick").children].forEach(b=>b.classList.toggle("on",b.dataset.v===m));}
 $("langPick").addEventListener("click",e=>{const b=e.target.closest("button");if(b&&b.dataset.v!==langMode())setLang(b.dataset.v,true);});
