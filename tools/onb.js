@@ -125,7 +125,7 @@ $("introSkip").addEventListener("click",endIntro);
 $("introAgain").addEventListener("click",()=>showIntro(false));
 function openOnb(){let a=(cfg&&cfg.profile)||null;
   if(!a){try{const m=location.hash.match(/p=([^&]+)/);if(m){$("o_pre").hidden=false;}if(m)a=JSON.parse(decodeURIComponent(escape(atob(m[1].replace(/-/g,"+").replace(/_/g,"/")))));}catch(e){a=null;}}
-  fillOnb(a);$("onb").hidden=false;document.body.classList.add("onboarding");let seen=false;try{seen=localStorage.getItem("asc-u-intro")==="1";}catch(e){}if(!seen&&!(cfg&&!cfg.blank)){showIntro();return;}$("o_cancel").hidden=!(cfg&&!cfg.blank);window.scrollTo(0,0);}
+  fillOnb(a);$("onb").hidden=false;document.body.classList.add("onboarding");let seen=false;try{seen=localStorage.getItem("asc-u-intro")==="1";}catch(e){}if(!(cfg&&!cfg.blank)){showIntro(false);return;}$("o_cancel").hidden=!(cfg&&!cfg.blank);window.scrollTo(0,0);}
 function closeOnb(){$("onb").hidden=true;document.body.classList.remove("onboarding");}
 $("o_go").addEventListener("click",()=>{const a=readOnb();if(!a.name){$("o_msg").textContent="Coloque seu nome.";return;}
   cfg=buildCfg(a);
