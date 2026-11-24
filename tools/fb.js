@@ -49,3 +49,16 @@ $("rkLeave").addEventListener("click",leaveRank);
 for(const b of document.querySelectorAll('#tabbar [data-go="prog"]'))b.addEventListener("click",loadRank);
 document.addEventListener("visibilitychange",()=>{if(document.hidden)sendRank("uso");});
 setTimeout(()=>{sendRank("abriu");loadRank();},0);
+
+// ---------- Linguagem: simples x completo (só neste aparelho) ----------
+const LANG_SIMPLE_OCC=["casa","motorista","aposentado"];
+function langMode(){try{const v=localStorage.getItem("asc-u-lang");if(v)return v;}catch(e){}const o=cfg&&cfg.profile&&cfg.profile.occ;return LANG_SIMPLE_OCC.includes(o)?"simples":"completo";}
+function setLang(v,reload){try{localStorage.setItem("asc-u-lang",v);}catch(e){}if(reload)location.reload();}
+const LANG_RULES=[[/\bo XP inteiro\b/g,"todos os pontos"],[/\b([Oo]) XP\b/g,(m,o)=>o==="O"?"Os pontos":"os pontos"],[/\bseu XP\b/g,"seus pontos"],[/\bQuests\b/g,"Tarefas"],[/\bquests\b/g,"tarefas"],[/\bQuest\b/g,"Tarefa"],[/\bquest\b/g,"tarefa"],
+  [/\bXP\b/g,"pontos"],[/\bBoss\b/g,"Desafio"],[/\bboss\b/g,"desafio"],[/\bAtributos\b/g,"Áreas da vida"],[/\bRanks:/g,"Faixas:"],[/\bRank (?=[A-Z])/g,"Faixa "],[/\bcheck-in\b/gi,"registro"],[/\bstreak\b/gi,"sequência"],[/^Gatilho:/,"Quando fazer:"]];
+function langFix(root){if(langMode()!=="simples"||!root)return;const w=document.createTreeWalker(root,NodeFilter.SHOW_TEXT,{acceptNode:n=>{const p=n.parentElement;if(!p||/^(SCRIPT|STYLE|TEXTAREA|INPUT)$/.test(p.tagName)||p.closest(".ring,#langPanel"))return NodeFilter.FILTER_REJECT;return /XP|[Qq]uest|[Bb]oss|Atributos|Rank|check-in|streak|Gatilho/i.test(n.nodeValue)?NodeFilter.FILTER_ACCEPT:NodeFilter.FILTER_SKIP;}});
+  const ns=[];while(w.nextNode())ns.push(w.currentNode);for(const n of ns){let t=n.nodeValue;for(const [r,s] of LANG_RULES)t=t.replace(r,s);if(t!==n.nodeValue)n.nodeValue=t;}}
+function langUI(){const m=langMode();document.body.dataset.lang=m;[...$("langPick").children].forEach(b=>b.classList.toggle("on",b.dataset.v===m));}
+$("langPick").addEventListener("click",e=>{const b=e.target.closest("button");if(b&&b.dataset.v!==langMode())setLang(b.dataset.v,true);});
+langUI();langFix(document.body);
+new MutationObserver(ms=>{if(langMode()!=="simples")return;for(const m of ms){if(m.type==="characterData")langFix(m.target.parentElement);else m.addedNodes.forEach(n=>langFix(n.nodeType===3?n.parentElement:n));}}).observe(document.body,{subtree:true,childList:true,characterData:true});
