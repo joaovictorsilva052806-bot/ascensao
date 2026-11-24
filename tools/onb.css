@@ -1,0 +1,17 @@
+.onboarding .wrap>section:not(#onb){display:none!important}
+.onb label{display:flex;flex-direction:column;gap:4px;font-size:.86rem;color:var(--muted);margin-top:10px}
+.onb label.chk{flex-direction:row;align-items:center;gap:8px;color:var(--fg)}
+.onb input:not([type=checkbox]),.onb select{font:inherit;background:#0a1222;border:1px solid var(--line);color:var(--fg);border-radius:7px;padding:9px 10px;min-width:0}
+.onb fieldset{border:1px solid var(--line);border-radius:8px;margin:12px 0 0;padding:6px 10px 10px;min-width:0}
+.onb legend{font-size:.8rem;color:var(--glow);padding:0 4px}
+.onb .two,.onb .three{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}.onb .three{grid-template-columns:repeat(3,minmax(0,1fr))}
+.dsel,.chips{display:flex;flex-wrap:wrap;gap:6px;margin-top:8px}
+.dsel button,.chips button{font:inherit;font-size:.8rem;padding:6px 10px;border-radius:999px;border:1px solid var(--line);background:#0a1222;color:var(--muted)}
+.dsel button.on,.chips button.on{border-color:var(--accent);color:var(--fg);background:rgba(61,139,255,.18)}
+.onb .row{margin-top:14px}
+.onb .pre{font-size:.86rem;padding:10px 12px;border:1px solid var(--accent);background:rgba(0,212,255,.08);border-radius:3px}
+.onb .sticky{position:sticky;bottom:calc(8px + env(safe-area-inset-bottom,0px));z-index:5;background:rgba(2,9,15,.9);padding:8px;border:1px solid var(--line)}
+.onb .dsel button.on,.onb .chips button.on{border-color:var(--accent);background:rgba(0,212,255,.18)}
+.onb input:not([type=checkbox]),.onb select{background:rgba(0,212,255,.04);border-radius:3px}
+.onb fieldset{border-radius:3px}
+.onb legend{font-family:var(--f-hud);font-size:.62rem;letter-spacing:.18em;text-transform:uppercase}

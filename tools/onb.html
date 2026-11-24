@@ -1,0 +1,26 @@
+  <section class="panel onb" id="onb" hidden>
+    <h2>Monte seu jogo</h2>
+    <div class="pre" id="o_pre" hidden>Já veio preenchido com a sua rotina. Confira os horários e toque em <b>Criar meu jogo</b>.</div>
+    <p class="sm muted">2 minutos. Com isso o app cria quests que cabem no seu dia, com hora e gatilho certos. Tudo fica só no seu celular.</p>
+    <label>Como quer ser chamado(a)?<input id="o_name" maxlength="30" autocomplete="off" placeholder="Seu nome ou apelido"></label>
+    <div class="two"><label>Acordo às<input type="time" id="o_wake" value="07:00"></label><label>Quero dormir às<input type="time" id="o_sleep" value="23:00"></label></div>
+    <fieldset><legend>Trabalho</legend>
+      <label class="chk"><input type="checkbox" id="o_works" checked> Eu trabalho</label>
+      <div class="dsel" id="o_workDays"></div>
+      <div class="three"><label>Entro<input type="time" id="o_workStart" value="08:00"></label><label>Almoço<input type="time" id="o_lunch" value="12:00"></label><label>Saio<input type="time" id="o_workEnd" value="17:00"></label></div>
+    </fieldset>
+    <fieldset><legend>Estudo</legend>
+      <label class="chk"><input type="checkbox" id="o_studies"> Faço faculdade ou curso</label>
+      <label>Curso<input id="o_course" maxlength="60" autocomplete="off" placeholder="Ex.: Engenharia"></label>
+      <div class="dsel" id="o_classDays"></div>
+      <div class="two"><label>Aula começa<input type="time" id="o_classStart" value="19:00"></label><label>Aula termina<input type="time" id="o_classEnd" value="22:30"></label></div>
+    </fieldset>
+    <label>Como você se desloca?<select id="o_transport"><option value="onibus">Ônibus</option><option value="carro">Carro ou moto</option><option value="ape">A pé ou bicicleta</option><option value="casa">Trabalho/estudo de casa</option></select></label>
+    <fieldset><legend>O que mais importa agora? (até 4)</legend><div class="chips" id="o_focus"></div></fieldset>
+    <label>Uma meta grande para os próximos meses (opcional)<input id="o_goal" maxlength="80" autocomplete="off" placeholder="Ex.: conseguir estágio na área"></label>
+    <div class="two"><label>Meta de dinheiro R$ (opcional)<input id="o_money" inputmode="decimal" placeholder="Ex.: 1500"></label><label>Até<input type="date" id="o_moneyDate"></label></div>
+    <label class="chk"><input type="checkbox" id="o_faith"> Quero o painel de fé e gratidão</label>
+    <div class="row sticky"><button class="go" type="button" id="o_go">Criar meu jogo</button><button class="ghost" type="button" id="o_cancel" hidden>Cancelar</button></div>
+    <div class="sm muted" id="o_msg"></div>
+  </section>
+
