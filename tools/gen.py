@@ -5,6 +5,7 @@ def rep(a,b,n=1):
     global s
     assert s.count(a)==n,(a[:60],s.count(a));s=s.replace(a,b)
 rep('<title>Ascensão Bellardi</title>','<title>Ascensão</title>')
+rep('<h2>Quests de hoje</h2>','<h2>Tarefas de hoje</h2>')
 rep('href="icon-180.png"','href="../icon-180.png"');rep('<link rel="icon" href="icon-192.png">','<link rel="icon" href="../icon-192.png">')
 s=s.replace('"ascensao-prog"','"asc-u-prog"').replace('"ascensao-cfg"','"asc-u-cfg"').replace('"ascensao-sync"','"asc-u-sync"')
 rep('placeholder="Ex.: mandar a proposta pro cliente"','placeholder="Ex.: entregar a lista de Cálculo"')

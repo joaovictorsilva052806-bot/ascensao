@@ -221,6 +221,7 @@ input:focus,select:focus,textarea:focus{outline:none;border-color:var(--accent)!
 .calrow b{font-family:var(--f-mono);color:var(--glow)}
 .calrow i{font-style:normal;font-size:.72rem;color:var(--muted)}
 .calrow:active{background:rgba(0,212,255,.12)}
+input,select,textarea{font-size:16px!important}
 .onboarding .wrap>section:not(#onb){display:none!important}
 .onb label{display:flex;flex-direction:column;gap:4px;font-size:.86rem;color:var(--muted);margin-top:10px}
 .onb label.chk{flex-direction:row;align-items:center;gap:8px;color:var(--fg)}
@@ -245,19 +246,19 @@ input:focus,select:focus,textarea:focus{outline:none;border-color:var(--accent)!
   <section class="panel onb" id="onb" hidden>
     <h2>Monte seu jogo</h2>
     <div class="pre" id="o_pre" hidden>Já veio preenchido com a sua rotina. Confira os horários e toque em <b>Criar meu jogo</b>.</div>
-    <p class="sm muted">2 minutos. Com isso o app cria quests que cabem no seu dia, com hora e gatilho certos. Tudo fica só no seu celular.</p>
+    <p class="sm muted">Responda o que souber, leva 2 minutos. O app monta as tarefas do seu dia. Cada tarefa feita vale pontos (XP) e você sobe de nível. Tudo fica só no seu celular.</p>
     <label>Como quer ser chamado(a)?<input id="o_name" maxlength="30" autocomplete="off" placeholder="Seu nome ou apelido"></label>
     <div class="two"><label>Acordo às<input type="time" id="o_wake" value="07:00"></label><label>Quero dormir às<input type="time" id="o_sleep" value="23:00"></label></div>
     <fieldset><legend>Trabalho</legend>
-      <label class="chk"><input type="checkbox" id="o_works" checked> Eu trabalho</label>
-      <div class="dsel" id="o_workDays"></div>
-      <div class="three"><label>Entro<input type="time" id="o_workStart" value="08:00"></label><label>Almoço<input type="time" id="o_lunch" value="12:00"></label><label>Saio<input type="time" id="o_workEnd" value="17:00"></label></div>
+      <label class="chk"><input type="checkbox" id="o_works" checked> Eu trabalho fora ou tenho horário fixo</label>
+      <div id="o_workBox"><div class="dsel" id="o_workDays"></div>
+      <div class="three"><label>Entro<input type="time" id="o_workStart" value="08:00"></label><label>Almoço<input type="time" id="o_lunch" value="12:00"></label><label>Saio<input type="time" id="o_workEnd" value="17:00"></label></div></div>
     </fieldset>
     <fieldset><legend>Estudo</legend>
       <label class="chk"><input type="checkbox" id="o_studies"> Faço faculdade ou curso</label>
-      <label>Curso<input id="o_course" maxlength="60" autocomplete="off" placeholder="Ex.: Engenharia"></label>
+      <div id="o_studyBox"><label>Curso<input id="o_course" maxlength="60" autocomplete="off" placeholder="Ex.: Engenharia"></label>
       <div class="dsel" id="o_classDays"></div>
-      <div class="two"><label>Aula começa<input type="time" id="o_classStart" value="19:00"></label><label>Aula termina<input type="time" id="o_classEnd" value="22:30"></label></div>
+      <div class="two"><label>Aula começa<input type="time" id="o_classStart" value="19:00"></label><label>Aula termina<input type="time" id="o_classEnd" value="22:30"></label></div></div>
     </fieldset>
     <label>Como você se desloca?<select id="o_transport"><option value="onibus">Ônibus</option><option value="carro">Carro ou moto</option><option value="ape">A pé ou bicicleta</option><option value="casa">Trabalho/estudo de casa</option></select></label>
     <fieldset><legend>O que mais importa agora? (até 4)</legend><div class="chips" id="o_focus"></div></fieldset>
@@ -295,7 +296,7 @@ input:focus,select:focus,textarea:focus{outline:none;border-color:var(--accent)!
   </section>
 
   <section data-tab="hoje" class="panel">
-    <div class="qhead"><h2>Quests de hoje</h2><span class="sm muted mono" id="today"></span></div>
+    <div class="qhead"><h2>Tarefas de hoje</h2><span class="sm muted mono" id="today"></span></div>
     <div class="sm muted" id="dayxp"></div>
     <div class="debt" id="debt" hidden></div>
     <div id="quests"><div class="empty">Carregando suas quests…</div></div>
@@ -750,7 +751,7 @@ $("calIcs").addEventListener("click",()=>{const blob=new Blob([buildICS()],{type
   $("calMsg").textContent="Abriu a tela da agenda? Toque em \"Adicionar tudo\". Se nada abriu, use os botões do Google abaixo.";});
 // ---------- Perfil e geração de quests (onboarding) ----------
 const DN=["seg","ter","qua","qui","sex","sáb","dom"];
-const FOCI=[["estudos","Estudos"],["sono","Dormir melhor"],["corpo","Saúde e corpo"],["carreira","Carreira"],["dinheiro","Dinheiro"],["relac","Pessoas que amo"],["casa","Casa em ordem"]];
+const FOCI=[["estudos","Estudos"],["sono","Dormir melhor"],["corpo","Saúde e corpo"],["carreira","Carreira"],["dinheiro","Dinheiro"],["relac","Pessoas que amo"],["casa","Casa em ordem"],["remedio","Remédios no horário"],["agua","Beber água"]];
 function toggles(id,items,sel,max){const box=$(id);box.textContent="";for(const [v,l] of items){const b=document.createElement("button");b.type="button";b.textContent=l;b.dataset.v=v;if(sel.includes(v))b.classList.add("on");
   b.addEventListener("click",()=>{if(!b.classList.contains("on")&&max&&box.querySelectorAll(".on").length>=max){$("o_msg").textContent="Escolha no máximo "+max+".";return;}b.classList.toggle("on");});box.append(b);}}
 const picked=id=>[...$(id).querySelectorAll(".on")].map(b=>b.dataset.v);
@@ -758,7 +759,9 @@ function fillOnb(a){a=a||{};const v=(id,x)=>{if(x!=null)$(id).value=x;};
   v("o_name",a.name);v("o_wake",a.wake);v("o_sleep",a.sleep);v("o_workStart",a.workStart);v("o_lunch",a.lunch);v("o_workEnd",a.workEnd);v("o_course",a.course);v("o_classStart",a.classStart);v("o_classEnd",a.classEnd);v("o_transport",a.transport);v("o_goal",a.goal);v("o_money",a.money);v("o_moneyDate",a.moneyDate);
   if(a.works!=null)$("o_works").checked=a.works;if(a.studies!=null)$("o_studies").checked=a.studies;if(a.faith!=null)$("o_faith").checked=a.faith;
   const dd=DN.map((l,i)=>[String(i),l]);toggles("o_workDays",dd,(a.workDays||[0,1,2,3,4]).map(String));toggles("o_classDays",dd,(a.classDays||[0,1,2,3,4]).map(String));
-  toggles("o_focus",FOCI,a.focus||["estudos","sono"],4);}
+  toggles("o_focus",FOCI,a.focus||["sono","corpo"],4);syncBoxes();}
+function syncBoxes(){$("o_workBox").hidden=!$("o_works").checked;$("o_studyBox").hidden=!$("o_studies").checked;}
+$("o_works").addEventListener("change",syncBoxes);$("o_studies").addEventListener("change",syncBoxes);
 function readOnb(){const g=id=>$(id).value.trim();return {name:g("o_name"),wake:g("o_wake")||"07:00",sleep:g("o_sleep")||"23:00",works:$("o_works").checked,workDays:picked("o_workDays").map(Number),workStart:g("o_workStart"),lunch:g("o_lunch"),workEnd:g("o_workEnd"),
   studies:$("o_studies").checked,course:g("o_course"),classDays:picked("o_classDays").map(Number),classStart:g("o_classStart"),classEnd:g("o_classEnd"),transport:g("o_transport"),focus:picked("o_focus"),goal:g("o_goal"),money:g("o_money"),moneyDate:g("o_moneyDate"),faith:$("o_faith").checked};}
 const hm=t=>{const [h,m]=(t||"0:0").split(":").map(Number);return h*60+(m||0);};
@@ -795,6 +798,11 @@ function buildCfg(a){const Q=[];let n=0;const add=q=>{q.id=q.id||("g"+(++n));Q.p
   if(f("casa"))add({id:"s_casa",title:"10 min de arrumação",xp:15,stat:"foco",days:[5,6],ifThen:"Fim de semana, antes de pegar o celular de manhã."});
   if(a.goal){add({id:"s_meta1",title:"Escrever os 3 primeiros passos para: "+a.goal,xp:30,stat:"foco",once:true,ifThen:"No próximo fim de semana, depois do café, com papel e caneta."});
     add({id:"s_meta",title:"1 passo da meta: "+a.goal,xp:30,stat:"vendas",days:[6],minTitle:"10 min",ifThen:"Domingo à tarde, antes de planejar a semana."});}
+  if(f("remedio"))add({id:"s_remed",title:"Tomar os remédios da manhã",xp:15,stat:"corpo",main:true,ifThen:"Quando levantar ("+fm(hm(a.wake))+"), tomo junto com o primeiro copo d'água."});
+  if(f("agua"))add({id:"s_agua",title:"Beber 6 copos de água",xp:10,stat:"corpo",minTitle:"3 copos",ifThen:"A cada refeição, 1 copo antes de comer."});
+  // garante pelo menos 2 principais além do fechamento, seguindo a ordem dos focos
+  let mains=Q.filter(q=>q.main).length;for(const q of Q){if(mains>=3)break;if(!q.main&&!q.once&&!q.days){q.main=true;mains++;}}
+  const rk=q=>q.id==="s_remed"?0:q.id==="s_fech"?2:1;Q.sort((x,y)=>rk(x)-rk(y));
   const c={version:1,name:a.name||"Você",startDate:todayKey(),profile:a,faith:!!a.faith,quests:Q};
   if(studyIds.length)c.boss={name:"Constância nos estudos",deadline:"Renasce toda segunda",hp:10,fullHit:3,minHit:1,reward:80,questIds:studyIds,hint:"Cada revisão ou bloco de estudo tira 3 de vida; o mínimo tira 1."};
   const mv=parseFloat(String(a.money||"").replace(/\./g,"").replace(",","."));
