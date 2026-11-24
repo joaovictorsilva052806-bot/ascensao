@@ -16,13 +16,36 @@ $("tipClose").addEventListener("click",()=>{try{localStorage.setItem("asc-u-tip"
 // Android: o arquivo .ics não abre direto no Google Agenda; usar os botões do Google
 if(AND){$("calIcs").hidden=true;$("calMsg").textContent="Toque em cada lembrete abaixo. Abre o Google Agenda já preenchido: é só tocar em Salvar.";}
 setTimeout(showTip,0);
-// ---------- Aviso de entrada (opcional, com consentimento): só 1º nome + tipo de celular ----------
-const PING_URL="https://docs.google.com/forms/d/e/1FAIpQLSeupI0e9q5NvzLgusfgD1CNKN7hGBx91xGD1jkEl1z2uxPUuw/formResponse";
-function sendPing(ev){const nome=String((cfg&&cfg.name)||"").trim().split(/\s+/)[0].slice(0,20)||"?";const dev=IOS?"iPhone":AND?"Android":"Computador";
-  const inst=(navigator.standalone||matchMedia("(display-mode: standalone)").matches)?"instalado":"navegador";
-  try{fetch(PING_URL,{method:"POST",mode:"no-cors",body:new URLSearchParams({"entry.807978446":[nome,dev,inst,ev,"nível "+levelOf(totalXP())].join(" | ")})}).catch(()=>{});}catch(e){}
-  prog.ping=prog.ping||{};prog.ping.sent=todayKey();save();}
-function askPing(){const show=cfg&&!cfg.blank&&!(prog.ping&&prog.ping.asked);$("pingCard").hidden=!show;}
-$("pingYes").addEventListener("click",()=>{prog.ping=prog.ping||{};prog.ping.asked=true;sendPing("já usava");$("pingCard").hidden=true;toast("Valeu! Aviso enviado.");});
-$("pingNo").addEventListener("click",()=>{prog.ping=prog.ping||{};prog.ping.asked=true;save();$("pingCard").hidden=true;});
-setTimeout(askPing,0);
+// ---------- Ranking semanal (opcional): só 1º nome, tipo de celular, nível e XP da semana ----------
+const RK_POST="https://docs.google.com/forms/d/e/1FAIpQLSeupI0e9q5NvzLgusfgD1CNKN7hGBx91xGD1jkEl1z2uxPUuw/formResponse";
+const RK_CSV="https://docs.google.com/spreadsheets/d/e/2PACX-1vTyr0ZbAqlFWbOWEZXpjcRPXPE04u9EfktPhrq5Mf_vnQ2YjeVEARfhqGrrpqVXxkIVsvnE_x8DMdpr/pub?gid=1002&single=true&output=csv";
+const firstName=()=>String((cfg&&cfg.name)||"").trim().split(/\s+/)[0].replace(/[|,;"<>]/g,"").slice(0,20)||"Anônimo";
+function weekXP(){const ws=weekStart(todayKey());let s=0;for(const e of entries())if(weekStart(e.date)===ws)s+=(e.xp||0)+(e.bonus||0);return s;}
+function sendRank(ev,force){const r=prog.rank;if(!r||!r.on)return;const xp=weekXP(),ws=weekStart(todayKey()).replace(/-/g,"");
+  if(!force&&r.lastXp===xp&&r.lastWk===ws)return;
+  const dev=IOS?"iPhone":AND?"Android":"Computador";
+  const v=["R",r.uid,firstName(),dev,ws,xp,levelOf(totalXP()),ev].join("|");
+  try{fetch(RK_POST,{method:"POST",mode:"no-cors",keepalive:true,body:new URLSearchParams({"entry.807978446":v})}).catch(()=>{});}catch(e){}
+  r.lastXp=xp;r.lastWk=ws;r.last=new Date().toISOString();save();}
+function joinRank(ev){prog.rank=Object.assign({uid:Math.random().toString(36).slice(2,10)},prog.rank||{},{on:true,asked:true});sendRank(ev||"entrou",true);loadRank();renderRankUI();}
+function leaveRank(){prog.rank=Object.assign(prog.rank||{},{on:false,asked:true});save();renderRankUI();toast("Você saiu do ranking. Seu nome some na próxima semana.");}
+let rankRows=null;
+async function loadRank(){try{const t=await (await fetch(RK_CSV+"&t="+Date.now(),{credentials:"omit"})).text();
+  rankRows=t.trim().split(/\r?\n/).slice(1).map(l=>l.split(",")).filter(r=>r[0]&&r[0]!=="nome").map(r=>({n:r[0],xp:+r[1]||0,lv:+r[2]||1}));}catch(e){rankRows=rankRows||null;}renderRankUI();}
+function renderRankUI(){const on=!!(prog.rank&&prog.rank.on);const asked=!!(prog.rank&&prog.rank.asked)||!!(prog.ping&&prog.ping.asked&&prog.rank);
+  $("pingCard").hidden=!(cfg&&!cfg.blank&&!prog.rank);
+  $("rkJoin").hidden=on;$("rkLeave").hidden=!on;
+  const ol=$("rkList");ol.textContent="";
+  if(!rankRows){const li=document.createElement("li");li.className="muted";li.textContent="Carregando…";ol.append(li);return;}
+  if(!rankRows.length){const li=document.createElement("li");li.className="muted";li.textContent="Ninguém pontuou ainda nesta semana. Seja o primeiro.";ol.append(li);return;}
+  const me=on?firstName():null;
+  rankRows.forEach((r,i)=>{const li=document.createElement("li");if(me&&r.n===me)li.className="me";
+    const p=document.createElement("b");p.textContent=(i<3?["🥇","🥈","🥉"][i]:"#"+(i+1));
+    const n=document.createElement("span");n.textContent=r.n+" · nv "+r.lv;const x=document.createElement("i");x.textContent=r.xp+" XP";li.append(p,n,x);ol.append(li);});}
+$("pingYes").addEventListener("click",()=>{joinRank("entrou");$("pingCard").hidden=true;toast("Você está no ranking da semana!");});
+$("pingNo").addEventListener("click",()=>{prog.rank={on:false,asked:true};save();$("pingCard").hidden=true;});
+$("rkJoin").addEventListener("click",()=>{joinRank("entrou");toast("Você está no ranking da semana!");});
+$("rkLeave").addEventListener("click",leaveRank);
+for(const b of document.querySelectorAll('#tabbar [data-go="prog"]'))b.addEventListener("click",loadRank);
+document.addEventListener("visibilitychange",()=>{if(document.hidden)sendRank("uso");});
+setTimeout(()=>{sendRank("abriu");loadRank();},0);

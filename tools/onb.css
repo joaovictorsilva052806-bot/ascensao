@@ -15,3 +15,9 @@
 .onb input:not([type=checkbox]),.onb select{background:rgba(0,212,255,.04);border-radius:3px}
 .onb fieldset{border-radius:3px}
 .onb legend{font-family:var(--f-hud);font-size:.62rem;letter-spacing:.18em;text-transform:uppercase}
+.rk{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:6px}
+.rk li{display:grid;grid-template-columns:40px 1fr auto;gap:10px;align-items:center;padding:10px 12px;border:1px solid var(--line);border-left:2px solid var(--accent);background:rgba(0,212,255,.04);border-radius:3px}
+.rk li.muted{display:block;border-left-width:1px}
+.rk li b{font-family:var(--f-mono);color:var(--glow)}
+.rk li i{font-style:normal;font-family:var(--f-mono);color:var(--gold)}
+.rk li.me{border-color:var(--gold);box-shadow:0 0 14px rgba(255,200,87,.25)}

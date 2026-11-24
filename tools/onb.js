@@ -65,6 +65,6 @@ $("o_go").addEventListener("click",()=>{const a=readOnb();if(!a.name){$("o_msg")
   cfg=buildCfg(a);
   try{localStorage.setItem("asc-u-cfg",JSON.stringify(cfg));}catch(e){}
   if(location.hash)history.replaceState(null,"",location.pathname);
-  $("titleName").textContent=cfg.name;prog.ping=prog.ping||{};prog.ping.asked=true;if(a.ping)sendPing("cadastro");closeOnb();save();render();goTab("hoje");showTip();toast("Pronto, "+cfg.name+"! "+cfg.quests.length+" quests criadas para o seu dia.");});
+  $("titleName").textContent=cfg.name;if(a.ping)setTimeout(()=>joinRank("cadastro"),0);else prog.rank=prog.rank||{on:false,asked:true};closeOnb();save();render();goTab("hoje");showTip();toast("Pronto, "+cfg.name+"! "+cfg.quests.length+" quests criadas para o seu dia.");});
 $("o_cancel").addEventListener("click",closeOnb);
 $("redo").addEventListener("click",openOnb);

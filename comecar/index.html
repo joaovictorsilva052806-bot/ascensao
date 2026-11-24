@@ -239,6 +239,12 @@ input,select,textarea{font-size:16px!important}
 .onb input:not([type=checkbox]),.onb select{background:rgba(0,212,255,.04);border-radius:3px}
 .onb fieldset{border-radius:3px}
 .onb legend{font-family:var(--f-hud);font-size:.62rem;letter-spacing:.18em;text-transform:uppercase}
+.rk{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:6px}
+.rk li{display:grid;grid-template-columns:40px 1fr auto;gap:10px;align-items:center;padding:10px 12px;border:1px solid var(--line);border-left:2px solid var(--accent);background:rgba(0,212,255,.04);border-radius:3px}
+.rk li.muted{display:block;border-left-width:1px}
+.rk li b{font-family:var(--f-mono);color:var(--glow)}
+.rk li i{font-style:normal;font-family:var(--f-mono);color:var(--gold)}
+.rk li.me{border-color:var(--gold);box-shadow:0 0 14px rgba(255,200,87,.25)}
 </style></head><body>
 
 <div class="hudtop"><span>ASCENSÃO<i>//</i>SISTEMA ONLINE</span><span class="mono" id="clock">--:--</span></div>
@@ -265,15 +271,15 @@ input,select,textarea{font-size:16px!important}
     <label>Uma meta grande para os próximos meses (opcional)<input id="o_goal" maxlength="80" autocomplete="off" placeholder="Ex.: conseguir estágio na área"></label>
     <div class="two"><label>Meta de dinheiro R$ (opcional)<input id="o_money" inputmode="decimal" placeholder="Ex.: 1500"></label><label>Até<input type="date" id="o_moneyDate"></label></div>
     <label class="chk"><input type="checkbox" id="o_faith"> Quero o painel de fé e gratidão</label>
-    <label class="chk"><input type="checkbox" id="o_ping"> Avisar o criador do app que eu entrei (vai só o primeiro nome e o tipo de celular)</label>
+    <label class="chk"><input type="checkbox" id="o_ping"> 🏆 Entrar no ranking da semana (aparece só seu primeiro nome e seu XP)</label>
     <div class="row sticky"><button class="go" type="button" id="o_go">Criar meu jogo</button><button class="ghost" type="button" id="o_cancel" hidden>Cancelar</button></div>
     <div class="sm muted" id="o_msg"></div>
   </section>
 
   <section data-tab="hoje" class="panel tip" id="pingCard" hidden>
-    <h2>Avisar que você entrou?</h2>
-    <div class="sm">Manda só o seu primeiro nome e o tipo de celular para quem criou o app. Nenhuma tarefa ou horário sai do seu celular.</div>
-    <div class="row"><button class="go" type="button" id="pingYes">Sim, avisar</button><button class="ghost" type="button" id="pingNo">Agora não</button></div>
+    <h2>🏆 Ranking da semana</h2>
+    <div class="sm">Compare seu XP com quem também usa o Ascensão. Aparece só seu primeiro nome e seu XP. Nenhuma tarefa ou horário sai do seu celular.</div>
+    <div class="row"><button class="go" type="button" id="pingYes">Entrar no ranking</button><button class="ghost" type="button" id="pingNo">Agora não</button></div>
   </section>
 
   <section data-tab="hoje" class="panel tip" id="installTip" hidden>
@@ -352,6 +358,12 @@ input,select,textarea{font-size:16px!important}
     <label for="fGrat">À noite: 3 coisas pelas quais eu agradeço (pode ser a Deus)
       <textarea id="fGrat" rows="3" maxlength="400" placeholder="1. &#10;2. &#10;3. "></textarea></label>
     <button class="go" type="button" id="fSave">Salvar o dia</button>
+  </section>
+
+  <section data-tab="prog" class="panel" id="rankPanel">
+    <div class="qhead"><h2>🏆 Ranking da semana</h2><span class="sm muted">zera toda segunda</span></div>
+    <ol class="rk" id="rkList"></ol>
+    <div class="row"><button class="go" type="button" id="rkJoin">Entrar no ranking</button><button class="link" type="button" id="rkLeave" hidden>Sair do ranking</button></div>
   </section>
 
   <section data-tab="prog" class="panel">
@@ -824,7 +836,7 @@ $("o_go").addEventListener("click",()=>{const a=readOnb();if(!a.name){$("o_msg")
   cfg=buildCfg(a);
   try{localStorage.setItem("asc-u-cfg",JSON.stringify(cfg));}catch(e){}
   if(location.hash)history.replaceState(null,"",location.pathname);
-  $("titleName").textContent=cfg.name;prog.ping=prog.ping||{};prog.ping.asked=true;if(a.ping)sendPing("cadastro");closeOnb();save();render();goTab("hoje");showTip();toast("Pronto, "+cfg.name+"! "+cfg.quests.length+" quests criadas para o seu dia.");});
+  $("titleName").textContent=cfg.name;if(a.ping)setTimeout(()=>joinRank("cadastro"),0);else prog.rank=prog.rank||{on:false,asked:true};closeOnb();save();render();goTab("hoje");showTip();toast("Pronto, "+cfg.name+"! "+cfg.quests.length+" quests criadas para o seu dia.");});
 $("o_cancel").addEventListener("click",closeOnb);
 $("redo").addEventListener("click",openOnb);
 // ---------- Sugestões (sai pelo WhatsApp; fica salva no aparelho) ----------
@@ -845,16 +857,39 @@ $("tipClose").addEventListener("click",()=>{try{localStorage.setItem("asc-u-tip"
 // Android: o arquivo .ics não abre direto no Google Agenda; usar os botões do Google
 if(AND){$("calIcs").hidden=true;$("calMsg").textContent="Toque em cada lembrete abaixo. Abre o Google Agenda já preenchido: é só tocar em Salvar.";}
 setTimeout(showTip,0);
-// ---------- Aviso de entrada (opcional, com consentimento): só 1º nome + tipo de celular ----------
-const PING_URL="https://docs.google.com/forms/d/e/1FAIpQLSeupI0e9q5NvzLgusfgD1CNKN7hGBx91xGD1jkEl1z2uxPUuw/formResponse";
-function sendPing(ev){const nome=String((cfg&&cfg.name)||"").trim().split(/\s+/)[0].slice(0,20)||"?";const dev=IOS?"iPhone":AND?"Android":"Computador";
-  const inst=(navigator.standalone||matchMedia("(display-mode: standalone)").matches)?"instalado":"navegador";
-  try{fetch(PING_URL,{method:"POST",mode:"no-cors",body:new URLSearchParams({"entry.807978446":[nome,dev,inst,ev,"nível "+levelOf(totalXP())].join(" | ")})}).catch(()=>{});}catch(e){}
-  prog.ping=prog.ping||{};prog.ping.sent=todayKey();save();}
-function askPing(){const show=cfg&&!cfg.blank&&!(prog.ping&&prog.ping.asked);$("pingCard").hidden=!show;}
-$("pingYes").addEventListener("click",()=>{prog.ping=prog.ping||{};prog.ping.asked=true;sendPing("já usava");$("pingCard").hidden=true;toast("Valeu! Aviso enviado.");});
-$("pingNo").addEventListener("click",()=>{prog.ping=prog.ping||{};prog.ping.asked=true;save();$("pingCard").hidden=true;});
-setTimeout(askPing,0);
+// ---------- Ranking semanal (opcional): só 1º nome, tipo de celular, nível e XP da semana ----------
+const RK_POST="https://docs.google.com/forms/d/e/1FAIpQLSeupI0e9q5NvzLgusfgD1CNKN7hGBx91xGD1jkEl1z2uxPUuw/formResponse";
+const RK_CSV="https://docs.google.com/spreadsheets/d/e/2PACX-1vTyr0ZbAqlFWbOWEZXpjcRPXPE04u9EfktPhrq5Mf_vnQ2YjeVEARfhqGrrpqVXxkIVsvnE_x8DMdpr/pub?gid=1002&single=true&output=csv";
+const firstName=()=>String((cfg&&cfg.name)||"").trim().split(/\s+/)[0].replace(/[|,;"<>]/g,"").slice(0,20)||"Anônimo";
+function weekXP(){const ws=weekStart(todayKey());let s=0;for(const e of entries())if(weekStart(e.date)===ws)s+=(e.xp||0)+(e.bonus||0);return s;}
+function sendRank(ev,force){const r=prog.rank;if(!r||!r.on)return;const xp=weekXP(),ws=weekStart(todayKey()).replace(/-/g,"");
+  if(!force&&r.lastXp===xp&&r.lastWk===ws)return;
+  const dev=IOS?"iPhone":AND?"Android":"Computador";
+  const v=["R",r.uid,firstName(),dev,ws,xp,levelOf(totalXP()),ev].join("|");
+  try{fetch(RK_POST,{method:"POST",mode:"no-cors",keepalive:true,body:new URLSearchParams({"entry.807978446":v})}).catch(()=>{});}catch(e){}
+  r.lastXp=xp;r.lastWk=ws;r.last=new Date().toISOString();save();}
+function joinRank(ev){prog.rank=Object.assign({uid:Math.random().toString(36).slice(2,10)},prog.rank||{},{on:true,asked:true});sendRank(ev||"entrou",true);loadRank();renderRankUI();}
+function leaveRank(){prog.rank=Object.assign(prog.rank||{},{on:false,asked:true});save();renderRankUI();toast("Você saiu do ranking. Seu nome some na próxima semana.");}
+let rankRows=null;
+async function loadRank(){try{const t=await (await fetch(RK_CSV+"&t="+Date.now(),{credentials:"omit"})).text();
+  rankRows=t.trim().split(/\r?\n/).slice(1).map(l=>l.split(",")).filter(r=>r[0]&&r[0]!=="nome").map(r=>({n:r[0],xp:+r[1]||0,lv:+r[2]||1}));}catch(e){rankRows=rankRows||null;}renderRankUI();}
+function renderRankUI(){const on=!!(prog.rank&&prog.rank.on);const asked=!!(prog.rank&&prog.rank.asked)||!!(prog.ping&&prog.ping.asked&&prog.rank);
+  $("pingCard").hidden=!(cfg&&!cfg.blank&&!prog.rank);
+  $("rkJoin").hidden=on;$("rkLeave").hidden=!on;
+  const ol=$("rkList");ol.textContent="";
+  if(!rankRows){const li=document.createElement("li");li.className="muted";li.textContent="Carregando…";ol.append(li);return;}
+  if(!rankRows.length){const li=document.createElement("li");li.className="muted";li.textContent="Ninguém pontuou ainda nesta semana. Seja o primeiro.";ol.append(li);return;}
+  const me=on?firstName():null;
+  rankRows.forEach((r,i)=>{const li=document.createElement("li");if(me&&r.n===me)li.className="me";
+    const p=document.createElement("b");p.textContent=(i<3?["🥇","🥈","🥉"][i]:"#"+(i+1));
+    const n=document.createElement("span");n.textContent=r.n+" · nv "+r.lv;const x=document.createElement("i");x.textContent=r.xp+" XP";li.append(p,n,x);ol.append(li);});}
+$("pingYes").addEventListener("click",()=>{joinRank("entrou");$("pingCard").hidden=true;toast("Você está no ranking da semana!");});
+$("pingNo").addEventListener("click",()=>{prog.rank={on:false,asked:true};save();$("pingCard").hidden=true;});
+$("rkJoin").addEventListener("click",()=>{joinRank("entrou");toast("Você está no ranking da semana!");});
+$("rkLeave").addEventListener("click",leaveRank);
+for(const b of document.querySelectorAll('#tabbar [data-go="prog"]'))b.addEventListener("click",loadRank);
+document.addEventListener("visibilitychange",()=>{if(document.hidden)sendRank("uso");});
+setTimeout(()=>{sendRank("abriu");loadRank();},0);
 
 let saveTimer=null, SYNC="";
 try{SYNC=localStorage.getItem("asc-u-sync")||"";}catch(e){}
