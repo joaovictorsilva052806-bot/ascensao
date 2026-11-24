@@ -16,3 +16,13 @@ $("tipClose").addEventListener("click",()=>{try{localStorage.setItem("asc-u-tip"
 // Android: o arquivo .ics não abre direto no Google Agenda; usar os botões do Google
 if(AND){$("calIcs").hidden=true;$("calMsg").textContent="Toque em cada lembrete abaixo. Abre o Google Agenda já preenchido: é só tocar em Salvar.";}
 setTimeout(showTip,0);
+// ---------- Aviso de entrada (opcional, com consentimento): só 1º nome + tipo de celular ----------
+const PING_URL="https://docs.google.com/forms/d/e/1FAIpQLSeupI0e9q5NvzLgusfgD1CNKN7hGBx91xGD1jkEl1z2uxPUuw/formResponse";
+function sendPing(ev){const nome=String((cfg&&cfg.name)||"").trim().split(/\s+/)[0].slice(0,20)||"?";const dev=IOS?"iPhone":AND?"Android":"Computador";
+  const inst=(navigator.standalone||matchMedia("(display-mode: standalone)").matches)?"instalado":"navegador";
+  try{fetch(PING_URL,{method:"POST",mode:"no-cors",body:new URLSearchParams({"entry.807978446":[nome,dev,inst,ev,"nível "+levelOf(totalXP())].join(" | ")})}).catch(()=>{});}catch(e){}
+  prog.ping=prog.ping||{};prog.ping.sent=todayKey();save();}
+function askPing(){const show=cfg&&!cfg.blank&&!(prog.ping&&prog.ping.asked);$("pingCard").hidden=!show;}
+$("pingYes").addEventListener("click",()=>{prog.ping=prog.ping||{};prog.ping.asked=true;sendPing("já usava");$("pingCard").hidden=true;toast("Valeu! Aviso enviado.");});
+$("pingNo").addEventListener("click",()=>{prog.ping=prog.ping||{};prog.ping.asked=true;save();$("pingCard").hidden=true;});
+setTimeout(askPing,0);

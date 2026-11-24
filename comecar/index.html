@@ -265,8 +265,15 @@ input,select,textarea{font-size:16px!important}
     <label>Uma meta grande para os próximos meses (opcional)<input id="o_goal" maxlength="80" autocomplete="off" placeholder="Ex.: conseguir estágio na área"></label>
     <div class="two"><label>Meta de dinheiro R$ (opcional)<input id="o_money" inputmode="decimal" placeholder="Ex.: 1500"></label><label>Até<input type="date" id="o_moneyDate"></label></div>
     <label class="chk"><input type="checkbox" id="o_faith"> Quero o painel de fé e gratidão</label>
+    <label class="chk"><input type="checkbox" id="o_ping"> Avisar o criador do app que eu entrei (vai só o primeiro nome e o tipo de celular)</label>
     <div class="row sticky"><button class="go" type="button" id="o_go">Criar meu jogo</button><button class="ghost" type="button" id="o_cancel" hidden>Cancelar</button></div>
     <div class="sm muted" id="o_msg"></div>
+  </section>
+
+  <section data-tab="hoje" class="panel tip" id="pingCard" hidden>
+    <h2>Avisar que você entrou?</h2>
+    <div class="sm">Manda só o seu primeiro nome e o tipo de celular para quem criou o app. Nenhuma tarefa ou horário sai do seu celular.</div>
+    <div class="row"><button class="go" type="button" id="pingYes">Sim, avisar</button><button class="ghost" type="button" id="pingNo">Agora não</button></div>
   </section>
 
   <section data-tab="hoje" class="panel tip" id="installTip" hidden>
@@ -758,13 +765,13 @@ function toggles(id,items,sel,max){const box=$(id);box.textContent="";for(const 
 const picked=id=>[...$(id).querySelectorAll(".on")].map(b=>b.dataset.v);
 function fillOnb(a){a=a||{};const v=(id,x)=>{if(x!=null)$(id).value=x;};
   v("o_name",a.name);v("o_wake",a.wake);v("o_sleep",a.sleep);v("o_workStart",a.workStart);v("o_lunch",a.lunch);v("o_workEnd",a.workEnd);v("o_course",a.course);v("o_classStart",a.classStart);v("o_classEnd",a.classEnd);v("o_transport",a.transport);v("o_goal",a.goal);v("o_money",a.money);v("o_moneyDate",a.moneyDate);
-  if(a.works!=null)$("o_works").checked=a.works;if(a.studies!=null)$("o_studies").checked=a.studies;if(a.faith!=null)$("o_faith").checked=a.faith;
+  if(a.works!=null)$("o_works").checked=a.works;if(a.studies!=null)$("o_studies").checked=a.studies;if(a.faith!=null)$("o_faith").checked=a.faith;if(a.ping!=null)$("o_ping").checked=a.ping;
   const dd=DN.map((l,i)=>[String(i),l]);toggles("o_workDays",dd,(a.workDays||[0,1,2,3,4]).map(String));toggles("o_classDays",dd,(a.classDays||[0,1,2,3,4]).map(String));
   toggles("o_focus",FOCI,a.focus||["sono","corpo"],4);syncBoxes();}
 function syncBoxes(){$("o_workBox").hidden=!$("o_works").checked;$("o_studyBox").hidden=!$("o_studies").checked;}
 $("o_works").addEventListener("change",syncBoxes);$("o_studies").addEventListener("change",syncBoxes);
 function readOnb(){const g=id=>$(id).value.trim();return {name:g("o_name"),wake:g("o_wake")||"07:00",sleep:g("o_sleep")||"23:00",works:$("o_works").checked,workDays:picked("o_workDays").map(Number),workStart:g("o_workStart"),lunch:g("o_lunch"),workEnd:g("o_workEnd"),
-  studies:$("o_studies").checked,course:g("o_course"),classDays:picked("o_classDays").map(Number),classStart:g("o_classStart"),classEnd:g("o_classEnd"),transport:g("o_transport"),focus:picked("o_focus"),goal:g("o_goal"),money:g("o_money"),moneyDate:g("o_moneyDate"),faith:$("o_faith").checked};}
+  studies:$("o_studies").checked,course:g("o_course"),classDays:picked("o_classDays").map(Number),classStart:g("o_classStart"),classEnd:g("o_classEnd"),transport:g("o_transport"),focus:picked("o_focus"),goal:g("o_goal"),money:g("o_money"),moneyDate:g("o_moneyDate"),faith:$("o_faith").checked,ping:$("o_ping").checked};}
 const hm=t=>{const [h,m]=(t||"0:0").split(":").map(Number);return h*60+(m||0);};
 const fm=m=>{m=((m%1440)+1440)%1440;return String(Math.floor(m/60)).padStart(2,"0")+"h"+(m%60?String(m%60).padStart(2,"0"):"");};
 function buildCfg(a){const Q=[];let n=0;const add=q=>{q.id=q.id||("g"+(++n));Q.push(q);return q;};
@@ -817,7 +824,7 @@ $("o_go").addEventListener("click",()=>{const a=readOnb();if(!a.name){$("o_msg")
   cfg=buildCfg(a);
   try{localStorage.setItem("asc-u-cfg",JSON.stringify(cfg));}catch(e){}
   if(location.hash)history.replaceState(null,"",location.pathname);
-  $("titleName").textContent=cfg.name;closeOnb();save();render();goTab("hoje");showTip();toast("Pronto, "+cfg.name+"! "+cfg.quests.length+" quests criadas para o seu dia.");});
+  $("titleName").textContent=cfg.name;prog.ping=prog.ping||{};prog.ping.asked=true;if(a.ping)sendPing("cadastro");closeOnb();save();render();goTab("hoje");showTip();toast("Pronto, "+cfg.name+"! "+cfg.quests.length+" quests criadas para o seu dia.");});
 $("o_cancel").addEventListener("click",closeOnb);
 $("redo").addEventListener("click",openOnb);
 // ---------- Sugestões (sai pelo WhatsApp; fica salva no aparelho) ----------
@@ -838,6 +845,17 @@ $("tipClose").addEventListener("click",()=>{try{localStorage.setItem("asc-u-tip"
 // Android: o arquivo .ics não abre direto no Google Agenda; usar os botões do Google
 if(AND){$("calIcs").hidden=true;$("calMsg").textContent="Toque em cada lembrete abaixo. Abre o Google Agenda já preenchido: é só tocar em Salvar.";}
 setTimeout(showTip,0);
+// ---------- Aviso de entrada (opcional, com consentimento): só 1º nome + tipo de celular ----------
+const PING_URL="https://docs.google.com/forms/d/e/1FAIpQLSeupI0e9q5NvzLgusfgD1CNKN7hGBx91xGD1jkEl1z2uxPUuw/formResponse";
+function sendPing(ev){const nome=String((cfg&&cfg.name)||"").trim().split(/\s+/)[0].slice(0,20)||"?";const dev=IOS?"iPhone":AND?"Android":"Computador";
+  const inst=(navigator.standalone||matchMedia("(display-mode: standalone)").matches)?"instalado":"navegador";
+  try{fetch(PING_URL,{method:"POST",mode:"no-cors",body:new URLSearchParams({"entry.807978446":[nome,dev,inst,ev,"nível "+levelOf(totalXP())].join(" | ")})}).catch(()=>{});}catch(e){}
+  prog.ping=prog.ping||{};prog.ping.sent=todayKey();save();}
+function askPing(){const show=cfg&&!cfg.blank&&!(prog.ping&&prog.ping.asked);$("pingCard").hidden=!show;}
+$("pingYes").addEventListener("click",()=>{prog.ping=prog.ping||{};prog.ping.asked=true;sendPing("já usava");$("pingCard").hidden=true;toast("Valeu! Aviso enviado.");});
+$("pingNo").addEventListener("click",()=>{prog.ping=prog.ping||{};prog.ping.asked=true;save();$("pingCard").hidden=true;});
+setTimeout(askPing,0);
+
 let saveTimer=null, SYNC="";
 try{SYNC=localStorage.getItem("asc-u-sync")||"";}catch(e){}
 function save(){

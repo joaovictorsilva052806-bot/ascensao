@@ -6,13 +6,13 @@ function toggles(id,items,sel,max){const box=$(id);box.textContent="";for(const 
 const picked=id=>[...$(id).querySelectorAll(".on")].map(b=>b.dataset.v);
 function fillOnb(a){a=a||{};const v=(id,x)=>{if(x!=null)$(id).value=x;};
   v("o_name",a.name);v("o_wake",a.wake);v("o_sleep",a.sleep);v("o_workStart",a.workStart);v("o_lunch",a.lunch);v("o_workEnd",a.workEnd);v("o_course",a.course);v("o_classStart",a.classStart);v("o_classEnd",a.classEnd);v("o_transport",a.transport);v("o_goal",a.goal);v("o_money",a.money);v("o_moneyDate",a.moneyDate);
-  if(a.works!=null)$("o_works").checked=a.works;if(a.studies!=null)$("o_studies").checked=a.studies;if(a.faith!=null)$("o_faith").checked=a.faith;
+  if(a.works!=null)$("o_works").checked=a.works;if(a.studies!=null)$("o_studies").checked=a.studies;if(a.faith!=null)$("o_faith").checked=a.faith;if(a.ping!=null)$("o_ping").checked=a.ping;
   const dd=DN.map((l,i)=>[String(i),l]);toggles("o_workDays",dd,(a.workDays||[0,1,2,3,4]).map(String));toggles("o_classDays",dd,(a.classDays||[0,1,2,3,4]).map(String));
   toggles("o_focus",FOCI,a.focus||["sono","corpo"],4);syncBoxes();}
 function syncBoxes(){$("o_workBox").hidden=!$("o_works").checked;$("o_studyBox").hidden=!$("o_studies").checked;}
 $("o_works").addEventListener("change",syncBoxes);$("o_studies").addEventListener("change",syncBoxes);
 function readOnb(){const g=id=>$(id).value.trim();return {name:g("o_name"),wake:g("o_wake")||"07:00",sleep:g("o_sleep")||"23:00",works:$("o_works").checked,workDays:picked("o_workDays").map(Number),workStart:g("o_workStart"),lunch:g("o_lunch"),workEnd:g("o_workEnd"),
-  studies:$("o_studies").checked,course:g("o_course"),classDays:picked("o_classDays").map(Number),classStart:g("o_classStart"),classEnd:g("o_classEnd"),transport:g("o_transport"),focus:picked("o_focus"),goal:g("o_goal"),money:g("o_money"),moneyDate:g("o_moneyDate"),faith:$("o_faith").checked};}
+  studies:$("o_studies").checked,course:g("o_course"),classDays:picked("o_classDays").map(Number),classStart:g("o_classStart"),classEnd:g("o_classEnd"),transport:g("o_transport"),focus:picked("o_focus"),goal:g("o_goal"),money:g("o_money"),moneyDate:g("o_moneyDate"),faith:$("o_faith").checked,ping:$("o_ping").checked};}
 const hm=t=>{const [h,m]=(t||"0:0").split(":").map(Number);return h*60+(m||0);};
 const fm=m=>{m=((m%1440)+1440)%1440;return String(Math.floor(m/60)).padStart(2,"0")+"h"+(m%60?String(m%60).padStart(2,"0"):"");};
 function buildCfg(a){const Q=[];let n=0;const add=q=>{q.id=q.id||("g"+(++n));Q.push(q);return q;};
@@ -65,6 +65,6 @@ $("o_go").addEventListener("click",()=>{const a=readOnb();if(!a.name){$("o_msg")
   cfg=buildCfg(a);
   try{localStorage.setItem("asc-u-cfg",JSON.stringify(cfg));}catch(e){}
   if(location.hash)history.replaceState(null,"",location.pathname);
-  $("titleName").textContent=cfg.name;closeOnb();save();render();goTab("hoje");showTip();toast("Pronto, "+cfg.name+"! "+cfg.quests.length+" quests criadas para o seu dia.");});
+  $("titleName").textContent=cfg.name;prog.ping=prog.ping||{};prog.ping.asked=true;if(a.ping)sendPing("cadastro");closeOnb();save();render();goTab("hoje");showTip();toast("Pronto, "+cfg.name+"! "+cfg.quests.length+" quests criadas para o seu dia.");});
 $("o_cancel").addEventListener("click",closeOnb);
 $("redo").addEventListener("click",openOnb);
