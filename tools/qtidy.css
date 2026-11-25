@@ -6,3 +6,8 @@
 .quest.qtlock{opacity:.6}.quest.qtlock .btns button{cursor:not-allowed}
 .qtlb{font-size:.74rem;color:var(--gold);margin-top:2px}
 .qtdesc{font-size:.84rem;color:var(--muted);margin:2px 0}.quest:not(.open) .qtdesc{display:none}
+.quest{grid-template-columns:1fr!important}
+.quest .btns{justify-content:flex-end;flex-wrap:wrap}
+.quest .tag{display:block;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;opacity:.7}
+.quest .t .tt{font-size:1.02rem;line-height:1.3}
+.quest .nextlbl{margin-bottom:-2px}
