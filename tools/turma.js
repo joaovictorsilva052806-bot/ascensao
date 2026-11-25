@@ -74,7 +74,7 @@ function tmUI(){const p=tmPlace();if(!p)return;if(tmKid()||!cfg||cfg.blank){p.hi
       else act.append(tmEl("span","sm muted","pedido enviado"));
       li.append(act);}
     ol.append(li);if(i===2&&L.length>3)ol.append(tmEl("li","tmzone","▲ zona de subida"));});p.append(ol);
-  if(fr.length)p.append(tmEl("div","sm muted tmhint","Toque num amigo para comparar. 🎉 dá parabéns, 👉 cutuca (1 de cada por dia)."));
+  if(fr.length)p.append(tmEl("div","sm muted tmhint","Toque num amigo para ver o card dele. 🎉 dá parabéns, 👉 cutuca (1 de cada por dia)."));
   // novidades
   const F=s.feed.slice(0,6);if(F.length){const fd=tmEl("div","tmfeed");fd.append(tmEl("h3",null,"Novidades da turma"));
     for(const f of F){const r=tmEl("div","tmfi");r.append(tmEl("span",null,f.t));
