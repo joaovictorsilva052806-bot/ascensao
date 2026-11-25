@@ -15,7 +15,7 @@ const openCard=async(p,id)=>{await p.evaluate(id=>{document.querySelectorAll('.s
 for(const [nome,dev] of [['iPhone',devices['iPhone 13']],['Android',devices['Pixel 7']]]){
   const c=await b.newContext({...dev,timezoneId:'America/Sao_Paulo',acceptDownloads:true});const p=await c.newPage();const errs=[];p.on('pageerror',e=>errs.push(e.message));
   p.on('console',m=>{if(m.type()==='error'&&!/ERR_TUNNEL|ERR_PROXY|Failed to load resource/.test(m.text()))errs.push(m.text());});
-  await c.route(/duolingo\.com|calendar\.google\.com/,r=>r.fulfill({status:200,contentType:'text/html',body:'ok'}));
+  await c.route(/duolingo\.com|calendar\.google\.com|chatgpt\.com/,r=>r.fulfill({status:200,contentType:'text/html',body:'ok'}));
   await p.clock.install({time:new Date('2026-11-26T10:00:00-03:00')});
   await p.goto(B+'/comecar/');await p.waitForTimeout(800);await onboard(p);await p.waitForTimeout(400);
   const C=()=>p.evaluate(()=>JSON.parse(localStorage.getItem('asc-u-cfg')));const P=()=>p.evaluate(()=>JSON.parse(localStorage.getItem('asc-u-prog')));
@@ -61,6 +61,8 @@ for(const [nome,dev] of [['iPhone',devices['iPhone 13']],['Android',devices['Pix
     ok(nome+': .ics baixado',!!dl);ok(nome+': .ics repete seg/qua/qui/sex',/RRULE:FREQ=WEEKLY;BYDAY=MO,WE,TH,FR/.test(txt),txt.slice(0,300));ok(nome+': .ics às 19:30 (hoje)',/DTSTART:20261126T193000/.test(txt),txt.slice(0,400));ok(nome+': .ics com alarme',/BEGIN:VALARM/.test(txt));}
   else{const [pop]=await Promise.all([c.waitForEvent('page',{timeout:3000}).catch(()=>null),cb.evaluate(b=>b.click())]);const u=pop?pop.url():'';if(pop)await pop.close();
     ok(nome+': abre o Google Agenda com repetição, fuso e hora',/calendar\.google\.com/.test(u)&&/recur=RRULE/.test(u)&&/ctz=America/.test(u)&&/20261126T193000/.test(u),u);}
+  if(nome==='iPhone'){await tab(p,'mais');const [pop]=await Promise.all([c.waitForEvent('page',{timeout:3000}).catch(()=>null),p.evaluate(()=>document.querySelector('#aiPanel [data-ai="chatgpt"]').click())]);await p.waitForTimeout(400);
+    const m=await p.$eval('#aiMsg',e=>e.textContent);ok(nome+': IA abre sem falso "bloqueou"',!!pop&&!/bloqueou/.test(m),m);if(pop)await pop.close();await tab(p,'hoje');}
   ok(nome+': tarefa sem horário e sem app fica limpa',!(await p.$('#quests .quest[data-q="t_nt"] .qapp')));
   ok(nome+': sem erro de console',!errs.length,errs.join(' | '));await c.close();}
 {const c=await b.newContext({viewport:{width:390,height:844}});const p=await c.newPage();const errs=[];p.on('pageerror',e=>errs.push(e.message));

@@ -21,10 +21,11 @@ function apFirst(q,hm){const d=new Date();d.setHours(hm[0],hm[1],0,0);const days
 function apRule(q){const days=q.days&&q.days.length&&q.days.length<7?q.days:null;return q.once?"":days?"RRULE:FREQ=WEEKLY;BYDAY="+days.map(x=>BYD[x]).join(","):"RRULE:FREQ=DAILY";}
 function apNote(q){return (q.minTitle?"Mínimo: "+q.minTitle+"\n":"")+(q.ifThen?"Gatilho: "+q.ifThen+"\n":"")+location.href.split("#")[0];}
 function apICS(q,hm){const s=apFirst(q,hm),e=new Date(s.getTime()+apMins(q)*60000),st=icsDT(new Date()),r=apRule(q);
-  const L=["BEGIN:VCALENDAR","VERSION:2.0","PRODID:-//Ascensao//PT-BR","CALSCALE:GREGORIAN","METHOD:PUBLISH","BEGIN:VEVENT","UID:asc-q-"+String(q.id).replace(/[^\w-]/g,"")+"-"+st+"@ascensao","DTSTAMP:"+st,"DTSTART:"+icsDT(s),"DTEND:"+icsDT(e)];
+  const L=["BEGIN:VCALENDAR","VERSION:2.0","PRODID:-//Ascensao//PT-BR","CALSCALE:GREGORIAN","METHOD:PUBLISH","BEGIN:VEVENT","UID:asc-q-"+String(q.id).replace(/[^\w-]/g,"")+"@ascensao","DTSTAMP:"+st,"DTSTART:"+icsDT(s),"DTEND:"+icsDT(e)];
   if(r)L.push(r);L.push("SUMMARY:"+icsEsc("Ascension: "+q.title),"DESCRIPTION:"+icsEsc(apNote(q)),"BEGIN:VALARM","ACTION:DISPLAY","DESCRIPTION:"+icsEsc(q.title),"TRIGGER:PT0M","END:VALARM","END:VEVENT","END:VCALENDAR");return L.join("\r\n");}
+function apTZ(){try{return Intl.DateTimeFormat().resolvedOptions().timeZone||"America/Sao_Paulo";}catch(e){return "America/Sao_Paulo";}}
 function apGcal(q,hm){const s=apFirst(q,hm),e=new Date(s.getTime()+apMins(q)*60000),r=apRule(q);
-  return "https://calendar.google.com/calendar/render?action=TEMPLATE&text="+encodeURIComponent("Ascension: "+q.title)+"&dates="+icsDT(s)+"/"+icsDT(e)+"&ctz=America/Sao_Paulo"+(r?"&recur="+encodeURIComponent(r):"")+"&details="+encodeURIComponent(apNote(q));}
+  return "https://calendar.google.com/calendar/render?action=TEMPLATE&text="+encodeURIComponent("Ascension: "+q.title)+"&dates="+icsDT(s)+"/"+icsDT(e)+"&ctz="+encodeURIComponent(apTZ())+(r?"&recur="+encodeURIComponent(r):"")+"&details="+encodeURIComponent(apNote(q));}
 function apCal(q){const hm=apTime(q);if(!hm)return;try{prog.apCal=(prog.apCal||0)+1;save();}catch(e){}
   if(AP_IOS){const u=URL.createObjectURL(new Blob([apICS(q,hm)],{type:"text/calendar;charset=utf-8"}));const a=document.createElement("a");a.href=u;a.download="tarefa-ascension.ics";document.body.append(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(u),60000);
     toast("Abriu o Calendário? Toque em Adicionar. O aviso vem na hora da tarefa.");}
