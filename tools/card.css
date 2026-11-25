@@ -1,0 +1,35 @@
+/* ---- Card de jogador + convite + destaque (tools/card.js) ---- */
+.cdmodal .cdcard{position:relative;max-width:360px;padding:16px 16px 14px;border:2px solid var(--cd);border-radius:16px;background:radial-gradient(120% 70% at 50% 0%,color-mix(in srgb,var(--cd) 28%,transparent),transparent 60%),linear-gradient(180deg,#0c1628,#060b15);box-shadow:0 0 0 1px rgba(255,255,255,.04) inset,0 0 34px color-mix(in srgb,var(--cd) 35%,transparent);text-align:center}
+.cdtop{display:flex;justify-content:space-between;align-items:center;gap:8px}
+.cdrk{width:34px;height:34px;display:grid;place-items:center;border:2px solid var(--cd);border-radius:8px;transform:rotate(45deg);font-family:var(--f-hud);font-size:.95rem;color:#fff}
+.cdrk{line-height:1}.cdtag{font-family:var(--f-hud);font-size:.62rem;letter-spacing:.2em;color:var(--cd)}
+.cdlv{font-family:var(--f-mono);font-size:.86rem;color:var(--gold)}
+.cdart{display:flex;justify-content:center;margin:8px 0 4px;filter:drop-shadow(0 6px 18px color-mix(in srgb,var(--cd) 45%,transparent))}
+.cdart svg{width:150px;height:150px}
+.cdname{margin:4px 0 0;font-size:1.3rem}
+.cdcls{font-family:var(--f-hud);font-size:.72rem;letter-spacing:.14em;text-transform:uppercase;color:var(--cd);margin-bottom:10px}
+.cdkpi{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:6px;margin-bottom:12px}
+.cdkpi>div{display:flex;flex-direction:column;gap:2px;padding:8px 2px;border:1px solid var(--line);border-radius:10px;background:rgba(255,255,255,.03)}
+.cdkpi b{font-family:var(--f-mono);font-size:.98rem;color:#fff;white-space:nowrap}
+.cdkpi span{font-size:.62rem;color:var(--muted);text-transform:uppercase;letter-spacing:.06em}
+.cdattr{display:flex;flex-direction:column;gap:7px;text-align:left;margin-bottom:12px}
+.cdbar{display:grid;grid-template-columns:88px 1fr 40px;align-items:center;gap:8px;font-size:.84rem}
+.cdt{height:8px;border-radius:99px;background:rgba(255,255,255,.07);overflow:hidden}
+.cdt i{display:block;height:100%;border-radius:99px;background:linear-gradient(90deg,color-mix(in srgb,var(--cd) 60%,#fff 0%),var(--cd));box-shadow:0 0 8px var(--cd)}
+.cdv{font-family:var(--f-mono);font-size:.74rem;color:var(--muted);text-align:right}
+.cdcard .cdrow{display:flex;flex-wrap:wrap;gap:6px}.cdcard .cdrow>button:not(.link){flex:1 1 0;min-width:0;min-height:44px;padding:0 6px;white-space:nowrap}.cdcard .cdrow>.link{flex-basis:100%;min-height:36px}
+.cdacts{display:grid;grid-template-columns:1.4fr 1fr;gap:8px;margin-bottom:10px}
+.cdacts button{min-height:44px}
+.cdinv{display:flex;flex-direction:column;gap:8px;padding:14px;margin-bottom:12px;border:1px solid var(--gold);border-radius:12px;background:rgba(242,193,78,.08)}
+.cdme{display:flex;align-items:baseline;gap:6px;margin-top:4px}
+.cdme b{font-family:var(--f-hud);font-size:1.5rem;color:#fff;text-shadow:0 0 12px var(--accent)}
+.cdme span{font-size:.8rem;color:var(--muted)}
+.tabbar [data-go=amigos] svg{stroke:var(--gold)}
+.tabbar [data-go=amigos].on svg{stroke:var(--glow)}
+.tabbar [data-go=amigos].cdhot svg{animation:cdp 1.8s ease-in-out infinite}
+@keyframes cdp{50%{transform:scale(1.12);filter:drop-shadow(0 0 6px var(--gold))}}
+@media (prefers-reduced-motion:reduce){.tabbar [data-go=amigos].cdhot svg{animation:none}}
+.cdbdg{position:absolute;top:2px;left:calc(50% + 6px);min-width:17px;height:17px;padding:0 4px;border-radius:99px;background:#ff4d6d;color:#fff;font-family:var(--f-mono);font-size:.62rem;letter-spacing:0;line-height:17px;text-align:center;box-shadow:0 0 8px rgba(255,77,109,.7)}
+.cdcard .cdrow{display:grid!important;grid-auto-flow:column;grid-auto-columns:minmax(0,1fr);gap:6px}
+.cdcard .cdrow>button{width:100%;min-width:0;min-height:44px;padding:0 4px;white-space:nowrap;font-size:.88rem}
+.cdclose{display:block;margin:10px auto 0;min-height:36px}
