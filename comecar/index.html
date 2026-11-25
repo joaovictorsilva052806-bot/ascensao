@@ -1641,7 +1641,7 @@ function statXP(){const st={foco:0,vendas:0,mente:0,corpo:0};for(const e of entr
 function coinsEarned(){let s=0;for(const e of entries())s+=Math.max(0,(e.xp||0)+(e.bonus||0));return Math.floor(s/10);}
 function rpgTip(){const d=new Date();const n=Math.floor((d-new Date(d.getFullYear(),0,0))/864e5);return TIPS[n%TIPS.length];}
 let sysQ=[];function sysPop(tag,title,text,cb,lbl){sysQ.push([tag,title,text,cb,lbl]);if(sysQ.length===1)sysNext();}
-function sysNext(){if(!sysQ.length)return;const [tag,title,text,cb,lbl]=sysQ[0];const m=document.createElement("div");m.className="sysmodal";m.setAttribute("role","dialog");
+let sysShown=null;function sysNext(){if(!sysQ.length||(sysShown&&sysShown.isConnected))return;const [tag,title,text,cb,lbl]=sysQ[0];const m=document.createElement("div");m.className="sysmodal";m.setAttribute("role","dialog");sysShown=m;
   const c=document.createElement("div");c.className="card";const a=document.createElement("div");a.className="tag";a.textContent="[ SISTEMA ] "+tag;const h=document.createElement("h3");h.textContent=title;const p=document.createElement("p");p.className="sm";p.textContent=text;
   const b=document.createElement("button");b.className="go";b.type="button";b.textContent=lbl||"Aceitar";b.addEventListener("click",()=>{m.remove();sysQ.shift();if(cb)try{cb();}catch(e){}if(sysQ.length)sysNext();else setTimeout(render,50);});c.append(a,h,p,b);m.append(c);document.body.append(m);try{const ua=navigator.userActivation;if(navigator.vibrate&&(!ua||ua.hasBeenActive))navigator.vibrate([10,30,10]);}catch(e){}}
 function sparks(gold){if(matchMedia("(prefers-reduced-motion: reduce)").matches)return;const pt=lastPt||{x:innerWidth/2,y:innerHeight/2};
@@ -1662,8 +1662,9 @@ function typeSys(el,t){if(el.dataset.t===t)return;el.dataset.t=t;clearInterval(t
 function renderRPG(){renderDun();sysTipUI();const r=rpgState();const st=statXP();const lv=levelOf(totalXP());
   // primeira vez: marca o que já tinha sem soltar alertas antigos
   const cur={};for(const k in STATS)cur[k]=slvl(st[k]);
-  if(!r.seen){r.seen=Object.assign({},cur);}
-  else{for(const k in STATS){const was=r.seen[k]||1;if(cur[k]>was){for(const [lvN,nm,tx] of SKILLS[k])if(lvN>was&&lvN<=cur[k])sysPop("HABILIDADE DESBLOQUEADA",nm,STATS[k]+" nível "+lvN+". "+tx);r.seen[k]=cur[k];}}}
+  // grava o que já foi anunciado, senão o alerta volta ao reabrir o app
+  if(!r.seen){r.seen=Object.assign({},cur);try{save();}catch(e){}}
+  else{let ch=false;for(const k in STATS){const was=r.seen[k]||1;if(cur[k]>was){for(const [lvN,nm,tx] of SKILLS[k])if(lvN>was&&lvN<=cur[k])sysPop("HABILIDADE DESBLOQUEADA",nm,STATS[k]+" nível "+lvN+". "+tx);r.seen[k]=cur[k];ch=true;}}if(ch)try{save();}catch(e){}}
   if(typeof r.cls==="string")r.cls=null;
   if(r.cls){const t=lv>=20?2:lv>=10?1:0;if(t>(r.evo||0)){r.evo=t;sysPop("EVOLUÇÃO DE CLASSE",clsName(r.cls,lv),"Nível "+lv+". Sua classe evoluiu. Continue no seu ritmo.");}}
   else if(cfg&&!cfg.blank&&(!$("onb")||$("onb").hidden)&&!clsOpen&&!sysQ.length)setTimeout(()=>{if(!sysQ.length)openCls();},400);
