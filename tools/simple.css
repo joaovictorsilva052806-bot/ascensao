@@ -3,7 +3,8 @@
 .tabbar{padding-left:max(8px,calc(50% - 280px));padding-right:max(8px,calc(50% - 280px))}
 /* painéis secundários viram uma linha que abre com um toque */
 .panel.fold{gap:0}
-.panel.fold>.fhd{cursor:pointer;user-select:none;-webkit-user-select:none;display:flex;align-items:center;justify-content:flex-start;flex-wrap:nowrap;gap:10px;min-height:28px}
+.panel.fold>.fhd{cursor:pointer;user-select:none;-webkit-user-select:none;display:flex;align-items:center;justify-content:flex-start;flex-wrap:nowrap;gap:10px;min-height:44px;margin-block:-8px}
+/* alvo de toque de 44px no cabeçalho recolhível (o -8px mantém o visual igual) */
 .panel.fold>.fhd>h2{flex:1 1 auto;min-width:0}
 .panel.fold>.fhd>:not(h2){flex:none;white-space:nowrap}
 .panel.fold:not(.open)>.fhd>.muted:not(.mono){display:none}
@@ -12,7 +13,7 @@
 .panel.fold>.fhd:focus-visible{outline:2px solid var(--glow);outline-offset:4px}
 .panel.fold:not(.open)>:not(.fhd){display:none!important}
 .panel.fold.open{gap:14px}
-.panel.fold.open>.fhd{margin-bottom:2px}
+.panel.fold.open>.fhd{margin-bottom:-6px}
 .panel.fold:not(.open){padding-block:14px}
 /* Foco: só o relógio e o botão, no meio da tela */
 body[data-tab=foco] #focusPanel{text-align:center;align-items:stretch;margin-top:min(8vh,64px)}
