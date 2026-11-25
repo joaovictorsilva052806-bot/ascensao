@@ -1,5 +1,24 @@
 # Relatório de QA (ATENA)
 
+## 25/11/2026 · 1ª rodada da ATENA: placar inicial e 3 correções (#27, #28, #30)
+
+Playwright, 390x844 e 1366x820, servidor local, main do #25 ao #29. Placar inicial (só leitura): 129/132.
+
+| Teste | Resultado |
+|---|---|
+| /, /comecar/, /convite/: abrem, sem rolagem horizontal | passou |
+| Onboarding Despertar completo, check-in, marcar e desmarcar quest | passou |
+| Masmorra 7 andares e virada de dia (relógio simulado) | passou |
+| Reset ("Apagar tudo") e restaurar backup: histórico igual | passou |
+| Offline (SW registrado à mão no localhost) | passou |
+| Migração: localStorage gerado na versão de 24/11 (#5), raiz e /comecar/: nada some (temporada guarda em prog-t1) | passou |
+| reduce-motion: barra de XP e anel do rank ainda animavam | corrigido no #27 (qa/movimento.test.js 10/10) |
+| Erro de console: aviso do Sistema vibrava antes do 1º toque | corrigido no #28 (qa/vibrar.test.js 5/5) |
+| Avisos do Sistema em dobro na tela + habilidade anunciada de novo a cada abertura (r.seen não era gravado) | corrigido no #30 (qa/avisos.test.js 4/4) |
+
+Suíte depois do #30: avisos 4, classe 22, foco 32, liga 12, movimento 10, religar 14, rotas 12, segredos 38, sequencia 30, vibrar 5. Tudo verde.
+Site no ar: github.io é bloqueado na nuvem; conferido pelo "pages build and deployment" (sucesso). Caches ascensao-v28 e ascensao-u-v37.
+
 ## 25/11/2026 · Atalho "Ascension Foco" em 1 toque no iPhone
 
 - Link do JV conferido pelo conteúdo do atalho: Adjust Date (+Shortcut Input em minutos) e Não Perturbe até a Data Ajustada. O 1º link ficava ligado sem fim e foi recusado.
