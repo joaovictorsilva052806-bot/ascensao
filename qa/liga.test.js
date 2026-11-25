@@ -17,7 +17,8 @@ const base=(x={})=>Object.assign({log:{'2026-11-25':[{q:'q1',kind:'full',xp:40,s
 let {ctx,p,errs,posts}=await open(base(),'2026-11-25T14:00:00');let t=await drain(p);
 ok('pílula 🏆 3º em Hoje',(await p.textContent('#lgPill')).includes('3º'),await p.textContent('#lgPill').catch(()=>'?'));
 await p.locator('#lgPill').dispatchEvent('click');await p.waitForTimeout(300);
-ok('tocar na pílula abre o ranking',await p.locator('#rankPanel').isVisible()&&await p.locator('#rkList li').first().isVisible());
+// desde o #56 a pílula leva à aba Amigos, onde a Turma mostra a liga e a posição (o painel antigo do ranking fica recolhido logo abaixo)
+ok('tocar na pílula abre a liga na aba Amigos',await p.evaluate(()=>{const t=document.getElementById('tmPanel');return document.body.dataset.tab==='amigos'&&!!t&&t.offsetParent!==null&&/Liga Ferro/.test(t.innerText)&&/3º/.test(t.innerText);}),await p.evaluate(()=>document.body.dataset.tab));
 const ln=await p.textContent('#lgLine');ok('linha da liga com rival',ln.includes('Ferro')&&ln.includes('3º de 4')&&/Faltam \d+ XP para passar Bia/.test(ln),ln);
 await p.screenshot({path:'/mnt/project-files/sequencia/liga.png'});
 let st=await p.evaluate(()=>JSON.parse(localStorage.getItem('asc-u-prog')));
