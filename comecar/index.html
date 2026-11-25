@@ -321,6 +321,31 @@ body.enter .quest{animation:qIn .35s ease-out backwards}
 .clsbtn.sug{border-color:var(--gold);box-shadow:0 0 0 1px var(--gold)}
 #betaPanel label.chk{display:flex;align-items:center;gap:8px;margin:10px 0;font-size:.86rem}
 #betaRate button{font-size:1.3rem;padding:6px 10px}
+.dun{display:grid;grid-template-columns:repeat(7,1fr);gap:6px;margin:10px 0 8px}
+.dun>div{aspect-ratio:1;border:1px solid var(--line);border-radius:6px;display:flex;flex-direction:column;align-items:center;justify-content:center;font-size:.66rem;color:var(--muted);gap:2px}
+.dun>div b{font-size:1rem}
+.dun>.ok{border-color:var(--good,#35d49a);color:var(--good,#35d49a);background:rgba(53,212,154,.08)}
+.dun>.miss{opacity:.45}
+.dun>.now{border-color:var(--acc,var(--accent));color:var(--glow);box-shadow:0 0 12px rgba(0,212,255,.35);animation:lvPulse 2s ease-in-out infinite}
+.dun>.rest{border-style:dashed}
+@media (prefers-reduced-motion:reduce){.dun>.now{animation:none}}
+.dun>.pre{opacity:.25}
+.quick{position:fixed;inset:0;z-index:55;background:var(--bg);overflow:auto;padding:max(28px,env(safe-area-inset-top)) 18px 28px;display:flex;flex-direction:column;gap:16px}
+.quick .qbar{height:4px;background:rgba(0,212,255,.15);border-radius:2px;overflow:hidden}.quick .qbar i{display:block;height:100%;width:0;background:var(--accent);box-shadow:0 0 10px var(--glow);transition:width .4s}
+.qstep{display:flex;flex-direction:column;gap:14px;animation:sysIn .4s cubic-bezier(.2,.9,.3,1.2)}
+.qstep .tag{font-family:var(--f-mono);font-size:.72rem;letter-spacing:.2em;color:var(--accent)}
+.qstep h2{font-family:var(--f-hud,inherit);font-size:1.5rem;line-height:1.25;margin:0;color:var(--glow);text-transform:none;letter-spacing:0}
+.qstep input{font-size:18px!important;padding:14px;background:rgba(0,212,255,.05);border:1px solid var(--line);color:var(--fg);border-radius:4px}
+.qgrid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.qgrid button{padding:16px 10px;font-size:1rem;min-height:58px}
+.qgrid button.on{background:var(--accent);color:#02121a;border-color:var(--accent);box-shadow:0 0 14px rgba(0,212,255,.45)}
+.qgrid.sm3 button{padding:12px 8px;font-size:.9rem;min-height:48px}
+button.big{padding:16px;font-size:1.05rem}
+#q_full{margin-top:auto;align-self:center}
+.qspin{width:56px;height:56px;border-radius:50%;border:3px solid rgba(0,212,255,.2);border-top-color:var(--accent);animation:spin 1s linear infinite;align-self:center;margin-top:20px}
+@media (prefers-reduced-motion:reduce){.qstep,.qspin{animation:none}}
+.shake{animation:shake .4s}@keyframes shake{25%{transform:translateX(-6px)}75%{transform:translateX(6px)}}
+.onboarding .wrap>section#quick:not([hidden]){display:flex!important}
 </style></head><body>
 
 <div class="hudtop"><span>ASCENSÃO<i>//</i>SISTEMA ONLINE</span><span class="mono" id="clock">--:--</span></div>
@@ -335,6 +360,40 @@ body.enter .quest{animation:qIn .35s ease-out backwards}
     <div class="row"><button class="link" type="button" id="introSkip">Pular</button><button class="go" type="button" id="introNext">Próximo</button></div>
   </section>
 
+  <section class="quick" id="quick" hidden>
+    <div class="qbar"><i id="qBar"></i></div>
+    <div class="qstep" data-s="0">
+      <div class="tag">[ SISTEMA ] NOVO JOGADOR DETECTADO</div>
+      <h2>Qual é o seu nome de jogador?</h2>
+      <input id="q_name" maxlength="24" autocomplete="off" placeholder="Seu nome ou apelido" enterkeyhint="next">
+      <button class="go big" type="button" id="q_n0">Continuar ▸</button>
+      <button class="link" type="button" id="q_bk">Já usava o app? Restaurar backup</button>
+    </div>
+    <div class="qstep" data-s="1" hidden>
+      <div class="tag">[ SISTEMA ] CALIBRANDO</div>
+      <h2>Quantos anos você tem?</h2>
+      <div class="qgrid" id="q_age"></div>
+    </div>
+    <div class="qstep" data-s="2" hidden>
+      <div class="tag">[ SISTEMA ] SUA ROTINA</div>
+      <h2>O que você faz no dia a dia?</h2>
+      <div class="qgrid" id="q_occ"></div>
+    </div>
+    <div class="qstep" data-s="3" hidden>
+      <div class="tag">[ SISTEMA ] MISSÃO PRINCIPAL</div>
+      <h2>No que você quer evoluir?</h2>
+      <p class="sm muted">Toque em até 3. Ou escreva a sua.</p>
+      <div class="qgrid sm3" id="q_focus"></div>
+      <input id="q_goal" maxlength="60" autocomplete="off" placeholder="Escreva a sua (ex.: tirar 8 em matemática)">
+      <button class="go big" type="button" id="q_done">Gerar meu jogo ⚡</button>
+    </div>
+    <div class="qstep" data-s="4" hidden>
+      <div class="tag">[ SISTEMA ] GERANDO MISSÕES</div>
+      <h2 id="q_load">Montando seu jogo…</h2>
+      <div class="qspin"></div>
+    </div>
+    <button class="link" type="button" id="q_full">Prefiro montar com detalhes</button>
+  </section>
   <section class="panel onb" id="onb" hidden>
     <div class="qhead"><h2>Monte seu jogo</h2><button class="link" type="button" id="introAgain">O que é isso?</button></div>
     <div class="pre" id="o_pre" hidden>Já veio preenchido com a sua rotina. Confira os horários e toque em <b>Criar meu jogo</b>.</div>
@@ -485,6 +544,12 @@ body.enter .quest{animation:qIn .35s ease-out backwards}
     <button class="go" type="button" id="fSave">Salvar o dia</button>
   </section>
 
+  <section data-tab="prog" class="panel rpg" id="dunPanel">
+    <div class="qhead"><h2>🏰 Masmorra da semana</h2><span class="sm muted" id="dunCount"></span></div>
+    <div class="dun" id="dunFloors"></div>
+    <div class="sm muted" id="dunText"></div>
+    <div class="row"><button class="go" type="button" id="dunOpen" hidden>Abrir o baú da masmorra</button></div>
+  </section>
   <section data-tab="prog" class="panel rpg" id="rpgPanel">
     <div class="qhead"><h2>Atributos e habilidades</h2><span class="sm muted" id="rpgCls"></span></div>
     <div class="sm muted" id="rpgAwake"></div>
@@ -787,10 +852,10 @@ function fx(xp,gold){try{if(navigator.vibrate)navigator.vibrate(gold?[12,40,18]:
   if(!xp)return;const f=document.createElement("div");f.className="xpfloat"+(gold?" gold":"");f.textContent="+"+xp+" XP";
   const pt=lastPt||{x:innerWidth/2,y:innerHeight/2};f.style.left=pt.x+"px";f.style.top=(pt.y-20)+"px";document.body.append(f);setTimeout(()=>f.remove(),1200);}
 // ---------- Sequência (estilo Duolingo: descanso congela, não quebra) ----------
-function streakDays(){const act=k=>(prog.log[k]||[]).some(e=>!/^(ach|checkin|tip):/.test(String(e.q)));const rest=k=>!!(prog.rest||{})[k];
+function streakDays(){const act=k=>(prog.log[k]||[]).some(e=>!/^(ach|checkin|tip|dun):/.test(String(e.q)));const rest=k=>!!(prog.rest||{})[k];
   const d=new Date();let n=0;if(!act(dkey(d))&&!rest(dkey(d)))d.setDate(d.getDate()-1);
   for(let i=0;i<400;i++){const k=dkey(d);if(act(k))n++;else if(!rest(k))break;d.setDate(d.getDate()-1);}return n;}
-function renderPills(){const n=streakDays();const today=(prog.log[todayKey()]||[]).some(e=>!/^(ach|checkin|tip):/.test(String(e.q)));
+function renderPills(){const n=streakDays();const today=(prog.log[todayKey()]||[]).some(e=>!/^(ach|checkin|tip|dun):/.test(String(e.q)));
   const st=$("streak");st.textContent="🔥 "+n+(n===1?" dia":" dias");st.classList.toggle("cold",!today);st.title=today?"Sequência garantida hoje":"Faça 1 quest hoje para manter a sequência";
   const dt=new Date();const ms=mainsFor(dt);const done=prog.log[todayKey()]||[];const ok=ms.filter(q=>done.some(e=>e.q===q.id)).length;
   $("dayPill").textContent=ok+"/"+ms.length+" principais";$("dayPill").classList.toggle("full",ms.length>0&&ok===ms.length);}
@@ -932,7 +997,7 @@ $("restBtn").addEventListener("click",()=>{const tk=todayKey();prog.rest=prog.re
 
 // ---------- Conquistas (novidade que não acaba) ----------
 let ACH=[];function achList(){return [
- ["a_first","Primeiro passo","1ª quest concluída",10,()=>entries().some(e=>!/^(ach|checkin|tip):/.test(String(e.q)))],
+ ["a_first","Primeiro passo","1ª quest concluída",10,()=>entries().some(e=>!/^(ach|checkin|tip|dun):/.test(String(e.q)))],
  ["a_3d","Esquentando","3 dias ativos",20,()=>activeDays()>=3],
  ["a_7d","Uma semana inteira","7 dias ativos",50,()=>activeDays()>=7],
  ["a_21d","Hábito formando","21 dias ativos",100,()=>activeDays()>=21],
@@ -942,7 +1007,7 @@ let ACH=[];function achList(){return [
  ["a_review","Olhar de dono","1ª revisão da semana",20,()=>Object.keys(prog.reviews||{}).length>0],
  ["a_faith","Coração grato","7 dias com o painel de gratidão",40,()=>Object.keys(prog.faith||{}).length>=7,()=>!!(cfg&&cfg.faith)],
  ["a_once","Missão cumprida","Concluir todas as missões únicas",60,()=>{const o=((cfg&&cfg.quests)||[]).filter(q=>q.once);return o.length>0&&o.every(q=>entries().some(e=>e.q===q.id));}]].filter(a=>!a[5]||a[5]());}
-function activeDays(){return new Set(entries().filter(e=>!/^(ach|checkin|tip):/.test(String(e.q))).map(e=>e.date)).size;}
+function activeDays(){return new Set(entries().filter(e=>!/^(ach|checkin|tip|dun):/.test(String(e.q))).map(e=>e.date)).size;}
 function renderAch(){const box=$("achList");box.textContent="";prog.ach=prog.ach||{};let got=0;
   for(const [id,name,desc,xp] of (ACH=achList())){const on=!!prog.ach[id];if(on)got++;const d=document.createElement("div");d.className="badge"+(on?" on":"");const b=document.createElement("b");b.textContent=(on?"🏅 ":"🔒 ")+name;d.append(b,document.createTextNode(desc+" · +"+xp+" XP"));box.append(d);}
   $("achCount").textContent=got+" / "+ACH.length;$("faithPanel").hidden=!(cfg&&cfg.faith);applyCopy();renderEd();renderAdj();renderRPG();betaUI();setTimeout(dailyCheckin,600);}
@@ -1061,6 +1126,7 @@ function buildCfg(a){const Q=[];let n=0;const add=q=>{q.id=q.id||("g"+(++n));Q.p
   if(f("casa")&&minor)add({id:"s_casa",title:"Ajudar em casa 10 min (louça, quarto ou lixo)",xp:15,stat:"foco",ifThen:"Depois do jantar, antes do celular."});
   else if(f("casa"))add({id:"s_casa",title:"10 min de arrumação",xp:15,stat:"foco",days:[5,6],ifThen:"Fim de semana, antes de pegar o celular de manhã."});
   if(a.goal){add({id:"s_meta1",title:"Escrever os 3 primeiros passos para: "+a.goal,xp:30,stat:"foco",once:true,ifThen:"No próximo fim de semana, depois do café, com papel e caneta."});
+    add({id:"s_meta_d",title:"10 min na minha missão: "+a.goal,xp:20,stat:"foco",minTitle:"5 min",ifThen:"Logo depois da primeira tarefa do dia."});
     add({id:"s_meta",title:"1 passo da meta: "+a.goal,xp:30,stat:"vendas",days:[6],minTitle:"10 min",ifThen:"Domingo à tarde, antes de planejar a semana."});}
   if(f("remedio"))add({id:"s_remed",title:"Tomar os remédios da manhã",xp:15,stat:"corpo",main:true,ifThen:"Quando levantar ("+fm(hm(a.wake))+"), tomo junto com o primeiro copo d'água."});
   if(f("agua"))add({id:"s_agua",title:"Beber 6 copos de água",xp:10,stat:"corpo",minTitle:"3 copos",ifThen:"A cada refeição, 1 copo antes de comer."});
@@ -1096,7 +1162,7 @@ function showIntro(only){introOnly=!!only;$("intro").hidden=false;$("onb").hidde
 function introIdx(){const s=$("slides");return Math.round(s.scrollLeft/Math.max(1,s.clientWidth));}
 function introDots(){const i=introIdx();[...$("dots").children].forEach((d,k)=>d.classList.toggle("on",k===i));$("introNext").textContent=i>=2?"Começar":"Próximo";}
 function endIntro(){try{localStorage.setItem("asc-u-intro","1");}catch(e){}
-  if(introOnly){introOnly=false;$("intro").hidden=true;document.body.classList.remove("onboarding");window.scrollTo(0,0);return;}$("intro").hidden=true;$("onb").hidden=false;window.scrollTo(0,0);}
+  if(introOnly){introOnly=false;$("intro").hidden=true;document.body.classList.remove("onboarding");window.scrollTo(0,0);return;}$("intro").hidden=true;if(!(cfg&&!cfg.blank)&&typeof openQuick==="function"){openQuick();return;}$("onb").hidden=false;window.scrollTo(0,0);}
 $("slides").addEventListener("scroll",()=>{clearTimeout(introDots._t);introDots._t=setTimeout(introDots,60);});
 $("introNext").addEventListener("click",()=>{const i=introIdx();if(i>=2)endIntro();else{const s=$("slides");s.scrollTo({left:(i+1)*s.clientWidth,behavior:"smooth"});}});
 $("introSkip").addEventListener("click",endIntro);
@@ -1368,7 +1434,7 @@ function sysLine(){const dt=new Date();const h=dt.getHours();const nm=((cfg&&cfg
 function typeSys(el,t){if(el.dataset.t===t)return;el.dataset.t=t;clearInterval(typeSys.i);
   if(matchMedia("(prefers-reduced-motion: reduce)").matches||document.body.dataset.tab!=="hoje"){el.textContent=t;return;}
   let n=0;el.textContent="";typeSys.i=setInterval(()=>{n+=2;el.textContent=t.slice(0,n);if(n>=t.length)clearInterval(typeSys.i);},22);}
-function renderRPG(){const r=rpgState();const st=statXP();const lv=levelOf(totalXP());
+function renderRPG(){renderDun();const r=rpgState();const st=statXP();const lv=levelOf(totalXP());
   // primeira vez: marca o que já tinha sem soltar alertas antigos
   const cur={};for(const k in STATS)cur[k]=slvl(st[k]);
   if(!r.seen){r.seen=Object.assign({},cur);}
@@ -1424,6 +1490,21 @@ function openCls(){if(clsOpen||(rpgState().cls&&!openCls.force))return;openCls.f
   c.append(tag,h,p,seg,grid,own,later);m.append(c);document.body.append(m);fill();}
 $("clsChange").addEventListener("click",()=>{openCls.force=true;clsOpen=false;openCls();});
 
+// ---------- Masmorra da semana: 7 andares (seg a dom). Andar limpo = todas as principais do dia (ou 1 tarefa, se não houver principal). 5 andares abrem o baú. ----------
+const DUN_NEED=5,DUN_XP=50;
+function dunWeek(){const d=new Date();d.setHours(0,0,0,0);d.setDate(d.getDate()-((d.getDay()+6)%7));return d;}
+function dunFloor(dt){const k=dkey(dt);if(cfg&&cfg.startDate&&k<cfg.startDate)return "pre";if((prog.rest||{})[k])return "rest";const L=(prog.log[k]||[]).filter(e=>!/^(ach|checkin|tip|dun):/.test(String(e.q)));const ms=mainsFor(dt);
+  if(ms.length?ms.every(q=>L.some(e=>e.q===q.id)):L.length>0)return "ok";return k<todayKey()?"miss":k===todayKey()?"now":"lock";}
+function renderDun(){const box=$("dunFloors");if(!box)return;const w=dunWeek(),wk=dkey(w);let n=0,pre=0;box.textContent="";const DN=["seg","ter","qua","qui","sex","sáb","dom"];
+  for(let i=0;i<7;i++){const d=new Date(w);d.setDate(w.getDate()+i);const st=dunFloor(d);if(st==="ok"||st==="rest")n++;if(st==="pre")pre++;const c=document.createElement("div");c.className=st;
+    const b=document.createElement("b");b.textContent=st==="pre"?"·":st==="ok"?"✓":st==="rest"?"☾":st==="miss"?"✗":st==="now"?"⚔":"🔒";c.append(b,document.createTextNode(DN[i]));box.append(c);}
+  const got=Object.keys(prog.log).some(k=>k>=wk&&(prog.log[k]||[]).some(e=>e.q==="dun:"+wk));
+  const need=Math.max(1,Math.min(DUN_NEED,7-pre-1));renderDun.need=need;$("dunCount").textContent=n+"/"+need+" andares";
+  $("dunOpen").hidden=got||n<need;
+  $("dunText").textContent=got?"Baú aberto. A masmorra renasce na segunda.":n>=need?"Masmorra vencida! Abra o baú.":"Andar limpo = todas as principais do dia (o mínimo vale). Descanso protege o andar. Limpe "+need+" para abrir o baú: +"+DUN_XP+" XP.";}
+$("dunOpen").addEventListener("click",()=>{const wk=dkey(dunWeek());if(Object.keys(prog.log).some(k=>(prog.log[k]||[]).some(e=>e.q==="dun:"+wk)))return;
+  addXP({q:"dun:"+wk,kind:"dun",xp:DUN_XP,stat:"foco",bonus:0,t:new Date().toISOString()},"");sysPop("MASMORRA VENCIDA","Baú aberto: +"+DUN_XP+" XP","Cinco andares numa semana. Isso é constância de verdade. A próxima masmorra abre na segunda.");});
+
 // ---------- Beta: números anônimos com consentimento (LGPD). Nada sai sem o "sim". ----------
 const BETA_KEY="asc-u-beta";
 function betaGet(){try{return JSON.parse(localStorage.getItem(BETA_KEY)||"{}")||{};}catch(e){return {};}}
@@ -1436,7 +1517,7 @@ function betaPost(parts){const v=["B"].concat(parts).map(x=>String(x==null?"":x)
 function betaTab(t){const b=betaGet();if(!b.on)return;const k=todayKey();b.tabs=b.tabs||{};b.tabs[k]=b.tabs[k]||{};b.tabs[k][t]=(b.tabs[k][t]||0)+1;
   for(const d in b.tabs)if(d<k&&Object.keys(b.tabs).length>3)delete b.tabs[d];betaSet(b);}
 function betaDaily(){const b=betaGet();if(!b.on||betaKid())return;const tk=todayKey();if(b.last===tk)return;
-  const y=new Date();y.setDate(y.getDate()-1);const yk=dkey(y);const L=(prog.log[yk]||[]).filter(e=>!/^(ach|checkin|tip):/.test(String(e.q)));
+  const y=new Date();y.setDate(y.getDate()-1);const yk=dkey(y);const L=(prog.log[yk]||[]).filter(e=>!/^(ach|checkin|tip|dun):/.test(String(e.q)));
   const ms=mainsFor(y);const mDone=ms.filter(q=>L.some(e=>e.q===q.id)).length;
   let act=0;const d=new Date();for(let i=1;i<=14;i++){d.setDate(d.getDate()-1);if((prog.log[dkey(d)]||[]).length)act++;}
   const P=(cfg&&cfg.profile)||{};const c=(prog.rpg&&prog.rpg.cls)||{};const tabs=(b.tabs&&b.tabs[yk])||{};
@@ -1468,6 +1549,34 @@ function dailyCheckin(){if(!cfg||cfg.blank||($("onb")&&!$("onb").hidden)||docume
     if((prog.log[todayKey()]||[]).some(e=>String(e.q).startsWith("checkin:")))return;
     addXP({q:"checkin:"+todayKey(),kind:"checkin",xp:10,stat:"foco",bonus,t:new Date().toISOString()},"Check-in feito: +"+(10+bonus)+" XP");
     if(typeof sendRank==="function")sendRank("checkin",true);},"Fazer check-in");}
+
+// ---------- Começo em modo jogo: 4 toques, quase nada para ler. O formulário completo continua em "montar com detalhes". ----------
+const Q_ICON={kid:"🧒",teen:"🎮",young:"⚡",adult:"💼",senior:"🌳",escola:"🎒",estudante:"🎓",clt:"🏢",autonomo:"🚀",casa:"🏠",motorista:"🚚",aposentado:"☕",outro:"✨"};
+const Q_FOC_ICON={estudos:"📚",sono:"😴",corpo:"💪",carreira:"📈",dinheiro:"💰",relac:"❤️",casa:"🧹",remedio:"💊",agua:"💧",tela:"📵",leitura:"📖"};
+let qStep=0,qData={};
+function qGo(n){qStep=n;for(const s of document.querySelectorAll("#quick .qstep"))s.hidden=+s.dataset.s!==n;$("qBar").style.width=(n/4*100)+"%";$("q_full").hidden=n>=4;
+  if(n===0)setTimeout(()=>$("q_name").focus(),120);if(n===3)qFocus();try{if(navigator.vibrate)navigator.vibrate(8);}catch(e){}}
+function qBtns(id,items,cb){const box=$(id);box.textContent="";for(const [v,l] of items){const b=document.createElement("button");b.type="button";b.textContent=(Q_ICON[v]||Q_FOC_ICON[v]||"")+" "+l;b.dataset.v=v;b.addEventListener("click",()=>cb(v,b));box.append(b);}}
+function qFocus(){const minor=qData.age==="kid"||qData.age==="teen";const pref=(OCC_SET[qData.occ]||{}).focus||[];
+  const order=FOCI.map(x=>x[0]).sort((a,b)=>(pref.includes(b)-pref.includes(a)));const list=order.map(v=>FOCI.find(x=>x[0]===v)).filter(x=>!(minor&&(x[0]==="remedio"||x[0]==="carreira"))).slice(0,8);
+  qBtns("q_focus",list,(v,b)=>{const on=[...$("q_focus").querySelectorAll(".on")];if(!b.classList.contains("on")&&on.length>=3){on[0].classList.remove("on");}b.classList.toggle("on");});
+  for(const b of $("q_focus").children)if(pref.slice(0,2).includes(b.dataset.v))b.classList.add("on");
+  $("q_goal").placeholder=minor?"Escreva a sua (ex.: tirar 8 em matemática)":"Escreva a sua (ex.: arrumar um emprego melhor)";}
+function openQuick(){qData={};$("q_name").value="";$("q_goal").value="";$("quick").hidden=false;$("onb").hidden=true;document.body.classList.add("onboarding");qGo(0);}
+function qNameNext(){const n=$("q_name").value.trim();if(!n){$("q_name").focus();$("q_name").classList.add("shake");setTimeout(()=>$("q_name").classList.remove("shake"),400);return;}qData.name=n;qGo(1);}
+$("q_n0").addEventListener("click",qNameNext);$("q_name").addEventListener("keydown",e=>{if(e.key==="Enter"){e.preventDefault();qNameNext();}});
+qBtns("q_age",AGE,v=>{qData.age=v;qGo(2);});
+qBtns("q_occ",OCC,v=>{qData.occ=v;qGo(3);});
+$("q_done").addEventListener("click",()=>{qData.focus=[...$("q_focus").querySelectorAll(".on")].map(b=>b.dataset.v);qData.goal=$("q_goal").value.trim().replace(/[<>]/g,"").slice(0,60);
+  if(!qData.focus.length&&!qData.goal){$("q_goal").focus();return;}
+  qGo(4);const msgs=["Lendo sua rotina…","Calibrando dificuldade…","Gerando missões…"];let i=0;const t=setInterval(()=>{i++;if(msgs[i])$("q_load").textContent=msgs[i];},450);
+  setTimeout(()=>{clearInterval(t);
+    $("o_name").value=qData.name;pickAge(qData.age,true);pickOcc(qData.occ,true);
+    const foc=qData.focus.length?qData.focus:((OCC_SET[qData.occ]||{}).focus||["sono"]).slice(0,2);for(const b of $("o_focus").children)b.classList.toggle("on",foc.includes(b.dataset.v));
+    $("o_goal").value=qData.goal||"";if($("o_ping"))$("o_ping").checked=false;
+    $("quick").hidden=true;$("o_go").click();},1400);});
+$("q_full").addEventListener("click",()=>{$("quick").hidden=true;$("onb").hidden=false;if(qData.name)$("o_name").value=qData.name;if(qData.age)pickAge(qData.age,true);if(qData.occ)pickOcc(qData.occ,true);window.scrollTo(0,0);});
+$("q_bk").addEventListener("click",()=>{$("q_full").click();const d=$("o_bkBox");if(d){d.open=true;setTimeout(()=>d.scrollIntoView({block:"center"}),60);}});
 
 let saveTimer=null, SYNC="";
 try{SYNC=localStorage.getItem("asc-u-sync")||"";}catch(e){}

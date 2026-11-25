@@ -275,6 +275,15 @@ body.enter .quest{animation:qIn .35s ease-out backwards}
 .clsbtn.sug{border-color:var(--gold);box-shadow:0 0 0 1px var(--gold)}
 #betaPanel label.chk{display:flex;align-items:center;gap:8px;margin:10px 0;font-size:.86rem}
 #betaRate button{font-size:1.3rem;padding:6px 10px}
+.dun{display:grid;grid-template-columns:repeat(7,1fr);gap:6px;margin:10px 0 8px}
+.dun>div{aspect-ratio:1;border:1px solid var(--line);border-radius:6px;display:flex;flex-direction:column;align-items:center;justify-content:center;font-size:.66rem;color:var(--muted);gap:2px}
+.dun>div b{font-size:1rem}
+.dun>.ok{border-color:var(--good,#35d49a);color:var(--good,#35d49a);background:rgba(53,212,154,.08)}
+.dun>.miss{opacity:.45}
+.dun>.now{border-color:var(--acc,var(--accent));color:var(--glow);box-shadow:0 0 12px rgba(0,212,255,.35);animation:lvPulse 2s ease-in-out infinite}
+.dun>.rest{border-style:dashed}
+@media (prefers-reduced-motion:reduce){.dun>.now{animation:none}}
+.dun>.pre{opacity:.25}
 </style></head><body>
 
 <div class="hudtop"><span>ASCENSÃO<i>//</i>SISTEMA ONLINE</span><span class="mono" id="clock">--:--</span></div>
@@ -365,6 +374,12 @@ body.enter .quest{animation:qIn .35s ease-out backwards}
   <section data-tab="prog" class="panel" hidden>
     <h2>Atributos</h2>
     <div class="stats" id="stats"></div>
+  </section>
+  <section data-tab="prog" class="panel rpg" id="dunPanel">
+    <div class="qhead"><h2>🏰 Masmorra da semana</h2><span class="sm muted" id="dunCount"></span></div>
+    <div class="dun" id="dunFloors"></div>
+    <div class="sm muted" id="dunText"></div>
+    <div class="row"><button class="go" type="button" id="dunOpen" hidden>Abrir o baú da masmorra</button></div>
   </section>
   <section data-tab="prog" class="panel rpg" id="rpgPanel">
     <div class="qhead"><h2>Atributos e habilidades</h2><span class="sm muted" id="rpgCls"></span></div>
@@ -588,10 +603,10 @@ function fx(xp,gold){try{if(navigator.vibrate)navigator.vibrate(gold?[12,40,18]:
   if(!xp)return;const f=document.createElement("div");f.className="xpfloat"+(gold?" gold":"");f.textContent="+"+xp+" XP";
   const pt=lastPt||{x:innerWidth/2,y:innerHeight/2};f.style.left=pt.x+"px";f.style.top=(pt.y-20)+"px";document.body.append(f);setTimeout(()=>f.remove(),1200);}
 // ---------- Sequência (estilo Duolingo: descanso congela, não quebra) ----------
-function streakDays(){const act=k=>(prog.log[k]||[]).some(e=>!/^(ach|checkin|tip):/.test(String(e.q)));const rest=k=>!!(prog.rest||{})[k];
+function streakDays(){const act=k=>(prog.log[k]||[]).some(e=>!/^(ach|checkin|tip|dun):/.test(String(e.q)));const rest=k=>!!(prog.rest||{})[k];
   const d=new Date();let n=0;if(!act(dkey(d))&&!rest(dkey(d)))d.setDate(d.getDate()-1);
   for(let i=0;i<400;i++){const k=dkey(d);if(act(k))n++;else if(!rest(k))break;d.setDate(d.getDate()-1);}return n;}
-function renderPills(){const n=streakDays();const today=(prog.log[todayKey()]||[]).some(e=>!/^(ach|checkin|tip):/.test(String(e.q)));
+function renderPills(){const n=streakDays();const today=(prog.log[todayKey()]||[]).some(e=>!/^(ach|checkin|tip|dun):/.test(String(e.q)));
   const st=$("streak");st.textContent="🔥 "+n+(n===1?" dia":" dias");st.classList.toggle("cold",!today);st.title=today?"Sequência garantida hoje":"Faça 1 quest hoje para manter a sequência";
   const dt=new Date();const ms=mainsFor(dt);const done=prog.log[todayKey()]||[];const ok=ms.filter(q=>done.some(e=>e.q===q.id)).length;
   $("dayPill").textContent=ok+"/"+ms.length+" principais";$("dayPill").classList.toggle("full",ms.length>0&&ok===ms.length);}
@@ -733,7 +748,7 @@ $("restBtn").addEventListener("click",()=>{const tk=todayKey();prog.rest=prog.re
 
 // ---------- Conquistas (novidade que não acaba) ----------
 const ACH=[
- ["a_first","Primeiro passo","1ª quest concluída",10,()=>entries().some(e=>!/^(ach|checkin|tip):/.test(String(e.q)))],
+ ["a_first","Primeiro passo","1ª quest concluída",10,()=>entries().some(e=>!/^(ach|checkin|tip|dun):/.test(String(e.q)))],
  ["a_3d","Esquentando","3 dias ativos",20,()=>activeDays()>=3],
  ["a_7d","Uma semana inteira","7 dias ativos",50,()=>activeDays()>=7],
  ["a_21d","Hábito formando","21 dias ativos",100,()=>activeDays()>=21],
@@ -743,7 +758,7 @@ const ACH=[
  ["a_review","Olhar de dono","1ª revisão da semana",20,()=>Object.keys(prog.reviews||{}).length>0],
  ["a_faith","Fé sobre o medo","7 dias com o painel de fé",40,()=>Object.keys(prog.faith||{}).length>=7],
  ["a_once","Missão cumprida","Concluir as 3 missões únicas",60,()=>["u_dommo","u_konstit","u_catalogo"].every(id=>entries().some(e=>e.q===id))]];
-function activeDays(){return new Set(entries().filter(e=>!/^(ach|checkin|tip):/.test(String(e.q))).map(e=>e.date)).size;}
+function activeDays(){return new Set(entries().filter(e=>!/^(ach|checkin|tip|dun):/.test(String(e.q))).map(e=>e.date)).size;}
 function renderAch(){const box=$("achList");box.textContent="";prog.ach=prog.ach||{};let got=0;
   for(const [id,name,desc,xp] of ACH){const on=!!prog.ach[id];if(on)got++;const d=document.createElement("div");d.className="badge"+(on?" on":"");const b=document.createElement("b");b.textContent=(on?"🏅 ":"🔒 ")+name;d.append(b,document.createTextNode(desc+" · +"+xp+" XP"));box.append(d);}
   $("achCount").textContent=got+" / "+ACH.length;}
@@ -843,7 +858,7 @@ function sysLine(){const dt=new Date();const h=dt.getHours();const nm=((cfg&&cfg
 function typeSys(el,t){if(el.dataset.t===t)return;el.dataset.t=t;clearInterval(typeSys.i);
   if(matchMedia("(prefers-reduced-motion: reduce)").matches||document.body.dataset.tab!=="hoje"){el.textContent=t;return;}
   let n=0;el.textContent="";typeSys.i=setInterval(()=>{n+=2;el.textContent=t.slice(0,n);if(n>=t.length)clearInterval(typeSys.i);},22);}
-function renderRPG(){const r=rpgState();const st=statXP();const lv=levelOf(totalXP());
+function renderRPG(){renderDun();const r=rpgState();const st=statXP();const lv=levelOf(totalXP());
   // primeira vez: marca o que já tinha sem soltar alertas antigos
   const cur={};for(const k in STATS)cur[k]=slvl(st[k]);
   if(!r.seen){r.seen=Object.assign({},cur);}
@@ -898,6 +913,21 @@ function openCls(){if(clsOpen||(rpgState().cls&&!openCls.force))return;openCls.f
   const later=document.createElement("button");later.type="button";later.className="link";later.textContent="Escolher depois";later.addEventListener("click",()=>{m.remove();clsOpen="later";});
   c.append(tag,h,p,seg,grid,own,later);m.append(c);document.body.append(m);fill();}
 $("clsChange").addEventListener("click",()=>{openCls.force=true;clsOpen=false;openCls();});
+
+// ---------- Masmorra da semana: 7 andares (seg a dom). Andar limpo = todas as principais do dia (ou 1 tarefa, se não houver principal). 5 andares abrem o baú. ----------
+const DUN_NEED=5,DUN_XP=50;
+function dunWeek(){const d=new Date();d.setHours(0,0,0,0);d.setDate(d.getDate()-((d.getDay()+6)%7));return d;}
+function dunFloor(dt){const k=dkey(dt);if(cfg&&cfg.startDate&&k<cfg.startDate)return "pre";if((prog.rest||{})[k])return "rest";const L=(prog.log[k]||[]).filter(e=>!/^(ach|checkin|tip|dun):/.test(String(e.q)));const ms=mainsFor(dt);
+  if(ms.length?ms.every(q=>L.some(e=>e.q===q.id)):L.length>0)return "ok";return k<todayKey()?"miss":k===todayKey()?"now":"lock";}
+function renderDun(){const box=$("dunFloors");if(!box)return;const w=dunWeek(),wk=dkey(w);let n=0,pre=0;box.textContent="";const DN=["seg","ter","qua","qui","sex","sáb","dom"];
+  for(let i=0;i<7;i++){const d=new Date(w);d.setDate(w.getDate()+i);const st=dunFloor(d);if(st==="ok"||st==="rest")n++;if(st==="pre")pre++;const c=document.createElement("div");c.className=st;
+    const b=document.createElement("b");b.textContent=st==="pre"?"·":st==="ok"?"✓":st==="rest"?"☾":st==="miss"?"✗":st==="now"?"⚔":"🔒";c.append(b,document.createTextNode(DN[i]));box.append(c);}
+  const got=Object.keys(prog.log).some(k=>k>=wk&&(prog.log[k]||[]).some(e=>e.q==="dun:"+wk));
+  const need=Math.max(1,Math.min(DUN_NEED,7-pre-1));renderDun.need=need;$("dunCount").textContent=n+"/"+need+" andares";
+  $("dunOpen").hidden=got||n<need;
+  $("dunText").textContent=got?"Baú aberto. A masmorra renasce na segunda.":n>=need?"Masmorra vencida! Abra o baú.":"Andar limpo = todas as principais do dia (o mínimo vale). Descanso protege o andar. Limpe "+need+" para abrir o baú: +"+DUN_XP+" XP.";}
+$("dunOpen").addEventListener("click",()=>{const wk=dkey(dunWeek());if(Object.keys(prog.log).some(k=>(prog.log[k]||[]).some(e=>e.q==="dun:"+wk)))return;
+  addXP({q:"dun:"+wk,kind:"dun",xp:DUN_XP,stat:"foco",bonus:0,t:new Date().toISOString()},"");sysPop("MASMORRA VENCIDA","Baú aberto: +"+DUN_XP+" XP","Cinco andares numa semana. Isso é constância de verdade. A próxima masmorra abre na segunda.");});
 // ---------- Check-in diário: abriu o app, ganha XP. Sequência de check-ins dá bônus (até +10). ----------
 function ciStreak(){let n=0;const d=new Date();d.setDate(d.getDate()-1);for(let i=0;i<365;i++){if((prog.log[dkey(d)]||[]).some(e=>String(e.q).startsWith("checkin:")))n++;else break;d.setDate(d.getDate()-1);}return n;}
 function dailyCheckin(){if(!cfg||cfg.blank||($("onb")&&!$("onb").hidden)||document.getElementById("clsModal"))return;const tk=todayKey();if((prog.log[tk]||[]).some(e=>String(e.q).startsWith("checkin:")))return;

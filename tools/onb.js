@@ -83,6 +83,7 @@ function buildCfg(a){const Q=[];let n=0;const add=q=>{q.id=q.id||("g"+(++n));Q.p
   if(f("casa")&&minor)add({id:"s_casa",title:"Ajudar em casa 10 min (louça, quarto ou lixo)",xp:15,stat:"foco",ifThen:"Depois do jantar, antes do celular."});
   else if(f("casa"))add({id:"s_casa",title:"10 min de arrumação",xp:15,stat:"foco",days:[5,6],ifThen:"Fim de semana, antes de pegar o celular de manhã."});
   if(a.goal){add({id:"s_meta1",title:"Escrever os 3 primeiros passos para: "+a.goal,xp:30,stat:"foco",once:true,ifThen:"No próximo fim de semana, depois do café, com papel e caneta."});
+    add({id:"s_meta_d",title:"10 min na minha missão: "+a.goal,xp:20,stat:"foco",minTitle:"5 min",ifThen:"Logo depois da primeira tarefa do dia."});
     add({id:"s_meta",title:"1 passo da meta: "+a.goal,xp:30,stat:"vendas",days:[6],minTitle:"10 min",ifThen:"Domingo à tarde, antes de planejar a semana."});}
   if(f("remedio"))add({id:"s_remed",title:"Tomar os remédios da manhã",xp:15,stat:"corpo",main:true,ifThen:"Quando levantar ("+fm(hm(a.wake))+"), tomo junto com o primeiro copo d'água."});
   if(f("agua"))add({id:"s_agua",title:"Beber 6 copos de água",xp:10,stat:"corpo",minTitle:"3 copos",ifThen:"A cada refeição, 1 copo antes de comer."});
@@ -118,7 +119,7 @@ function showIntro(only){introOnly=!!only;$("intro").hidden=false;$("onb").hidde
 function introIdx(){const s=$("slides");return Math.round(s.scrollLeft/Math.max(1,s.clientWidth));}
 function introDots(){const i=introIdx();[...$("dots").children].forEach((d,k)=>d.classList.toggle("on",k===i));$("introNext").textContent=i>=2?"Começar":"Próximo";}
 function endIntro(){try{localStorage.setItem("asc-u-intro","1");}catch(e){}
-  if(introOnly){introOnly=false;$("intro").hidden=true;document.body.classList.remove("onboarding");window.scrollTo(0,0);return;}$("intro").hidden=true;$("onb").hidden=false;window.scrollTo(0,0);}
+  if(introOnly){introOnly=false;$("intro").hidden=true;document.body.classList.remove("onboarding");window.scrollTo(0,0);return;}$("intro").hidden=true;if(!(cfg&&!cfg.blank)&&typeof openQuick==="function"){openQuick();return;}$("onb").hidden=false;window.scrollTo(0,0);}
 $("slides").addEventListener("scroll",()=>{clearTimeout(introDots._t);introDots._t=setTimeout(introDots,60);});
 $("introNext").addEventListener("click",()=>{const i=introIdx();if(i>=2)endIntro();else{const s=$("slides");s.scrollTo({left:(i+1)*s.clientWidth,behavior:"smooth"});}});
 $("introSkip").addEventListener("click",endIntro);
