@@ -677,9 +677,11 @@ function checkAch(){prog.ach=prog.ach||{};for(const [id,name,,xp,test] of ACH){i
 // ---------- Lembretes na agenda (sem servidor: arquivo .ics ou Google Agenda) ----------
 const BYD=["MO","TU","WE","TH","FR","SA","SU"];
 function remPlan(){const P=cfg&&cfg.profile;const W=[0,1,2,3,4];
-  if(!P)return [{t:"Ascensão: 1ª quest do dia",h:"08:00",d:W,n:"Abra o app e faça a quest PRÓXIMA."},{t:"Ascensão: estudo",h:"13:00",d:W,n:"25 min de estudo. Mínimo: 10 min."},{t:"Ascensão: follow-ups",h:"17:00",d:W,n:"Responder leads e follow-ups."},{t:"Ascensão: fechamento",h:"22:30",d:[0,1,2,3,4,5,6],n:"Marcar as quests e escolher a nº 1 de amanhã."}];
+  const SYS={t:"[SISTEMA] Missão diária disponível",d:[0,1,2,3,4,5,6],n:"Check-in vale XP. Abra o Ascensão e veja a próxima missão."};
+  if(!P)return [Object.assign({h:"07:30"},SYS),{t:"Ascensão: 1ª quest do dia",h:"08:00",d:W,n:"Abra o app e faça a quest PRÓXIMA."},{t:"Ascensão: estudo",h:"13:00",d:W,n:"25 min de estudo. Mínimo: 10 min."},{t:"Ascensão: follow-ups",h:"17:00",d:W,n:"Responder leads e follow-ups."},{t:"Ascensão: fechamento",h:"22:30",d:[0,1,2,3,4,5,6],n:"Marcar as quests e escolher a nº 1 de amanhã."}];
   const hmm=t=>{const [h,m]=(t||"0:0").split(":").map(Number);return h*60+(m||0);},f2=m=>{m=((m%1440)+1440)%1440;return String(Math.floor(m/60)).padStart(2,"0")+":"+String(m%60).padStart(2,"0");};
   const out=[];const q=id=>(cfg.quests||[]).find(x=>x.id===id);
+  out.push(Object.assign({h:f2(hmm(P.wake)+20)},SYS));
   const rev=q("s_rev");if(rev){const bus=P.transport==="onibus";const at=bus&&P.works?hmm(P.workStart)-25:(P.works&&P.lunch?hmm(P.lunch)+30:hmm(P.wake)+60);out.push({t:"Ascensão: revisão",h:f2(at),d:rev.days||W,n:rev.title+" (mínimo: "+(rev.minTitle||"")+")"});}
   const bl=q("s_bloco");if(bl)out.push({t:"Ascensão: bloco de estudo",h:"09:00",d:[5],n:bl.title});
   const so=q("s_sono");out.push({t:so?"Ascensão: hora de desligar":"Ascensão: fechamento",h:f2(hmm(P.sleep)-30),d:[0,1,2,3,4,5,6],n:(so?so.title+". ":"")+"Abra o app, marque as quests e escolha a nº 1 de amanhã."});

@@ -65,7 +65,7 @@ function sysLine(){const dt=new Date();const h=dt.getHours();const nm=((cfg&&cfg
 function typeSys(el,t){if(el.dataset.t===t)return;el.dataset.t=t;clearInterval(typeSys.i);
   if(matchMedia("(prefers-reduced-motion: reduce)").matches||document.body.dataset.tab!=="hoje"){el.textContent=t;return;}
   let n=0;el.textContent="";typeSys.i=setInterval(()=>{n+=2;el.textContent=t.slice(0,n);if(n>=t.length)clearInterval(typeSys.i);},22);}
-function renderRPG(){renderDun();const r=rpgState();const st=statXP();const lv=levelOf(totalXP());
+function renderRPG(){renderDun();sysTipUI();const r=rpgState();const st=statXP();const lv=levelOf(totalXP());
   // primeira vez: marca o que já tinha sem soltar alertas antigos
   const cur={};for(const k in STATS)cur[k]=slvl(st[k]);
   if(!r.seen){r.seen=Object.assign({},cur);}
@@ -135,3 +135,10 @@ function renderDun(){const box=$("dunFloors");if(!box)return;const w=dunWeek(),w
   $("dunText").textContent=got?"Baú aberto. A masmorra renasce na segunda.":n>=need?"Masmorra vencida! Abra o baú.":"Andar limpo = todas as principais do dia (o mínimo vale). Descanso protege o andar. Limpe "+need+" para abrir o baú: +"+DUN_XP+" XP.";}
 $("dunOpen").addEventListener("click",()=>{const wk=dkey(dunWeek());if(Object.keys(prog.log).some(k=>(prog.log[k]||[]).some(e=>e.q==="dun:"+wk)))return;
   addXP({q:"dun:"+wk,kind:"dun",xp:DUN_XP,stat:"foco",bonus:0,t:new Date().toISOString()},"");sysPop("MASMORRA VENCIDA","Baú aberto: +"+DUN_XP+" XP","Cinco andares numa semana. Isso é constância de verdade. A próxima masmorra abre na segunda.");});
+
+// ---------- Aviso diário do Sistema: vai pela agenda do celular (arquivo .ics com todos os lembretes) ----------
+const SYSTIP_KEY=document.getElementById("o_go")?"asc-"+"u-systip":"ascensao-systip";
+function sysTipUI(){let d="";try{d=localStorage.getItem(SYSTIP_KEY)||"";}catch(e){}const el=$("sysTip");if(!el)return;
+  const days=Object.keys(prog.log||{}).length;el.hidden=!!d||!cfg||cfg.blank||!!document.querySelector(".sysmodal")||days<2;}
+$("sysTipYes").addEventListener("click",()=>{try{localStorage.setItem(SYSTIP_KEY,"1");}catch(e){}$("sysTip").hidden=true;if($("calIcs"))$("calIcs").click();toast("Abriu a agenda? Toque em Adicionar tudo. O aviso do Sistema vem junto.");});
+$("sysTipNo").addEventListener("click",()=>{try{localStorage.setItem(SYSTIP_KEY,"0");}catch(e){}$("sysTip").hidden=true;});
