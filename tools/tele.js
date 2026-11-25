@@ -16,7 +16,7 @@ function anon(step){if(tlKid())return;const t=tlGet();t.an=t.an||{};const k=step
   for(const x in t.an)if(!x.endsWith(tlDk()))delete t.an[x];t.an[k]=1;tlSet(t);
   tlPost(["A",anonId(),step,tlDk(),tlPlat(),standalone()?"app":"navegador"]);}
 // linha identificada
-function tlStats(){const y=new Date();y.setDate(y.getDate()-1);const yk=dkey(y);const L=(prog.log[yk]||[]).filter(e=>!/^(ach|boss|foco|sq|checkin|tip|dun):/.test(String(e.q)));
+function tlStats(){const y=new Date();y.setDate(y.getDate()-1);const yk=dkey(y);const L=(prog.log[yk]||[]).filter(e=>!/^(ach|boss|foco|sq|checkin|tip|dun|zap|ch):/.test(String(e.q)));
   const ms=mainsFor(y);const skip=ms.filter(q=>!L.some(e=>e.q===q.id)).length;
   let act=0;const d=new Date();for(let i=0;i<14;i++){if((prog.log[dkey(d)]||[]).length)act++;d.setDate(d.getDate()-1);}
   return {xp:totalXP(),lv:levelOf(totalXP()),act,done:L.filter(e=>e.kind!=="min").length,min:L.filter(e=>e.kind==="min").length,skip,streak:(typeof streakDays==="function"?streakDays():""),nq:((cfg&&cfg.quests)||[]).length,ms:+prog.msUsed||0,cards:(prog.cards||[]).length};}

@@ -314,6 +314,9 @@ body:not([data-tab=criador]) .wrap>section[data-tab=criador]{display:none}
 .clssug{display:flex;flex-direction:column;align-items:center;gap:10px;margin:14px 0 6px}.clssug .go.big{display:flex;flex-direction:column;gap:4px;width:100%;padding:16px}.clssug .go.big small{font-weight:500;opacity:.85}
 /* sem movimento: barra de XP e anel do rank mudam na hora (a regra antiga em base.html era anulada pela de .bar>i mais abaixo) */
 @media (prefers-reduced-motion:reduce){.bar>i,.rank{transition:none}}
+.crtabs button{font-size:.8rem}
+.crdata{margin:6px 0}.crscroll{overflow-x:auto;max-width:100%;margin-top:6px;border:1px solid var(--line);border-radius:8px}
+.crtbl{border-collapse:collapse;font-size:.74rem;white-space:nowrap}.crtbl th,.crtbl td{padding:5px 8px;border-bottom:1px solid var(--line);text-align:left}.crtbl th{color:var(--glow);position:sticky;top:0;background:var(--panel)}
 
 /* ---------- Segredos ---------- */
 .sectitle{font-family:var(--f-hud,monospace);font-size:.68rem;letter-spacing:.12em;color:var(--gold);margin:-2px 0 2px;text-shadow:0 0 8px rgba(242,193,78,.35)}
@@ -396,6 +399,18 @@ body.inmission{overflow:hidden}
 .pill.fire.risk{filter:none;opacity:1;border-color:#ff6b4a;color:#ffd0c2;animation:strisk 1.6s ease-in-out infinite}
 @keyframes strisk{50%{box-shadow:0 0 16px rgba(255,107,74,.6)}}
 @media (prefers-reduced-motion:reduce){.pill.fire.risk{animation:none;box-shadow:0 0 0 2px rgba(255,107,74,.6)}}
+/* ---- Quebrar correntes (tools/chain.*) ---- */
+.chc{display:grid;gap:8px;padding:12px;border:1px solid var(--line);border-radius:12px;background:linear-gradient(160deg,#0f1d38,#0a1222);margin-bottom:10px}
+.chc.done{border-color:var(--good)}
+.chtop{display:grid;grid-template-columns:auto 1fr auto;gap:8px;align-items:center}
+.chtop .ic{font-size:1.4rem}.chrun{font-family:var(--f-mono);color:var(--glow);font-size:.9rem}
+.chlinks{display:grid;grid-template-columns:repeat(10,1fr);gap:4px}
+.chlinks i{height:8px;border-radius:4px;border:1px solid rgba(111,177,255,.35);background:transparent}
+.chlinks i.on{background:var(--glow);box-shadow:0 0 6px rgba(111,177,255,.6)}
+.chc.done .chlinks i.on{background:var(--good)}
+.chpick{display:flex;flex-wrap:wrap;gap:6px;margin:6px 0}
+.chpick .chip{font:inherit;font-size:.82rem;padding:8px 10px;min-height:40px;border:1px solid rgba(0,212,255,.35);background:transparent;color:inherit;border-radius:8px;cursor:pointer}
+.chapoio{font-size:.76rem;color:var(--muted,#9aa7bd);border-top:1px dashed var(--line);padding-top:6px}
 </style></head><body>
 
 <div class="hudtop"><span>ASCENSION<i>//</i>SISTEMA ONLINE</span><span class="mono" id="clock">--:--</span></div>
@@ -616,6 +631,8 @@ body.inmission{overflow:hidden}
     <div class="row"><button type="button" id="crReload">Atualizar</button><a class="btnlink" target="_blank" rel="noopener" href="https://docs.google.com/spreadsheets/d/1EY8bqpvjYVeXaOKTs35MVeG9Upp07wvvhTxY2quMkfc/edit#gid=1127574012">Quem entrou por dia ↗</a></div>
     <h3 class="crh">Usuários</h3>
     <div class="sm muted">Quem aceitou o painel: apelido, aparelho, entrada, último acesso, XP, dias ativos, missões feitas e puladas. Abre na sua planilha privada.</div>
+    <div class="row crtabs" id="crDataTabs"><button type="button" data-k="usuarios" class="go">👥 Usuários</button><button type="button" data-k="funil">📈 Funil</button><button type="button" data-k="feedback">💬 Feedback</button></div>
+    <div id="crData" class="sm muted crdata">Toque em uma aba.</div>
     <div class="row crlinks"><a class="btnlink" target="_blank" rel="noopener" href="https://docs.google.com/spreadsheets/d/1EY8bqpvjYVeXaOKTs35MVeG9Upp07wvvhTxY2quMkfc/edit#gid=2001">👥 Usuários ↗</a><a class="btnlink" target="_blank" rel="noopener" href="https://docs.google.com/spreadsheets/d/1EY8bqpvjYVeXaOKTs35MVeG9Upp07wvvhTxY2quMkfc/edit#gid=2002">📈 Funil do convite ↗</a><a class="btnlink" target="_blank" rel="noopener" href="https://docs.google.com/spreadsheets/d/1EY8bqpvjYVeXaOKTs35MVeG9Upp07wvvhTxY2quMkfc/edit#gid=2003">💬 Feedback ↗</a></div>
     <h3 class="crh">Seu XP</h3>
     <div class="row crxp"><button type="button" data-xp="10">+10</button><button type="button" data-xp="50">+50</button><button type="button" data-xp="100">+100</button><button type="button" data-xp="-10">−10</button></div>
@@ -782,10 +799,10 @@ function fx(xp,gold){try{if(navigator.vibrate)navigator.vibrate(gold?[12,40,18]:
   const pt=lastPt||{x:innerWidth/2,y:innerHeight/2};f.style.left=pt.x+"px";f.style.top=(pt.y-20)+"px";document.body.append(f);setTimeout(()=>f.remove(),1200);}
 // ---------- Sequência (estilo Duolingo: descanso congela, não quebra) ----------
 function isRest(k){return !!(prog.rest||{})[k]||!!(prog.shield&&prog.shield.used&&prog.shield.used[k]);}
-function streakDays(){const act=k=>(prog.log[k]||[]).some(e=>!/^(ach|checkin|tip|dun|adm):/.test(String(e.q)));const rest=isRest;
+function streakDays(){const act=k=>(prog.log[k]||[]).some(e=>!/^(ach|checkin|tip|dun|adm|ch):/.test(String(e.q)));const rest=isRest;
   const d=new Date();let n=0;if(!act(dkey(d))&&!rest(dkey(d)))d.setDate(d.getDate()-1);
   for(let i=0;i<400;i++){const k=dkey(d);if(act(k))n++;else if(!rest(k))break;d.setDate(d.getDate()-1);}return n;}
-function renderPills(){const n=streakDays();const today=(prog.log[todayKey()]||[]).some(e=>!/^(ach|checkin|tip|dun|adm):/.test(String(e.q)));
+function renderPills(){const n=streakDays();const today=(prog.log[todayKey()]||[]).some(e=>!/^(ach|checkin|tip|dun|adm|ch):/.test(String(e.q)));
   const st=$("streak");st.textContent="🔥 "+n+(n===1?" dia":" dias");st.classList.toggle("cold",!today);st.title=today?"Sequência garantida hoje":"Faça 1 quest hoje para manter a sequência";
   const dt=new Date();const ms=mainsFor(dt);const done=prog.log[todayKey()]||[];const ok=ms.filter(q=>done.some(e=>e.q===q.id)).length;
   $("dayPill").textContent=ok+"/"+ms.length+" principais";$("dayPill").classList.toggle("full",ms.length>0&&ok===ms.length);}
@@ -1003,7 +1020,7 @@ $("restBtn").addEventListener("click",()=>{const tk=todayKey();prog.rest=prog.re
 
 // ---------- Conquistas (novidade que não acaba) ----------
 const ACH=[
- ["a_first","Primeiro passo","1ª quest concluída",10,()=>entries().some(e=>!/^(ach|checkin|tip|dun|adm):/.test(String(e.q)))],
+ ["a_first","Primeiro passo","1ª quest concluída",10,()=>entries().some(e=>!/^(ach|checkin|tip|dun|adm|ch):/.test(String(e.q)))],
  ["a_3d","Esquentando","3 dias ativos",20,()=>activeDays()>=3],
  ["a_7d","Uma semana inteira","7 dias ativos",50,()=>activeDays()>=7],
  ["a_21d","Hábito formando","21 dias ativos",100,()=>activeDays()>=21],
@@ -1013,7 +1030,7 @@ const ACH=[
  ["a_review","Olhar de dono","1ª revisão da semana",20,()=>Object.keys(prog.reviews||{}).length>0],
  ["a_faith","Fé sobre o medo","7 dias com o painel de fé",40,()=>Object.keys(prog.faith||{}).length>=7],
  ["a_once","Missão cumprida","Concluir as 3 missões únicas",60,()=>["u_dommo","u_konstit","u_catalogo"].every(id=>entries().some(e=>e.q===id))]];
-function activeDays(){return new Set(entries().filter(e=>!/^(ach|checkin|tip|dun|adm):/.test(String(e.q))).map(e=>e.date)).size;}
+function activeDays(){return new Set(entries().filter(e=>!/^(ach|checkin|tip|dun|adm|ch):/.test(String(e.q))).map(e=>e.date)).size;}
 function renderAch(){const box=$("achList");box.textContent="";prog.ach=prog.ach||{};let got=0;
   for(const [id,name,desc,xp] of ACH){const on=!!prog.ach[id];if(on)got++;const d=document.createElement("div");d.className="badge"+(on?" on":"");const b=document.createElement("b");b.textContent=(on?"🏅 ":"🔒 ")+name;d.append(b,document.createTextNode(desc+" · +"+xp+" XP"));box.append(d);}
   $("achCount").textContent=got+" / "+ACH.length;}
@@ -1258,6 +1275,18 @@ $("crInvite").addEventListener("click",()=>{const text="[ SINAL DETECTADO ] Voc�
   if(navigator.share){navigator.share({title:"Ascension",text,url:CR_INV}).catch(()=>{});return;}
   (navigator.clipboard?navigator.clipboard.writeText(text+" "+CR_INV):Promise.reject()).then(()=>toast("Convite copiado. Cole no WhatsApp."),()=>toast(CR_INV));});
 $("crInviteCopy").addEventListener("click",()=>{(navigator.clipboard?navigator.clipboard.writeText(CR_INV):Promise.reject()).then(()=>toast("Link copiado: "+CR_INV),()=>toast(CR_INV));});
+
+// Painel dentro do app: lê as abas privadas pelo script do criador (endereço e chave vêm da SUA planilha, nunca do repositório)
+let crDataK="usuarios",crDataC=null;
+function crTable(rows){const tb=document.createElement("table");tb.className="crtbl";rows.forEach((r,i)=>{const tr=document.createElement("tr");for(const v of r){const td=document.createElement(i?"td":"th");td.textContent=v;tr.append(td);}tb.append(tr);});return tb;}
+async function crData(force){const el=$("crData");if(!el)return;for(const b of document.querySelectorAll("#crDataTabs button"))b.className=b.dataset.k===crDataK?"go":"";
+  const P=cfg&&cfg.painel;if(!P||!P.url||!P.k){el.textContent="Painel ainda não ligado. Use os atalhos abaixo por enquanto.";return;}
+  if(!crDataC||force){el.textContent="Carregando…";try{const j=await (await fetch(P.url+"?k="+encodeURIComponent(P.k)+"&t="+Date.now(),{credentials:"omit"})).json();if(!j.ok)throw 0;crDataC=j;}catch(e){el.textContent="Sem conexão com o painel agora.";return;}}
+  const rows=(crDataC[crDataK]||[]).filter(r=>r.some(c=>c!==""));el.textContent="";
+  const at=new Date(crDataC.at);const hd=document.createElement("div");hd.textContent=(rows.length>1?(rows.length-1)+" linha(s)":"Nada ainda")+" · atualizado "+at.toLocaleTimeString("pt-BR",{hour:"2-digit",minute:"2-digit"});el.append(hd);
+  if(rows.length){const w=document.createElement("div");w.className="crscroll";w.append(crTable(rows));el.append(w);}}
+for(const b of document.querySelectorAll("#crDataTabs button"))b.addEventListener("click",()=>{crDataK=b.dataset.k;crData(false);});
+document.querySelector('#tabbar [data-go="criador"]')&&document.querySelector('#tabbar [data-go="criador"]').addEventListener("click",()=>crData(true));
 // ---------- Segredos: conquistas ocultas, códigos e títulos raros ----------
 // Só ADICIONA campos ao progresso: prog.sec {id: "AAAA-MM-DD"} e prog.secTitle (id do título em uso).
 // O XP entra como "ach:<id>" (mesmo tratamento das conquistas: não conta sequência nem masmorra).
@@ -1311,7 +1340,7 @@ function secClock(){if(!secReady()||document.hidden)return;const d=new Date(),h=
 const secS={done:[],flip:{}};
 const _secToggle=toggle;
 toggle=function(q,kind){const tk=todayKey();const was=(prog.log[tk]||[]).find(e=>e.q===q.id);
-  const act=k=>(prog.log[k]||[]).some(e=>!/^(ach|checkin|tip|dun|adm):/.test(String(e.q))&&!/^(checkin|tip|dun|adm):/.test(String(e.q)));
+  const act=k=>(prog.log[k]||[]).some(e=>!/^(ach|checkin|tip|dun|adm|ch):/.test(String(e.q))&&!/^(checkin|tip|dun|adm):/.test(String(e.q)));
   let last=null;for(const k in prog.log)if(k<tk&&act(k)&&(!last||k>last))last=k;
   _secToggle(q,kind);
   const now=(prog.log[tk]||[]).find(e=>e.q===q.id);secS.flip[q.id]=(secS.flip[q.id]||0)+1;
@@ -1365,7 +1394,7 @@ setTimeout(secMount,0);
 // ---------- Telas enxutas: cada aba mostra uma coisa principal; o resto vira linha que abre com um toque ----------
 // Não apaga nada: só recolhe. O que fica aberto é lembrado nesta sessão (preferência de tela, não é progresso).
 (function(){
-  const KEEP=new Set(["focusPanel","dunPanel","invPanel","onb","quick","syncCard","zapPanel","gdPanel"]);
+  const KEEP=new Set(["focusPanel","dunPanel","invPanel","onb","quick","syncCard","zapPanel","gdPanel","chPanel"]);
   const openKey="asc-ui-open";let opened={};try{opened=JSON.parse(sessionStorage.getItem(openKey)||"{}")||{};}catch(e){}
   const saveOpen=()=>{try{sessionStorage.setItem(openKey,JSON.stringify(opened));}catch(e){}};
   function foldAll(){for(const sec of document.querySelectorAll(".wrap>section.panel[data-tab]:not([data-sf])")){
@@ -1551,6 +1580,64 @@ function stInfo(){const s=shieldSt();const n=streakDays();
   sysPop("SEQUÊNCIA","🔥 "+n+(n===1?" dia":" dias")+" · 🛡️ "+s.n,"1 tarefa por dia mantém o fogo (o mínimo vale). Se um dia passar em branco, um escudo salva a sequência sozinho. Você ganha 1 escudo a cada marco de 7, 14, 30 dias e guarda até "+ST_MAX+".",null,"Entendi");}
 {const _sl=sysLine;sysLine=function(){const t=_sl();if(!stRisk())return t;const ms=mainsFor(new Date()).filter(q=>!(prog.log[todayKey()]||[]).some(e=>e.q===q.id));const nx=ms[0];
   return "🔥 Sua sequência de "+streakDays()+" dias está em risco. "+(nx?"1 tarefa salva: "+(nx.minTitle||nx.title)+".":"Uma tarefa qualquer salva.")+(shieldSt().n?" Se não der, o escudo segura.":"");};}
+
+// ---------- Quebrar correntes: largar um hábito, um dia de cada vez ----------
+// Check-in diário "Fiquei limpo hoje": +XP na hora e um bônus que cresce com a sequência (vai para o "cofre").
+// Marcos (3, 7, 14, 30, 60, 90 dias) pagam o cofre. Recaída = recomeço: metade do cofre é sua, a sequência volta a 1.
+// Linguagem neutra, sem promessa de saúde. Tudo fica no celular. Só ADICIONA prog.chains = [{...}].
+const CH_MAX=3,CH_DAY=5,CH_MS=[3,7,14,30,60,90,180,365];
+const CH_LIST=[
+  {h:"tela",n:"Menos tempo de tela",ic:"📵",age:"all"},{h:"redes",n:"Rolar redes sociais sem parar",ic:"📱",age:"all"},
+  {h:"doce",n:"Doces e refrigerante",ic:"🍬",age:"all"},{h:"jogo",n:"Jogar além da conta",ic:"🎮",age:"all"},
+  {h:"adiar",n:"Deixar tudo para depois",ic:"⏳",age:"teen"},{h:"unha",n:"Roer unha",ic:"✋",age:"teen"},
+  {h:"cigarro",n:"Cigarro ou vape",ic:"🚭",age:"adult",apoio:1},{h:"alcool",n:"Álcool",ic:"🚫",age:"adult",apoio:1},
+  {h:"aposta",n:"Apostas",ic:"🎲",age:"adult"},{h:"outro",n:"Outro hábito",ic:"⛓️",age:"adult"}];
+function chList(){const a=typeof ageNow==="function"?ageNow():"";return CH_LIST.filter(x=>x.age==="all"||(x.age==="teen"&&a!=="kid")||(x.age==="adult"&&a!=="kid"&&a!=="teen"));}
+function chSt(){if(!Array.isArray(prog.chains))prog.chains=[];return prog.chains;}
+const chDk=d=>dkey(d||new Date());
+function chYest(){const d=new Date();d.setDate(d.getDate()-1);return chDk(d);}
+// sequência atual: dias seguidos com check-in até hoje ou ontem
+function chRun(c){if(!c.last)return 0;if(c.last!==chDk()&&c.last!==chYest())return 0;return c.run||0;}
+function chBonus(run){return Math.min(20,run*2);}
+function chNext(run){return CH_MS.find(m=>m>run)||null;}
+function chEl(t,cl,x){const e=document.createElement(t);if(cl)e.className=cl;if(x!=null)e.textContent=x;return e;}
+function chCheck(c){const tk=chDk();if(c.last===tk||c.rday===tk)return;const run=chRun(c)+1;c.run=run;c.last=tk;c.best=Math.max(c.best||0,run);
+  const b=chBonus(run);c.bank=(c.bank||0)+b;let pay=0,ms=null;if(CH_MS.includes(run)){pay=c.bank;c.bank=0;ms=run;}
+  save();addXP({q:"ch:"+c.id+":"+tk,kind:"chain",xp:CH_DAY+pay,stat:"mente",bonus:0,t:new Date().toISOString()},"Corrente: dia "+run+" (+"+(CH_DAY+pay)+" XP)");
+  try{haptic([12,30,12]);}catch(e){}try{if(typeof sendRank==="function")sendRank("corrente",true);}catch(e){}
+  if(ms)sysPop("CORRENTE",ms+" dias: um elo quebrado","\""+c.n+"\": "+ms+" dias seguidos. O cofre abriu: +"+pay+" XP. Próximo marco: "+(chNext(run)||"você decide")+" dias.",null,"Continuar");
+  chUI();}
+function chRestart(c){if(!confirm("Registrar um recomeço em \""+c.n+"\"? A sequência volta para o dia 1 e metade do cofre vira XP agora."))return;
+  const keep=Math.floor((c.bank||0)/2);c.restarts=(c.restarts||0)+1;c.run=0;c.last=null;c.bank=0;c.since=chDk();c.rday=chDk();save();
+  if(keep>0)addXP({q:"ch:"+c.id+":r"+c.restarts+":"+chDk(),kind:"chain",xp:keep,stat:"mente",bonus:0,t:new Date().toISOString()},"Recomeço: +"+keep+" XP guardados");
+  sysPop("RECOMEÇO","Recomeçar também conta","Você manteve "+keep+" XP do cofre e o seu recorde de "+(c.best||0)+(c.best===1?" dia":" dias")+". Amanhã começa o dia 1. Uma queda não apaga o caminho.",null,"Bora");chUI();}
+function chAdd(item,custom){const L=chSt();if(L.length>=CH_MAX){toast("Até "+CH_MAX+" correntes ao mesmo tempo.");return;}
+  const n=item.h==="outro"?String(custom||"").trim().replace(/[|<>]/g,"").slice(0,40):item.n;if(!n)return;
+  if(L.some(c=>c.h===item.h&&item.h!=="outro")){toast("Essa corrente já está aqui.");return;}
+  L.push({id:Math.random().toString(36).slice(2,8),h:item.h,n,ic:item.ic,since:chDk(),run:0,best:0,bank:0,restarts:0,last:null});save();chOpen=false;chUI();
+  toast("Corrente criada. Marque todo dia que conseguir.");}
+let chOpen=false;
+function chUI(){let p=$("chPanel");const anchor=$("zapPanel")||($("quests")&&$("quests").closest("section"));if(!anchor)return;
+  if(!p){p=chEl("section","panel chn");p.id="chPanel";p.dataset.tab="hoje";if(anchor.id==="zapPanel")anchor.after(p);else anchor.before(p);}
+  if(!cfg||cfg.blank){p.hidden=true;return;}p.hidden=false;p.textContent="";const L=chSt();
+  const hd=chEl("div","qhead");hd.append(chEl("h2",null,"⛓️ Quebrar correntes"),chEl("span","xp",L.length?L.filter(c=>c.last===chDk()).length+"/"+L.length+" hoje":"um dia de cada vez"));p.append(hd);
+  if(!L.length&&!chOpen){p.append(chEl("div","sm muted","Escolha um hábito que você quer largar. Cada dia limpo dá XP, e a sequência enche um cofre que abre nos marcos."));}
+  for(const c of L){const run=chRun(c),done=c.last===chDk(),rd=c.rday===chDk(),nx=chNext(run);const dd=n=>n+(n===1?" dia":" dias");const it=CH_LIST.find(x=>x.h===c.h)||{};
+    const card=chEl("div","chc"+(done?" done":""));const top=chEl("div","chtop");top.append(chEl("span","ic",c.ic||"⛓️"),chEl("b",null,c.n),chEl("span","chrun",dd(run)));card.append(top);
+    const links=chEl("div","chlinks");const pct=nx?Math.round(run/nx*100):100;for(let i=0;i<10;i++){const k=chEl("i",i<Math.round(pct/10)?"on":"");links.append(k);}card.append(links);
+    card.append(chEl("div","sm muted",(nx?"Marco de "+nx+" dias: faltam "+dd(nx-run)+". ":"")+"Cofre: "+(c.bank||0)+" XP. Recorde: "+dd(c.best||0)+(c.restarts?" · "+c.restarts+" recomeço(s)":"")+"."));
+    const row=chEl("div","row");const ok=chEl("button",done||rd?"ghost":"go",done?"✓ Limpo hoje":rd?"Recomeço hoje · dia 1 amanhã":"Fiquei limpo hoje · +"+CH_DAY+" XP");ok.type="button";ok.disabled=done||rd;ok.addEventListener("click",()=>chCheck(c));
+    const rs=chEl("button","link","Recomeçar");rs.type="button";rs.addEventListener("click",()=>chRestart(c));
+    const rm=chEl("button","link","Remover");rm.type="button";rm.addEventListener("click",()=>{if(!confirm("Remover a corrente \""+c.n+"\"? O XP que você ganhou continua."))return;prog.chains=chSt().filter(x=>x!==c);save();chUI();});
+    row.append(ok,rs,rm);card.append(row);
+    if(it.apoio)card.append(chEl("div","chapoio","Quer apoio para parar? Disque Saúde 136 (gratuito)."));
+    p.append(card);}
+  if(L.length<CH_MAX){if(!chOpen){const b=chEl("button","ghost",L.length?"+ Outra corrente":"Escolher um hábito");b.type="button";b.addEventListener("click",()=>{chOpen=true;chUI();});p.append(b);}
+    else{const g=chEl("div","chpick");for(const x of chList()){if(L.some(c=>c.h===x.h&&x.h!=="outro"))continue;const b=chEl("button","chip",x.ic+" "+x.n);b.type="button";
+        b.addEventListener("click",()=>{if(x.h!=="outro"){chAdd(x);return;}const r=chEl("div","add");const inp=chEl("input");inp.maxLength=40;inp.placeholder="Qual hábito?";const s=chEl("button","go","Criar");s.type="button";s.addEventListener("click",()=>chAdd(x,inp.value));r.append(inp,s);g.after(r);inp.focus();});g.append(b);}
+      const cx=chEl("button","link","Cancelar");cx.type="button";cx.addEventListener("click",()=>{chOpen=false;chUI();});p.append(g,cx);}}}
+{const _r=render;render=function(){_r.apply(this,arguments);try{if(!$("chPanel")||!$("chPanel").contains(document.activeElement))chUI();}catch(e){}};}
+setTimeout(()=>{try{chUI();}catch(e){}},0);
 
 let saveTimer=null, SYNC="";
 try{SYNC=localStorage.getItem("ascensao-sync")||"";}catch(e){}

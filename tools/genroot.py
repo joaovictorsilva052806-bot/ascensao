@@ -20,7 +20,7 @@ rep('fillFocusSelect();renderReview();','fillFocusSelect();renderReview();render
 rep('    </details>\n  </section>\n</div>','    </details>\n  </section>\n'+R('creator.html')+'</div>')
 rep('Mais</button>\n</nav>','Mais</button>\n  <button type="button" data-go="criador" hidden><svg viewBox="0 0 24 24"><path d="M12 2l2.6 6.3L21 9l-5 4.4L17.5 20 12 16.6 6.5 20 8 13.4 3 9l6.4-.7z"/></svg>Criador</button>\n</nav>')
 rep('let t0="hoje";try{t0=sessionStorage.getItem("asc-tab")||"hoje";}catch(e){}','let t0="hoje";try{t0=sessionStorage.getItem("asc-tab")||"hoje";}catch(e){}if(t0==="criador"&&!crOn())t0="hoje";')
-s=s.replace('String(e.q).startsWith("ach:")','/^(ach|checkin|tip|dun|adm):/.test(String(e.q))')
+s=s.replace('String(e.q).startsWith("ach:")','/^(ach|checkin|tip|dun|adm|ch):/.test(String(e.q))')
 sea=R('season.js').replace('"asc-u-season"','"ascensao-season"').replace('"asc-u-prog-t1"','"ascensao-prog-t1"').replace('"asc-u-cfg"','"ascensao-cfg"')
 rep('try{if(navigator.storage&&navigator.storage.persist)',sea+'\ntry{if(navigator.storage&&navigator.storage.persist)')
 assert 'asc-u-' not in s.replace('asc-u-intro',''),'chave errada'
@@ -32,4 +32,7 @@ rep('\nlet saveTimer=null, SYNC="";','\n'+R('mission.js')+'\nlet saveTimer=null,
 # sequência estilo Duolingo: escudo automático, marcos e aviso de risco (tools/streak.*)
 rep('</style></head>',R('streak.css')+'</style></head>')
 rep('\nlet saveTimer=null, SYNC="";','\n'+R('streak.js')+'\nlet saveTimer=null, SYNC="";')
+# quebrar correntes (tools/chain.*)
+rep('</style></head>',R('chain.css')+'</style></head>')
+rep('\nlet saveTimer=null, SYNC="";','\n'+R('chain.js')+'\nlet saveTimer=null, SYNC="";')
 open(SP+'../index.html','w').write(s)
