@@ -249,7 +249,7 @@ input,select,textarea{font-size:16px!important}
     <div class="qhead"><h2 id="moneyTitle">Pix do mês</h2><span class="sm muted mono" id="moneyDays"></span></div>
     <div class="bar money"><i id="moneyBar" style="width:0%"></i></div>
     <div class="sm mono" id="moneyText"></div>
-    <div class="add"><input id="moneyIn" inputmode="decimal" placeholder="Entrou dinheiro? Ex.: 350" autocomplete="off"><button class="go" type="button" id="moneyAdd">Registrar</button></div>
+    <div class="add"><input id="moneyIn" aria-label="Valor que entrou (R$)" inputmode="decimal" placeholder="Entrou dinheiro? Ex.: 350" autocomplete="off"><button class="go" type="button" id="moneyAdd">Registrar</button></div>
   </section>
 
   <section data-tab="hoje" class="panel">
@@ -259,7 +259,7 @@ input,select,textarea{font-size:16px!important}
     <div id="quests"><div class="empty">Carregando suas quests…</div></div>
     <div class="swipehint">Dica: deslize a quest para a direita para concluir →</div>
     <form class="add" id="addForm">
-      <input id="addInput" placeholder="Quest rápida (vale 10 XP)" maxlength="80" autocomplete="off">
+      <input id="addInput" aria-label="Nova quest rápida" placeholder="Quest rápida (vale 10 XP)" maxlength="80" autocomplete="off">
       <button class="go" type="submit">Adicionar</button>
     </form>
   </section>
@@ -364,7 +364,7 @@ input,select,textarea{font-size:16px!important}
       <summary>Backup do progresso</summary>
       <p>O iPhone pode apagar dados de sites. Copie o backup de vez em quando e cole numa nota.</p>
       <div class="row"><button type="button" id="bkCopy">Copiar backup</button></div>
-      <textarea id="bkText" rows="2" placeholder="Para restaurar, cole o backup aqui" style="font:inherit;width:100%;background:#0a1222;border:1px solid var(--line);color:var(--fg);border-radius:7px;padding:9px 10px"></textarea>
+      <textarea id="bkText" aria-label="Texto do backup" rows="2" placeholder="Para restaurar, cole o backup aqui" style="font:inherit;width:100%;background:#0a1222;border:1px solid var(--line);color:var(--fg);border-radius:7px;padding:9px 10px"></textarea>
       <div class="row"><button type="button" id="bkRestore">Restaurar backup</button></div>
     </details>
     <details>

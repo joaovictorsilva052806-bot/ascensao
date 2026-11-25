@@ -5,8 +5,8 @@
     <label class="sm muted" for="aiWish">O que você quer mudar? (opcional)</label>
     <input id="aiWish" maxlength="160" autocomplete="off" placeholder="Ex.: estou sem tempo de manhã; quero treinar mais">
     <div class="row"><button class="go" type="button" id="aiCopy">Copiar pedido</button><a class="ghost btnlink" href="https://claude.ai/new" target="_blank" rel="noopener">Abrir Claude</a><a class="ghost btnlink" href="https://chatgpt.com/" target="_blank" rel="noopener">Abrir ChatGPT</a></div>
-    <textarea id="aiPrompt" rows="3" readonly hidden></textarea>
-    <textarea id="aiIn" rows="4" placeholder="Cole aqui a resposta da IA"></textarea>
+    <textarea id="aiPrompt" aria-label="Pedido para a IA" rows="3" readonly hidden></textarea>
+    <textarea id="aiIn" aria-label="Resposta da IA" rows="4" placeholder="Cole aqui a resposta da IA"></textarea>
     <div class="row"><button class="go" type="button" id="aiRead">Ler resposta</button></div>
     <div class="sm" id="aiMsg"></div>
     <ul class="aiprev" id="aiPrev" hidden></ul>
