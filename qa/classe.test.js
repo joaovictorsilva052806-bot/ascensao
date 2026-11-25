@@ -15,13 +15,13 @@ for(const [route,pre] of [['comecar/','asc-u'],['','ascensao']])for(const [occ,e
   for(let i=0;i<12&&!(await p.locator('#clsModal').count());i++){const m=p.locator('.sysmodal:not(#clsModal) button.go');if(await m.count())await m.first().dispatchEvent('click');await p.waitForTimeout(300);}
   ok(tag+': modal com sugestão '+exp,(await p.textContent('#clsSug').catch(()=>'')).includes(exp),await p.textContent('#clsSug').catch(()=>'sem modal'));
   if(why)ok(tag+': mostra o porquê',(await p.textContent('#clsModal .clswhy').catch(()=>'')).includes(why),await p.textContent('#clsModal .clswhy').catch(()=>'sem porquê'));
-  ok(tag+': lista escondida',!(await p.locator('#clsModal .clsgrid').isVisible()));
-  if(!occ&&!focus.length){await p.screenshot({path:'/mnt/project-files/sequencia/classe.png'});await p.click('#clsMore');ok(tag+': ver outras mostra a lista',await p.locator('#clsModal .clsgrid').isVisible()&&(await p.locator('#clsModal .clsbtn').count())>=5);await p.locator('#clsModal .clsbtn').first().click();}
+  ok(tag+': lista escondida',!(await p.locator('#clsModal .clsgrid').first().isVisible()));
+  if(!occ&&!focus.length){await p.screenshot({path:'/mnt/project-files/sequencia/classe.png'});await p.click('#clsMore');ok(tag+': ver outras mostra a lista',await p.locator('#clsModal .clsgrid').first().isVisible()&&(await p.locator('#clsModal .clsbtn').count())>=5);await p.locator('#clsModal .clsbtn').first().click();}
   else await p.click('#clsSug');
   await p.waitForTimeout(300);const st=await p.evaluate(k=>JSON.parse(localStorage.getItem(k)),pre+'-prog');
   ok(tag+': 1 toque grava a classe',st.rpg&&st.rpg.cls&&st.rpg.cls.name&&st.velho==='fica',JSON.stringify(st.rpg||{}));
   for(let i=0;i<5;i++){const m=p.locator('.sysmodal button.go');if(await m.count())await m.first().dispatchEvent('click');await p.waitForTimeout(200);}
   await p.locator('#clsPill').dispatchEvent('click');await p.waitForTimeout(200);
-  ok(tag+': trocar pelo topo abre a lista completa',await p.locator('#clsModal .clsgrid').isVisible()&&!(await p.locator('#clsSug').isVisible()));
+  ok(tag+': trocar pelo topo abre a lista completa',await p.locator('#clsModal .clsgrid').first().isVisible()&&!(await p.locator('#clsSug').isVisible()));
   ok(tag+': console limpo',errs.length===0,errs.join(' | '));await ctx.close();}
 await b.close();console.log(R.join('\n'));process.exit(R.some(x=>x.startsWith('FAIL'))?1:0);})();
