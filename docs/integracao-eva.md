@@ -11,7 +11,7 @@ Status: proposta de 25/11/2026. Nada aqui foi publicado; as fases 1 e 2 esperam 
 | App pessoal (`/ascensao/`) → `Code.gs` | só o JV | progresso dele (quests, XP, nível) | planilha pessoal, abas `dados` e `placar` |
 | `Code.gs` → app pessoal | EVA edita | config das quests (`dados!A1`) | planilha pessoal |
 | `/comecar/` → formulário | testadores que aceitaram | linhas `U` (apelido e uso) e `B` (beta anônimo) | planilha privada do painel |
-| `/comecar/` → formulário | testadores ≥ 14 | linhas `A` (funil anônimo por etapa) | planilha privada do painel |
+| `/comecar/` → formulário | testadores ≥ 14 com opt-in (desde o #65) | linhas `A` (funil anônimo por etapa) | planilha privada do painel |
 | Modo Criador ← script do painel | só o aparelho do JV (chave `#k=`) | abas `usuarios`, `funil`, `feedback` | lida na hora, nada fica salvo |
 
 ## Fase 0 · já funciona, zero código
@@ -60,5 +60,5 @@ No app pessoal aparece um card "📡 Transmissão da EVA" com **Aceitar** ou **A
 ## Decisões do JV
 
 1. **Painel do beta (este PR):** "pode publicar"?
-2. **Achado de privacidade:** o funil anônimo (`A`, em `tools/tele.js`) envia etapas para quem tem 14 anos ou mais **sem** opt-in. A regra do projeto diz "beta anônimo só com opt-in". Recomendo ligar o funil só depois do "sim" do aceite; o custo é perder a contagem de quem abre e desiste antes do aceite.
+2. ~~Funil anônimo sem opt-in~~: resolvido no #65 (só envia depois do aceite; o convite não envia nada).
 3. **Fases 1 e 2:** seguir com a fase 1 primeiro (resumo), e a fase 2 (sugestões) depois de uma semana de resumo funcionando.

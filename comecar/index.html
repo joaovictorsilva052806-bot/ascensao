@@ -283,6 +283,14 @@ input,select,textarea{font-size:16px!important}
 .edform input:not([type=checkbox]),.edform select{font:inherit;background:rgba(0,212,255,.04);border:1px solid var(--line);color:var(--fg);border-radius:3px;padding:8px 10px;min-width:0}
 .edform .two{display:grid;grid-template-columns:1fr 1fr;gap:8px}.edform .row{flex-wrap:wrap}.link.danger{color:#ff7a7a}
 .panel.tip:not([hidden])~.panel.tip{display:none!important}
+/* ---- IA de 1 toque (tools/ai1.js) ---- */
+.aimode{display:grid;grid-template-columns:1fr 1fr;gap:6px;margin:10px 0}
+.aimode .chip{min-height:40px;justify-content:center;text-align:center}
+.aimode .chip.on{border-color:var(--accent);color:var(--glow);background:rgba(0,212,255,.1)}
+.aigo{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:6px;margin-top:10px}
+.aigo button{min-height:48px;font-weight:700}
+.aipaste{width:100%;min-height:50px;margin-top:12px}
+.aiman{margin-top:8px}
 .sysline{font-family:var(--f-mono);font-size:.74rem;color:var(--glow);letter-spacing:.04em;margin-top:6px;min-height:1.1em}
 .sysline::before{content:"[SISTEMA] ";color:var(--accent);opacity:.8}
 .rpgstats{display:flex;flex-direction:column;gap:10px;margin-top:8px}
@@ -578,6 +586,11 @@ svg.av{display:block;flex:none}
 .qtfoot .qtlb{margin:0;font-family:var(--f-mono);font-size:.76rem;padding:6px 10px;border:1px dashed rgba(242,193,78,.5);border-radius:8px}
 .quest .if,.quest .qlink,.quest .mshint{margin:0}
 .quest.open .if{padding-top:8px;border-top:1px dashed var(--line)}
+/* Alvo de toque ≥ 44px (WCAG 2.5.5 / Apple HIG) sem mudar o visual: área invisível em volta do título da tarefa e dos selos do topo */
+.quest .t .tt{position:relative}
+.quest .t .tt::before{content:"";position:absolute;left:0;right:0;top:-12px;bottom:-12px}
+#streak,#shieldPill,#clsPill{position:relative}
+#streak::before,#shieldPill::before,#clsPill::before{content:"";position:absolute;left:-2px;right:-2px;top:-8px;bottom:-8px}
 /* ---- Aba Amigos (tools/turma.js) ---- */
 .tabbar{grid-template-columns:none!important;grid-auto-flow:column;grid-auto-columns:minmax(0,1fr)}
 .tabbar:has(> button:nth-of-type(6):not([hidden])) button{letter-spacing:.03em;font-size:.5rem}
@@ -653,6 +666,9 @@ body[data-tab=amigos] #frPanel .frlist{display:none}
 .cdcard .cdrow{display:grid!important;grid-auto-flow:column;grid-auto-columns:minmax(0,1fr);gap:6px}
 .cdcard .cdrow>button{width:100%;min-width:0;min-height:44px;padding:0 4px;white-space:nowrap;font-size:.88rem}
 .cdclose{display:block;margin:10px auto 0;min-height:36px}
+.cdlink{display:flex;flex-direction:column;gap:6px;padding:12px;margin-bottom:10px;border:1px dashed var(--accent);border-radius:12px;background:rgba(0,212,255,.05)}
+.cdurl{font-family:var(--f-mono);font-size:.74rem;color:var(--glow);overflow-wrap:anywhere;user-select:all;-webkit-user-select:all;padding:8px;border-radius:8px;background:rgba(0,0,0,.25)}
+.cdlbtn{display:grid;grid-template-columns:1fr 1fr;gap:6px}.cdlbtn button{min-height:42px}
 </style></head><body>
 
 <div class="hudtop"><span>ASCENSION<i>//</i>SISTEMA ONLINE</span><span class="mono" id="clock">--:--</span></div>
@@ -956,16 +972,29 @@ body[data-tab=amigos] #frPanel .frlist{display:none}
   </section>
 
   <section data-tab="mais" class="panel" id="aiPanel">
-    <h2>🤖 Gerar minhas quests com IA</h2>
-    <div class="sm muted">A IA que você já usa (Claude, ChatGPT, Gemini) monta tarefas sob medida para você. O app não manda nada para ninguém: você copia, cola e traz a resposta de volta.</div>
-    <ol class="sm aisteps"><li>Toque em <b>Copiar pedido</b>.</li><li>Abra sua IA, cole e envie.</li><li>Copie a resposta inteira, cole aqui embaixo e toque em <b>Ler resposta</b>.</li></ol>
-    <label class="sm muted" for="aiWish">O que você quer mudar? (opcional)</label>
+    <h2>🤖 IA de 1 toque</h2>
+    <div class="sm muted">Escolha o que quer, toque na sua IA e ela abre com o pedido pronto. Depois copie a resposta e toque em <b>Colar resposta</b>: o app monta as tarefas e mostra antes de salvar. Nada sai do aparelho sem você.</div>
+    <div class="aimode" id="aiMode" role="radiogroup" aria-label="O que a IA vai montar">
+      <button type="button" class="chip on" data-m="dia" role="radio" aria-checked="true">📅 Tarefas do dia</button>
+      <button type="button" class="chip" data-m="treino" role="radio" aria-checked="false">💪 Plano de treino</button>
+      <button type="button" class="chip" data-m="estudo" role="radio" aria-checked="false">📚 Plano de estudo</button>
+      <button type="button" class="chip" data-m="revisao" role="radio" aria-checked="false">🔁 Revisão da semana</button>
+    </div>
+    <label class="sm muted" for="aiWish">Quer contar algo para a IA? (opcional)</label>
     <input id="aiWish" maxlength="160" autocomplete="off" placeholder="Ex.: estou sem tempo de manhã; quero treinar mais">
-    <div class="row"><button class="go" type="button" id="aiCopy">Copiar pedido</button><a class="ghost btnlink" href="https://claude.ai/new" target="_blank" rel="noopener">Abrir Claude</a><a class="ghost btnlink" href="https://chatgpt.com/" target="_blank" rel="noopener">Abrir ChatGPT</a></div>
+    <div class="aigo">
+      <button type="button" class="go" data-ai="chatgpt">ChatGPT</button>
+      <button type="button" class="go" data-ai="claude">Claude</button>
+      <button type="button" class="go" data-ai="gemini">Gemini</button>
+    </div>
+    <button class="link" type="button" id="aiCopy">Só copiar o pedido</button>
     <textarea id="aiPrompt" aria-label="Pedido para a IA" rows="3" readonly hidden></textarea>
-    <textarea id="aiIn" aria-label="Resposta da IA" rows="4" placeholder="Cole aqui a resposta da IA"></textarea>
-    <div class="row"><button class="go" type="button" id="aiRead">Ler resposta</button></div>
-    <div class="sm" id="aiMsg"></div>
+    <button class="go aipaste" type="button" id="aiPaste">📋 Colar resposta da IA</button>
+    <details class="aiman"><summary class="sm muted">Colar na mão</summary>
+      <textarea id="aiIn" aria-label="Resposta da IA" rows="4" placeholder="Cole aqui a resposta da IA"></textarea>
+      <div class="row"><button class="ghost" type="button" id="aiRead">Ler resposta</button></div>
+    </details>
+    <div class="sm" id="aiMsg" aria-live="polite"></div>
     <ul class="aiprev" id="aiPrev" hidden></ul>
     <div class="row" id="aiApply" hidden><button class="go" type="button" id="aiReplace">Trocar minhas tarefas</button><button class="ghost" type="button" id="aiAdd">Só adicionar</button></div>
   </section>
@@ -1669,10 +1698,13 @@ const cleanNick=v=>String(v||"").trim().replace(/[|,;"<>]/g,"").replace(/\s+/g,"
 // Nome que vai para o ranking: o apelido, se houver; senão o 1º nome (só para maiores de 18)
 const rankName=()=>cleanNick(prog.rank&&prog.rank.nick)||(isMinor()?"":firstName());
 function weekXP(ws){ws=ws||weekStart(todayKey());let s=0;for(const e of entries())if(weekStart(e.date)===ws)s+=(e.xp||0)+(e.bonus||0);return s;}
+// Token secreto do jogador: nasce no aparelho, vai como último campo (tk…) e o servidor confere e apaga antes de gravar.
+// Ninguém de fora consegue mandar XP, avatar ou convite no seu nome. Fica em prog.rank.tk (sai junto no backup).
+function rkTok(){const r=prog.rank;if(!r||!r.uid)return "";if(!/^tk[\w-]{22}$/.test(r.tk||"")){const a=new Uint8Array(16);crypto.getRandomValues(a);r.tk="tk"+btoa(String.fromCharCode.apply(null,a)).replace(/\+/g,"-").replace(/\//g,"_").replace(/=+$/,"");save();}return r.tk;}
 function sendRank(ev,force){const r=prog.rank;if(!r||!r.on)return;const xp=weekXP(),ws=weekStart(todayKey()).replace(/-/g,"");
   if(!force&&r.lastXp===xp&&r.lastWk===ws)return;
   const dev=isMinor()?"-":IOS?"iPhone":AND?"Android":"Computador";if(!rankName())return;
-  const v=["R",r.uid,rankName(),dev,ws,xp,levelOf(totalXP()),ev].join("|");
+  const v=["R",r.uid,rankName(),dev,ws,xp,levelOf(totalXP()),ev,rkTok()].join("|");
   try{fetch(RK_POST,{method:"POST",mode:"no-cors",keepalive:true,body:new URLSearchParams({"entry.807978446":v})}).catch(()=>{});}catch(e){}
   r.lastXp=xp;r.lastWk=ws;r.last=new Date().toISOString();save();}
 function joinRank(ev){if(ageNow()==="kid"){toast("O ranking é a partir de 14 anos.");return;}
@@ -1765,6 +1797,29 @@ function aiApply(replace){if(!aiNew)return;let Q=(cfg.quests||[]).slice();
   try{localStorage.setItem("asc-u-cfg",JSON.stringify(cfg));}catch(e){}save();aiNew=null;$("aiPrev").hidden=true;$("aiApply").hidden=true;$("aiIn").value="";
   $("aiMsg").textContent="";render();goTab("hoje");toast(replace?"Tarefas novas no ar! Seu XP e histórico continuam.":"Tarefas adicionadas!");}
 $("aiReplace").addEventListener("click",()=>aiApply(true));$("aiAdd").addEventListener("click",()=>aiApply(false));
+// ---------- IA de 1 toque: abre ChatGPT/Claude/Gemini com o pedido pronto e lê a resposta da área de transferência ----------
+// Custo zero: nada passa por servidor nosso. Modos: tarefas do dia, plano de treino, plano de estudo, revisão da semana.
+let aiMode="dia";
+const AI_MODE={
+  dia:null,
+  treino:"Monte um PLANO DE TREINO em forma de tarefas diárias (stat \"corpo\"), progressivo e seguro para o meu nível, com aquecimento e descanso. Pode incluir 1 ou 2 tarefas de sono e água.",
+  estudo:"Monte um PLANO DE ESTUDO em forma de tarefas diárias (stat \"mente\"), com blocos curtos, revisão e um dia leve. Use as minhas matérias ou o meu curso, se eu disser.",
+  revisao:"Faça a REVISÃO DA MINHA SEMANA: diga em 3 frases o que funcionou, o que travou e por quê, com base no histórico. Depois proponha a lista de tarefas da semana que vem já ajustada."};
+{const _p=aiPrompt;aiPrompt=function(){const t=_p();const m=AI_MODE[aiMode];if(!m)return t;return t.replace("Monte minhas tarefas diárias.",m);};}
+function aiSetMode(m){aiMode=m;for(const b of $("aiMode").children){const on=b.dataset.m===m;b.classList.toggle("on",on);b.setAttribute("aria-checked",on?"true":"false");}
+  $("aiWish").placeholder={dia:"Ex.: estou sem tempo de manhã; quero treinar mais",treino:"Ex.: iniciante, 3x por semana, sem academia",estudo:"Ex.: Cálculo e Física, prova dia 10",revisao:"Ex.: travei no treino; quero dormir mais cedo"}[m];}
+$("aiMode").addEventListener("click",e=>{const b=e.target.closest("button[data-m]");if(b)aiSetMode(b.dataset.m);});
+async function aiCopyText(t){try{await navigator.clipboard.writeText(t);return true;}catch(e){}const ta=$("aiPrompt");ta.value=t;ta.hidden=false;ta.select();try{return document.execCommand("copy");}catch(e){return false;}finally{ta.hidden=true;}}
+const AI_URL={chatgpt:t=>"https://chatgpt.com/?q="+encodeURIComponent(t),claude:t=>"https://claude.ai/new?q="+encodeURIComponent(t),gemini:()=>"https://gemini.google.com/app"};
+for(const b of document.querySelectorAll("#aiPanel [data-ai]"))b.addEventListener("click",async()=>{const k=b.dataset.ai;const t=aiPrompt();
+  // abre na hora (no iPhone o pop-up precisa sair do toque); depois copia como reserva
+  const w=window.open(AI_URL[k](t),"_blank","noopener");const ok=await aiCopyText(t);
+  $("aiMsg").textContent=(k==="gemini"?"O Gemini abriu: cole o pedido (já copiado) e envie. ":"A IA abriu com o pedido pronto: é só enviar. ")+"Quando ela responder, toque em Copiar na resposta e volte aqui em 📋 Colar resposta."+(ok?"":" (Se o pedido não veio, toque em Só copiar o pedido.)");
+  if(!w)$("aiMsg").textContent="O celular bloqueou a janela. Toque em Só copiar o pedido e abra a IA você mesmo.";
+  try{prog.aiUse=(prog.aiUse||0)+1;save();}catch(e){}});
+$("aiPaste").addEventListener("click",async()=>{let t="";try{t=await navigator.clipboard.readText();}catch(e){}
+  if(!t||t.indexOf("[")<0){const d=document.querySelector("#aiPanel .aiman");if(d)d.open=true;$("aiMsg").textContent=t?"Isso não parece a resposta da IA. Copie a resposta inteira (com o bloco de código) e tente de novo, ou cole na mão aqui embaixo.":"Não consegui ler a área de transferência. Cole a resposta na mão aqui embaixo.";setTimeout(()=>$("aiIn").focus(),60);return;}
+  $("aiIn").value=t;$("aiRead").click();const p=$("aiPrev");if(!p.hidden)p.scrollIntoView({block:"center",behavior:"smooth"});});
 
 // ---------- Editar tarefas no app (sem refazer o perfil) ----------
 let edCur=null;const ED_DN=["seg","ter","qua","qui","sex","sáb","dom"];
@@ -2455,7 +2510,7 @@ setTimeout(()=>{try{sqUI();}catch(e){}},0);
 
 // ---------- Painel do criador (LGPD): com o "Aceito", o criador vê seu apelido e como você usa o app ----------
 // Vai para a planilha PRIVADA do criador pelo mesmo formulário do ranking. Nunca: localização, contatos, telefone, documentos, fotos.
-// Quem recusa (ou tem até 13 anos) entra só no contador anônimo de etapas (abriu, instalou, criou perfil).
+// Contador anônimo de etapas (abriu, instalou, criou perfil) só para quem deu opt-in; quem recusa ou tem até 13 anos não envia nada.
 // Sair = para de enviar e pede para apagar: some do painel na hora.
 const TL_KEY="asc-u-tele";
 function tlGet(){try{return JSON.parse(localStorage.getItem(TL_KEY)||"{}")||{};}catch(e){return {};}}
@@ -2465,9 +2520,11 @@ const tlPlat=()=>IOS?"iPhone":AND?"Android":"Computador";
 const tlDk=d=>dkey(d||new Date()).replace(/-/g,"");
 const tlClean=v=>String(v==null?"":v).replace(/[|\n\r]/g," ").slice(0,280);
 function tlPost(parts){const v=parts.map(tlClean).join("|");try{fetch(RK_POST,{method:"POST",mode:"no-cors",keepalive:true,body:new URLSearchParams({"entry.807978446":v})}).catch(()=>{});}catch(e){}}
-// contador anônimo: 1 vez por etapa por dia, id aleatório sem ligação com o nome
+// contador anônimo: 1 vez por etapa por dia, id aleatório sem ligação com o nome.
+// Só com opt-in (aceite do painel ou "sim" do beta anônimo): sem consentimento, nada sai do celular.
+function anonOk(){if(tlKid())return false;if(tlGet().on)return true;try{return !!(JSON.parse(localStorage.getItem("asc-u-beta")||"{}")||{}).on;}catch(e){return false;}}
 function anonId(){let id="";try{id=localStorage.getItem("asc-anon")||"";if(!id){id="a"+Math.random().toString(36).slice(2,10);localStorage.setItem("asc-anon",id);}}catch(e){id="a0";}return id;}
-function anon(step){if(tlKid())return;const t=tlGet();t.an=t.an||{};const k=step+":"+tlDk();if(t.an[k])return;
+function anon(step){if(!anonOk())return;const t=tlGet();t.an=t.an||{};const k=step+":"+tlDk();if(t.an[k])return;
   for(const x in t.an)if(!x.endsWith(tlDk()))delete t.an[x];t.an[k]=1;tlSet(t);
   tlPost(["A",anonId(),step,tlDk(),tlPlat(),standalone()?"app":"navegador"]);}
 // linha identificada
@@ -2491,7 +2548,7 @@ function tlAsk(){if(!cfg||cfg.blank||!cfg.quests||!cfg.quests.length||tlKid())re
   ok.addEventListener("click",()=>{const n=cleanNick(nk.value);if(!n){msg.textContent="Escolha um apelido.";nk.focus();return;}if(teen&&!(par&&par.checked)){msg.textContent="Marque que seu responsável autorizou.";return;}
     const t2=tlGet();Object.assign(t2,{on:true,asked:true,nick:n,uid:t2.uid||("u"+Math.random().toString(36).slice(2,10)),since:tlDk(),parent:teen?1:0});tlSet(t2);
     m.remove();tlSend("aceite");anon("5-aceitou");Object.assign(t2,{last:tlDk()});tlSet(t2);try{haptic([15,40,15]);}catch(e){}toast("Acesso liberado. Valeu, "+n+"!");tlUI();});
-  no.addEventListener("click",()=>{const t2=tlGet();t2.asked=true;t2.on=false;tlSet(t2);m.remove();anon("5-recusou");toast("Tudo certo. Só a contagem anônima fica ligada.");tlUI();});
+  no.addEventListener("click",()=>{const t2=tlGet();t2.asked=true;t2.on=false;tlSet(t2);m.remove();anon("5-recusou");toast("Tudo certo. Nada sai do seu celular.");tlUI();});
   m.append(c);document.body.append(m);}
 function tlLeave(){const t=tlGet();if(!t.on)return;if(!confirm("Sair do painel do criador e pedir para apagar seus dados?"))return;
   tlSend("sair","pedido de exclusão");t.on=false;t.left=tlDk();tlSet(t);tlUI();toast("Pronto. Você saiu e seus dados somem do painel do criador.");}
@@ -2499,7 +2556,7 @@ function tlLeave(){const t=tlGet();if(!t.on)return;if(!confirm("Sair do painel d
 function tlUI(){let p=$("tlPanel");if(!p){const anchor=$("betaPanel");if(!anchor)return;p=document.createElement("section");p.className="panel";p.id="tlPanel";p.dataset.tab="mais";
     const hd=document.createElement("div");hd.className="qhead";const h=document.createElement("h2");h.textContent="🛰️ Seus dados e o criador";hd.append(h);const bd=document.createElement("div");bd.id="tlBody";bd.className="tlbody";p.append(hd,bd);anchor.after(p);}
   const bd=$("tlBody");const t=tlGet(),kid=tlKid();bd.textContent="";
-  const s=document.createElement("div");s.className="sm";s.textContent=kid?"Para quem tem até 13 anos fica desligado. Nada com seu nome sai do celular.":t.on?("Ligado como \""+(t.nick||"")+"\". O criador vê seu apelido e como você usa o app. Nunca localização, contatos, telefone ou fotos."):"Desligado. Só uma contagem anônima (abriu, instalou) sai do celular.";bd.append(s);
+  const s=document.createElement("div");s.className="sm";s.textContent=kid?"Para quem tem até 13 anos fica desligado. Nada com seu nome sai do celular.":t.on?("Ligado como \""+(t.nick||"")+"\". O criador vê seu apelido e como você usa o app. Nunca localização, contatos, telefone ou fotos."):"Desligado. Nada com seu nome sai do celular.";bd.append(s);
   if(kid)return;const r=document.createElement("div");r.className="row";const b=document.createElement("button");b.type="button";
   if(t.on){b.className="link";b.textContent="Sair e apagar meus dados";b.addEventListener("click",tlLeave);}else{b.className="go";b.textContent="Liberar meu painel";b.addEventListener("click",()=>{const t2=tlGet();t2.asked=false;tlSet(t2);tlAsk();});}
   r.append(b);bd.append(r);}
@@ -2622,7 +2679,7 @@ function sqiSt(){if(!prog.sqInv||typeof prog.sqInv!=="object")prog.sqInv={seen:{
 const sqiN=v=>String(v||"").trim().toLowerCase();
 const sqiDk=()=>todayKey().replace(/-/g,"");
 function sqiFresh(d){const s=String(d||"").replace(/\D/g,"");if(s.length!==8)return true;const t=new Date(+s.slice(0,4),+s.slice(4,6)-1,+s.slice(6,8));return (Date.now()-t)/864e5<8;}
-function sqiPost(parts){const v=parts.map(x=>String(x==null?"":x).replace(/[|,\n\r]/g," ").slice(0,40)).join("|");
+function sqiPost(parts){let v=parts.map(x=>String(x==null?"":x).replace(/[|,\n\r]/g," ").slice(0,40)).join("|");const tk=typeof rkTok==="function"?rkTok():"";if(tk)v+="|"+tk;
   try{fetch(RK_POST,{method:"POST",mode:"no-cors",keepalive:true,body:new URLSearchParams({"entry.807978446":v})}).catch(()=>{});}catch(e){}}
 async function sqiLoad(){if(ageNow()==="kid"||!(prog.rank&&prog.rank.on))return;sqiAt=Date.now();
   try{const t=await (await fetch(RK_CSV+"&t="+Date.now(),{credentials:"omit"})).text();
@@ -2848,7 +2905,7 @@ function avZapWeek(){let n=0;try{const ws=weekStart(todayKey());for(const e of e
 function avAttrs(){try{const st=statXP();return ["foco","vendas","mente","corpo"].map(k=>slvl(st[k]||0)).join("-");}catch(e){return "";}}
 function avPost(force){if(typeof RK_POST==="undefined"||ageNow()==="kid"||!(prog.rank&&prog.rank.on))return;const me=rankName();if(!me)return;
   let sq=0;try{sq=streakDays()||0;}catch(e){}const at=avAttrs();const key=[me,sq,avZapWeek(),avCode(),todayKey(),at].join("|");if(!force&&prog.avPub===key)return;if(prog.avPub===key)return;prog.avPub=key;save();
-  const v=["P",me,sq,avZapWeek(),avCode(),todayKey().replace(/-/g,""),at].join("|");
+  const v=["P",me,sq,avZapWeek(),avCode(),todayKey().replace(/-/g,""),at,(typeof rkTok==="function"?rkTok():"")].join("|");
   try{fetch(RK_POST,{method:"POST",mode:"no-cors",keepalive:true,body:new URLSearchParams({"entry.807978446":v})}).catch(()=>{});}catch(e){}}
 if(typeof sendRank==="function"){const _sr=sendRank;sendRank=function(){_sr.apply(this,arguments);try{avPost();}catch(e){}};}
 // ---------- Amigos: adicionar, aceitar no app do outro e comparar lado a lado ----------
@@ -3094,8 +3151,10 @@ function tmCard(n){const me=!n||tmN(n)===tmN(rankName());const d=me?cdMine():cdO
   const x=cdEl("button","link cdclose","Fechar");x.type="button";x.addEventListener("click",close);c.append(row,x);
   m.append(c);document.body.append(m);try{haptic([10]);}catch(e){}setTimeout(()=>x.focus(),60);}
 // --- convite pessoal ---
+// link fixo da turma: o mesmo link serve para quantas pessoas quiser (grupo do WhatsApp, Instagram etc.)
+function cdLink(){const me=rankName();if(!tmOn()||!me)return "";const s=tmSt();if(!s.inv){const a=new Uint8Array(8);crypto.getRandomValues(a);s.inv=[...a].map(x=>(x%36).toString(36)).join("");save();}return CD_URL+"?amigo="+encodeURIComponent(me)+"&c="+s.inv;}
 async function cdInvite(){const me=rankName();if(!tmOn()||!me){toast("Entre no ranking primeiro: o convite usa o seu apelido.");return;}
-  const s=tmSt();if(!s.inv){const a=new Uint8Array(8);crypto.getRandomValues(a);s.inv=[...a].map(x=>(x%36).toString(36)).join("");save();}const url=CD_URL+"?amigo="+encodeURIComponent(me)+"&c="+s.inv;const text="Bora jogar comigo no Ascension? É um jogo pra subir de nível na vida real. Entra pelo meu link que a gente já vira amigo lá dentro:";
+  const url=cdLink();const text="Bora jogar comigo no Ascension? É um jogo pra subir de nível na vida real. Entra pelo meu link que a gente já vira amigo lá dentro:";
   try{if(navigator.share){await navigator.share({title:"Ascension",text,url});return;}}catch(e){if(e&&e.name==="AbortError")return;}
   try{await navigator.clipboard.writeText(text+" "+url);toast("Link copiado. Cole no WhatsApp do seu amigo.");}catch(e){window.open("https://wa.me/?text="+encodeURIComponent(text+" "+url),"_blank");}}
 async function cdSig(tk,n){const b=await crypto.subtle.digest("SHA-256",new TextEncoder().encode(tk+"|"+tmN(n)));return "cv"+[...new Uint8Array(b)].slice(0,6).map(x=>x.toString(16).padStart(2,"0")).join("");}
@@ -3132,6 +3191,11 @@ document.addEventListener("click",e=>{const li=e.target.closest&&e.target.closes
 {const _tu=tmUI;tmUI=function(){_tu();try{const p=$("tmPanel");if(!p||p.hidden)return;cdInvCard();if(!tmOn())return;
   if(!p.querySelector(".cdacts")){const r=cdEl("div","cdacts");const a=cdEl("button","go cdinvb","📨 Convidar amigo");a.type="button";a.addEventListener("click",cdInvite);
     const b=cdEl("button","ghost","🪪 Meu card");b.type="button";b.addEventListener("click",()=>tmCard());r.append(a,b);const seg=p.querySelector(".tmseg");(seg||p.lastChild).before(r);}
+  if(!p.querySelector(".cdlink")){const u=cdLink();if(u){const bx=cdEl("div","cdlink");bx.append(cdEl("b",null,"🔗 Link da sua turma"),cdEl("span","sm muted","Mande no grupo: quem entrar por ele vira seu amigo na hora. Serve para quantas pessoas quiser."));
+      const lk=cdEl("div","cdurl",u.replace(/^https:\/\//,""));bx.append(lk);const r=cdEl("div","cdlbtn");
+      const c1=cdEl("button","ghost","Copiar link");c1.type="button";c1.addEventListener("click",async()=>{try{await navigator.clipboard.writeText(u);toast("Link da turma copiado.");}catch(e){const sel=getSelection();const rg=document.createRange();rg.selectNodeContents(lk);sel.removeAllRanges();sel.addRange(rg);toast("Segure no link para copiar.");}});
+      const c2=cdEl("button","ghost","WhatsApp");c2.type="button";c2.addEventListener("click",()=>window.open("https://wa.me/?text="+encodeURIComponent("Bora jogar comigo no Ascension? É um jogo pra subir de nível na vida real. Entra pela minha turma: "+u),"_blank"));
+      r.append(c1,c2);bx.append(r);const ac=p.querySelector(".cdacts");(ac||p.querySelector(".tmseg")).after(bx);}}
   for(const li of p.querySelectorAll(".tmlist li:not(.tmzone)"))li.classList.add("tap");
   const lg=p.querySelector(".tmlg");if(lg&&!lg.querySelector(".cdme")){const ps=cdPos(rankName());if(ps.g){const x=cdEl("div","cdme");x.append(cdEl("b",null,(ps.t||ps.g)+"º"),cdEl("span",null,ps.t?"de "+ps.tof+" na turma":"de "+ps.gof+" no geral"));lg.append(x);}}}catch(e){}cdBadgeUI();};}
 {const _ck=sqiCheck;sqiCheck=function(){_ck.apply(this,arguments);try{cdInbox();cdInvDo();}catch(e){}};}

@@ -20,7 +20,7 @@ const CSV=['nome,xp,nivel,,tipo,de,para,esquadrao,data,,pnick,seq,desafios,avata
 const ctx=await b.newContext({viewport:{width:390,height:844}});const p=await ctx.newPage();const errs=[],csp=[];
 p.on('pageerror',e=>errs.push(e.message));p.on('console',m=>{const t=m.text();if(/Content Security Policy|Refused to/.test(t))csp.push(t);else if(m.type()==='error'&&!/Failed to load resource|ERR_|navigator.vibrate/.test(t))errs.push(t)});
 await ctx.route('https://fonts.googleapis.com/**',r=>r.fulfill({status:200,contentType:'text/css',body:''}));
-await ctx.route('https://docs.google.com/**',r=>r.request().method()==='POST'?r.fulfill({status:200,body:''}):r.fulfill({status:200,contentType:'text/csv',body:CSV}));
+const posts=[];await ctx.route('https://docs.google.com/**',r=>{if(r.request().method()==='POST'){posts.push(new URLSearchParams(r.request().postData()).get('entry.807978446')||'');return r.fulfill({status:200,body:''});}return r.fulfill({status:200,contentType:'text/csv',body:CSV});});
 await p.clock.install({time:new Date('2026-11-26T14:00:00')});await p.goto(U+'comecar/');
 const prog={log:{'2026-11-26':[{q:'q1',kind:'full',xp:40,stat:'mente',bonus:0,t:'x'}]},extra:{},faith:{},energy:{},mit:{},reviews:{},money:[],rest:{},ach:{},rpg:{cls:{id:'mago',style:'fant',name:'Mago'}},
   rank:{on:true,asked:true,uid:'abc12345'},friends:{l:['Bia'],pend:{Ana:'2026-11-25'},seen:{}},squad:{n:'Squad',m:[],won:{}},turma:{inv:INV},velho:'fica'};
@@ -40,6 +40,9 @@ const sm=(st.squad&&st.squad.m)||[];ok('esquadrão: estranho não entra sozinho'
 const cut=toasts.filter(t=>/te cutucou/.test(t));
 ok('cutucada de quem não é amigo é ignorada',!toasts.some(t=>t.includes('Zed')),toasts.join(' / '));
 ok('no máx. 5 avisos de cutucar por dia',st.turma.inN&&st.turma.inN.n<=5,JSON.stringify(st.turma.inN));
+const tkR=posts.filter(v=>/^[RPFGIJK]\|/.test(v));const tks=new Set(tkR.map(v=>(v.match(/\|(tk[\w-]{22})$/)||[])[1]));
+ok('token: toda linha R/P/F/G/I/J/K leva o mesmo token',tkR.length>0&&!tks.has(undefined)&&tks.size===1,tkR.map(v=>v.slice(0,3)+'…'+v.slice(-6)).join(' '));
+ok('token salvo em prog.rank.tk',/^tk[\w-]{22}$/.test(st.rank.tk||'')&&tks.has(st.rank.tk));
 ok('campos antigos intactos',st.velho==='fica'&&st.rank.uid==='abc12345');
 ok('CSP sem bloqueios em /comecar/',csp.length===0,csp.join(' | '));ok('console limpo em /comecar/',errs.length===0,errs.join(' | '));
 // link #s= trocando a planilha já ligada: pergunta e, se recusar, mantém

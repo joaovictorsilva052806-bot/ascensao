@@ -1,14 +1,27 @@
   <section data-tab="mais" class="panel" id="aiPanel">
-    <h2>🤖 Gerar minhas quests com IA</h2>
-    <div class="sm muted">A IA que você já usa (Claude, ChatGPT, Gemini) monta tarefas sob medida para você. O app não manda nada para ninguém: você copia, cola e traz a resposta de volta.</div>
-    <ol class="sm aisteps"><li>Toque em <b>Copiar pedido</b>.</li><li>Abra sua IA, cole e envie.</li><li>Copie a resposta inteira, cole aqui embaixo e toque em <b>Ler resposta</b>.</li></ol>
-    <label class="sm muted" for="aiWish">O que você quer mudar? (opcional)</label>
+    <h2>🤖 IA de 1 toque</h2>
+    <div class="sm muted">Escolha o que quer, toque na sua IA e ela abre com o pedido pronto. Depois copie a resposta e toque em <b>Colar resposta</b>: o app monta as tarefas e mostra antes de salvar. Nada sai do aparelho sem você.</div>
+    <div class="aimode" id="aiMode" role="radiogroup" aria-label="O que a IA vai montar">
+      <button type="button" class="chip on" data-m="dia" role="radio" aria-checked="true">📅 Tarefas do dia</button>
+      <button type="button" class="chip" data-m="treino" role="radio" aria-checked="false">💪 Plano de treino</button>
+      <button type="button" class="chip" data-m="estudo" role="radio" aria-checked="false">📚 Plano de estudo</button>
+      <button type="button" class="chip" data-m="revisao" role="radio" aria-checked="false">🔁 Revisão da semana</button>
+    </div>
+    <label class="sm muted" for="aiWish">Quer contar algo para a IA? (opcional)</label>
     <input id="aiWish" maxlength="160" autocomplete="off" placeholder="Ex.: estou sem tempo de manhã; quero treinar mais">
-    <div class="row"><button class="go" type="button" id="aiCopy">Copiar pedido</button><a class="ghost btnlink" href="https://claude.ai/new" target="_blank" rel="noopener">Abrir Claude</a><a class="ghost btnlink" href="https://chatgpt.com/" target="_blank" rel="noopener">Abrir ChatGPT</a></div>
+    <div class="aigo">
+      <button type="button" class="go" data-ai="chatgpt">ChatGPT</button>
+      <button type="button" class="go" data-ai="claude">Claude</button>
+      <button type="button" class="go" data-ai="gemini">Gemini</button>
+    </div>
+    <button class="link" type="button" id="aiCopy">Só copiar o pedido</button>
     <textarea id="aiPrompt" aria-label="Pedido para a IA" rows="3" readonly hidden></textarea>
-    <textarea id="aiIn" aria-label="Resposta da IA" rows="4" placeholder="Cole aqui a resposta da IA"></textarea>
-    <div class="row"><button class="go" type="button" id="aiRead">Ler resposta</button></div>
-    <div class="sm" id="aiMsg"></div>
+    <button class="go aipaste" type="button" id="aiPaste">📋 Colar resposta da IA</button>
+    <details class="aiman"><summary class="sm muted">Colar na mão</summary>
+      <textarea id="aiIn" aria-label="Resposta da IA" rows="4" placeholder="Cole aqui a resposta da IA"></textarea>
+      <div class="row"><button class="ghost" type="button" id="aiRead">Ler resposta</button></div>
+    </details>
+    <div class="sm" id="aiMsg" aria-live="polite"></div>
     <ul class="aiprev" id="aiPrev" hidden></ul>
     <div class="row" id="aiApply" hidden><button class="go" type="button" id="aiReplace">Trocar minhas tarefas</button><button class="ghost" type="button" id="aiAdd">Só adicionar</button></div>
   </section>

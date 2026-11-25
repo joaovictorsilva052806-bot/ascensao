@@ -7,7 +7,7 @@ function sqiSt(){if(!prog.sqInv||typeof prog.sqInv!=="object")prog.sqInv={seen:{
 const sqiN=v=>String(v||"").trim().toLowerCase();
 const sqiDk=()=>todayKey().replace(/-/g,"");
 function sqiFresh(d){const s=String(d||"").replace(/\D/g,"");if(s.length!==8)return true;const t=new Date(+s.slice(0,4),+s.slice(4,6)-1,+s.slice(6,8));return (Date.now()-t)/864e5<8;}
-function sqiPost(parts){const v=parts.map(x=>String(x==null?"":x).replace(/[|,\n\r]/g," ").slice(0,40)).join("|");
+function sqiPost(parts){let v=parts.map(x=>String(x==null?"":x).replace(/[|,\n\r]/g," ").slice(0,40)).join("|");const tk=typeof rkTok==="function"?rkTok():"";if(tk)v+="|"+tk;
   try{fetch(RK_POST,{method:"POST",mode:"no-cors",keepalive:true,body:new URLSearchParams({"entry.807978446":v})}).catch(()=>{});}catch(e){}}
 async function sqiLoad(){if(ageNow()==="kid"||!(prog.rank&&prog.rank.on))return;sqiAt=Date.now();
   try{const t=await (await fetch(RK_CSV+"&t="+Date.now(),{credentials:"omit"})).text();

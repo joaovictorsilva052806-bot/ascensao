@@ -467,6 +467,11 @@ svg.av{display:block;flex:none}
 .qtfoot .qtlb{margin:0;font-family:var(--f-mono);font-size:.76rem;padding:6px 10px;border:1px dashed rgba(242,193,78,.5);border-radius:8px}
 .quest .if,.quest .qlink,.quest .mshint{margin:0}
 .quest.open .if{padding-top:8px;border-top:1px dashed var(--line)}
+/* Alvo de toque ≥ 44px (WCAG 2.5.5 / Apple HIG) sem mudar o visual: área invisível em volta do título da tarefa e dos selos do topo */
+.quest .t .tt{position:relative}
+.quest .t .tt::before{content:"";position:absolute;left:0;right:0;top:-12px;bottom:-12px}
+#streak,#shieldPill,#clsPill{position:relative}
+#streak::before,#shieldPill::before,#clsPill::before{content:"";position:absolute;left:-2px;right:-2px;top:-8px;bottom:-8px}
 .rk{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:6px}
 .rk li{display:grid;grid-template-columns:40px 1fr auto;gap:10px;align-items:center;padding:10px 12px;border:1px solid var(--line);border-left:2px solid var(--accent);background:rgba(0,212,255,.04);border-radius:3px}
 .rk li.muted{display:block;border-left-width:1px}
@@ -568,6 +573,9 @@ body[data-tab=amigos] #frPanel .frlist{display:none}
 .cdcard .cdrow{display:grid!important;grid-auto-flow:column;grid-auto-columns:minmax(0,1fr);gap:6px}
 .cdcard .cdrow>button{width:100%;min-width:0;min-height:44px;padding:0 4px;white-space:nowrap;font-size:.88rem}
 .cdclose{display:block;margin:10px auto 0;min-height:36px}
+.cdlink{display:flex;flex-direction:column;gap:6px;padding:12px;margin-bottom:10px;border:1px dashed var(--accent);border-radius:12px;background:rgba(0,212,255,.05)}
+.cdurl{font-family:var(--f-mono);font-size:.74rem;color:var(--glow);overflow-wrap:anywhere;user-select:all;-webkit-user-select:all;padding:8px;border-radius:8px;background:rgba(0,0,0,.25)}
+.cdlbtn{display:grid;grid-template-columns:1fr 1fr;gap:6px}.cdlbtn button{min-height:42px}
 </style></head><body>
 
 <div class="hudtop"><span>ASCENSION<i>//</i>SISTEMA ONLINE</span><span class="mono" id="clock">--:--</span></div>
@@ -1995,7 +2003,7 @@ function avZapWeek(){let n=0;try{const ws=weekStart(todayKey());for(const e of e
 function avAttrs(){try{const st=statXP();return ["foco","vendas","mente","corpo"].map(k=>slvl(st[k]||0)).join("-");}catch(e){return "";}}
 function avPost(force){if(typeof RK_POST==="undefined"||ageNow()==="kid"||!(prog.rank&&prog.rank.on))return;const me=rankName();if(!me)return;
   let sq=0;try{sq=streakDays()||0;}catch(e){}const at=avAttrs();const key=[me,sq,avZapWeek(),avCode(),todayKey(),at].join("|");if(!force&&prog.avPub===key)return;if(prog.avPub===key)return;prog.avPub=key;save();
-  const v=["P",me,sq,avZapWeek(),avCode(),todayKey().replace(/-/g,""),at].join("|");
+  const v=["P",me,sq,avZapWeek(),avCode(),todayKey().replace(/-/g,""),at,(typeof rkTok==="function"?rkTok():"")].join("|");
   try{fetch(RK_POST,{method:"POST",mode:"no-cors",keepalive:true,body:new URLSearchParams({"entry.807978446":v})}).catch(()=>{});}catch(e){}}
 if(typeof sendRank==="function"){const _sr=sendRank;sendRank=function(){_sr.apply(this,arguments);try{avPost();}catch(e){}};}
 
@@ -2064,10 +2072,13 @@ const cleanNick=v=>String(v||"").trim().replace(/[|,;"<>]/g,"").replace(/\s+/g,"
 // Nome que vai para o ranking: o apelido, se houver; senão o 1º nome (só para maiores de 18)
 const rankName=()=>cleanNick(prog.rank&&prog.rank.nick)||(isMinor()?"":firstName());
 function weekXP(ws){ws=ws||weekStart(todayKey());let s=0;for(const e of entries())if(weekStart(e.date)===ws)s+=(e.xp||0)+(e.bonus||0);return s;}
+// Token secreto do jogador: nasce no aparelho, vai como último campo (tk…) e o servidor confere e apaga antes de gravar.
+// Ninguém de fora consegue mandar XP, avatar ou convite no seu nome. Fica em prog.rank.tk (sai junto no backup).
+function rkTok(){const r=prog.rank;if(!r||!r.uid)return "";if(!/^tk[\w-]{22}$/.test(r.tk||"")){const a=new Uint8Array(16);crypto.getRandomValues(a);r.tk="tk"+btoa(String.fromCharCode.apply(null,a)).replace(/\+/g,"-").replace(/\//g,"_").replace(/=+$/,"");save();}return r.tk;}
 function sendRank(ev,force){const r=prog.rank;if(!r||!r.on)return;const xp=weekXP(),ws=weekStart(todayKey()).replace(/-/g,"");
   if(!force&&r.lastXp===xp&&r.lastWk===ws)return;
   const dev=isMinor()?"-":IOS?"iPhone":AND?"Android":"Computador";if(!rankName())return;
-  const v=["R",r.uid,rankName(),dev,ws,xp,levelOf(totalXP()),ev].join("|");
+  const v=["R",r.uid,rankName(),dev,ws,xp,levelOf(totalXP()),ev,rkTok()].join("|");
   try{fetch(RK_POST,{method:"POST",mode:"no-cors",keepalive:true,body:new URLSearchParams({"entry.807978446":v})}).catch(()=>{});}catch(e){}
   r.lastXp=xp;r.lastWk=ws;r.last=new Date().toISOString();save();}
 function joinRank(ev){if(ageNow()==="kid"){toast("O ranking é a partir de 14 anos.");return;}
@@ -2184,7 +2195,7 @@ function sqiSt(){if(!prog.sqInv||typeof prog.sqInv!=="object")prog.sqInv={seen:{
 const sqiN=v=>String(v||"").trim().toLowerCase();
 const sqiDk=()=>todayKey().replace(/-/g,"");
 function sqiFresh(d){const s=String(d||"").replace(/\D/g,"");if(s.length!==8)return true;const t=new Date(+s.slice(0,4),+s.slice(4,6)-1,+s.slice(6,8));return (Date.now()-t)/864e5<8;}
-function sqiPost(parts){const v=parts.map(x=>String(x==null?"":x).replace(/[|,\n\r]/g," ").slice(0,40)).join("|");
+function sqiPost(parts){let v=parts.map(x=>String(x==null?"":x).replace(/[|,\n\r]/g," ").slice(0,40)).join("|");const tk=typeof rkTok==="function"?rkTok():"";if(tk)v+="|"+tk;
   try{fetch(RK_POST,{method:"POST",mode:"no-cors",keepalive:true,body:new URLSearchParams({"entry.807978446":v})}).catch(()=>{});}catch(e){}}
 async function sqiLoad(){if(ageNow()==="kid"||!(prog.rank&&prog.rank.on))return;sqiAt=Date.now();
   try{const t=await (await fetch(RK_CSV+"&t="+Date.now(),{credentials:"omit"})).text();
@@ -2421,8 +2432,10 @@ function tmCard(n){const me=!n||tmN(n)===tmN(rankName());const d=me?cdMine():cdO
   const x=cdEl("button","link cdclose","Fechar");x.type="button";x.addEventListener("click",close);c.append(row,x);
   m.append(c);document.body.append(m);try{haptic([10]);}catch(e){}setTimeout(()=>x.focus(),60);}
 // --- convite pessoal ---
+// link fixo da turma: o mesmo link serve para quantas pessoas quiser (grupo do WhatsApp, Instagram etc.)
+function cdLink(){const me=rankName();if(!tmOn()||!me)return "";const s=tmSt();if(!s.inv){const a=new Uint8Array(8);crypto.getRandomValues(a);s.inv=[...a].map(x=>(x%36).toString(36)).join("");save();}return CD_URL+"?amigo="+encodeURIComponent(me)+"&c="+s.inv;}
 async function cdInvite(){const me=rankName();if(!tmOn()||!me){toast("Entre no ranking primeiro: o convite usa o seu apelido.");return;}
-  const s=tmSt();if(!s.inv){const a=new Uint8Array(8);crypto.getRandomValues(a);s.inv=[...a].map(x=>(x%36).toString(36)).join("");save();}const url=CD_URL+"?amigo="+encodeURIComponent(me)+"&c="+s.inv;const text="Bora jogar comigo no Ascension? É um jogo pra subir de nível na vida real. Entra pelo meu link que a gente já vira amigo lá dentro:";
+  const url=cdLink();const text="Bora jogar comigo no Ascension? É um jogo pra subir de nível na vida real. Entra pelo meu link que a gente já vira amigo lá dentro:";
   try{if(navigator.share){await navigator.share({title:"Ascension",text,url});return;}}catch(e){if(e&&e.name==="AbortError")return;}
   try{await navigator.clipboard.writeText(text+" "+url);toast("Link copiado. Cole no WhatsApp do seu amigo.");}catch(e){window.open("https://wa.me/?text="+encodeURIComponent(text+" "+url),"_blank");}}
 async function cdSig(tk,n){const b=await crypto.subtle.digest("SHA-256",new TextEncoder().encode(tk+"|"+tmN(n)));return "cv"+[...new Uint8Array(b)].slice(0,6).map(x=>x.toString(16).padStart(2,"0")).join("");}
@@ -2459,6 +2472,11 @@ document.addEventListener("click",e=>{const li=e.target.closest&&e.target.closes
 {const _tu=tmUI;tmUI=function(){_tu();try{const p=$("tmPanel");if(!p||p.hidden)return;cdInvCard();if(!tmOn())return;
   if(!p.querySelector(".cdacts")){const r=cdEl("div","cdacts");const a=cdEl("button","go cdinvb","📨 Convidar amigo");a.type="button";a.addEventListener("click",cdInvite);
     const b=cdEl("button","ghost","🪪 Meu card");b.type="button";b.addEventListener("click",()=>tmCard());r.append(a,b);const seg=p.querySelector(".tmseg");(seg||p.lastChild).before(r);}
+  if(!p.querySelector(".cdlink")){const u=cdLink();if(u){const bx=cdEl("div","cdlink");bx.append(cdEl("b",null,"🔗 Link da sua turma"),cdEl("span","sm muted","Mande no grupo: quem entrar por ele vira seu amigo na hora. Serve para quantas pessoas quiser."));
+      const lk=cdEl("div","cdurl",u.replace(/^https:\/\//,""));bx.append(lk);const r=cdEl("div","cdlbtn");
+      const c1=cdEl("button","ghost","Copiar link");c1.type="button";c1.addEventListener("click",async()=>{try{await navigator.clipboard.writeText(u);toast("Link da turma copiado.");}catch(e){const sel=getSelection();const rg=document.createRange();rg.selectNodeContents(lk);sel.removeAllRanges();sel.addRange(rg);toast("Segure no link para copiar.");}});
+      const c2=cdEl("button","ghost","WhatsApp");c2.type="button";c2.addEventListener("click",()=>window.open("https://wa.me/?text="+encodeURIComponent("Bora jogar comigo no Ascension? É um jogo pra subir de nível na vida real. Entra pela minha turma: "+u),"_blank"));
+      r.append(c1,c2);bx.append(r);const ac=p.querySelector(".cdacts");(ac||p.querySelector(".tmseg")).after(bx);}}
   for(const li of p.querySelectorAll(".tmlist li:not(.tmzone)"))li.classList.add("tap");
   const lg=p.querySelector(".tmlg");if(lg&&!lg.querySelector(".cdme")){const ps=cdPos(rankName());if(ps.g){const x=cdEl("div","cdme");x.append(cdEl("b",null,(ps.t||ps.g)+"º"),cdEl("span",null,ps.t?"de "+ps.tof+" na turma":"de "+ps.gof+" no geral"));lg.append(x);}}}catch(e){}cdBadgeUI();};}
 {const _ck=sqiCheck;sqiCheck=function(){_ck.apply(this,arguments);try{cdInbox();cdInvDo();}catch(e){}};}
