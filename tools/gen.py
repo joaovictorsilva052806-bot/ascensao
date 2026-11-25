@@ -145,5 +145,8 @@ rep('\nlet saveTimer=null, SYNC="";','\n'+open(SP+'qtidy.js').read()+'\nlet save
 # aba Amigos: liga, turma, novidades, parabéns e cutucar (tools/turma.*)
 rep('</style></head>',open(SP+'turma.css').read()+open(SP+'card.css').read()+'</style></head>')
 rep('\nlet saveTimer=null, SYNC="";','\n'+open(SP+'turma.js').read()+open(SP+'card.js').read()+'\nlet saveTimer=null, SYNC="";')
+# chefão da turma, baú do dia e mural/figurinhas (tools/boss.*, tools/chest.*, tools/mural.*)
+rep('</style></head>',R('boss.css')+R('chest.css')+R('mural.css')+'</style></head>')
+rep('\nlet saveTimer=null, SYNC="";','\n'+R('boss.js')+R('chest.js')+R('mural.js')+'\nlet saveTimer=null, SYNC="";')
 open('comecar/index.html','w').write(s)
 pass

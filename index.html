@@ -567,6 +567,148 @@ body[data-tab=amigos] #frPanel .frlist{display:none}
 .cdlink{display:flex;flex-direction:column;gap:6px;padding:12px;margin-bottom:10px;border:1px dashed var(--accent);border-radius:12px;background:rgba(0,212,255,.05)}
 .cdurl{font-family:var(--f-mono);font-size:.74rem;color:var(--glow);overflow-wrap:anywhere;user-select:all;-webkit-user-select:all;padding:8px;border-radius:8px;background:rgba(0,0,0,.25)}
 .cdlbtn{display:grid;grid-template-columns:1fr 1fr;gap:6px}.cdlbtn button{min-height:42px}
+/* ---- Chefão da turma (tools/boss.js) ---- */
+.tb{position:relative;overflow:hidden;background:radial-gradient(120% 80% at 50% 0%,rgba(123,44,255,.16),transparent 60%),var(--panel,#0b1220)}
+.tbhd{display:flex;justify-content:space-between;align-items:center;gap:8px;margin-bottom:6px}
+.tbtag{font-family:var(--f-hud,inherit);font-size:.66rem;letter-spacing:.18em;color:var(--bad,#ff5a6e);font-weight:700}
+.tbclock{font-family:var(--f-mono,monospace);font-size:.72rem;color:var(--gold,#f2c14e);white-space:nowrap}
+.tbstage{position:relative;display:flex;justify-content:center;margin:2px 0 4px}
+.tbsvg{width:min(78vw,280px);height:auto;display:block;overflow:visible}
+.tbsvg .tbbody{transform-origin:50% 60%;animation:tbfloat 3.2s ease-in-out infinite}
+.tbsvg .tbaura{transform-origin:50% 58%;animation:tbaura 2.4s ease-in-out infinite}
+.tbsvg .tbeyes{animation:tbeye 4s infinite}
+.tbsvg .tblines{animation:tblines 1.4s linear infinite}
+.tbsvg.hurt .tbaura{animation-duration:1.2s}
+.tbsvg.crit .tbeyes{animation:tbflick .5s infinite}
+.tbsvg.crit .tbbody{animation:tbfloat 1.4s ease-in-out infinite,tbtremble .18s linear infinite}
+.tbsvg.dead{filter:grayscale(1) brightness(.55)}
+.tbsvg.dead .tbbody,.tbsvg.dead .tbaura,.tbsvg.dead .tbeyes,.tbsvg.dead .tblines{animation:none}
+.tbsvg.dead .tbbody{transform:rotate(-6deg) translateY(8px)}
+.tbstamp{position:absolute;top:42%;left:50%;transform:translate(-50%,-50%) rotate(-12deg);padding:6px 14px;border:3px solid var(--good,#3ddc97);color:var(--good,#3ddc97);font-family:var(--f-hud,inherit);font-weight:800;letter-spacing:.2em;font-size:1.1rem;border-radius:8px;background:rgba(5,8,14,.7)}
+.tbname{margin:2px 0 8px;text-align:center;font-family:var(--f-hud,inherit);letter-spacing:.06em;font-size:1.02rem}
+.tbhp{position:relative;height:18px;border-radius:999px;background:#1a0b12;border:1px solid rgba(255,90,110,.45);overflow:hidden;box-shadow:inset 0 0 8px rgba(0,0,0,.6)}
+.tbhp>i{position:absolute;inset:0 auto 0 0;background:linear-gradient(90deg,#3ddc97,#a6f36b);transition:width .8s cubic-bezier(.2,.9,.3,1)}
+.tbhp>i.hurt{background:linear-gradient(90deg,#ff9f43,#ffd166)}
+.tbhp>i.crit{background:linear-gradient(90deg,#ff3d6e,#ff7b54);animation:tbpulse .8s infinite}
+.tbhpn{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-family:var(--f-mono,monospace);font-size:.72rem;font-weight:700;color:#fff;text-shadow:0 1px 2px #000}
+.tbsay{margin:8px 0 4px;text-align:center;font-style:italic;color:var(--muted,#9fb0c8);font-size:.88rem}
+.tbrule{text-align:center}
+.tbm{list-style:none;margin:10px 0 0;padding:0;display:flex;flex-direction:column;gap:6px}
+.tbm li{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:2px 8px;padding:6px 10px;border-radius:8px;background:rgba(255,255,255,.03);border:1px solid var(--line,#1f2e4d)}
+.tbm li.me{border-color:var(--accent,#00d4ff)}
+.tbmn{white-space:nowrap;overflow:hidden;text-overflow:ellipsis;font-size:.88rem}
+.tbmx{font-family:var(--f-mono,monospace);font-size:.76rem;color:var(--bad,#ff5a6e);white-space:nowrap}
+.tbmg{grid-column:1/3;height:4px;border-radius:4px;background:#111a2c;overflow:hidden}
+.tbmg>i{display:block;height:100%;background:linear-gradient(90deg,#ff5a6e,#ffd166)}
+.tbsolo{display:flex;flex-direction:column;gap:8px;margin-top:10px;padding:10px;border:1px dashed var(--line,#1f2e4d);border-radius:10px;font-size:.86rem}
+.tbdmg{position:absolute;left:50%;top:30%;transform:translateX(-50%);font-family:var(--f-hud,inherit);font-weight:900;font-size:2rem;color:#fff;text-shadow:0 0 10px #ff3d6e,0 2px 0 #b8323f;pointer-events:none;animation:tbdmg 1.2s ease-out forwards;z-index:2}
+.tbdmg.sm{font-size:1.2rem;top:0;left:auto;right:16px;transform:none}
+.tbhit .tbsvg,.tbstrip.tbhit .tbsico{animation:tbshake .45s}
+.tbhit .tbsvg .tbbody{filter:brightness(2.2)}
+/* faixa da tela Hoje */
+.tbstrip{position:relative;display:flex;align-items:center;gap:10px;width:100%;min-height:56px;margin:0 0 12px;padding:8px 12px;border-radius:12px;border:1px solid rgba(255,90,110,.4);background:linear-gradient(90deg,rgba(123,44,255,.18),rgba(255,90,110,.08));color:inherit;font:inherit;text-align:left;cursor:pointer;overflow:visible}
+.tbstrip[hidden]{display:none}
+.tbsico{flex:0 0 52px;width:52px;height:42px;display:flex;align-items:center;justify-content:center}
+.tbsico .tbsvg{width:56px}
+.tbsico .tblines{display:none}
+.tbstx{flex:1;min-width:0;display:flex;flex-direction:column;gap:4px}
+.tbstx b{font-size:.86rem;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.tbsbar{display:block;height:6px;border-radius:6px;background:#1a0b12;overflow:hidden}
+.tbsbar>i{display:block;height:100%;background:linear-gradient(90deg,#ff3d6e,#ffd166);transition:width .8s}
+.tbssub{font-size:.72rem;color:var(--muted,#9fb0c8)}
+@keyframes tbfloat{0%,100%{transform:translateY(0)}50%{transform:translateY(-4px)}}
+@keyframes tbaura{0%,100%{opacity:.75;transform:scale(1)}50%{opacity:1;transform:scale(1.06)}}
+@keyframes tbeye{0%,92%,100%{opacity:1}95%{opacity:.2}}
+@keyframes tbflick{0%,100%{opacity:1}50%{opacity:.35}}
+@keyframes tblines{0%{opacity:.2}50%{opacity:.6}100%{opacity:.2}}
+@keyframes tbtremble{0%{translate:0 0}25%{translate:1px 0}75%{translate:-1px 0}}
+@keyframes tbshake{0%,100%{transform:translateX(0)}20%{transform:translateX(-8px) rotate(-2deg)}40%{transform:translateX(7px) rotate(2deg)}60%{transform:translateX(-5px)}80%{transform:translateX(3px)}}
+@keyframes tbdmg{0%{opacity:0;translate:0 10px;scale:.6}15%{opacity:1;scale:1.25}100%{opacity:0;translate:0 -46px;scale:1}}
+@keyframes tbpulse{50%{filter:brightness(1.5)}}
+@media (prefers-reduced-motion:reduce){.tbsvg *,.tbhp>i,.tbdmg{animation:none!important}}
+/* ---- Baú do dia (tools/chest.js) ---- */
+.bxcard{text-align:center;display:flex;flex-direction:column;align-items:center;gap:8px;overflow:hidden}
+.bxbtn{background:none;border:0;padding:34px 0 0;margin-top:-6px;cursor:pointer;width:min(62vw,220px);touch-action:manipulation;-webkit-tap-highlight-color:transparent}
+.bxsvg{display:block;width:100%;height:auto;overflow:visible}
+.bxsvg .bxrays{opacity:0;transform-origin:80px 70px;transform-box:view-box}
+.bxsvg .bxlid{transform-box:view-box;transform-origin:28px 64px;transition:transform .5s cubic-bezier(.3,1.6,.5,1)}
+.bxbtn.t1 .bxsvg{filter:drop-shadow(0 0 8px rgba(233,238,247,.35))}
+.bxbtn.t2 .bxsvg{filter:drop-shadow(0 0 12px rgba(255,224,138,.55))}
+.bxbtn:not(.open) .bxsvg{animation:bxidle 2.2s ease-in-out infinite}
+.bxbtn.shake .bxsvg{animation:bxshake .4s}
+.bxbtn.open .bxlid{transform:translate(-2px,-14px) rotate(-22deg)}
+.bxbtn.open .bxrays{animation:bxrays 2.6s linear infinite;opacity:1}
+.bxtap{font-family:var(--f-hud,inherit);letter-spacing:.12em;font-size:.78rem;color:var(--gold,#f2c14e);animation:bxblink 1.2s infinite}
+.bxout{position:relative;z-index:1;background:var(--panel,#0b1220);display:flex;flex-direction:column;align-items:center;gap:6px;padding:12px 16px;border-radius:12px;border:1px solid var(--rc);box-shadow:0 0 18px color-mix(in srgb,var(--rc) 45%,transparent);animation:bxpop .5s cubic-bezier(.3,1.5,.5,1)}
+.bxrar{font-family:var(--f-hud,inherit);font-size:.7rem;letter-spacing:.2em;text-transform:uppercase;color:var(--rc)}
+.bxname{font-size:1.05rem}
+.bxxp{font-family:var(--f-hud,inherit);font-size:1.6rem;color:var(--gold,#f2c14e)}
+.bxrow{justify-content:center}
+.bxfpv,.bxring{display:inline-flex;border-radius:50%;padding:4px;background:conic-gradient(from 0deg,var(--bxf1),var(--bxf2),var(--bxf1));box-shadow:0 0 14px var(--bxf1)}
+.bxfpv svg,.bxring svg{display:block;border-radius:50%}
+/* pílula na tela Hoje */
+.bxpill{display:flex;align-items:center;gap:10px;width:100%;min-height:56px;margin:0 0 12px;padding:6px 14px;border-radius:12px;border:1px solid rgba(242,193,78,.6);background:linear-gradient(90deg,rgba(242,193,78,.18),rgba(255,159,67,.06));color:inherit;font:inherit;text-align:left;cursor:pointer;animation:bxglow 1.6s ease-in-out infinite}
+.bxpill[hidden]{display:none}
+.bxpill b{flex:1}
+.bxpi{width:44px;flex:0 0 44px}
+.bxpi .bxrays{display:none}
+/* coleção */
+.bxh{margin:12px 0 6px;font-family:var(--f-hud,inherit);font-size:.7rem;letter-spacing:.16em;text-transform:uppercase;color:var(--glow,#7af3ff)}
+.bxgrid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:8px}
+.bxf{display:flex;flex-direction:column;align-items:center;gap:3px;min-height:44px;padding:8px 2px;border-radius:10px;border:1px solid var(--line,#1f2e4d);background:#0a1222;color:inherit;font:inherit}
+.bxf.eq{border-color:var(--rc);box-shadow:0 0 10px color-mix(in srgb,var(--rc) 40%,transparent)}
+.bxf.lock{opacity:.5}
+.bxf.lock .bxring{background:#111a2c;box-shadow:none;width:52px;height:52px;align-items:center;justify-content:center;font-size:1.1rem}
+.bxfn{font-size:.68rem;line-height:1.15;text-align:center}
+.bxfr{font-size:.6rem;color:var(--rc);letter-spacing:.06em}
+.bxtl{display:flex;flex-direction:column;gap:6px}
+.bxtt{display:flex;justify-content:space-between;align-items:center;gap:8px;min-height:44px;padding:8px 12px;border-radius:10px;border:1px solid var(--line,#1f2e4d);background:#0a1222;color:inherit;font:inherit;text-align:left}
+.bxtt b{color:var(--rc)}
+.bxtt.eq{border-color:var(--rc)}
+.bxtitle{color:var(--gold,#f2c14e)}
+/* moldura em uso: seu avatar ganha o anel */
+body[data-bxf] #avPanel .avpv,body[data-bxf] .tmlist li.me .tmav,body[data-bxf] .frcmp .me .av-wrap{border-radius:50%;padding:3px;background:conic-gradient(from 0deg,var(--bxf1),var(--bxf2),var(--bxf1));box-shadow:0 0 12px var(--bxf1)}
+body[data-bxf] #avPanel .avpv svg,body[data-bxf] .tmlist li.me .tmav svg{border-radius:50%}
+body[data-bxf] .tmlist li.me .tmav svg{width:38px;height:38px}
+@keyframes bxidle{0%,100%{transform:translateY(0) rotate(0)}50%{transform:translateY(-4px) rotate(-1deg)}}
+@keyframes bxshake{0%,100%{transform:rotate(0)}25%{transform:rotate(-7deg) scale(1.04)}50%{transform:rotate(6deg)}75%{transform:rotate(-4deg)}}
+@keyframes bxrays{to{transform:rotate(360deg)}}
+@keyframes bxblink{50%{opacity:.45}}
+@keyframes bxpop{0%{transform:scale(.5);opacity:0}100%{transform:scale(1);opacity:1}}
+@keyframes bxglow{50%{box-shadow:0 0 14px rgba(242,193,78,.45)}}
+@media (prefers-reduced-motion:reduce){.bxsvg,.bxsvg *,.bxtap,.bxout,.bxpill{animation:none!important;transition:none!important}}
+/* ---- Mural da turma e Álbum de figurinhas (tools/mural.js) ---- */
+.much{position:fixed;left:50%;bottom:calc(86px + env(safe-area-inset-bottom));transform:translateX(-50%);z-index:60;min-height:46px;padding:0 18px;border-radius:999px;border:1px solid var(--gold,#f2c14e);background:#0b1220;color:var(--gold,#f2c14e);font:inherit;font-weight:700;box-shadow:0 6px 24px rgba(0,0,0,.5),0 0 14px rgba(242,193,78,.35);animation:muin .35s cubic-bezier(.3,1.5,.5,1);white-space:nowrap}
+.mumodal .card{max-height:88vh;overflow:auto}
+.mustk{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:8px;margin:8px 0}
+.mus{min-height:56px;font-size:1.8rem;border-radius:12px;border:1px solid var(--line,#1f2e4d);background:#0a1222;line-height:1}
+.mus:active{transform:scale(.92)}
+.mualb .muday{display:flex;align-items:center;gap:10px;padding:6px 0;border-top:1px solid var(--line,#1f2e4d)}
+.mudd{font-family:var(--f-mono,monospace);font-size:.74rem;color:var(--muted,#9fb0c8);width:40px;flex:0 0 40px}
+.mudg{display:flex;flex-wrap:wrap;gap:4px}
+.mut{font-size:1.5rem;line-height:1;filter:drop-shadow(0 2px 2px rgba(0,0,0,.5))}
+.mulist{margin:6px 0 10px;padding-left:18px;display:flex;flex-direction:column;gap:6px}
+.mumodal .chk{display:flex;gap:8px;align-items:flex-start;min-height:36px;text-align:left}
+.mumsg{color:var(--gold,#f2c14e);min-height:1.2em}
+.muprev{width:100%;max-height:46vh;object-fit:contain;border-radius:10px;background:#000;margin:6px 0}
+.mucaps{display:flex;flex-wrap:wrap;gap:6px;margin:8px 0}
+.mucaps .chip.on{border-color:var(--accent,#00d4ff);color:var(--glow,#7af3ff)}
+.muwarn{color:var(--gold,#f2c14e)}
+.mupick{width:100%;margin:4px 0;text-align:left}
+.mu>.ghost{width:100%;margin-bottom:10px}
+.mulst{display:flex;flex-direction:column;gap:12px}
+.mupost{border:1px solid var(--line,#1f2e4d);border-radius:12px;overflow:hidden;background:#0a1222}
+.mutop{display:flex;align-items:center;gap:8px;padding:8px 10px}
+.mutop b{flex:1;min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.muav svg{display:block;width:32px;height:32px}
+.muimg{display:block;width:100%;max-height:70vh;object-fit:cover;background:#000}
+.muq{padding:8px 10px 0;font-size:.88rem}
+.murx{display:flex;align-items:center;gap:6px;padding:8px 10px 10px}
+.murb{min-width:52px;min-height:40px;border-radius:999px;border:1px solid var(--line,#1f2e4d);background:transparent;color:inherit;font:inherit;font-size:.95rem}
+.murb.on{border-color:var(--gold,#f2c14e);background:rgba(242,193,78,.12)}
+.muop{margin-left:auto;font-size:.8rem;min-height:40px}
+@keyframes muin{from{opacity:0;transform:translate(-50%,16px)}to{opacity:1;transform:translate(-50%,0)}}
+@media (prefers-reduced-motion:reduce){.much{animation:none}}
 </style></head><body>
 
 <div class="hudtop"><span>ASCENSION<i>//</i>SISTEMA ONLINE</span><span class="mono" id="clock">--:--</span></div>
@@ -2404,6 +2546,356 @@ document.addEventListener("click",e=>{const li=e.target.closest&&e.target.closes
 setTimeout(()=>{try{cdBadgeUI();tmUI();}catch(e){}},0);
 // menor de 18 sem apelido: o pedido de apelido fica na aba Amigos (o ranking mora lá agora)
 if(typeof joinRank==="function"){const _jr=joinRank;joinRank=function(){_jr.apply(this,arguments);try{if(!tmOn()&&$("rkNick")){goTab("amigos");const r=$("rankPanel");if(r){if(r.classList.contains("fold")&&!r.classList.contains("open")){const h=r.querySelector(".fhd");if(h)h.click();}r.scrollIntoView({block:"center"});}setTimeout(()=>$("rkNick").focus(),80);}}catch(e){}};}
+
+// ---------- Chefão da turma: um chefe por semana para você e seus amigos juntos ----------
+// Cada tarefa feita por qualquer pessoa da turma tira vida dele (1 XP da semana = 1 de dano).
+// Usa só o que já é público por opção (XP da semana no ranking 14+). Até 13 anos ou fora do ranking: modo solo, tudo no aparelho.
+// Derrotado até domingo: +TB_PRIZE XP para cada um e um título raro. Volta toda segunda com outro chefe.
+// Só ADICIONA prog.tboss = {won:{semana:1}, seen:{semana:dano}}. XP entra como "ach:tb:<semana>" (não conta sequência).
+const TB_HP=300,TB_PRIZE=60;
+// [nome, apelido curto, forma, cor principal, cor do brilho, fala]
+const TB_LIST=[
+ ["Vaelgor, o Adiador","Vaelgor","drag","#7b2cff","#ff4fd8","Amanhã você faz. Amanhã… sempre amanhã."],
+ ["Kurogane, Titã do Sofá","Kurogane","tita","#3a4a63","#00d4ff","Senta mais um pouco. Só mais cinco minutos."],
+ ["Fera do Scroll Infinito","Fera","drag","#0e8f7a","#64ffda","Mais um vídeo. E mais um. E mais um."],
+ ["Mórdax, Dragão do Cansaço","Mórdax","drag","#b8323f","#ff9f43","Você está cansado demais para começar."],
+ ["Golem da Distração","Golem","tita","#6b4f2a","#f2c14e","Olha o celular. Viu? Já esqueceu o que ia fazer."],
+ ["Nyxar, Sombra da Dúvida","Nyxar","drag","#1f2e8a","#7aa2ff","E se não der certo? Melhor nem tentar."],
+ ["Colosso do Barulho","Colosso","tita","#5a2a6b","#ff6ec7","Tanta coisa ao mesmo tempo. Escolhe nenhuma."],
+ ["Ignis, Fera da Pressa","Ignis","drag","#c2410c","#ffd166","Faz tudo de uma vez ou não faz nada."]];
+function tbSt(){if(!prog.tboss||typeof prog.tboss!=="object")prog.tboss={};const t=prog.tboss;t.won=t.won||{};t.seen=t.seen||{};return t;}
+function tbWk(){return weekStart(todayKey());}
+function tbBoss(ws){ws=ws||tbWk();let h=7;for(const c of ws)h=(h*33+c.charCodeAt(0))>>>0;return TB_LIST[h%TB_LIST.length];}
+function tbKid(){try{return ageNow()==="kid";}catch(e){return false;}}
+function tbOn(){return !!cfg&&!cfg.blank&&!!(cfg.quests&&cfg.quests.length);}
+function tbSocial(){return !tbKid()&&!!(prog.rank&&prog.rank.on);}
+function tbTab(){return tbSocial()?"amigos":"prog";}
+const tbN=v=>String(v||"").trim().toLowerCase();
+// XP da semana sem a própria recompensa do chefão (senão ele "se mata" com o prêmio)
+function tbMyXP(){const ws=tbWk();let x=weekXP();for(const e of entries())if(e.q==="ach:tb:"+ws&&weekStart(e.date)===ws)x-=(e.xp||0);return Math.max(0,x);}
+function tbRows(){const me={n:rankName()||"Você",xp:tbMyXP(),me:true,av:""};try{me.av=avCode();}catch(e){}
+  const rows=[me];let fr=[];try{if(tbSocial())fr=frSt().l;}catch(e){}
+  for(const n of fr){const r=(rankRows||[]).find(x=>tbN(x.n)===tbN(n));if(!r)continue;const p=(typeof sqPub!=="undefined"&&sqPub[tbN(n)])||{};rows.push({n:r.n,xp:Math.max(0,+r.xp||0),av:p.av||""});}
+  return rows.sort((a,b)=>b.xp-a.xp);}
+function tbState(){const rows=tbRows();const hp=TB_HP*rows.length;const dmg=rows.reduce((a,r)=>a+r.xp,0);const left=Math.max(0,hp-dmg);
+  return {rows,hp,dmg:Math.min(dmg,hp),left,pct:Math.round(left/hp*100),boss:tbBoss()};}
+function tbEl(t,cl,x){const e=document.createElement(t);if(cl)e.className=cl;if(x!=null)e.textContent=x;return e;}
+function tbMotion(){return !matchMedia("(prefers-reduced-motion: reduce)").matches;}
+// --- arte original (SVG): dragão ou titã, com aura, olhos acesos e rachaduras quando está fraco ---
+function tbArt(b,pct,dead){const [,,form,c1,c2]=b;const id="tb"+Math.random().toString(36).slice(2,7);const hurt=pct<50,crit=pct<20;
+  const defs='<defs><radialGradient id="'+id+'a" cx="50%" cy="55%" r="55%"><stop offset="0" stop-color="'+c2+'" stop-opacity=".55"/><stop offset=".55" stop-color="'+c1+'" stop-opacity=".25"/><stop offset="1" stop-color="'+c1+'" stop-opacity="0"/></radialGradient>'+
+   '<linearGradient id="'+id+'b" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="'+c1+'"/><stop offset="1" stop-color="#07090f"/></linearGradient>'+
+   '<filter id="'+id+'g" x="-50%" y="-50%" width="200%" height="200%"><feGaussianBlur stdDeviation="2.2" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter></defs>';
+  const aura='<ellipse class="tbaura" cx="100" cy="92" rx="96" ry="70" fill="url(#'+id+'a)"/>'+
+   '<g class="tblines" stroke="'+c2+'" stroke-opacity=".35" stroke-width="1.2"><path d="M8 40 L40 58"/><path d="M192 36 L160 56"/><path d="M4 110 L36 102"/><path d="M196 116 L164 104"/><path d="M30 150 L56 128"/><path d="M172 152 L146 128"/></g>';
+  const eyes=(lx,ly,rx,ry)=>'<g class="tbeyes" filter="url(#'+id+'g)"><path d="M'+lx+' '+ly+' l22 6 l-4 7 l-20 -5z" fill="'+c2+'"/><path d="M'+rx+' '+ry+' l-22 6 l4 7 l20 -5z" fill="'+c2+'"/>'+
+   '<path d="M'+(lx+12)+' '+(ly+5)+' l3 1 l-1 4 l-3 -1z" fill="#fff"/><path d="M'+(rx-12)+' '+(ry+5)+' l-3 1 l1 4 l3 -1z" fill="#fff"/></g>';
+  const cracks=hurt?'<g class="tbcrack" stroke="'+c2+'" stroke-width="1.6" fill="none" filter="url(#'+id+'g)"><path d="M86 60 l6 10 l-5 8 l7 9"/>'+(crit?'<path d="M122 70 l-6 9 l6 7 l-4 10"/><path d="M98 112 l4 8 l-6 6"/>':'')+'</g>':'';
+  let body;
+  if(form==="tita"){
+    body='<g class="tbbody"><path d="M28 152 Q30 104 58 92 L74 86 L126 86 L142 92 Q170 104 172 152Z" fill="url(#'+id+'b)" stroke="#000" stroke-opacity=".5"/>'+
+     '<path d="M40 104 L22 88 L30 70 L58 84Z M160 104 L178 88 L170 70 L142 84Z" fill="'+c1+'" stroke="#000" stroke-opacity=".5"/>'+
+     '<path d="M64 88 L62 46 Q64 26 100 22 Q136 26 138 46 L136 88 Q118 100 100 100 Q82 100 64 88Z" fill="url(#'+id+'b)" stroke="#000" stroke-opacity=".55" stroke-width="1.5"/>'+
+     '<path d="M70 50 L130 50 L126 64 L74 64Z" fill="#05070c"/>'+
+     '<g class="tbeyes" filter="url(#'+id+'g)"><ellipse cx="100" cy="57" rx="16" ry="5" fill="'+c2+'"/><ellipse cx="100" cy="57" rx="5" ry="3" fill="#fff"/></g>'+
+     '<path d="M80 76 L120 76 L116 86 L84 86Z" fill="#05070c"/><path d="M86 76 v6 M94 76 v8 M102 76 v8 M110 76 v6" stroke="'+c2+'" stroke-opacity=".6"/>'+
+     '<path d="M70 32 L58 10 L80 26 M130 32 L142 10 L120 26" fill="'+c1+'" stroke="#000" stroke-opacity=".5"/>'+
+     '<circle cx="100" cy="122" r="9" fill="none" stroke="'+c2+'" stroke-width="2" filter="url(#'+id+'g)"/></g>';
+  }else{
+    body='<g class="tbbody"><path d="M100 70 L20 34 L34 66 L6 70 L36 92 L18 110 L70 100Z M100 70 L180 34 L166 66 L194 70 L164 92 L182 110 L130 100Z" fill="'+c1+'" fill-opacity=".85" stroke="#000" stroke-opacity=".5"/>'+
+     '<path d="M70 52 Q52 20 34 14 Q56 30 60 58Z M130 52 Q148 20 166 14 Q144 30 140 58Z" fill="#e9e2d0" stroke="#000" stroke-opacity=".4"/>'+
+     '<path d="M100 26 L132 44 L142 74 L134 104 L118 128 L100 140 L82 128 L66 104 L58 74 L68 44Z" fill="url(#'+id+'b)" stroke="#000" stroke-opacity=".55" stroke-width="1.5"/>'+
+     '<path d="M100 30 L106 52 L100 60 L94 52Z" fill="'+c2+'" fill-opacity=".5"/>'+
+     '<path d="M66 66 L96 74 M134 66 L104 74" stroke="#05070c" stroke-width="5" stroke-linecap="round"/>'+
+     eyes(68,70,132,70)+
+     '<path d="M74 104 L126 104 L114 124 L100 130 L86 124Z" fill="#05070c"/>'+
+     '<path d="M78 104 l5 9 l5 -9 l5 10 l5 -10 l5 10 l5 -10 l5 9 l5 -9" fill="#f4f1e8" stroke="none"/>'+
+     '<g class="tbbreath" fill="'+c2+'" filter="url(#'+id+'g)"><circle cx="92" cy="134" r="2"/><circle cx="108" cy="136" r="1.6"/><circle cx="100" cy="142" r="1.3"/></g></g>';
+  }
+  return '<svg class="tbsvg'+(hurt?" hurt":"")+(crit?" crit":"")+(dead?" dead":"")+'" viewBox="0 0 200 160" role="img" aria-label="'+b[0]+'">'+defs+aura+body+cracks+'</svg>';}
+// --- dano novo desde a última vez que você olhou: número subindo e tremida ---
+function tbHitFx(box,n){if(!box||n<=0||!tbMotion())return;const f=tbEl("span","tbdmg","-"+n);box.append(f);box.classList.remove("tbhit");void box.offsetWidth;box.classList.add("tbhit");
+  setTimeout(()=>f.remove(),1300);try{haptic([8,20,8]);}catch(e){}}
+function tbCheckWin(st){const s=tbSt();const ws=tbWk();if(st.left>0||s.won[ws]||st.rows.length<1)return;s.won[ws]=1;save();const b=st.boss;
+  const solo=st.rows.length===1;if(!tbSocial())s.won[ws]=1;
+  sysPop("CHEFÃO DERROTADO",b[0]+" caiu!",(solo?"Você derrubou o chefão sozinho.":"A turma ("+st.rows.length+" pessoas) derrubou o chefão antes de domingo.")+" Recompensa: +"+TB_PRIZE+" XP e o título raro « Ruína de "+b[1]+" ».",()=>{
+    if(!entries().some(e=>e.q==="ach:tb:"+ws))addXP({q:"ach:tb:"+ws,kind:"full",xp:TB_PRIZE,stat:"foco",bonus:0,t:new Date().toISOString()},"Chefão derrotado: +"+TB_PRIZE+" XP");
+    try{if(typeof bxGiveTitle==="function")bxGiveTitle("tb_"+tbN(b[1]),"Ruína de "+b[1],"chefão");}catch(e){}
+    try{tbUI();}catch(e){}},"Coletar recompensa");}
+// --- painel na aba Amigos (logo acima da turma) ---
+function tbPlace(){const wrap=document.querySelector(".wrap");if(!wrap)return null;let p=$("tbPanel");
+  if(!p){p=tbEl("section","panel tb");p.id="tbPanel";}const tab=tbTab();p.dataset.tab=tab;
+  if(tab==="amigos"){const tm=$("tmPanel");if(tm&&tm.parentNode===wrap){if(p.nextElementSibling!==tm)tm.before(p);}else if(!p.isConnected)wrap.append(p);}
+  else{const first=document.querySelector('.wrap>section[data-tab="prog"]');if(first&&p.nextElementSibling!==first&&p!==first)first.before(p);else if(!p.isConnected)wrap.append(p);}
+  return p;}
+function tbUI(){const p=tbPlace();if(!p)return;if(!tbOn()){p.hidden=true;tbStrip();return;}p.hidden=false;
+  const st=tbState();const s=tbSt();const ws=tbWk();const b=st.boss;const dead=st.left<=0;const prev=s.seen[ws]||0;const gain=st.dmg-prev;
+  p.textContent="";
+  const hd=tbEl("div","tbhd");hd.append(tbEl("span","tbtag",tbSocial()?"CHEFÃO DA TURMA":"CHEFÃO DA SEMANA"),tbEl("span","tbclock",dead?"✔ derrotado":"⏳ até domingo · "+(typeof tmLeft==="function"?tmLeft():"")));p.append(hd);
+  const stage=tbEl("div","tbstage"+(dead?" dead":""));stage.innerHTML=tbArt(b,st.pct,dead);if(dead)stage.append(tbEl("span","tbstamp","DERROTADO"));p.append(stage);
+  p.append(tbEl("h3","tbname",b[0]));
+  const hp=tbEl("div","tbhp");const fill=tbEl("i");fill.style.width=st.pct+"%";if(st.pct<20)fill.className="crit";else if(st.pct<50)fill.className="hurt";hp.append(fill);
+  const lbl=tbEl("span","tbhpn",dead?"0 HP":st.left+" / "+st.hp+" HP");hp.append(lbl);p.append(hp);
+  p.append(tbEl("p","tbsay",dead?"« Isso… não estava nos meus planos. »":"« "+b[5]+" »"));
+  p.append(tbEl("div","sm muted tbrule",dead?"Recompensa coletada por quem estava na turma. Novo chefão na segunda.":(tbSocial()?"Cada tarefa feita por alguém da turma tira vida dele (1 XP = 1 de dano). Derrotem até domingo: +"+TB_PRIZE+" XP e título raro para cada um.":"Cada tarefa sua tira vida dele (1 XP = 1 de dano). Derrote até domingo: +"+TB_PRIZE+" XP e um título raro.")));
+  // quem bateu mais
+  const ol=tbEl("ol","tbm");const mx=Math.max(1,...st.rows.map(r=>r.xp));st.rows.slice(0,8).forEach((r,i)=>{const li=tbEl("li",r.me?"me":"");
+    li.append(tbEl("span","tbmn",(i===0&&r.xp>0?"👑 ":"")+r.n+(r.me?" (você)":"")),tbEl("span","tbmx",r.xp+" de dano"));
+    const g=tbEl("div","tbmg");const gi=tbEl("i");gi.style.width=Math.round(r.xp/mx*100)+"%";g.append(gi);li.append(g);ol.append(li);});
+  p.append(ol);
+  if(st.rows.length===1&&tbSocial()){const e=tbEl("div","tbsolo");e.append(tbEl("span",null,"Sozinho a vida dele é "+TB_HP+". Cada amigo soma "+TB_HP+" de vida e o dano dele também."));
+    const bt=tbEl("button","ghost","+ Chamar amigo para a luta");bt.type="button";bt.addEventListener("click",()=>{try{frAdd=true;frUI();}catch(e){}const f=$("frPanel");if(f){f.classList.remove("tmoff");f.scrollIntoView({block:"start",behavior:"smooth"});}});e.append(bt);p.append(e);}
+  if(gain>0&&prev>0)tbHitFx(stage,gain);
+  if(st.dmg!==prev){s.seen[ws]=st.dmg;for(const k in s.seen)if(k<ws)delete s.seen[k];save();}
+  tbStrip(st);tbCheckWin(st);}
+// --- faixa pequena na tela Hoje: vida do chefão e atalho para Amigos ---
+function tbStrip(st){let el=$("tbStrip");const hoje=document.querySelector('.wrap>section[data-tab="hoje"] .status');
+  if(!tbOn()||!hoje){if(el)el.hidden=true;return;}
+  if(!el){el=tbEl("button","tbstrip");el.type="button";el.id="tbStrip";el.addEventListener("click",()=>{const t=tbTab();goTab(t);if(t==="amigos"){try{loadRank();}catch(e){}try{tmUI();}catch(e){}}tbUI();const p=$("tbPanel");if(p)p.scrollIntoView({block:"start"});});
+    const sec=hoje.closest("section");sec.after(el);}
+  st=st||tbState();el.hidden=false;el.textContent="";const b=st.boss;const dead=st.left<=0;
+  const ic=tbEl("span","tbsico");ic.innerHTML=tbArt(b,st.pct,dead);
+  const tx=tbEl("span","tbstx");tx.append(tbEl("b",null,dead?b[1]+" derrotado ✔":"🐉 "+b[1]+" · "+st.pct+"% de vida"));
+  const bar=tbEl("span","tbsbar");const f=tbEl("i");f.style.width=st.pct+"%";bar.append(f);tx.append(bar);
+  tx.append(tbEl("span","tbssub",dead?(tbSocial()?"A turma venceu esta semana.":"Você venceu esta semana."):"Cada tarefa sua tira vida dele."));
+  el.append(ic,tx);el.setAttribute("aria-label",dead?"Chefão derrotado. Abrir o chefão":"Chefão "+b[1]+" com "+st.pct+"% de vida. Abrir o chefão");}
+// quando você conclui uma tarefa, o chefão sente na hora (faixa treme e mostra o dano)
+{const _tg=toggle;toggle=function(q,kind){const a=tbOn()?tbMyXP():0;_tg.apply(this,arguments);if(!tbOn())return;const d=tbMyXP()-a;
+  try{tbUI();if(d>0){const el=$("tbStrip");if(el&&tbMotion()){const f=tbEl("span","tbdmg sm","-"+d);el.append(f);el.classList.remove("tbhit");void el.offsetWidth;el.classList.add("tbhit");setTimeout(()=>f.remove(),1300);}}}catch(e){}};}
+{const _rr=renderRankUI;renderRankUI=function(){_rr.apply(this,arguments);try{tbUI();}catch(e){}};}
+{const _r=render;render=function(){_r.apply(this,arguments);try{tbStrip();}catch(e){}};}
+setTimeout(()=>{try{tbUI();}catch(e){}},0);
+// ---------- Baú do dia: fechou o dia, abre um baú com recompensa surpresa ----------
+// Recompensa variável: XP, moldura de avatar ou título raro. Sequência maior = baú melhor (madeira, prata, ouro).
+// Tudo no aparelho (vale para todas as idades). O sorteio é guardado antes de abrir: fechar e reabrir não troca o prêmio.
+// Só ADICIONA prog.chest = {roll:{dia:prêmio}, got:{dia:1}, frames:[ids], titles:[{id,n,src}], frame:"", title:"", dry:n}.
+// XP entra como "ach:bau:<dia>" (não conta sequência nem masmorra).
+const BX_FR=[// [id, nome, raridade, cor1, cor2]
+ ["f_bronze","Aro de Bronze",1,"#cd7f32","#ffb877"],["f_prata","Aro de Prata",1,"#c0c8d8","#ffffff"],["f_neon","Neon do Sistema",1,"#00d4ff","#7af3ff"],
+ ["f_ouro","Coroa Dourada",2,"#f2c14e","#fff2b0"],["f_chama","Chama Viva",2,"#ff5a1f","#ffd166"],["f_sombra","Sombra Roxa",2,"#7b2cff","#ff4fd8"],
+ ["f_aurora","Aurora",3,"#3ddc97","#7aa2ff"],["f_eclipse","Eclipse",3,"#0b0b10","#ff3d6e"]];
+const BX_TT=[// [id, título, raridade]
+ ["t_crep","Guardião do Crepúsculo",1],["t_fech","Fechador de Dias",1],["t_aco","Mente de Aço",1],
+ ["t_chama","Chama Constante",2],["t_lamina","Lâmina Silenciosa",2],["t_desp","O Despertado",2],
+ ["t_sob","Soberano da Rotina",3],["t_ecl","Filho do Eclipse",3]];
+const BX_RAR=["","Raro","Épico","Lendário"],BX_RCOL=["#9fb0c8","#00d4ff","#c77dff","#f2c14e"];
+function bxSt(){if(!prog.chest||typeof prog.chest!=="object")prog.chest={};const c=prog.chest;c.roll=c.roll||{};c.got=c.got||{};c.frames=c.frames||[];c.titles=c.titles||[];c.dry=c.dry||0;return c;}
+function bxEl(t,cl,x){const e=document.createElement(t);if(cl)e.className=cl;if(x!=null)e.textContent=x;return e;}
+function bxMotion(){return !matchMedia("(prefers-reduced-motion: reduce)").matches;}
+function bxRnd(){try{const a=new Uint32Array(1);crypto.getRandomValues(a);return a[0]/4294967296;}catch(e){return Math.random();}}
+function bxPick(list){let t=0;for(const x of list)t+=x[1];let r=bxRnd()*t;for(const x of list){r-=x[1];if(r<0)return x[0];}return list[list.length-1][0];}
+function bxTier(){let n=0;try{n=streakDays()||0;}catch(e){}return n>=7?2:n>=3?1:0;}
+const BX_TIER=[["Baú de madeira","#8b5a2b","#d9a066"],["Baú de prata","#8d99ae","#e9eef7"],["Baú de ouro","#b8860b","#ffe08a"]];
+// --- sorteio (com garantia: no máximo 4 baús seguidos sem item) ---
+function bxRoll(){const c=bxSt();const tier=bxTier();
+  const fr=BX_FR.filter(f=>!c.frames.includes(f[0])),tt=BX_TT.filter(t=>!c.titles.some(x=>x.id===t[0]));
+  const pc=[.25,.35,.5][tier];const want=(fr.length||tt.length)&&(c.dry>=4||bxRnd()<pc);
+  if(want){const w=tier===2?[0,4,4,2]:[0,6,3,1];
+    const useF=fr.length&&(!tt.length||bxRnd()<.6);const pool=useF?fr:tt;const id=bxPick(pool.map(x=>[x[0],w[x[2]]]));const it=pool.find(x=>x[0]===id);
+    return {k:useF?"f":"t",id,n:it[1],r:it[2],xp:5,tier};}
+  const xp=bxPick([[10,40],[15,30],[20,18],[30,9],[40,3]])+(tier===2?5:0);return {k:"x",xp,r:xp>=30?2:xp>=20?1:0,tier};}
+// --- quando o baú libera: tarefa de fechar o dia feita (ou, sem ela, todas as principais depois das 18h) ---
+function bxIsFech(q){return !!q&&(q.id==="s_fech"||q.id==="q_fech"||/fechar o dia|antes de dormir|fechamento/i.test(String(q.title||"")));}
+function bxReady(){if(!cfg||cfg.blank||!cfg.quests||!cfg.quests.length)return false;const tk=todayKey();const done=prog.log[tk]||[];
+  const fq=(cfg.quests||[]).filter(bxIsFech);if(fq.length)return fq.some(q=>done.some(e=>e.q===q.id));
+  let ms=[];try{ms=mainsFor(new Date());}catch(e){}return new Date().getHours()>=18&&ms.length>0&&ms.every(q=>done.some(e=>e.q===q.id));}
+function bxPending(){const c=bxSt();const tk=todayKey();return bxReady()&&!c.got[tk];}
+// --- arte do baú (SVG original) ---
+function bxArt(tier){const [,a,b]=BX_TIER[tier];return '<svg class="bxsvg" viewBox="0 0 160 140" aria-hidden="true">'+
+  '<g class="bxrays">'+[0,30,60,90,120,150,180,210,240,270,300,330].map(d=>'<path d="M80 70 L73 8 L87 8Z" fill="#fff1a8" opacity=".55" transform="rotate('+d+' 80 70)"/>').join("")+'<circle cx="80" cy="70" r="26" fill="#fff7c2" opacity=".8"/></g>'+
+  '<ellipse cx="80" cy="128" rx="54" ry="7" fill="#000" opacity=".35"/>'+
+  '<g class="bxbase"><rect x="26" y="66" width="108" height="58" rx="6" fill="'+a+'" stroke="#1a0f05" stroke-width="3"/><rect x="26" y="84" width="108" height="8" fill="'+b+'" opacity=".8"/>'+
+  '<rect x="40" y="66" width="8" height="58" fill="'+b+'" opacity=".6"/><rect x="112" y="66" width="8" height="58" fill="'+b+'" opacity=".6"/>'+
+  '<rect x="70" y="78" width="20" height="22" rx="3" fill="'+b+'" stroke="#1a0f05" stroke-width="2"/><circle cx="80" cy="87" r="3" fill="#1a0f05"/><rect x="79" y="88" width="2" height="6" fill="#1a0f05"/></g>'+
+  '<g class="bxlid"><path d="M26 66 L26 48 Q26 26 80 24 Q134 26 134 48 L134 66Z" fill="'+a+'" stroke="#1a0f05" stroke-width="3"/>'+
+  '<path d="M40 64 L40 40 M120 64 L120 40" stroke="'+b+'" stroke-width="8" opacity=".6"/><path d="M28 60 L132 60" stroke="'+b+'" stroke-width="6" opacity=".8"/></g>'+
+  '<g class="bxglow"><circle cx="80" cy="64" r="20" fill="#fff7c2" opacity=".0"/></g></svg>';}
+// --- moldura: anel em volta do seu avatar (só no seu aparelho) ---
+function bxFrameCss(id){const f=BX_FR.find(x=>x[0]===id);return f?"--bxf1:"+f[3]+";--bxf2:"+f[4]:"";}
+function bxApplyFrame(){const c=bxSt();const f=BX_FR.find(x=>x[0]===c.frame);if(f){document.body.dataset.bxf=f[0];document.body.style.setProperty("--bxf1",f[3]);document.body.style.setProperty("--bxf2",f[4]);}else delete document.body.dataset.bxf;}
+// --- título: aparece embaixo do seu nome (troca com os títulos dos Segredos) ---
+function bxTitleUI(){const c=bxSt();const h1=$("titleName");if(!h1)return;let t=$("bxTitle");if(!t){t=bxEl("div","sectitle bxtitle");t.id="bxTitle";(($("secTitle"))||h1).after(t);}
+  const it=c.title&&c.titles.find(x=>x.id===c.title);t.hidden=!it;t.textContent=it?"« "+it.n+" »":"";if(it){const s=$("secTitle");if(s)s.hidden=true;}}
+function bxEquipTitle(id){const c=bxSt();c.title=id||"";if(id&&prog.secTitle){prog.secTitle="";try{renderSec();}catch(e){}}save();bxTitleUI();bxColUI();}
+if(typeof secEquip==="function"){const _se=secEquip;secEquip=function(id){if(id){const c=bxSt();c.title="";}_se.apply(this,arguments);try{bxTitleUI();}catch(e){}};}
+function bxGiveTitle(id,n,src){const c=bxSt();if(c.titles.some(x=>x.id===id))return false;c.titles.push({id,n,src:src||"baú"});save();bxColUI();return true;}
+// --- abrir ---
+function bxOpen(){if($("bxModal"))return;const c=bxSt();const tk=todayKey();if(c.got[tk]||!bxReady())return;
+  if(!c.roll[tk]){c.roll[tk]=bxRoll();for(const k in c.roll)if(k<tk)delete c.roll[k];save();}
+  const rw=c.roll[tk];const tier=rw.tier||0;
+  const m=bxEl("div","sysmodal bxmodal");m.id="bxModal";m.setAttribute("role","dialog");m.setAttribute("aria-modal","true");m.setAttribute("aria-label","Baú do dia");
+  const card=bxEl("div","card bxcard");card.append(bxEl("div","tag","[ SISTEMA ] BAÚ DO DIA"),bxEl("h3",null,"Dia fechado. "+BX_TIER[tier][0]+" liberado."));
+  const hint=bxEl("p","sm muted bxhint",tier<2?"Sequência de "+(tier?7:3)+" dias melhora o baú.":"Sequência de 7+ dias: chance maior de item lendário.");
+  const btn=bxEl("button","bxbtn t"+tier);btn.type="button";btn.innerHTML=bxArt(tier);btn.setAttribute("aria-label","Abrir o baú");
+  const tap=bxEl("div","bxtap",bxMotion()?"Toque 3 vezes para abrir":"Toque para abrir");
+  const out=bxEl("div","bxout");out.hidden=true;
+  const row=bxEl("div","row bxrow");row.hidden=true;
+  card.append(btn,tap,hint,out,row);m.append(card);document.body.append(m);setTimeout(()=>btn.focus(),60);
+  let taps=0;const need=bxMotion()?3:1;
+  btn.addEventListener("click",()=>{if(btn.dataset.open)return;taps++;try{haptic(taps<need?[10]:[20,40,30]);}catch(e){}
+    if(taps<need){btn.classList.remove("shake");void btn.offsetWidth;btn.classList.add("shake");tap.textContent=need-taps===1?"Mais uma vez!":"Mais "+(need-taps)+"…";return;}
+    btn.dataset.open="1";btn.classList.add("open");tap.hidden=true;hint.hidden=true;setTimeout(reveal,bxMotion()?650:0);});
+  function reveal(){if(c.got[tk])return;c.got[tk]=1;for(const k in c.got)if(k<dkeyBack(30))delete c.got[k];
+    if(rw.k==="f"){if(!c.frames.includes(rw.id))c.frames.push(rw.id);c.dry=0;}else if(rw.k==="t"){bxGiveTitle(rw.id,rw.n,"baú");c.dry=0;}else c.dry++;
+    save();
+    if(!entries().some(e=>e.q==="ach:bau:"+tk))addXP({q:"ach:bau:"+tk,kind:"full",xp:rw.xp,stat:"mente",bonus:0,t:new Date().toISOString()},"");
+    out.hidden=false;out.textContent="";out.style.setProperty("--rc",BX_RCOL[rw.r||0]);
+    out.append(bxEl("div","bxrar",rw.r?BX_RAR[rw.r]:"Comum"));
+    if(rw.k==="f"){const pv=bxEl("div","bxfpv");pv.style.cssText=bxFrameCss(rw.id);try{pv.innerHTML=avMine(84);}catch(e){}out.append(pv,bxEl("b","bxname","Moldura: "+rw.n),bxEl("span","sm muted","+"+rw.xp+" XP"));}
+    else if(rw.k==="t")out.append(bxEl("b","bxname","Título: « "+rw.n+" »"),bxEl("span","sm muted","+"+rw.xp+" XP"));
+    else out.append(bxEl("b","bxname bxxp","+"+rw.xp+" XP"),bxEl("span","sm muted",c.dry>=3?"Item garantido em até "+Math.max(1,5-c.dry)+" baú(s).":"Amanhã tem outro."));
+    row.hidden=false;row.textContent="";
+    if(rw.k!=="x"){const eq=bxEl("button","go","Usar agora");eq.type="button";eq.addEventListener("click",()=>{if(rw.k==="f"){c.frame=rw.id;save();bxApplyFrame();}else bxEquipTitle(rw.id);toast("Equipado: "+rw.n);close();});row.append(eq);}
+    const ok=bxEl("button",rw.k==="x"?"go":"ghost","Fechar");ok.type="button";ok.addEventListener("click",close);row.append(ok);setTimeout(()=>(row.querySelector("button")||ok).focus(),50);
+    try{if(typeof sparks==="function")sparks(true);}catch(e){}
+    bxColUI();bxPill();}
+  function close(){m.remove();bxPill();try{render();}catch(e){}}
+  m.addEventListener("click",e=>{if(e.target===m&&btn.dataset.open)close();});}
+function dkeyBack(n){const d=new Date();d.setDate(d.getDate()-n);try{return dkey(d);}catch(e){return "";}}
+// --- pílula na tela Hoje quando o baú está esperando ---
+function bxPill(){let p=$("bxPill");const hoje=document.querySelector('.wrap>section[data-tab="hoje"] .status');if(!hoje)return;
+  const on=bxPending();if(!p){if(!on)return;p=bxEl("button","bxpill");p.type="button";p.id="bxPill";p.addEventListener("click",bxOpen);hoje.closest("section").before(p);}
+  p.hidden=!on;if(on){p.textContent="";const i=bxEl("span","bxpi");i.innerHTML=bxArt(bxTier());p.append(i,bxEl("b",null,"🎁 Baú do dia pronto"),bxEl("span","sm","Toque para abrir"));}}
+// --- coleção (aba Progresso): molduras e títulos para equipar ---
+function bxColUI(){let p=$("bxCol");const first=$("avPanel")||document.querySelector('.wrap>section[data-tab="prog"]');if(!first)return;
+  if(!p){p=bxEl("section","panel bxcol");p.id="bxCol";p.dataset.tab="prog";first.after(p);}
+  if(!cfg||cfg.blank){p.hidden=true;return;}p.hidden=false;const c=bxSt();p.textContent="";
+  const hd=bxEl("div","qhead");hd.append(bxEl("h2",null,"🎁 Coleção do baú"),bxEl("span","sm mono",(c.frames.length+c.titles.length)+((c.frames.length+c.titles.length)===1?" item":" itens")));p.append(hd);
+  p.append(bxEl("div","sm muted","Feche o dia para abrir 1 baú. Toque num item para usar; toque de novo para tirar."));
+  p.append(bxEl("h3","bxh","Molduras"));const g=bxEl("div","bxgrid");
+  for(const f of BX_FR){const own=c.frames.includes(f[0]);const b=bxEl("button","bxf"+(own?"":" lock")+(c.frame===f[0]?" eq":""));b.type="button";b.style.cssText=bxFrameCss(f[0]);
+    const ring=bxEl("span","bxring");if(own){try{ring.innerHTML=avMine(44);}catch(e){}}else ring.textContent="🔒";b.append(ring,bxEl("span","bxfn",own?f[1]:"???"),bxEl("span","bxfr",BX_RAR[f[2]]));b.style.setProperty("--rc",BX_RCOL[f[2]]);
+    b.disabled=!own;b.setAttribute("aria-label",own?f[1]+(c.frame===f[0]?" (em uso)":""):"Moldura bloqueada, "+BX_RAR[f[2]]);
+    if(own)b.addEventListener("click",()=>{c.frame=c.frame===f[0]?"":f[0];save();bxApplyFrame();bxColUI();toast(c.frame?"Moldura em uso: "+f[1]:"Moldura removida.");});g.append(b);}
+  p.append(g);p.append(bxEl("h3","bxh","Títulos"));const tl=bxEl("div","bxtl");
+  if(!c.titles.length)tl.append(bxEl("span","sm muted","Nenhum ainda. Baús e chefões dão títulos raros."));
+  for(const t of c.titles){const r=(BX_TT.find(x=>x[0]===t.id)||[0,0,2])[2];const b=bxEl("button","bxtt"+(c.title===t.id?" eq":""));b.type="button";b.style.setProperty("--rc",BX_RCOL[r]);
+    b.append(bxEl("b",null,"« "+t.n+" »"),bxEl("span","sm muted",(t.src==="chefão"?"do chefão":BX_RAR[r])+(c.title===t.id?" · em uso":"")));b.addEventListener("click",()=>bxEquipTitle(c.title===t.id?"":t.id));tl.append(b);}
+  p.append(tl);}
+// quando a tarefa de fechar o dia sai, o baú aparece
+{const _tg=toggle;toggle=function(q,kind){const before=bxPending();_tg.apply(this,arguments);try{bxPill();if(!before&&bxPending())setTimeout(()=>{if(sysQ&&sysQ.length){const w=setInterval(()=>{if(!sysQ.length){clearInterval(w);bxOpen();}},400);setTimeout(()=>clearInterval(w),20000);}else bxOpen();},900);}catch(e){}};}
+{const _r=render;render=function(){_r.apply(this,arguments);try{bxPill();bxTitleUI();}catch(e){}};}
+setTimeout(()=>{try{bxApplyFrame();bxTitleUI();bxColUI();bxPill();}catch(e){}},0);
+// ---------- Mural da turma (prova por foto, 14+) e Álbum de figurinhas (todas as idades) ----------
+// Mural: foto opcional de uma tarefa feita, vista SÓ por amigos confirmados, some em 7 dias, autor apaga quando quiser.
+//   - A foto é redesenhada num canvas no aparelho (sai sem EXIF/GPS), lado maior até 1080 px, JPEG até ~70 KB.
+//   - Sem comentário de texto: só reações fixas (🔥 💪 👏) e legenda escolhida de uma lista.
+//   - 14 a 17 anos: só com "meu responsável autorizou". Até 13: nada de foto, só figurinha.
+//   - O servidor (server/mural.gs) confere token, idade, amizade, tamanho e tipo; o app só mostra.
+//   - MURAL_URL vazio = mural de fotos escondido. O Álbum de figurinhas funciona sempre, sem sair do aparelho.
+// Só ADICIONA prog.mural = {ok:1, par:1, reg:"faixa", stk:{dia:[{q,e}]}}. Nada novo no formulário público.
+// Teste antes de lançar: localStorage "asc-mural-url" com um endereço /exec do Apps Script (só no próprio aparelho).
+const MURAL_URL=(()=>{const fixo="";try{const t=localStorage.getItem("asc-mural-url")||"";if(/^https:\/\/script\.google\.com\/macros\/s\/[\w-]+\/exec$/.test(t))return t;}catch(e){}return fixo;})();
+const MU_REACT=["🔥","💪","👏"];
+const MU_CAPS=["","Feito ✅","Mínimo cumprido","Dia difícil, fiz mesmo assim","Novo recorde","Primeira vez!"];
+const MU_STK=["⭐","🏆","🔥","💪","📚","🧠","🏃","🎯","🌙","✨","🦸","🐉","🎨","🎵","🥇","💧"];
+const MU_MAXB=70000;
+function muSt(){if(!prog.mural||typeof prog.mural!=="object")prog.mural={};const m=prog.mural;m.stk=m.stk||{};return m;}
+function muEl(t,cl,x){const e=document.createElement(t);if(cl)e.className=cl;if(x!=null)e.textContent=x;return e;}
+function muAge(){let a="";try{a=ageNow();}catch(e){}if(!a&&typeof crOn==="function")return "adult";return a;}
+function muKid(){return muAge()==="kid";}
+function muBand(){const a=muAge();return a==="teen"?"teen":(a==="young"||a==="adult"||a==="senior")?"adult":"";}
+function muTok(){try{return typeof rkTok==="function"?rkTok():"";}catch(e){return "";}}
+// pode ver e postar foto? (servidor confere de novo)
+function muPhotoOn(){return !!MURAL_URL&&!!muBand()&&!!(prog.rank&&prog.rank.on)&&!!rankName()&&!!muTok();}
+async function muApi(a,o){const body=JSON.stringify(Object.assign({a,n:rankName(),tk:muTok()},o||{}));
+  const r=await fetch(MURAL_URL,{method:"POST",body,credentials:"omit",redirect:"follow"});const j=await r.json();if(!j||j.ok===false)throw new Error((j&&j.err)||"erro");return j;}
+function muAgo(iso){const m=Math.max(0,Math.round((Date.now()-new Date(iso))/6e4));return m<60?(m<1?"agora":m+" min"):m<1440?Math.round(m/60)+" h":Math.round(m/1440)+" d";}
+// --- foto: redesenha no canvas (tira EXIF/GPS) e comprime ---
+async function muShrink(file){if(!file||!/^image\//.test(file.type||"image/"))throw new Error("tipo");
+  let src;try{src=await createImageBitmap(file,{imageOrientation:"from-image"});}catch(e){src=await new Promise((ok,no)=>{const i=new Image();i.onload=()=>ok(i);i.onerror=no;i.src=URL.createObjectURL(file);});}
+  const W=src.width,H=src.height;let side=1080,q=.72,url="";
+  for(let k=0;k<9;k++){const s=Math.min(1,side/Math.max(W,H));const c=document.createElement("canvas");c.width=Math.max(1,Math.round(W*s));c.height=Math.max(1,Math.round(H*s));
+    const g=c.getContext("2d");g.fillStyle="#000";g.fillRect(0,0,c.width,c.height);g.drawImage(src,0,0,c.width,c.height);url=c.toDataURL("image/jpeg",q);
+    if(url.length*.75<=MU_MAXB)return url;if(q>.45)q-=.12;else side=Math.round(side*.8);}
+  if(url.length*.75<=MU_MAXB)return url;throw new Error("grande");}
+// --- depois de concluir uma tarefa: atalho por 8 s ---
+function muChip(q){if(!q||!cfg||cfg.blank)return;const old=$("muChip");if(old)old.remove();const photo=muPhotoOn();
+  const b=muEl("button","much",photo?"📸 Provar no mural":"⭐ Colar figurinha");b.type="button";b.id="muChip";
+  b.addEventListener("click",()=>{b.remove();photo?muCompose(q):muSticker(q);});document.body.append(b);setTimeout(()=>{if(b.isConnected)b.remove();},8000);}
+{const _tg=toggle;toggle=function(q,kind){const tk=todayKey();const had=(prog.log[tk]||[]).some(e=>e.q===q.id);_tg.apply(this,arguments);
+  try{const now=(prog.log[tk]||[]).some(e=>e.q===q.id);if(!had&&now&&!/^(s_fech|q_fech)$/.test(q.id))muChip(q);}catch(e){}};}
+// --- figurinha (todas as idades, fica no aparelho) ---
+function muSticker(q){const m=muEl("div","sysmodal mumodal");m.setAttribute("role","dialog");m.setAttribute("aria-modal","true");const c=muEl("div","card");
+  const title=String(q.title||"Tarefa").replace(/^\S+\s(?=Fechar)/,"").slice(0,60);
+  c.append(muEl("div","tag","[ SISTEMA ] PROVA DA TAREFA"),muEl("h3",null,"Cole uma figurinha"),muEl("p","sm muted","« "+title+" » vai para o seu álbum. Fica só neste aparelho."));
+  const g=muEl("div","mustk");for(const e of MU_STK){const b=muEl("button","mus",e);b.type="button";b.setAttribute("aria-label","Figurinha "+e);
+    b.addEventListener("click",()=>{const s=muSt();const tk=todayKey();s.stk[tk]=(s.stk[tk]||[]).filter(x=>x.q!==title).concat([{q:title,e}]).slice(-12);
+      const keys=Object.keys(s.stk).sort();while(keys.length>60)delete s.stk[keys.shift()];save();m.remove();try{haptic([10,30,10]);}catch(e){}toast(e+" Figurinha colada no álbum.");muAlbumUI();});g.append(b);}
+  const no=muEl("button","link","Agora não");no.type="button";no.addEventListener("click",()=>m.remove());c.append(g,no);m.append(c);document.body.append(m);}
+function muAlbumUI(){let p=$("muAlbum");const anchor=$("bxCol")||$("avPanel")||document.querySelector('.wrap>section[data-tab="prog"]');if(!anchor)return;
+  if(!p){p=muEl("section","panel mualb");p.id="muAlbum";p.dataset.tab="prog";anchor.after(p);}
+  const s=muSt();const days=Object.keys(s.stk).sort().reverse().filter(d=>(s.stk[d]||[]).length);if(!cfg||cfg.blank){p.hidden=true;return;}p.hidden=false;p.textContent="";
+  let n=0;for(const d of days)n+=s.stk[d].length;
+  const hd=muEl("div","qhead");hd.append(muEl("h2",null,"⭐ Álbum de figurinhas"),muEl("span","sm mono",n+(n===1?" figurinha":" figurinhas")));p.append(hd);
+  if(!days.length){p.append(muEl("div","sm muted","Concluiu uma tarefa? Toque em « ⭐ Colar figurinha » e ela entra aqui como prova. Fica só no seu aparelho."));return;}
+  for(const d of days.slice(0,14)){const row=muEl("div","muday");const [y,mo,da]=d.split("-");row.append(muEl("span","mudd",da+"/"+mo));
+    const g=muEl("div","mudg");for(const x of s.stk[d]){const t=muEl("span","mut",x.e);t.title=x.q;t.setAttribute("aria-label",x.e+" "+x.q);g.append(t);}row.append(g);p.append(row);}}
+// --- consentimento (1ª vez) e aviso curto nas próximas ---
+function muConsent(done){const s=muSt();const teen=muBand()==="teen";
+  const m=muEl("div","sysmodal mumodal");m.setAttribute("role","dialog");m.setAttribute("aria-modal","true");const c=muEl("div","card");
+  c.append(muEl("div","tag","[ SISTEMA ] MURAL DA TURMA"),muEl("h3",null,"Antes da 1ª foto"));
+  const ul=muEl("ul","sm mulist");for(const t of ["Só seus amigos confirmados veem. Nunca fica público nem vai para o ranking.","A foto some sozinha em 7 dias. Você pode apagar antes, quando quiser.","Não mostre rosto (nem o seu, nem de ninguém), uniforme, nome da escola, endereço, número da casa, placa ou documento.","Sem comentários: só reações 🔥 💪 👏. Viu algo errado? Toque em Denunciar."])ul.append(muEl("li",null,t));c.append(ul);
+  const l1=muEl("label","chk sm");const c1=muEl("input");c1.type="checkbox";l1.append(c1,document.createTextNode(" Entendi as regras"));c.append(l1);
+  let c2=null;if(teen){const l2=muEl("label","chk sm");c2=muEl("input");c2.type="checkbox";l2.append(c2,document.createTextNode(" Meu responsável autorizou eu postar fotos para meus amigos"));c.append(l2);}
+  const msg=muEl("div","sm mumsg");c.append(msg);
+  const row=muEl("div","row");const ok=muEl("button","go","Continuar");ok.type="button";const no=muEl("button","ghost","Agora não");no.type="button";row.append(ok,no);c.append(row);
+  no.addEventListener("click",()=>m.remove());
+  ok.addEventListener("click",async()=>{if(!c1.checked){msg.textContent="Marque que entendeu as regras.";return;}if(teen&&!(c2&&c2.checked)){msg.textContent="Para quem tem 14 a 17 anos, o responsável precisa autorizar.";return;}
+    ok.disabled=true;msg.textContent="Ligando…";try{await muApi("reg",{band:muBand(),par:teen?1:0});s.ok=1;s.reg=muBand();if(teen)s.par=1;save();m.remove();done();}
+    catch(e){ok.disabled=false;msg.textContent="Não deu para ligar agora. Tente de novo em instantes.";}});
+  m.append(c);document.body.append(m);}
+// --- postar foto ---
+function muCompose(q){if(!muPhotoOn())return muSticker(q);const s=muSt();if(!s.ok||s.reg!==muBand())return muConsent(()=>muCompose(q));
+  const inp=muEl("input");inp.type="file";inp.accept="image/*";inp.hidden=true;document.body.append(inp);
+  inp.addEventListener("change",async()=>{const f=inp.files&&inp.files[0];inp.remove();if(!f)return;let url;try{url=await muShrink(f);}catch(e){toast("Não deu para usar essa foto. Tente outra.");return;}muPreview(q,url);});
+  inp.click();}
+function muPreview(q,url){const title=String(q.title||"Tarefa").slice(0,40);let cap="";
+  const m=muEl("div","sysmodal mumodal");m.setAttribute("role","dialog");m.setAttribute("aria-modal","true");const c=muEl("div","card");
+  c.append(muEl("div","tag","[ SISTEMA ] PROVA NO MURAL"));const im=muEl("img","muprev");im.alt="Sua foto";im.src=url;c.append(im,muEl("b",null,title));
+  const caps=muEl("div","mucaps");for(const t of MU_CAPS){const b=muEl("button","chip"+(t===cap?" on":""),t||"Sem legenda");b.type="button";b.addEventListener("click",()=>{cap=t;for(const x of caps.children)x.classList.toggle("on",x===b);});caps.append(b);}caps.firstChild.classList.add("on");c.append(caps);
+  c.append(muEl("p","sm muwarn","⚠ Sem rosto, escola, endereço ou documento. Só amigos veem, some em 7 dias."));
+  const msg=muEl("div","sm mumsg");c.append(msg);
+  const row=muEl("div","row");const ok=muEl("button","go","Postar para amigos");ok.type="button";const no=muEl("button","ghost","Cancelar");no.type="button";row.append(ok,no);c.append(row);
+  no.addEventListener("click",()=>m.remove());
+  ok.addEventListener("click",async()=>{ok.disabled=true;msg.textContent="Enviando…";try{await muApi("post",{q:title,cap,img:url});m.remove();try{haptic([15,40,15]);}catch(e){}toast("📸 Prova no mural. Seus amigos já podem reagir.");muAt=0;muLoad();}
+    catch(e){ok.disabled=false;const er=String(e.message||"");msg.textContent=/limite/.test(er)?"Hoje já foram 3 fotos. Amanhã tem mais.":/amigo/.test(er)?"Adicione um amigo antes de postar.":"Não deu para enviar agora. Tente de novo.";}});
+  m.append(c);document.body.append(m);}
+// --- painel na aba Amigos ---
+let muPosts=null,muAt=0,muBusy=false;
+async function muLoad(){if(!muPhotoOn()||muBusy||!muSt().ok)return muUI();if(Date.now()-muAt<45000)return muUI();muBusy=true;muAt=Date.now();
+  try{const j=await muApi("list");muPosts=Array.isArray(j.posts)?j.posts.slice(0,20):[];}catch(e){muPosts=muPosts||[];}muBusy=false;muUI();}
+function muImgOk(u){return typeof u==="string"&&/^data:image\/jpeg;base64,[A-Za-z0-9+/=]+$/.test(u)&&u.length<200000;}
+async function muAct(a,o,okMsg){try{await muApi(a,o);if(okMsg)toast(okMsg);}catch(e){toast("Não deu agora. Tente de novo.");}muAt=0;muLoad();}
+function muUI(){let p=$("muPanel");const wrap=document.querySelector(".wrap");if(!wrap)return;
+  if(!p){p=muEl("section","panel mu");p.id="muPanel";p.dataset.tab="amigos";const at=$("tmPanel");at&&at.parentNode===wrap?at.after(p):wrap.append(p);}
+  if(!MURAL_URL||!muBand()||!(prog.rank&&prog.rank.on)){p.hidden=true;return;}p.hidden=false;p.textContent="";const s=muSt();
+  const hd=muEl("div","qhead");hd.append(muEl("h2",null,"📸 Mural da turma"),muEl("span","sm muted","só amigos · 7 dias"));p.append(hd);
+  if(!muPhotoOn()){p.append(muEl("div","sm muted","O mural liga quando você está no ranking com apelido."));return;}
+  if(!s.ok){p.append(muEl("p","sm","Prove uma tarefa com foto. Só seus amigos veem e ela some em 7 dias."));const b=muEl("button","go","Ligar o mural");b.type="button";b.addEventListener("click",()=>muConsent(()=>{muAt=0;muLoad();}));p.append(b);return;}
+  const add=muEl("button","ghost","＋ Postar prova de uma tarefa de hoje");add.type="button";add.addEventListener("click",()=>{const tk=todayKey();const done=(prog.log[tk]||[]).map(e=>e.q);
+    const qs=((cfg&&cfg.quests)||[]).concat(prog.extra[tk]||[]).filter(q=>done.includes(q.id));if(!qs.length){toast("Conclua uma tarefa primeiro.");return;}
+    if(qs.length===1)return muCompose(qs[0]);const m=muEl("div","sysmodal mumodal");const c=muEl("div","card");c.append(muEl("h3",null,"Qual tarefa?"));
+    for(const q of qs.slice(0,10)){const b=muEl("button","ghost mupick",q.title);b.type="button";b.addEventListener("click",()=>{m.remove();muCompose(q);});c.append(b);}
+    const no=muEl("button","link","Cancelar");no.type="button";no.addEventListener("click",()=>m.remove());c.append(no);m.append(c);document.body.append(m);});p.append(add);
+  if(muPosts===null){p.append(muEl("div","sm muted","Carregando o mural…"));return;}
+  if(!muPosts.length){p.append(muEl("div","sm muted mu0","Nenhuma foto nos últimos 7 dias. Seja o primeiro a provar uma tarefa."));return;}
+  const me=String(rankName()||"").toLowerCase();const L=muEl("div","mulst");
+  for(const x of muPosts){if(!muImgOk(x.img))continue;const card=muEl("article","mupost");const top=muEl("div","mutop");
+    const av=muEl("span","muav");try{av.innerHTML=frAv(((typeof sqPub!=="undefined"&&sqPub[String(x.a||"").toLowerCase()])||{}).av,32);}catch(e){}
+    top.append(av,muEl("b",null,String(x.a||"").slice(0,16)),muEl("span","sm muted",muAgo(x.d)));card.append(top);
+    const im=muEl("img","muimg");im.alt="Foto de prova de "+String(x.a||"");im.loading="lazy";im.src=x.img;card.append(im);
+    card.append(muEl("div","muq","✅ "+String(x.q||"").slice(0,40)+(x.cap&&MU_CAPS.includes(x.cap)?" · "+x.cap:"")));
+    const bar=muEl("div","murx");for(const e of MU_REACT){const n=+((x.r||{})[e])||0;const mine=!!((x.my||{})[e]);const b=muEl("button","murb"+(mine?" on":""),e+(n?" "+n:""));b.type="button";b.setAttribute("aria-pressed",mine?"true":"false");b.setAttribute("aria-label","Reagir "+e);
+      b.addEventListener("click",()=>{x.my=x.my||{};x.r=x.r||{};x.my[e]=!mine;x.r[e]=Math.max(0,n+(mine?-1:1));muUI();muAct("react",{id:x.id,e});});bar.append(b);}
+    const own=String(x.a||"").toLowerCase()===me;const act=muEl("button","link muop",own?"Apagar":"Denunciar");act.type="button";
+    act.addEventListener("click",()=>{if(own){if(confirm("Apagar esta foto do mural?")){muPosts=muPosts.filter(y=>y!==x);muUI();muAct("del",{id:x.id},"Foto apagada.");}}
+      else if(confirm("Denunciar esta foto? Ela some para você e o criador do app é avisado.")){muPosts=muPosts.filter(y=>y!==x);muUI();muAct("report",{id:x.id},"Denúncia enviada. Obrigado.");}});
+    bar.append(act);card.append(bar);L.append(card);}
+  p.append(L);}
+document.addEventListener("click",e=>{const b=e.target.closest&&e.target.closest('#tabbar [data-go="amigos"]');if(b)setTimeout(()=>{try{muLoad();}catch(x){}},0);},true);
+{const _r=render;render=function(){_r.apply(this,arguments);try{if(!$("muAlbum")||document.body.dataset.tab==="prog")muAlbumUI();}catch(e){}};}
+setTimeout(()=>{try{muAlbumUI();muUI();}catch(e){}},0);
 
 let saveTimer=null, SYNC="";
 try{SYNC=localStorage.getItem("ascensao-sync")||"";}catch(e){}
