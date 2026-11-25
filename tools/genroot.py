@@ -24,4 +24,7 @@ s=s.replace('String(e.q).startsWith("ach:")','/^(ach|checkin|tip|dun|adm):/.test
 sea=R('season.js').replace('"asc-u-season"','"ascensao-season"').replace('"asc-u-prog-t1"','"ascensao-prog-t1"').replace('"asc-u-cfg"','"ascensao-cfg"')
 rep('try{if(navigator.storage&&navigator.storage.persist)',sea+'\ntry{if(navigator.storage&&navigator.storage.persist)')
 assert 'asc-u-' not in s.replace('asc-u-intro',''),'chave errada'
+# telas enxutas: painéis secundários recolhidos, foco centralizado (tools/simple.*)
+rep('</style></head>',R('simple.css')+'</style></head>')
+rep('\nlet saveTimer=null, SYNC="";','\n'+R('simple.js')+'\nlet saveTimer=null, SYNC="";')
 open(SP+'../index.html','w').write(s)

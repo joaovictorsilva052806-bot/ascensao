@@ -1,0 +1,26 @@
+/* ---- Telas enxutas: uma coisa principal por tela, o resto recolhido (tools/simple.*) ---- */
+.wrap{max-width:560px}
+.tabbar{padding-left:max(8px,calc(50% - 280px));padding-right:max(8px,calc(50% - 280px))}
+/* painéis secundários viram uma linha que abre com um toque */
+.panel.fold{gap:0}
+.panel.fold>.fhd{cursor:pointer;user-select:none;-webkit-user-select:none;display:flex;align-items:center;justify-content:flex-start;flex-wrap:nowrap;gap:10px;min-height:28px}
+.panel.fold>.fhd>h2{flex:1 1 auto;min-width:0}
+.panel.fold>.fhd>:not(h2){flex:none;white-space:nowrap}
+.panel.fold:not(.open)>.fhd>.muted:not(.mono){display:none}
+.panel.fold>.fhd::after{content:"";flex:none;margin-left:auto!important;width:8px;height:8px;border-right:2px solid var(--muted);border-bottom:2px solid var(--muted);transform:rotate(45deg);margin:0 4px 4px 0;transition:transform .2s}
+.panel.fold.open>.fhd::after{transform:rotate(-135deg);margin:4px 4px 0 0}
+.panel.fold>.fhd:focus-visible{outline:2px solid var(--glow);outline-offset:4px}
+.panel.fold:not(.open)>:not(.fhd){display:none!important}
+.panel.fold.open{gap:14px}
+.panel.fold.open>.fhd{margin-bottom:2px}
+.panel.fold:not(.open){padding-block:14px}
+/* Foco: só o relógio e o botão, no meio da tela */
+body[data-tab=foco] #focusPanel{text-align:center;align-items:stretch;margin-top:min(8vh,64px)}
+body[data-tab=foco] #focusPanel .qhead{justify-content:center;gap:12px;flex-wrap:wrap}
+body[data-tab=foco] #focusPanel .timer{font-size:clamp(4rem,22vw,6.5rem);margin:8px 0}
+body[data-tab=foco] #focusPanel .row{justify-content:center}
+body[data-tab=foco] #focusPanel select{max-width:100%;text-align:center;text-align-last:center}
+body[data-tab=foco] #focusNote{font-size:.8rem;color:var(--muted)}
+/* atalho repetido (fica em Mais › Sugerir melhoria) */
+#fbQuick{display:none}
+@media (prefers-reduced-motion:reduce){.panel.fold>.fhd::after{transition:none}}

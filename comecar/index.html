@@ -402,6 +402,32 @@ button.big{padding:16px;font-size:1.05rem}
 .seczen[hidden]{display:none}
 .zentxt{font-family:var(--f-hud,inherit);color:var(--glow);font-size:2rem}
 @media (prefers-reduced-motion:reduce){.seczen .zenring i{transition:none!important;transform:none!important}}
+/* ---- Telas enxutas: uma coisa principal por tela, o resto recolhido (tools/simple.*) ---- */
+.wrap{max-width:560px}
+.tabbar{padding-left:max(8px,calc(50% - 280px));padding-right:max(8px,calc(50% - 280px))}
+/* painéis secundários viram uma linha que abre com um toque */
+.panel.fold{gap:0}
+.panel.fold>.fhd{cursor:pointer;user-select:none;-webkit-user-select:none;display:flex;align-items:center;justify-content:flex-start;flex-wrap:nowrap;gap:10px;min-height:28px}
+.panel.fold>.fhd>h2{flex:1 1 auto;min-width:0}
+.panel.fold>.fhd>:not(h2){flex:none;white-space:nowrap}
+.panel.fold:not(.open)>.fhd>.muted:not(.mono){display:none}
+.panel.fold>.fhd::after{content:"";flex:none;margin-left:auto!important;width:8px;height:8px;border-right:2px solid var(--muted);border-bottom:2px solid var(--muted);transform:rotate(45deg);margin:0 4px 4px 0;transition:transform .2s}
+.panel.fold.open>.fhd::after{transform:rotate(-135deg);margin:4px 4px 0 0}
+.panel.fold>.fhd:focus-visible{outline:2px solid var(--glow);outline-offset:4px}
+.panel.fold:not(.open)>:not(.fhd){display:none!important}
+.panel.fold.open{gap:14px}
+.panel.fold.open>.fhd{margin-bottom:2px}
+.panel.fold:not(.open){padding-block:14px}
+/* Foco: só o relógio e o botão, no meio da tela */
+body[data-tab=foco] #focusPanel{text-align:center;align-items:stretch;margin-top:min(8vh,64px)}
+body[data-tab=foco] #focusPanel .qhead{justify-content:center;gap:12px;flex-wrap:wrap}
+body[data-tab=foco] #focusPanel .timer{font-size:clamp(4rem,22vw,6.5rem);margin:8px 0}
+body[data-tab=foco] #focusPanel .row{justify-content:center}
+body[data-tab=foco] #focusPanel select{max-width:100%;text-align:center;text-align-last:center}
+body[data-tab=foco] #focusNote{font-size:.8rem;color:var(--muted)}
+/* atalho repetido (fica em Mais › Sugerir melhoria) */
+#fbQuick{display:none}
+@media (prefers-reduced-motion:reduce){.panel.fold>.fhd::after{transition:none}}
 </style></head><body>
 
 <div class="hudtop"><span>ASCENSION<i>//</i>SISTEMA ONLINE</span><span class="mono" id="clock">--:--</span></div>
@@ -571,7 +597,7 @@ button.big{padding:16px;font-size:1.05rem}
   </section>
   <section data-tab="hoje" class="panel rpg" id="tipCard">
     <div class="qhead"><h2>📘 Treino do Sistema</h2><span class="sm muted">+5 XP · 20 s</span></div>
-    <p id="tipText"></p>
+    <p id="sysTipText"></p>
     <div class="row"><button class="go" type="button" id="tipOk">Li e vou testar hoje</button></div>
   </section>
 
@@ -1649,7 +1675,7 @@ function renderRPG(){renderDun();sysTipUI();const r=rpgState();const st=statXP()
       rpgState().spent+=w.c;save();render();sysPop("RECOMPENSA","Aproveite: "+w.t,"Você ganhou isso. Curta sem culpa e volte com energia.");});
     const del=document.createElement("button");del.type="button";del.className="link";del.textContent="✕";del.setAttribute("aria-label","Remover recompensa");del.addEventListener("click",()=>{rpgState().rew.splice(i,1);save();render();});
     row.append(sp,c,bt,del);cl.append(row);});
-  const tk=todayKey();const tc=$("tipCard");tc.hidden=!!r.tips[tk];$("tipText").textContent=rpgTip();}
+  const tk=todayKey();const tc=$("tipCard");tc.hidden=!!r.tips[tk];$("sysTipText").textContent=rpgTip();}
 $("tipOk").addEventListener("click",()=>{const r=rpgState(),tk=todayKey();if(r.tips[tk])return;r.tips[tk]=1;addXP({q:"tip:"+tk,kind:"tip",xp:5,stat:"mente",bonus:0,t:new Date().toISOString()},"Treino concluído: +5 XP");});
 $("chestForm").addEventListener("submit",e=>{e.preventDefault();const t=$("chestT").value.trim().slice(0,40);const c=Math.max(1,Math.min(500,parseInt($("chestC").value,10)||10));if(!t)return;
   const r=rpgState();if(r.rew.length>=12){toast("Máximo de 12 recompensas.");return;}r.rew.push({t,c});$("chestT").value="";$("chestC").value="";save();render();});
@@ -1894,6 +1920,35 @@ function secMount(){
   document.addEventListener("keydown",e=>{if(e.key==="Escape"&&!$("secZen").hidden)zenClose();});
   renderSec();secClock();setInterval(secClock,20000);document.addEventListener("visibilitychange",secClock);}
 setTimeout(secMount,0);
+
+
+// ---------- Telas enxutas: cada aba mostra uma coisa principal; o resto vira linha que abre com um toque ----------
+// Não apaga nada: só recolhe. O que fica aberto é lembrado nesta sessão (preferência de tela, não é progresso).
+(function(){
+  const KEEP=new Set(["focusPanel","dunPanel","invPanel","onb","quick"]);
+  const openKey="asc-ui-open";let opened={};try{opened=JSON.parse(sessionStorage.getItem(openKey)||"{}")||{};}catch(e){}
+  const saveOpen=()=>{try{sessionStorage.setItem(openKey,JSON.stringify(opened));}catch(e){}};
+  function foldAll(){for(const sec of document.querySelectorAll(".wrap>section.panel[data-tab]:not([data-sf])")){
+    sec.dataset.sf="1";const tab=sec.dataset.tab;
+    if(KEEP.has(sec.id)||sec.classList.contains("tip")||sec.classList.contains("onb")||tab==="criador")continue;
+    const hd=sec.firstElementChild;if(!hd||!(hd.matches(".qhead")||hd.matches("h2")))continue;
+    // Hoje: perfil e tarefas ficam abertos. Progresso: a masmorra fica aberta. Mais: tudo vira menu.
+    if(tab==="hoje"&&sec.querySelector("#quests"))continue;
+    const key=sec.id||(tab+":"+(hd.textContent||"").trim().slice(0,40));
+    sec.classList.add("fold");hd.classList.add("fhd");hd.setAttribute("role","button");hd.tabIndex=0;
+    const set=(o)=>{sec.classList.toggle("open",o);hd.setAttribute("aria-expanded",o?"true":"false");};
+    set(!!opened[key]);
+    const flip=()=>{const o=!sec.classList.contains("open");
+      if(o)for(const other of document.querySelectorAll('.panel.fold.open[data-tab="'+tab+'"]'))if(other!==sec){other.classList.remove("open");other.firstElementChild.setAttribute("aria-expanded","false");for(const k in opened)if(opened[k]===tab)delete opened[k];}
+      set(o);if(o)opened[key]=tab;else delete opened[key];saveOpen();
+      if(o){const r=sec.getBoundingClientRect();if(r.top<0||r.top>innerHeight*.6)sec.scrollIntoView({block:"start",behavior:matchMedia("(prefers-reduced-motion: reduce)").matches?"auto":"smooth"});}};
+    hd.addEventListener("click",e=>{if(e.target.closest("a,input,select,textarea")||(e.target.closest("button")&&e.target.closest("button")!==hd))return;flip();});
+    hd.addEventListener("keydown",e=>{if(e.key==="Enter"||e.key===" "){e.preventDefault();flip();}});
+    }}
+  foldAll();const w=document.querySelector(".wrap");if(w&&window.MutationObserver)new MutationObserver(foldAll).observe(w,{childList:true});
+  // Foco: explicação longa vira uma linha
+  const fn=document.getElementById("focusNote");if(fn&&/^Escolha a quest, aperte começar/.test(fn.textContent))fn.textContent="Celular virado para baixo. No fim, o XP entra sozinho.";
+})();
 
 let saveTimer=null, SYNC="";
 try{SYNC=localStorage.getItem("asc-u-sync")||"";}catch(e){}
