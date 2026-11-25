@@ -9,7 +9,7 @@ body[data-tab=amigos] .wrap>section[data-tab]:not([data-tab=amigos]){display:non
 .tmjoin{display:flex;flex-direction:column;gap:10px;padding:14px;border:1px dashed var(--line);border-radius:10px}
 .tmlg{display:flex;flex-direction:column;gap:2px;padding:12px 14px;border-radius:10px;background:linear-gradient(135deg,rgba(242,193,78,.14),rgba(0,212,255,.06));border:1px solid rgba(242,193,78,.35);margin-bottom:10px}
 .tmlg b{font-family:var(--f-hud);letter-spacing:.08em;font-size:.95rem;color:var(--gold)}
-.tmseg{display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-bottom:10px}
+.tmseg{display:grid;grid-template-columns:repeat(auto-fit,minmax(0,1fr));gap:6px;margin-bottom:10px}
 .tmseg button{min-height:38px;border-radius:999px;border:1px solid var(--line);background:transparent;color:var(--muted);font-size:.86rem}
 .tmseg button.on{border-color:var(--accent);color:var(--glow);background:rgba(0,212,255,.08)}
 .tmempty{display:flex;flex-direction:column;gap:8px;padding:12px;border:1px dashed var(--line);border-radius:10px;margin-bottom:10px}
@@ -38,3 +38,10 @@ body[data-tab=amigos] .wrap>section[data-tab]:not([data-tab=amigos]){display:non
 .tmhd h2{white-space:nowrap}
 body[data-tab=amigos] #frPanel .frlist{display:none}
 .wrap>section.tmoff{display:none!important}
+/* ---- Ranking do dia (tools/daily.js) ---- */
+.dybox{display:flex;flex-direction:column;gap:6px;margin-bottom:10px}
+.dyriv{font-family:var(--f-mono);font-size:.8rem;color:var(--glow);padding:8px 10px;border:1px dashed rgba(111,177,255,.35);border-radius:8px;background:rgba(0,212,255,.04)}
+.dybox .dyntf{align-self:flex-start;min-height:40px;padding:0 4px}
+.tmlist li{position:relative}
+.dyup{position:absolute;top:-9px;right:10px;padding:1px 8px;border-radius:999px;border:1px solid var(--good);background:#0a1222;font-family:var(--f-mono);font-size:.72rem;color:var(--good);letter-spacing:.06em}
+.zaprival{margin-top:6px}

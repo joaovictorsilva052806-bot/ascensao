@@ -13,3 +13,12 @@
 .zapcam{display:inline-flex;align-items:center;min-height:44px;padding:0 12px;border:1px solid var(--line);border-radius:8px;cursor:pointer}
 .zapsr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);clip-path:inset(50%);white-space:nowrap}
 @media (prefers-reduced-motion:reduce){.zaptap:active{transform:none}}
+.zapmo{justify-self:center;min-height:44px;padding:0 14px}
+.zapmo.on{border-color:var(--good);color:var(--good)}
+/* ---- Desafio em dupla (tools/duo.js) ---- */
+.duobox{display:grid;gap:6px;padding:10px;border:1px dashed rgba(242,193,78,.4);border-radius:10px}
+.duost{font-family:var(--f-mono);font-size:.82rem;color:var(--gold)}
+.duogo{min-height:44px}
+.duochips{display:flex;flex-wrap:wrap;gap:6px}
+.duochips .chip{min-height:40px}
+.zapc .duo{position:absolute;top:4px;left:6px;font-size:.8rem}

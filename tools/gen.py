@@ -144,6 +144,6 @@ rep('</style></head>',open(SP+'qtidy.css').read()+'</style></head>')
 rep('\nlet saveTimer=null, SYNC="";','\n'+open(SP+'qtidy.js').read()+'\nlet saveTimer=null, SYNC="";')
 # aba Amigos: liga, turma, novidades, parabéns e cutucar (tools/turma.*)
 rep('</style></head>',open(SP+'turma.css').read()+open(SP+'card.css').read()+'</style></head>')
-rep('\nlet saveTimer=null, SYNC="";','\n'+open(SP+'turma.js').read()+open(SP+'card.js').read()+'\nlet saveTimer=null, SYNC="";')
+rep('\nlet saveTimer=null, SYNC="";','\n'+open(SP+'daily.js').read()+open(SP+'turma.js').read()+open(SP+'card.js').read()+open(SP+'duo.js').read()+'\nlet saveTimer=null, SYNC="";')
 open('comecar/index.html','w').write(s)
 pass

@@ -517,6 +517,15 @@ body.inmission{overflow:hidden}
 .zapcam{display:inline-flex;align-items:center;min-height:44px;padding:0 12px;border:1px solid var(--line);border-radius:8px;cursor:pointer}
 .zapsr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);clip-path:inset(50%);white-space:nowrap}
 @media (prefers-reduced-motion:reduce){.zaptap:active{transform:none}}
+.zapmo{justify-self:center;min-height:44px;padding:0 14px}
+.zapmo.on{border-color:var(--good);color:var(--good)}
+/* ---- Desafio em dupla (tools/duo.js) ---- */
+.duobox{display:grid;gap:6px;padding:10px;border:1px dashed rgba(242,193,78,.4);border-radius:10px}
+.duost{font-family:var(--f-mono);font-size:.82rem;color:var(--gold)}
+.duogo{min-height:44px}
+.duochips{display:flex;flex-wrap:wrap;gap:6px}
+.duochips .chip{min-height:40px}
+.zapc .duo{position:absolute;top:4px;left:6px;font-size:.8rem}
 /* ---- Comece por aqui (tools/guide.*) ---- */
 .gd{border-color:var(--gold)!important}
 .gdl{list-style:none;margin:0;padding:0;display:grid;gap:8px}
@@ -602,7 +611,7 @@ body[data-tab=amigos] .wrap>section[data-tab]:not([data-tab=amigos]){display:non
 .tmjoin{display:flex;flex-direction:column;gap:10px;padding:14px;border:1px dashed var(--line);border-radius:10px}
 .tmlg{display:flex;flex-direction:column;gap:2px;padding:12px 14px;border-radius:10px;background:linear-gradient(135deg,rgba(242,193,78,.14),rgba(0,212,255,.06));border:1px solid rgba(242,193,78,.35);margin-bottom:10px}
 .tmlg b{font-family:var(--f-hud);letter-spacing:.08em;font-size:.95rem;color:var(--gold)}
-.tmseg{display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-bottom:10px}
+.tmseg{display:grid;grid-template-columns:repeat(auto-fit,minmax(0,1fr));gap:6px;margin-bottom:10px}
 .tmseg button{min-height:38px;border-radius:999px;border:1px solid var(--line);background:transparent;color:var(--muted);font-size:.86rem}
 .tmseg button.on{border-color:var(--accent);color:var(--glow);background:rgba(0,212,255,.08)}
 .tmempty{display:flex;flex-direction:column;gap:8px;padding:12px;border:1px dashed var(--line);border-radius:10px;margin-bottom:10px}
@@ -631,6 +640,13 @@ body[data-tab=amigos] .wrap>section[data-tab]:not([data-tab=amigos]){display:non
 .tmhd h2{white-space:nowrap}
 body[data-tab=amigos] #frPanel .frlist{display:none}
 .wrap>section.tmoff{display:none!important}
+/* ---- Ranking do dia (tools/daily.js) ---- */
+.dybox{display:flex;flex-direction:column;gap:6px;margin-bottom:10px}
+.dyriv{font-family:var(--f-mono);font-size:.8rem;color:var(--glow);padding:8px 10px;border:1px dashed rgba(111,177,255,.35);border-radius:8px;background:rgba(0,212,255,.04)}
+.dybox .dyntf{align-self:flex-start;min-height:40px;padding:0 4px}
+.tmlist li{position:relative}
+.dyup{position:absolute;top:-9px;right:10px;padding:1px 8px;border-radius:999px;border:1px solid var(--good);background:#0a1222;font-family:var(--f-mono);font-size:.72rem;color:var(--good);letter-spacing:.06em}
+.zaprival{margin-top:6px}
 /* ---- Card de jogador + convite + destaque (tools/card.js) ---- */
 .cdmodal .cdcard{position:relative;max-width:360px;padding:16px 16px 14px;border:2px solid var(--cd);border-radius:16px;background:radial-gradient(120% 70% at 50% 0%,color-mix(in srgb,var(--cd) 28%,transparent),transparent 60%),linear-gradient(180deg,#0c1628,#060b15);box-shadow:0 0 0 1px rgba(255,255,255,.04) inset,0 0 34px color-mix(in srgb,var(--cd) 35%,transparent);text-align:center}
 .cdtop{display:flex;justify-content:space-between;align-items:center;gap:8px}
@@ -2599,16 +2615,18 @@ function zapSay(t){const l=$("zapLive");if(l)l.textContent=t;}
 function zapOpen(z){zapCur=z;zapCnt=0;zapEnd=0;clearInterval(zapIv);let m=$("zapSheet");if(!m){m=zapEl("div","mssheet");m.id="zapSheet";m.setAttribute("role","dialog");m.setAttribute("aria-modal","true");document.body.append(m);}
   m.setAttribute("aria-label","Desafio relâmpago: "+z.t);m.textContent="";const lv=zapEl("div","zapsr");lv.id="zapLive";lv.setAttribute("aria-live","polite");lv.setAttribute("role","status");m.append(lv);
   m.hidden=false;document.body.classList.add("inmission");zapDraw();const f=m.querySelector(".zaptap,.mscard .go:not(:disabled),.mscard button");if(f)f.focus();}
-function zapClose(){clearInterval(zapIv);const m=$("zapSheet");if(m)m.hidden=true;document.body.classList.remove("inmission");
+function zapClose(){clearInterval(zapIv);zapMoStop();const m=$("zapSheet");if(m)m.hidden=true;document.body.classList.remove("inmission");
   const id=zapCur&&zapCur.id;const c=id&&document.querySelector('#zapPanel .zapc[data-id="'+id+'"]');if(c)c.focus();}
 document.addEventListener("keydown",e=>{if(e.key==="Escape"&&$("zapSheet")&&!$("zapSheet").hidden)zapClose();});
-function zapDraw(){const z=zapCur,m=$("zapSheet");if(!z||!m)return;const ae=document.activeElement;const had=ae&&m.contains(ae)?(ae.classList.contains("zaptap")?".zaptap":".mscard .go"):null;
+function zapDraw(){const z=zapCur,m=$("zapSheet");if(!z||!m)return;const ae=document.activeElement;let had=ae&&m.contains(ae)?(ae.classList.contains("zaptap")?".zaptap":ae.classList.contains("zapmo")?"zapmo":".mscard .go"):null;
   const old=m.querySelector(".zapcard");if(old)old.remove();const c=zapEl("div","mscard zapcard");
   const top=zapEl("div","mstop");top.append(zapEl("span","mstag","[ SISTEMA ] DESAFIO RELÂMPAGO"));const x=zapEl("button","link","Fechar");x.type="button";x.addEventListener("click",zapClose);top.append(x);
   c.append(top,zapEl("h3",null,z.ic+" "+z.t));
   const ok=()=>{if(z.n)return zapCnt>=z.n;return zapEnd&&Date.now()>=zapEnd;};
   if(z.n&&z.n>1){const big=zapEl("button","zaptap");big.type="button";big.setAttribute("aria-label","Contar mais um");big.append(zapEl("b",null,String(zapCnt)),zapEl("span",null,"de "+z.n+" "+z.u));
-      big.addEventListener("click",()=>{if(zapCnt>=z.n)return;zapCnt++;try{haptic(zapCnt>=z.n?[20,60,40]:12);}catch(e){}if(zapCnt>=z.n){try{chime();}catch(e){}}zapSay(zapCnt>=z.n?"Pronto: "+z.n+" de "+z.n+". Toque em Concluir.":zapCnt+" de "+z.n);zapDraw();});c.append(big,zapEl("div","sm muted","Toque no círculo a cada repetição."));}
+      big.addEventListener("click",zapInc);c.append(big,zapEl("div","sm muted",zapMo.on?"Sensor ligado: segure o celular junto ao corpo. O toque também conta.":"Toque no círculo a cada repetição."));
+      if(zapCnt<z.n&&z.mo!==false){const mb=zapEl("button","ghost zapmo"+(zapMo.on?" on":""),zapMo.on?"⏹ Parar o sensor":"📳 Contar pelo movimento");mb.type="button";mb.setAttribute("aria-pressed",zapMo.on?"true":"false");
+        mb.addEventListener("click",()=>{if(zapMo.on){zapMoStop();zapSay("Sensor desligado.");zapDraw();}else zapMoStart();});c.append(mb);}}
   else if(z.s){const left=zapEnd?Math.max(0,zapEnd-Date.now()):z.s*1000;const t=zapEl("div","msclock",fmt(left));t.id="zapClock";c.append(t);
       if(!zapEnd){const b=zapEl("button","go","▶ Começar "+(z.s>=60?Math.round(z.s/60)+" min":z.s+" s"));b.type="button";b.addEventListener("click",()=>{zapEnd=Date.now()+z.s*1000;try{haptic([15,40,15]);}catch(e){}zapIv=setInterval(()=>{const k=$("zapClock");if(!k){clearInterval(zapIv);return;}const l=zapEnd-Date.now();k.textContent=fmt(l);if(l<=0){clearInterval(zapIv);try{chime();haptic([20,60,20,60,40]);}catch(e){}zapSay("Tempo concluído. Toque em Concluir.");zapDraw();const g=$("zapSheet")&&$("zapSheet").querySelector(".msend .go");if(g)g.focus();}},250);zapSay("Cronômetro iniciado.");zapDraw();});c.append(b);}}
   // prova por foto (opcional)
@@ -2618,26 +2636,52 @@ function zapDraw(){const z=zapCur,m=$("zapSheet");if(!z||!m)return;const ae=docu
     inp.addEventListener("change",async()=>{const f=inp.files&&inp.files[0];if(!f)return;try{zapSavePhoto(z.id,await zapThumb(f));try{haptic(15);}catch(e){}zapDraw();}catch(e){toast("Não consegui ler a foto.");}});
     lb.append(document.createTextNode("📸 Prova por foto (+"+ZAP_PHOTO+" XP)"),inp);pr.append(lb,zapEl("span","sm muted","Opcional. A foto não sai do seu celular."));}
   c.append(pr);
+  if(typeof duoSlot==="function"){const dd=duoSlot(z);if(dd)c.append(dd);}
   const row=zapEl("div","row msend");const fin=zapEl("button","go",zapDone(z.id)?"Concluído ✓":"✓ Concluir +"+ZAP_XP+" XP");fin.type="button";
   const ready=(z.n&&z.n>1)||z.s?ok():true;fin.disabled=zapDone(z.id)||!ready;if(!ready&&!zapDone(z.id))fin.title="Complete primeiro";
   fin.addEventListener("click",()=>zapFinish(z));row.append(fin);c.append(row);m.append(c);
+  if(had==="zapmo")had=".zapmo";
   if(had){const t=m.querySelector(had+":not(:disabled)")||m.querySelector(".mscard .go:not(:disabled)")||x;t.focus();}}
 function zapFinish(z){if(zapDone(z.id))return;const tk=todayKey();prog.zap=prog.zap||{};for(const d in prog.zap)if(d<tk&&Object.keys(prog.zap).length>14)delete prog.zap[d];
   (prog.zap[tk]=prog.zap[tk]||{})[z.id]=1;const photo=!!zapPhotos().p[z.id];const xp=ZAP_XP+(photo?ZAP_PHOTO:0);
   const before=zapRankLine();
   addXP({q:"zap:"+z.id+":"+tk,kind:"zap",xp,stat:"corpo",bonus:0,t:new Date().toISOString()},"Desafio relâmpago: +"+xp+" XP");
   try{if(typeof sendRank==="function")sendRank("desafio",true);}catch(e){}
+  try{if(typeof duoDone==="function")duoDone(z);}catch(e){}
+  if(zapMo.used){try{const k="asc-u-zapmo";const o=JSON.parse(localStorage.getItem(k)||"{}");o[tk]=(o[tk]||0)+1;for(const d in o)if(d<tk)delete o[d];localStorage.setItem(k,JSON.stringify(o));}catch(e){}zapMo.used=false;}
   zapClose();zapUI();
   const after=zapRankLine();const all=zapToday().every(q=>zapDone(q.id));
   if(before&&after&&after.pos<before.pos)sysPop("RANKING","Subiu para #"+after.pos,"Você passou alguém no ranking da semana. "+(after.pos>1?after.txt.replace(/^#\d+ na semana · /,"Agora "):"Topo conquistado."),null,"Bora");
   else if(all)sysPop("DESAFIOS","3 de 3 hoje","Todos os desafios relâmpago do dia feitos. Amanhã chegam 3 novos.",null,"Continuar");}
+// um a mais no contador (toque ou sensor)
+function zapInc(){const z=zapCur;if(!z||!z.n||zapCnt>=z.n)return;zapCnt++;try{haptic(zapCnt>=z.n?[20,60,40]:12);}catch(e){}
+  if(zapCnt>=z.n){zapMoStop();try{chime();}catch(e){}}zapSay(zapCnt>=z.n?"Pronto: "+z.n+" de "+z.n+". Toque em Concluir.":zapCnt+" de "+z.n);zapDraw();}
+// contar pelo sensor de movimento: pico acima da média, depois vale abaixo = 1 repetição. Nada sai do celular.
+// iPhone: a permissão só pode ser pedida no toque (DeviceMotionEvent.requestPermission). Sem sensor ou sem sinal: volta para o toque.
+const ZMO_HI=2.6,ZMO_LO=-1.2,ZMO_GAP=450;
+let zapMo={on:false,avg:null,armed:false,last:0,got:0,t0:0,used:false,chk:0};
+function zapMoH(e){const g=e.accelerationIncludingGravity,l=e.acceleration;const ok=v=>v&&(v.x!=null||v.y!=null||v.z!=null);const a=ok(g)?g:ok(l)?l:null;if(!a)return;
+  const m=Math.hypot(a.x||0,a.y||0,a.z||0);if(!isFinite(m))return;
+  zapMo.got++;const now=Date.now();const w=now-zapMo.t0<600?.3:.08;zapMo.avg=zapMo.avg==null?m:zapMo.avg*(1-w)+m*w;const d=m-zapMo.avg;if(now-zapMo.t0<600)return;
+  if(zapMo.armed&&d>ZMO_HI&&now-zapMo.last>ZMO_GAP){zapMo.armed=false;zapMo.last=now;zapMo.used=true;zapInc();}
+  else if(!zapMo.armed&&d<ZMO_LO)zapMo.armed=true;}
+function zapMoStop(){if(!zapMo.on)return;zapMo.on=false;clearTimeout(zapMo.chk);window.removeEventListener("devicemotion",zapMoH);}
+function zapMoStart(){const fail=t=>{zapMoStop();toast(t);zapSay(t);zapDraw();};
+  if(typeof DeviceMotionEvent==="undefined"){fail("Este aparelho não tem sensor de movimento. Use o toque.");return;}
+  const go=()=>{Object.assign(zapMo,{on:true,avg:null,armed:true,last:0,got:0,t0:Date.now()});window.addEventListener("devicemotion",zapMoH);
+    zapMo.chk=setTimeout(()=>{if(zapMo.on&&!zapMo.got)fail("O sensor não respondeu. Use o toque no círculo.");},2500);
+    try{haptic([15,40,15]);}catch(e){}zapSay("Sensor ligado. Cada repetição conta sozinha.");zapDraw();};
+  if(typeof DeviceMotionEvent.requestPermission==="function"){DeviceMotionEvent.requestPermission().then(r=>{if(r==="granted")go();else fail("Sem permissão do sensor. Use o toque no círculo.");},()=>fail("Sem permissão do sensor. Use o toque no círculo."));}
+  else go();}
 // card na aba Hoje
 function zapUI(){let p=$("zapPanel");const qp=$("quests")&&$("quests").closest("section");if(!qp)return;
   if(!p){p=zapEl("section","panel zap");p.id="zapPanel";p.dataset.tab="hoje";qp.before(p);}
   if(!cfg||cfg.blank){p.hidden=true;return;}p.hidden=false;p.textContent="";
   const list=zapToday();const n=list.filter(z=>zapDone(z.id)).length;
   const hd=zapEl("div","qhead");hd.append(zapEl("h2",null,"⚡ Desafios relâmpago"),zapEl("span","xp",n+"/3 · +"+ZAP_XP+" XP cada"));p.append(hd);
-  const rl=zapRankLine();p.append(zapEl("div","zaprank",rl?rl.txt:(prog.rank&&prog.rank.on?"Cada desafio soma no ranking da semana.":ageNow()==="kid"?"Desafios rápidos para ganhar XP.":"Entre no ranking (em Progresso) e cada desafio te faz subir.")));
+  const rl=zapRankLine();const rv=typeof dyRival==="function"?dyRival():null;
+  p.append(zapEl("div","zaprank",rl?rl.txt:(prog.rank&&prog.rank.on?"Cada desafio soma no ranking da semana.":ageNow()==="kid"?"Desafios rápidos para ganhar XP.":"Entre no ranking (em Progresso) e cada desafio te faz subir.")));
+  if(rv)p.append(zapEl("div","zaprank zaprival",rv.txt));
   const g=zapEl("div","zapgrid");for(const z of list){const d=zapDone(z.id);const b=zapEl("button","zapc"+(d?" done":""));b.type="button";b.dataset.id=z.id;if(d)b.setAttribute("aria-label",z.t+": concluído");
     b.append(zapEl("span","ic",d?"✓":z.ic),zapEl("span","tt",z.t));if(zapPhotos().p[z.id])b.append(zapEl("span","ph","📸"));
     b.addEventListener("click",()=>{if(!d)zapOpen(z);});g.append(b);}p.append(g);}
@@ -2900,7 +2944,7 @@ function avUI(){let p=$("avPanel");const first=document.querySelector('.wrap>sec
 {const _r=render;render=function(){_r.apply(this,arguments);try{avUI();}catch(e){}};}
 setTimeout(()=>{try{avUI();}catch(e){}},0);
 // ---- Perfil público (só para quem está no ranking, 14+): sequência, desafios da semana e avatar ----
-function avZapWeek(){let n=0;try{const ws=weekStart(todayKey());for(const e of entries())if(String(e.q).startsWith("zap:")&&weekStart(e.date)===ws)n++;}catch(e){}return n;}
+function avZapWeek(){let n=0;try{const ws=weekStart(todayKey());for(const e of entries())if(String(e.q).startsWith("zap:")&&!String(e.q).startsWith("zap:duo:")&&weekStart(e.date)===ws)n++;}catch(e){}return n;}
 // atributos públicos no card (nível de Foco-Metas-Mente-Corpo), ex.: "4-2-3-1"
 function avAttrs(){try{const st=statXP();return ["foco","vendas","mente","corpo"].map(k=>slvl(st[k]||0)).join("-");}catch(e){return "";}}
 function avPost(force){if(typeof RK_POST==="undefined"||ageNow()==="kid"||!(prog.rank&&prog.rank.on))return;const me=rankName();if(!me)return;
@@ -3027,11 +3071,82 @@ setInterval(()=>{try{if(!document.hidden&&document.querySelector("#quests .qtloc
 if(typeof toggle==="function"){const _tg=toggle;toggle=function(q,kind){try{const done=(prog.log[todayKey()]||[]).some(e=>e.q===q.id);const lk=done?null:qtLocked(q);
   if(lk!=null){toast("🔒 Essa libera às "+lk+"h.");try{haptic([30]);}catch(e){}return;}}catch(e){}return _tg.apply(this,arguments);};}
 
+// ---------- Ranking do dia + rival do dia + avisos (etapa 2 do ranking) ----------
+// Sem servidor novo e sem dado novo saindo do celular: o XP de hoje dos outros vem da diferença entre o XP da semana
+// que a lista pública mostra agora e o que este aparelho viu ontem (ou na 1ª abertura de hoje). O seu é exato (log local).
+// Guarda só neste aparelho, em chave separada (asc-u-dia), fora do progresso: {d,base,ex,bt,last,ld,pos,ntf,nt}.
+const DY_KEY="asc-u-dia";
+function dySt(){let s={};try{s=JSON.parse(localStorage.getItem(DY_KEY)||"{}")||{};}catch(e){s={};}s.base=s.base||{};s.last=s.last||{};s.pos=s.pos||{};s.nt=s.nt||{};return s;}
+function dySave(s){try{localStorage.setItem(DY_KEY,JSON.stringify(s));}catch(e){}}
+const dyN=v=>String(v||"").trim().toLowerCase();
+function dyYest(k){const [y,m,d]=k.split("-").map(Number);const t=new Date(y,m-1,d);t.setDate(t.getDate()-1);return dkey(t);}
+function dyMyXP(){const tk=todayKey();let s=0;for(const e of (prog.log[tk]||[]))s+=(e.xp||0)+(e.bonus||0);return s;}
+// virada do dia e foto da lista: chamada a cada carga do ranking
+function dyRoll(){if(!rankRows)return dySt();const s=dySt();const td=todayKey(),ws=weekStart(td);const cur={};for(const r of rankRows)cur[dyN(r.n)]=r.xp||0;
+  if(s.d!==td){const now=new Date().toTimeString().slice(0,5);
+    if(td===ws&&!(s.ld===td)){s.base={};s.ex=true;s.bt="";}                       // segunda: a semana zerou, XP da semana = XP de hoje
+    else if(s.ld===dyYest(td)&&weekStart(s.ld)===ws){s.base=s.last||{};s.ex=true;s.bt="";} // viu a lista ontem: conta exato
+    else{s.base=cur;s.ex=false;s.bt=now;}                                          // sem foto de ontem: conta a partir de agora
+    s.d=td;s.pos={};s.up={};for(const k in s.nt)if(s.nt[k]!==td)delete s.nt[k];}
+  s.last=cur;s.ld=td;dySave(s);return s;}
+// lista de hoje (você + todos do ranking), maior XP de hoje primeiro
+function dyBoard(){const s=dySt();const me=rankName()||"Você";const mx=dyMyXP();const out=[];
+  for(const r of (rankRows||[])){if(dyN(r.n)===dyN(me))continue;const b=s.d===todayKey()?(s.base[dyN(r.n)]||0):(r.xp||0);out.push(Object.assign({},r,{xp:Math.max(0,(r.xp||0)-b),wk:r.xp}));}
+  out.push({n:me,xp:mx,me:true});
+  return out.sort((a,b)=>(b.xp||0)-(a.xp||0)||(a.me?-1:b.me?1:0));}
+// rival do dia: quem está logo acima de você hoje (ou logo abaixo, se você lidera)
+function dyRival(){if(!(prog.rank&&prog.rank.on)||!rankRows||!rankRows.length)return null;const L=dyBoard();const i=L.findIndex(r=>r.me);if(i<0)return null;const my=L[i].xp||0;
+  if(i===0){const b=L[1];if(!b)return null;return {pos:1,n:b.n,txt:b.xp>0?"Você lidera o dia, "+(my-b.xp)+" XP à frente de "+b.n+".":"Você lidera o dia. Ninguém pontuou hoje ainda."};}
+  const a=L[i-1];const gap=(a.xp||0)-my+1;const zp=typeof ZAP_XP!=="undefined"?ZAP_XP:10;const nz=Math.ceil(gap/zp);
+  return {pos:i+1,n:a.n,gap,txt:"⚔️ Rival do dia: "+a.n+" ("+a.xp+" XP hoje) · faltam "+gap+" XP"+(typeof zapToday==="function"?" ("+nz+" desafio"+(nz>1?"s":"")+")":"")};}
+function dyNote(){const s=dySt();if(s.d!==todayKey()||s.ex)return "";return s.bt?"Os outros contam desde as "+s.bt+" (quando o app abriu hoje). O seu é exato.":"";}
+// animação de subida: guarda sua posição por lista; se melhorou, a sua linha sobe até o lugar novo
+function dyRM(){return matchMedia("(prefers-reduced-motion: reduce)").matches;}
+function dyClimb(ol,view){if(!ol)return;const li=ol.querySelector("li.me");if(!li||!li.getClientRects().length||!rankRows)return;
+  const items=[...ol.children].filter(x=>!x.classList.contains("tmzone"));const pos=items.indexOf(li)+1;if(pos<1)return;
+  const s=dySt();const prev=+s.pos[view]||0;s.pos[view]=pos;s.up=s.up||{};const now=Date.now();let up=0,anim=true;
+  if(prev&&pos<prev){up=prev-pos;s.up[view]={n:up,t:now};}
+  else{const u=s.up[view];if(u&&now-u.t<6000&&pos<=prev){up=u.n;anim=now-u.t<1000;}}   // a lista foi redesenhada logo depois: mantém o selo
+  dySave(s);if(!up)return;
+  const bd=document.createElement("span");bd.className="dyup";bd.textContent="▲ "+up;bd.setAttribute("aria-label","Subiu "+up+" posição"+(up>1?"ões":""));li.append(bd);
+  if(prev&&pos<prev){try{haptic([12,40,12]);}catch(e){}}
+  if(!anim||dyRM()||!li.animate)return;const h=li.getBoundingClientRect().height+6;
+  li.style.zIndex="2";
+  const a=li.animate([{transform:"translateY("+(up*h)+"px)",boxShadow:"0 0 0 2px var(--good)"},{transform:"translateY(0)",boxShadow:"0 0 18px rgba(77,255,170,.45)"},{transform:"none",boxShadow:"none"}],{duration:900,easing:"cubic-bezier(.2,.8,.2,1)"});
+  a.onfinish=()=>{li.style.zIndex="";};}
+// ---- avisos locais (só se a pessoa ligar): alguém te passou hoje / à noite, se faltar desafio ----
+const dyCanNtf=()=>"Notification" in window;
+function dyNtfOn(){return !!dySt().ntf&&dyCanNtf()&&Notification.permission==="granted";}
+function dyShow(kind,title,body){const s=dySt();const td=todayKey();if(s.nt[kind]===td)return false;s.nt[kind]=td;dySave(s);
+  if(!document.hidden){toast(title+" "+body);return true;}
+  if(!dyNtfOn())return false;
+  const ic=location.pathname.replace(/(comecar\/)?[^/]*$/,"")+"icon-192.png";const o={body,icon:ic,badge:ic,tag:"asc-"+kind,lang:"pt-BR"};
+  try{if(navigator.serviceWorker&&navigator.serviceWorker.controller){navigator.serviceWorker.ready.then(r=>r.showNotification(title,o)).catch(()=>{});}else new Notification(title,o);}catch(e){}return true;}
+async function dyNtfToggle(){const s=dySt();if(s.ntf){s.ntf=0;dySave(s);toast("Avisos desligados.");dyNtfUI();return;}
+  if(!dyCanNtf()){toast(IOS?"No iPhone, os avisos só funcionam com o app instalado na tela de início.":"Este navegador não mostra avisos.");return;}
+  let p=Notification.permission;try{if(p==="default")p=await Notification.requestPermission();}catch(e){}
+  if(p!=="granted"){toast("Sem permissão para avisos. Dá para liberar nas configurações do navegador.");dyNtfUI();return;}
+  s.ntf=1;dySave(s);toast("🔔 Avisos ligados: quando alguém te passar hoje"+(typeof zapToday==="function"?" e às 20h, se faltar desafio.":"."));dyNtfUI();}
+function dyNtfUI(){for(const b of document.querySelectorAll(".dyntf")){const on=!!dySt().ntf&&dyCanNtf()&&Notification.permission==="granted";b.textContent=on?"🔔 Avisos ligados":"🔕 Me avise quando alguém me passar";b.setAttribute("aria-pressed",on?"true":"false");}}
+function dyNtfBtn(){const b=document.createElement("button");b.type="button";b.className="link dyntf";b.addEventListener("click",dyNtfToggle);setTimeout(dyNtfUI,0);return b;}
+function dyEvening(){if(typeof zapToday!=="function"||!cfg||cfg.blank||!dySt().ntf||new Date().getHours()<20)return;
+  const left=zapToday().filter(z=>!zapDone(z.id)).length;if(!left)return;
+  dyShow("noite","⚡ Ascension",(left>1?"Faltam ":"Falta ")+left+" desafio"+(left>1?"s":"")+" relâmpago hoje. "+(left*10)+" XP te esperando.");}
+// a cada carga do ranking: virada do dia, ultrapassagem e posição na pílula
+function dyAfterLoad(){if(!(prog.rank&&prog.rank.on)||!rankRows)return;const before=dySt();const was=before.d===todayKey()?+before.pos.rnow||0:0;dyRoll();
+  const L=dyBoard();const i=L.findIndex(r=>r.me);if(i<0)return;const pos=i+1;const s=dySt();s.pos.rnow=pos;dySave(s);
+  if(was&&pos>was){const a=L[i-1];if(a)dyShow("passou","⚔️ "+a.n+" te passou hoje.","Faltam "+((a.xp||0)-(L[i].xp||0)+1)+" XP para retomar o "+(pos-1)+"º lugar do dia.");}
+  dyEvening();}
+{const _rr=renderRankUI;renderRankUI=function(){_rr();try{dyAfterLoad();}catch(e){}};}
+// com o aviso ligado e o app em segundo plano, confere de vez em quando (o celular pode segurar quando o app está fechado)
+setInterval(()=>{try{if(document.hidden&&dySt().ntf){if(typeof loadRank==="function")loadRank();dyEvening();}}catch(e){}},15*60*1000);
+document.addEventListener("visibilitychange",()=>{try{if(!document.hidden)dyEvening();}catch(e){}});
+setTimeout(()=>{try{dyEvening();}catch(e){}},4000);
 // ---------- Aba Amigos: todo mundo joga junto (liga da semana, turma, novidades, parabéns e cutucar) ----------
 // Cada um faz as suas tarefas; aqui todo mundo vê nível, classe, sequência e XP da semana dos amigos.
 // Só usa o que já é público por opção (ranking 14+: apelido, XP da semana, nível, sequência, avatar). Até 13 anos: aba some.
 // Canal novo: K|de|para|p (parabéns) ou c (cutucar)|data, no mesmo formulário. Só ADICIONA prog.turma = {snap,feed,sent,seen,view}.
-function tmSt(){const t=prog.turma&&typeof prog.turma==="object"?prog.turma:(prog.turma={});t.snap=t.snap||{};t.feed=t.feed||[];t.sent=t.sent||{};t.seen=t.seen||{};t.view=t.view||"turma";return t;}
+function tmSt(){const t=prog.turma&&typeof prog.turma==="object"?prog.turma:(prog.turma={});t.snap=t.snap||{};t.feed=t.feed||[];t.sent=t.sent||{};t.seen=t.seen||{};t.view=t.view||"hoje";return t;}
 function tmEl(t,cl,x){const e=document.createElement(t);if(cl)e.className=cl;if(x!=null)e.textContent=x;return e;}
 const tmN=v=>String(v||"").trim().toLowerCase();
 function tmClsName(id){try{const all=(typeof CLS_REAL!=="undefined"?CLS_REAL:[]).concat(typeof CLS_FANT!=="undefined"?CLS_FANT:[]);const c=all.find(x=>x[0]===id);return c?c[1]:"";}catch(e){return "";}}
@@ -3055,7 +3170,8 @@ function tmPlace(){const wrap=document.querySelector(".wrap");if(!wrap)return;le
 function tmMe(){let sq=0;try{sq=streakDays()||0;}catch(e){}let av="";try{av=avCode();}catch(e){}return {n:rankName()||"Você",xp:weekXP(),lv:levelOf(totalXP()),seq:sq,av,me:true};}
 function tmFriends(){try{return frSt().l.map(n=>frRow(n));}catch(e){return [];}}
 function tmAll(){return (rankRows||[]).map(r=>{const p=(typeof sqPub!=="undefined"&&sqPub[tmN(r.n)])||{};return {n:r.n,xp:r.xp,lv:r.lv,seq:p.seq||0,av:p.av||""};});}
-function tmBoard(view){const me=tmMe();const L=view==="geral"?tmAll().filter(r=>tmN(r.n)!==tmN(me.n)):tmFriends();
+function tmBoard(view){if(view==="hoje"&&typeof dyBoard==="function"){const pub=r=>(typeof sqPub!=="undefined"&&sqPub[tmN(r.n)])||{};return dyBoard().map(r=>{const m=r.me?tmMe():{};return Object.assign({},r,{lv:r.me?m.lv:r.lv,seq:r.me?m.seq:(pub(r).seq||0),av:r.me?m.av:(pub(r).av||"")});});}
+  const me=tmMe();const L=view==="geral"?tmAll().filter(r=>tmN(r.n)!==tmN(me.n)):tmFriends();
   return [me,...L].sort((a,b)=>(b.xp||0)-(a.xp||0)||(b.lv||0)-(a.lv||0));}
 // --- novidades: compara com a última vez que viu cada amigo ---
 function tmFeedAdd(k,n,t){const s=tmSt();const id=k+":"+tmN(n)+":"+todayKey();if(s.feed.some(f=>f.id===id))return;s.feed.unshift({id,k,n,t,d:todayKey()});s.feed=s.feed.slice(0,20);}
@@ -3079,31 +3195,36 @@ function tmInbox(){const me=rankName();if(!me||typeof sqInvRows==="undefined")re
 function tmLeft(){const d=new Date();const nx=new Date(d);nx.setHours(24,0,0,0);while(nx.getDay()!==1)nx.setDate(nx.getDate()+1);const h=Math.max(0,Math.round((nx-d)/36e5));
   return h>=24?Math.floor(h/24)+"d "+(h%24)+"h":h+"h";}
 function tmAv(code,sz){try{return frAv(code,sz);}catch(e){return "";}}
+function tmLeftDay(){const d=new Date();const nx=new Date(d);nx.setHours(24,0,0,0);const m=Math.max(0,Math.round((nx-d)/6e4));return m>=60?Math.floor(m/60)+"h "+(m%60)+"min":m+"min";}
 // --- tela ---
 function tmUI(){const p=tmPlace();if(!p)return;if(tmKid()||!cfg||cfg.blank){p.hidden=true;return;}p.hidden=false;
   if(p.contains(document.activeElement)&&document.activeElement.tagName==="INPUT")return;p.textContent="";const s=tmSt();
   let tier="";try{tier=lgName(lgSt().t);}catch(e){}
-  const hd=tmEl("div","tmhd");hd.append(tmEl("h2",null,"👥 Turma"),tmEl("span","tmclock","⏳ fecha em "+tmLeft()));p.append(hd);
+  const hd=tmEl("div","tmhd");hd.append(tmEl("h2",null,"👥 Turma"),tmEl("span","tmclock","⏳ "+(s.view==="hoje"?"o dia fecha em "+tmLeftDay():"fecha em "+tmLeft())));p.append(hd);
   if(!tmOn()){const c=tmEl("div","tmjoin");c.append(tmEl("b",null,"Entre na turma"),tmEl("p","sm muted","Cada um faz as suas tarefas. Aqui vocês veem o nível, a sequência e o XP uns dos outros, sobem de liga juntos e mandam parabéns. Só aparece o seu apelido."));
     const b=tmEl("button","go","Entrar no ranking");b.type="button";b.addEventListener("click",()=>{const j=$("rkJoin");if(j&&!j.hidden){j.click();setTimeout(tmUI,600);}else{const r=$("rankPanel");if(r)r.scrollIntoView({block:"start",behavior:"smooth"});}});c.append(b);p.append(c);return;}
   // liga + seletor
   const lg=tmEl("div","tmlg");lg.append(tmEl("b",null,tier||"Liga"),tmEl("span","sm muted","Os 3 primeiros da semana sobem. Ninguém cai."));p.append(lg);
-  const fr=tmFriends();const seg=tmEl("div","tmseg");for(const [k,l] of [["turma","Meus amigos"+(fr.length?" ("+fr.length+")":"")],["geral","Todos"]]){const b=tmEl("button",s.view===k?"on":"",l);b.type="button";b.addEventListener("click",()=>{s.view=k;save();tmUI();});seg.append(b);}p.append(seg);
+  const fr=tmFriends();const seg=tmEl("div","tmseg");const VW=[["turma","Amigos"+(fr.length?" ("+fr.length+")":"")],["geral","Semana"]];if(typeof dyBoard==="function")VW.unshift(["hoje","Hoje"]);else if(s.view==="hoje")s.view="turma";
+  for(const [k,l] of VW){const b=tmEl("button",s.view===k?"on":"",l);b.type="button";b.setAttribute("aria-pressed",s.view===k?"true":"false");b.addEventListener("click",()=>{s.view=k;save();tmUI();});seg.append(b);}p.append(seg);
   const L=tmBoard(s.view);
+  if(s.view==="hoje"){const box=tmEl("div","dybox");const rv=typeof dyRival==="function"?dyRival():null;box.append(tmEl("div","dyriv",rv?rv.txt:"Ranking de hoje: zera à meia-noite. Cada XP de hoje conta."));
+    const nt=dyNote();if(nt)box.append(tmEl("div","sm muted",nt));box.append(dyNtfBtn());p.append(box);}
   if(s.view==="turma"&&!fr.length){const e=tmEl("div","tmempty");e.append(tmEl("p",null,"Sua turma ainda está vazia. Chame alguém para jogar com você."));
     const b=tmEl("button","go","+ Adicionar amigo");b.type="button";b.addEventListener("click",()=>{try{frAdd=true;frUI();}catch(e){}const f=$("frPanel");if(f)f.scrollIntoView({block:"start",behavior:"smooth"});});e.append(b);p.append(e);}
   if(!rankRows){p.append(tmEl("div","sm muted","Carregando a turma…"));}
   const ol=tmEl("ol","tmlist");L.slice(0,30).forEach((r,i)=>{const li=tmEl("li",(r.me?"me ":"")+(i<3&&L.length>=2?"up":""));
     li.append(tmEl("span","tmpos",i<3?["🥇","🥈","🥉"][i]:String(i+1)));const av=tmEl("span","tmav");av.innerHTML=tmAv(r.av,44);li.append(av);
     const tx=tmEl("div","tmtx");const cls=tmCls(r.av);tx.append(tmEl("b",null,r.n+(r.me?" (você)":"")),tmEl("span","tmmeta",(r.lv?"Nv "+r.lv:"")+(cls?" · "+cls:"")+(r.seq?" · 🔥 "+r.seq:"")));li.append(tx);
-    li.append(tmEl("span","tmxp",(r.xp||0)+" XP"));
+    li.append(tmEl("span","tmxp",s.view==="hoje"?"+"+(r.xp||0)+" hoje":(r.xp||0)+" XP"));
     if(!r.me){const fz=fr.some(f=>tmN(f.n)===tmN(r.n));const act=tmEl("div","tmact");
       if(fz){for(const k of ["p","c"]){const t=TM_K[k];const done=s.sent[k+":"+tmN(r.n)+":"+todayKey()];const b=tmEl("button","tmbtn"+(done?" done":""),t[0]);b.type="button";b.title=(k==="p"?"Dar parabéns para ":"Cutucar ")+r.n;b.setAttribute("aria-label",b.title);b.addEventListener("click",ev=>{ev.stopPropagation();tmSend(r.n,k);});act.append(b);}
         li.classList.add("tap");li.addEventListener("click",()=>{try{frCompare(r.n);}catch(e){}});}
       else if(!frSt().pend[r.n]){const b=tmEl("button","tmbtn add","+");b.type="button";b.title="Pedir amizade para "+r.n;b.setAttribute("aria-label",b.title);b.addEventListener("click",ev=>{ev.stopPropagation();frRequest(r.n);tmUI();});act.append(b);}
       else act.append(tmEl("span","sm muted","pedido enviado"));
       li.append(act);}
-    ol.append(li);if(i===2&&L.length>3)ol.append(tmEl("li","tmzone","▲ zona de subida"));});p.append(ol);
+    ol.append(li);if(i===2&&L.length>3&&s.view!=="hoje")ol.append(tmEl("li","tmzone","▲ zona de subida"));});p.append(ol);
+  try{dyClimb(ol,s.view);}catch(e){}
   if(fr.length)p.append(tmEl("div","sm muted tmhint","Toque num amigo para ver o card dele. 🎉 dá parabéns, 👉 cutuca (1 de cada por dia)."));
   // novidades
   const F=s.feed.slice(0,6);if(F.length){const fd=tmEl("div","tmfeed");fd.append(tmEl("h3",null,"Novidades da turma"));
@@ -3203,6 +3324,62 @@ document.addEventListener("click",e=>{const li=e.target.closest&&e.target.closes
 setTimeout(()=>{try{cdBadgeUI();tmUI();}catch(e){}},0);
 // menor de 18 sem apelido: o pedido de apelido fica na aba Amigos (o ranking mora lá agora)
 if(typeof joinRank==="function"){const _jr=joinRank;joinRank=function(){_jr.apply(this,arguments);try{if(!tmOn()&&$("rkNick")){goTab("amigos");const r=$("rankPanel");if(r){if(r.classList.contains("fold")&&!r.classList.contains("open")){const h=r.querySelector(".fhd");if(h)h.click();}r.scrollIntoView({block:"center"});}setTimeout(()=>$("rkNick").focus(),80);}}catch(e){}};}
+// ---------- Desafio em dupla: chame um amigo ou aliado do Esquadrão para o mesmo desafio relâmpago do dia ----------
+// Canal: o mesmo formulário do ranking, linha K (como parabéns/cutucar): K|de|para|d-<desafio> (convite), da-<desafio> (aceite), dk-<desafio> (feito).
+// Só vale de amigo ou aliado do Esquadrão, só no mesmo dia, 1 dupla por dia, no máximo 3 convites recebidos por dia. Quem tem até 13 anos não participa.
+// Os dois fizeram: +DUO_XP para cada um (entrada "zap:duo:<dia>" no log). Só ADICIONA prog.duo = {d,id,w,s,me,pa,paid,seen,ask}.
+const DUO_XP=10;
+function duoSt(){const td=todayKey();let o=prog.duo&&typeof prog.duo==="object"?prog.duo:null;
+  if(!o||o.d!==td){o={d:td,id:"",w:"",s:"",me:0,pa:0,paid:0,seen:{},ask:0};prog.duo=o;}o.seen=o.seen||{};return o;}
+const duoN=v=>String(v||"").trim().toLowerCase();
+function duoOn(){try{return ageNow()!=="kid"&&!!(prog.rank&&prog.rank.on)&&!!rankName()&&typeof sqiPost==="function";}catch(e){return false;}}
+function duoPals(){const out=[];const add=n=>{if(n&&duoN(n)!==duoN(rankName())&&!out.some(x=>duoN(x)===duoN(n)))out.push(n);};
+  try{for(const n of frSt().l)add(n);}catch(e){}try{const s=sqSt();if(s)for(const n of s.m)add(n);}catch(e){}return out;}
+const duoPal=n=>duoPals().some(x=>duoN(x)===duoN(n));
+function duoZap(id){try{return zapToday().find(z=>z.id===id)||null;}catch(e){return null;}}
+function duoEl(t,c,x){const e=document.createElement(t);if(c)e.className=c;if(x!=null)e.textContent=x;return e;}
+let duoPick=false;
+// bloco dentro da tela do desafio
+function duoSlot(z){if(!duoOn())return null;const o=duoSt();const pals=duoPals();
+  if(o.id&&o.id!==z.id)return null;
+  const box=duoEl("div","duobox");
+  if(o.id===z.id&&o.w){const st=o.s==="on"?(o.me?"✓ você":"… você")+" · "+(o.pa?"✓ ":"… ")+o.w:"Convite enviado para "+o.w+". Esperando o aceite.";
+    box.append(duoEl("div","duost","🤝 Dupla com "+o.w),duoEl("div","sm muted",o.paid?"Dupla completa: +"+DUO_XP+" XP para cada um.":st+(o.s==="on"?" · os dois fazendo, +"+DUO_XP+" XP para cada.":"")));return box;}
+  if(!pals.length){box.append(duoEl("div","sm muted","🤝 Adicione um amigo em Amigos para desafiar em dupla."));return box;}
+  if(!duoPick){const b=duoEl("button","ghost duogo","🤝 Desafiar em dupla (+"+DUO_XP+" XP)");b.type="button";b.addEventListener("click",()=>{duoPick=true;zapDraw();const f=document.querySelector("#zapSheet .duochips button");if(f)f.focus();});box.append(b);return box;}
+  box.append(duoEl("div","sm","Quem faz este desafio com você hoje?"));const ch=duoEl("div","duochips");
+  for(const n of pals.slice(0,12)){const c=duoEl("button","chip","+ "+n);c.type="button";c.addEventListener("click",()=>duoInvite(n,z));ch.append(c);}
+  const x=duoEl("button","link","Cancelar");x.type="button";x.addEventListener("click",()=>{duoPick=false;zapDraw();});box.append(ch,x);return box;}
+function duoInvite(n,z){if(!duoOn()||!duoPal(n))return;const o=duoSt();if(o.id)return;
+  Object.assign(o,{id:z.id,w:n,s:"sent",me:zapDone(z.id)?1:0,pa:0});duoPick=false;save();
+  sqiPost(["K",rankName(),n,"d-"+z.id,sqiDk()]);if(o.me)sqiPost(["K",rankName(),n,"dk-"+z.id,sqiDk()]);
+  try{haptic([12,30,12]);}catch(e){}toast("🤝 Convite enviado para "+n+". Aparece no app dele.");zapDraw();try{zapUI();}catch(e){}}
+// terminou o desafio: avisa a dupla e confere o bônus
+function duoDone(z){const o=duoSt();if(!o.id||o.id!==z.id||o.me)return;o.me=1;save();if(duoOn()&&o.w)sqiPost(["K",rankName(),o.w,"dk-"+z.id,sqiDk()]);duoPay();}
+function duoPay(){const o=duoSt();if(!(o.me&&o.pa&&o.s==="on")||o.paid)return;const td=todayKey();
+  if((prog.log[td]||[]).some(e=>String(e.q)==="zap:duo:"+td)){o.paid=1;save();return;}o.paid=1;
+  addXP({q:"zap:duo:"+td,kind:"duo",xp:DUO_XP,stat:"corpo",bonus:0,t:new Date().toISOString()},"Dupla completa: +"+DUO_XP+" XP");
+  sysPop("DUPLA","Desafio em dupla completo","Você e "+o.w+" fizeram o desafio do dia. +"+DUO_XP+" XP para cada um.",null,"Boa");}
+// lê o canal: convites, aceites e "feito" da dupla (só de hoje, só de amigo/aliado)
+function duoCheck(){if(!duoOn()||typeof sqInvRows==="undefined")return;const me=duoN(rankName());const o=duoSt();const dk=sqiDk();let ch=false;
+  for(const r of sqInvRows){if(r.k!=="K"||duoN(r.b)!==me||!r.a||String(r.d).replace(/\D/g,"")!==dk)continue;const m=/^d(a|k)?-([a-z]+)$/.exec(String(r.s));if(!m)continue;
+    const kind=m[1]||"",id=m[2];if(!duoZap(id))continue;
+    if(o.w&&duoN(r.a)===duoN(o.w)&&o.id===id){
+      if(kind==="a"&&o.s==="sent"){o.s="on";ch=true;toast("🤝 "+o.w+" aceitou a dupla. Bora!");}
+      if(kind==="k"&&!o.pa){o.pa=1;ch=true;if(o.s==="sent")o.s="on";toast("🤝 "+o.w+" já fez o desafio da dupla."+(o.me?"":" Sua vez."));}}
+    else if(!kind&&!o.id&&duoPal(r.a)){const key=duoN(r.a)+":"+id;if(o.seen[key]||o.ask>=3)continue;
+      if($("duoModal")||[...document.querySelectorAll(".sysmodal")].some(x=>x.getClientRects().length)||document.body.classList.contains("inmission")||document.body.classList.contains("onboarding"))continue;
+      o.seen[key]=1;o.ask++;ch=true;duoAsk(r.a,duoZap(id));break;}}
+  if(ch){save();duoPay();try{zapUI();}catch(e){}}}
+function duoAsk(n,z){const m=duoEl("div","sysmodal");m.id="duoModal";m.setAttribute("role","dialog");m.setAttribute("aria-modal","true");m.setAttribute("aria-label","Convite para desafio em dupla");const c=duoEl("div","card");
+  c.append(duoEl("div","tag","[ SISTEMA ] DESAFIO EM DUPLA"),duoEl("h3",null,n+" te chamou para uma dupla"),duoEl("p","sm",z.ic+" "+z.t+". Os dois fizeram hoje: +"+DUO_XP+" XP para cada um."));
+  const row=duoEl("div","row");const ok=duoEl("button","go","Aceitar");ok.type="button";const no=duoEl("button","ghost","Agora não");no.type="button";row.append(ok,no);c.append(row);
+  ok.addEventListener("click",()=>{const o=duoSt();if(!o.id){Object.assign(o,{id:z.id,w:n,s:"on",me:zapDone(z.id)?1:0,pa:0});save();sqiPost(["K",rankName(),n,"da-"+z.id,sqiDk()]);if(o.me)sqiPost(["K",rankName(),n,"dk-"+z.id,sqiDk()]);}
+    m.remove();try{haptic([15,40,15]);}catch(e){}toast("🤝 Dupla com "+n+" aceita.");try{zapUI();}catch(e){}duoPay();});
+  no.addEventListener("click",()=>{m.remove();});m.append(c);document.body.append(m);setTimeout(()=>ok.focus(),60);}
+// selo 🤝 no cartão do desafio da dupla
+{const _z=zapUI;zapUI=function(){_z.apply(this,arguments);try{const o=prog.duo;if(!o||o.d!==todayKey()||!o.id)return;const c=document.querySelector('#zapPanel .zapc[data-id="'+o.id+'"]');if(c&&!c.querySelector(".duo"))c.append(duoEl("span","duo",o.paid?"🤝✓":"🤝"));}catch(e){}};}
+{const _ck=sqiCheck;sqiCheck=function(){_ck.apply(this,arguments);try{duoCheck();}catch(e){}};}
 
 let saveTimer=null, SYNC="";
 try{SYNC=localStorage.getItem("asc-u-sync")||"";}catch(e){}
