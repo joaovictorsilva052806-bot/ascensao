@@ -19,6 +19,10 @@ Dados: tudo fica no `localStorage` do aparelho (`asc-u-*` na versão multiusuár
 
 Pontos de entrada no JS: `render()` desenha tudo; `toggle(quest, "full"|"min")` marca uma quest; `penalties()` calcula a dívida de quests principais; `buildCfg(perfil)` (em `tools/onb.js`) transforma o perfil em quests com gatilhos "se-então".
 
+## Segredos
+
+`tools/secret.js` e `tools/secret.css` (entram nos dois geradores): 17 conquistas ocultas com títulos raros, Terminal do Sistema (em Mais) para códigos e Modo Zen. Grava só `prog.sec` e `prog.secTitle`; o XP entra como `ach:<id>`. Teste: `node qa/segredos.test.js` com o servidor local ligado.
+
 ## Rodar local
 
 ```bash
