@@ -24,7 +24,15 @@ body{font:400 15px/1.5 ui-monospace,SFMono-Regular,Menlo,Consolas,"Roboto Mono",
 .sig{font-size:11px;letter-spacing:.42em;color:var(--g);opacity:.75;padding-left:.42em;min-height:1.5em}
 .sig::after{content:"_";animation:bl 1s steps(1) infinite}
 @keyframes bl{50%{opacity:0}}
-svg.eye{width:min(220px,62vw);height:auto;overflow:visible}
+svg.eye{width:min(220px,62vw);height:auto;overflow:visible;cursor:pointer;-webkit-tap-highlight-color:transparent;touch-action:manipulation;transition:transform .25s}
+svg.eye:active{transform:scale(.96)}
+.tap svg.eye{animation:call 1.8s ease-in-out infinite}
+@keyframes call{50%{filter:drop-shadow(0 0 18px rgba(243,201,105,.55))}}
+.blink .lid{transform:scaleY(.04);transition:transform .12s}
+.pupil{transition:transform .25s ease-out}
+.flash .glow{animation:fl .9s}
+@keyframes fl{30%{opacity:1;transform:scale(1.6)}}
+.glow{transform-origin:100px 60px}
 .lid{transform-origin:50% 50%;transform:scaleY(.04);transition:transform 1.4s cubic-bezier(.7,0,.2,1)}
 .open .lid{transform:scaleY(1)}
 .iris{transform-origin:100px 60px;animation:look 9s ease-in-out 3s infinite}
@@ -49,7 +57,7 @@ button.ghost{border-color:var(--l);color:var(--m);font-size:11px;padding:13px;ma
 </style></head><body class="wait">
 <div class="sig" id="sig" aria-hidden="true"></div>
 
-<svg class="eye" viewBox="0 0 200 120" aria-hidden="true">
+<svg class="eye" id="eye" role="button" aria-label="Tocar no olho" viewBox="0 0 200 120" aria-hidden="true">
   <defs>
     <radialGradient id="ir" cx="50%" cy="50%" r="50%"><stop offset="0" stop-color="#fff3c9"/><stop offset=".35" stop-color="#f3c969"/><stop offset="1" stop-color="#7a5414"/></radialGradient>
     <radialGradient id="gl" cx="50%" cy="50%" r="50%"><stop offset="0" stop-color="#f3c969" stop-opacity=".35"/><stop offset="1" stop-color="#f3c969" stop-opacity="0"/></radialGradient>
@@ -61,7 +69,7 @@ button.ghost{border-color:var(--l);color:var(--m);font-size:11px;padding:13px;ma
     <g clip-path="url(#cl)"><g class="iris">
       <circle cx="100" cy="60" r="31" fill="url(#ir)"/>
       <circle cx="100" cy="60" r="31" fill="none" stroke="#ffe7a8" stroke-opacity=".5" stroke-width=".8" stroke-dasharray="2 3"/>
-      <ellipse cx="100" cy="60" rx="5" ry="18" fill="#000"/>
+      <ellipse class="pupil" id="pu" cx="100" cy="60" rx="5" ry="18" fill="#000"/>
       <circle cx="91" cy="50" r="3.2" fill="#fff" opacity=".85"/>
     </g></g>
   </g>
@@ -119,17 +127,26 @@ function pick(){
   if(AND)return show(INAPP?"v-and-other":"v-and");
   show("v-pc");}
 pick();
-// Sequência: sinal digitado, o olho abre, a frase, depois o caminho.
-(function(){const h=$("t"),s=$("sig"),B=document.body,RM=matchMedia("(prefers-reduced-motion: reduce)").matches,T="[ SINAL DETECTADO ]";
-  let sk=false;const say=(txt,ms)=>new Promise(r=>{if(sk)return r();h.classList.add("f");setTimeout(()=>{if(sk)return r();h.textContent=txt;h.classList.remove("f");setTimeout(r,ms);},500);});
-  const end=()=>{sk=true;h.textContent="Aceite a missão";h.classList.remove("f");B.classList.add("open");B.classList.remove("wait");s.textContent=T;};
-  if(RM)return end();
-  let i=0;const ty=setInterval(()=>{s.textContent=T.slice(0,++i);if(i>=T.length){clearInterval(ty);run();}},55);
-  async function run(){setTimeout(()=>B.classList.add("open"),200);await new Promise(r=>setTimeout(r,1300));
-    await say("Você foi escolhido(a)",1500);await say("Aceite a missão",400);if(!sk)B.classList.remove("wait");}
-  // toque pula a introdução
-  addEventListener("pointerdown",()=>{if(B.classList.contains("wait")){clearInterval(ty);end();}},{once:true});
-})();
+// Sequência: sinal digitado, o olho abre, "você foi escolhido(a)", toque no olho, depois o caminho.
+const B=document.body,h=$("t"),s=$("sig"),eye=$("eye"),RM=matchMedia("(prefers-reduced-motion: reduce)").matches,T="[ SINAL DETECTADO ]";
+let stage=0; // 0 intro, 1 aguardando toque, 2 revelado
+const say=txt=>{h.classList.add("f");setTimeout(()=>{h.textContent=txt;h.classList.remove("f");},RM?0:450);};
+const buzz=p=>{try{navigator.vibrate&&navigator.vibrate(p)}catch(e){}};
+function ready(){if(stage>0)return;stage=1;s.textContent=T;B.classList.add("open");say("Você foi escolhido(a)");
+  setTimeout(()=>{if(stage===1){B.classList.add("tap");say("Toque no olho");}},RM?0:1800);}
+function reveal(){if(stage===2)return;stage=2;B.classList.remove("tap");buzz([18,60,30]);
+  B.classList.add("blink","flash");setTimeout(()=>B.classList.remove("blink"),160);setTimeout(()=>B.classList.remove("flash"),900);
+  say("Aceite a missão");setTimeout(()=>B.classList.remove("wait"),RM?0:500);}
+if(RM)ready();else{let i=0;const ty=setInterval(()=>{s.textContent=T.slice(0,++i);if(i>=T.length){clearInterval(ty);setTimeout(()=>B.classList.add("open"),150);setTimeout(ready,1400);}},55);
+  window.__skip=()=>{clearInterval(ty);ready();};}
+eye.addEventListener("click",()=>{if(stage===0){window.__skip&&window.__skip();return;}
+  if(stage===1)return reveal();
+  // já revelado: no Android com instalação nativa, o olho também instala
+  buzz(12);B.classList.add("blink");setTimeout(()=>B.classList.remove("blink"),160);if(evt)$("inst").click();});
+addEventListener("pointerdown",e=>{if(stage===0&&e.target.closest&&!e.target.closest("#eye")&&window.__skip)window.__skip();});
+// a pupila segue o dedo / o mouse
+addEventListener("pointermove",e=>{const r=eye.getBoundingClientRect(),dx=e.clientX-(r.left+r.width/2),dy=e.clientY-(r.top+r.height/2),d=Math.hypot(dx,dy)||1,k=Math.min(1,d/200);
+  $("pu").style.transform="translate("+(dx/d*7*k).toFixed(1)+"px,"+(dy/d*4*k).toFixed(1)+"px)";},{passive:true});
 addEventListener("beforeinstallprompt",e=>{e.preventDefault();evt=e;if(!INAPP)show("v-prompt");});
 $("inst").addEventListener("click",async()=>{if(!evt)return;evt.prompt();let r=null;try{r=await evt.userChoice;}catch(e){}evt=null;
   if(r&&r.outcome==="accepted")show("v-done");else pick();});
