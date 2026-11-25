@@ -2578,7 +2578,13 @@ function tlUI(){let p=$("tlPanel");if(!p){const anchor=$("betaPanel");if(!anchor
   r.append(b);bd.append(r);}
 // nota do "Teste do app" também vai identificada para quem aceitou
 {const bs=$("betaSend");if(bs)bs.addEventListener("click",()=>{try{const t=tlGet();if(!t.on||tlKid()||!betaRate)return;const tx=$("betaText").value.trim().replace(/\S+@\S+/g,"[email]").replace(/\+?\d[\d\s().-]{7,}\d/g,"[número]").slice(0,240);tlSend("nota",betaRate+": "+tx);}catch(e){}},true);}
-function tlBoot(){try{anon(standalone()?"3-abriu-app":"2-abriu-navegador");if(cfg&&!cfg.blank&&cfg.quests&&cfg.quests.length){anon("4-perfil");tlDaily();setTimeout(tlAsk,2500);}tlUI();}catch(e){}}
+// Métrica dos desafios relâmpago (só com opt-in, anônima: id aleatório, sem apelido): 1 linha por dia sobre ONTEM.
+// A|id|6-desafios|dia de ontem|aparelho|app/navegador|feitos de 3|dupla 0/1|sensor 0/1|usou o app ontem 0/1
+function tlZap(){if(!anonOk()||typeof zapToday!=="function")return;const t=tlGet();const y=new Date();y.setDate(y.getDate()-1);const yk=dkey(y),yd=yk.replace(/-/g,"");if(t.zd===yd)return;
+  const n=Object.keys(((prog.zap||{})[yk])||{}).length;const L=prog.log[yk]||[];const duo=L.some(e=>String(e.q).startsWith("zap:duo:"))?1:0;
+  let mo=0;try{mo=(JSON.parse(localStorage.getItem("asc-u-zapmo")||"{}")||{})[yk]?1:0;}catch(e){}
+  t.zd=yd;tlSet(t);tlPost(["A",anonId(),"6-desafios",yd,tlPlat(),standalone()?"app":"navegador",Math.min(3,n)+"/3",duo,mo,L.length?1:0]);}
+function tlBoot(){try{anon(standalone()?"3-abriu-app":"2-abriu-navegador");if(cfg&&!cfg.blank&&cfg.quests&&cfg.quests.length){anon("4-perfil");tlDaily();tlZap();setTimeout(tlAsk,2500);}tlUI();}catch(e){}}
 setTimeout(tlBoot,1200);
 // quem acabou de criar o perfil vê o aceite depois de fechar os avisos de boas-vindas
 let tlTry=0;const tlIv=setInterval(()=>{if(tlGet().asked||tlKid()||++tlTry>120){clearInterval(tlIv);return;}try{if(cfg&&cfg.quests&&cfg.quests.length){anon("4-perfil");tlAsk();}}catch(e){}},5000);
@@ -2648,7 +2654,7 @@ function zapFinish(z){if(zapDone(z.id))return;const tk=todayKey();prog.zap=prog.
   addXP({q:"zap:"+z.id+":"+tk,kind:"zap",xp,stat:"corpo",bonus:0,t:new Date().toISOString()},"Desafio relâmpago: +"+xp+" XP");
   try{if(typeof sendRank==="function")sendRank("desafio",true);}catch(e){}
   try{if(typeof duoDone==="function")duoDone(z);}catch(e){}
-  if(zapMo.used){try{const k="asc-u-zapmo";const o=JSON.parse(localStorage.getItem(k)||"{}");o[tk]=(o[tk]||0)+1;for(const d in o)if(d<tk)delete o[d];localStorage.setItem(k,JSON.stringify(o));}catch(e){}zapMo.used=false;}
+  if(zapMo.used){try{const k="asc-u-zapmo";const o=JSON.parse(localStorage.getItem(k)||"{}");o[tk]=(o[tk]||0)+1;for(const d in o)if(d<dkey(new Date(Date.now()-2*864e5)))delete o[d];localStorage.setItem(k,JSON.stringify(o));}catch(e){}zapMo.used=false;}
   zapClose();zapUI();
   const after=zapRankLine();const all=zapToday().every(q=>zapDone(q.id));
   if(before&&after&&after.pos<before.pos)sysPop("RANKING","Subiu para #"+after.pos,"Você passou alguém no ranking da semana. "+(after.pos>1?after.txt.replace(/^#\d+ na semana · /,"Agora "):"Topo conquistado."),null,"Bora");
