@@ -11,7 +11,8 @@
 //  - list: só posts do próprio e de amigos confirmados, últimos 7 dias, no máximo 20, imagem em base64 (nunca URL).
 //  - del: só o autor (apaga arquivo e linha). react: 🔥 💪 👏, só amigo ou o próprio, liga/desliga.
 //  - report: esconde para quem denunciou; 1 denúncia esconde post de 14-17 para todos, 2 escondem post de adulto. E-mail ao JV a cada uma.
-//  - gatilho diário muralLimpa: apaga arquivo e linha com mais de 7 dias.
+//  - gatilho diário muralLimpa: apaga foto e linha com mais de 7 dias.
+//  - fotos ficam numa planilha própria e privada criada pelo script (sem acesso ao Drive).
 
 var MU_SHEET_ID = "";          // vazio = usa SHEET_ID do projeto (planilha 1EY8…, a das respostas)
 var MU_RANK_TAB = "Respostas ao formulário 1"; // coluna B = linha crua "F|a|b||d", coluna C = "tk" quando o token foi conferido (validar)
@@ -92,15 +93,24 @@ function mFriends_(nick) {
 }
 // --- índice privado ---
 var MU_COLS = ["id", "autor", "nome", "uid", "data", "tarefa", "legenda", "fileId", "reacoes", "removido", "denuncias", "faixa"];
-function mTab_() { var ss = mSS_();
-  var sh = ss.getSheetByName(MU_TAB); if (!sh) { sh = ss.insertSheet(MU_TAB); sh.appendRow(MU_COLS); sh.hideSheet(); } return sh; }
+// fotos e índice ficam numa planilha PRÓPRIA e privada (criada pelo script, nunca publicada nem compartilhada).
+// Assim o mural não precisa de acesso ao Google Drive e não mora na planilha que tem a aba pública do ranking.
+function mStore_() { var p = mProps_(); var id = p.getProperty("mu:ss"); var ss = null;
+  if (id) { try { ss = SpreadsheetApp.openById(id); } catch (e) {} }
+  if (!ss) { ss = SpreadsheetApp.create("Ascension - mural (privado, nao compartilhar)"); p.setProperty("mu:ss", ss.getId()); }
+  return ss; }
+function mTab_() { var ss = mStore_();
+  var sh = ss.getSheetByName(MU_TAB); if (!sh) { sh = ss.insertSheet(MU_TAB); sh.appendRow(MU_COLS); } return sh; }
+function mFotos_() { var ss = mStore_(); return ss.getSheetByName("fotos") || ss.insertSheet("fotos"); }
+// a foto vai em pedaços de 45 mil caracteres (limite de 50 mil por célula); o "b" na frente impede o Sheets de ler "=", "+" ou "-" como fórmula
+function mFotoPut_(id, b64) { var row = [id]; for (var i = 0; i < b64.length; i += 45000) row.push("b" + b64.slice(i, i + 45000)); mFotos_().appendRow(row); }
+function mFotoRow_(id) { var c = mFotos_().createTextFinder(id).matchEntireCell(true).findNext(); return c && c.getColumn() === 1 ? c.getRow() : 0; }
+function mFotoGet_(id) { var sh = mFotos_(); var r = mFotoRow_(id); if (!r) return ""; var n = sh.getLastColumn(); if (n < 2) return "";
+  return sh.getRange(r, 2, 1, n - 1).getValues()[0].map(function (x) { return String(x || "").slice(1); }).join(""); }
+function mFotoDel_(id) { var r = mFotoRow_(id); if (r) mFotos_().deleteRow(r); }
 function mRows_() { var sh = mTab_(); var v = sh.getDataRange().getValues(); var out = [];
   for (var i = 1; i < v.length; i++) { var r = {}; for (var j = 0; j < MU_COLS.length; j++) r[MU_COLS[j]] = v[i][j]; r._row = i + 1; out.push(r); } return out; }
 function mJ_(s, d) { try { return JSON.parse(s || "") || d; } catch (e) { return d; } }
-function mFolder_() { var p = mProps_(); var id = p.getProperty("mu:folder");
-  if (id) { try { return DriveApp.getFolderById(id); } catch (e) {} }
-  var f = DriveApp.createFolder("Ascension - mural (privado)"); f.setSharing(DriveApp.Access.PRIVATE, DriveApp.Permission.NONE);
-  p.setProperty("mu:folder", f.getId()); return f; }
 function mFresh_(d) { return Date.now() - Number(d) < MU_DAYS * 864e5; } // data guardada em ms (número): o Sheets não converte
 function mClean_(s, n) { return String(s || "").replace(/[<>|\n\r]/g, " ").trim().slice(0, n); }
 // --- ações ---
@@ -117,9 +127,9 @@ function mPost_(nick, uid, age, b) {
     mRows_().forEach(function (r) { if (r.autor === nick && Utilities.formatDate(new Date(Number(r.data)), "America/Sao_Paulo", "yyyy-MM-dd") === today) n++; });
     if (n >= MU_MAX_DAY) return { ok: false, err: "limite" };
     var id = "m" + Utilities.getUuid().replace(/-/g, "").slice(0, 15); // "m" na frente: o Sheets nunca lê o id como número (ex.: 12e45…)
-    var file = mFolder_().createFile(Utilities.newBlob(bytes, "image/jpeg", id + ".jpg"));
+    mFotoPut_(id, m[1]);
     // tarefa: título é texto livre do jogador; só guarda para adulto (nunca vira canal de texto com 14-17)
-    mTab_().appendRow([id, nick, mClean_(b.n, 16), uid, Date.now(), age === "adult" ? mClean_(b.q, 40) : "", cap, file.getId(), "{}", "", "[]", age]);
+    mTab_().appendRow([id, nick, mClean_(b.n, 16), uid, Date.now(), age === "adult" ? mClean_(b.q, 40) : "", cap, id, "{}", "", "[]", age]);
   } finally { lock.releaseLock(); }
   return { ok: true };
 }
@@ -128,7 +138,7 @@ function mList_(nick, uid, age) {
   var rows = mRows_().filter(function (r) { return !r.removido && mFresh_(r.data) && (r.autor === nick || fr[r.autor]) && mJ_(r.denuncias, []).indexOf(uid) < 0; })
     .sort(function (a, b) { return Number(b.data) - Number(a.data); }).slice(0, MU_MAX_LIST);
   rows.forEach(function (r) { var img = "";
-    try { img = "data:image/jpeg;base64," + Utilities.base64Encode(DriveApp.getFileById(r.fileId).getBlob().getBytes()); } catch (e) { return; }
+    try { var b64 = mFotoGet_(r.id); if (!b64) return; img = "data:image/jpeg;base64," + b64; } catch (e) { return; }
     var rx = mJ_(r.reacoes, {}); var cnt = {}, my = {};
     MU_REACT.forEach(function (e) { var l = rx[e] || []; cnt[e] = l.length; my[e] = l.indexOf(uid) >= 0; });
     out.push({ id: r.id, a: r.nome, d: new Date(Number(r.data)).toISOString(), q: age === "adult" && r.faixa === "adult" ? r.tarefa : "", cap: r.legenda, img: img, r: cnt, my: my }); });
@@ -136,7 +146,7 @@ function mList_(nick, uid, age) {
 }
 function mFind_(id) { var all = mRows_(); for (var i = 0; i < all.length; i++) if (all[i].id === id) return all[i]; return null; }
 function mDel_(nick, id) { return mLock_(function () { var r = mFind_(id); if (!r || r.autor !== nick) return { ok: false, err: "dono" };
-  try { DriveApp.getFileById(r.fileId).setTrashed(true); } catch (e) {} mTab_().deleteRow(r._row); return { ok: true }; }); }
+  mFotoDel_(r.id); mTab_().deleteRow(r._row); return { ok: true }; }); }
 function mReact_(nick, uid, id, e) { if (MU_REACT.indexOf(e) < 0) return { ok: false, err: "reacao" };
   var fr = mFriends_(nick); return mLock_(function () { var r = mFind_(id); if (!r || r.removido || (r.autor !== nick && !fr[r.autor])) return { ok: false, err: "amigo" };
   var rx = mJ_(r.reacoes, {}); var l = rx[e] || []; var k = l.indexOf(uid); if (k >= 0) l.splice(k, 1); else l.push(uid); rx[e] = l;
@@ -149,9 +159,9 @@ function mReport_(nick, uid, id) { var fr = mFriends_(nick); var r, d, hide; var
   try { var ok = typeof g_emailOk === "function" ? g_emailOk() : true;
     if (ok) MailApp.sendEmail(Session.getEffectiveUser().getEmail(), "Ascension: denúncia no mural (" + d.length + ")",
       "Post " + r.id + " de " + r.nome + " (" + r.faixa + ") denunciado por " + nick + ". " + (hide ? "Escondido para todos." : "Escondido para quem denunciou.") +
-      "\nArquivo no Drive (privado): " + r.fileId); } catch (e) {}
+      "\nA foto fica na planilha privada do mural (aba fotos, id " + r.id + ") e some sozinha em 7 dias."); } catch (e) {}
   return { ok: true }; }
 // --- gatilho diário: apaga de verdade o que passou de 7 dias ---
 function muralLimpa() { mLock_(function () { var sh = mTab_(); var all = mRows_(); for (var i = all.length - 1; i >= 0; i--) { var r = all[i];
-  if (!mFresh_(r.data)) { try { DriveApp.getFileById(r.fileId).setTrashed(true); } catch (e) {} sh.deleteRow(r._row); } } }); }
+  if (!mFresh_(r.data)) { try { mFotoDel_(r.id); } catch (e) {} sh.deleteRow(r._row); } } }); }
 function muralInstalaGatilho() { ScriptApp.newTrigger("muralLimpa").timeBased().everyDays(1).atHour(4).create(); }
