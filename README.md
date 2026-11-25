@@ -25,6 +25,7 @@ Pontos de entrada no JS: `render()` desenha tudo; `toggle(quest, "full"|"min")` 
 - Qualquer um pode postar no formulário, então o app **não confia** nas linhas: aceite de amizade (`G`) só vale se você pediu; entrada no esquadrão (`J`) só de amigo ou de quem você convidou; cutucar/parabéns (`K`) só de amigos e no máximo 5 por dia; no máximo 3 janelas de pedido por dia.
 - Convite pessoal: o código fica só no link; na planilha vai `cv`+SHA-256(código|apelido), que não dá para copiar para outro apelido.
 - Links `#s=` e `#c=` pedem confirmação quando já há planilha/tarefas no aparelho. A chave do painel do criador fica só no aparelho (`#k=`), nunca no repositório.
+- Funil anônimo (linhas `A`, `tools/tele.js`) só com opt-in: aceite do painel ou "sim" do beta anônimo. O convite (`/convite/`, `/x/`) não envia nada. Teste: `node qa/funil.test.js`.
 - CSP por `<meta>` (o GitHub Pages não deixa mudar cabeçalhos). Teste: `node qa/seguranca.test.js`.
 
 ## Segredos

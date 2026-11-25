@@ -155,3 +155,10 @@ Falhou e foi corrigido no caminho: título duplicava "+10 XP" na mensagem; speed
 
 - 25/11/2026 18h35 · Revisão horária · Achado: main vermelha em `qa/classe.test.js` (2 falhas): o teste ainda esperava "Mago" para quem não tem rotina, mas o #47 passou a sugerir a classe pelo perfil (foco e meta). Mudou: teste atualizado para o comportamento novo e reforçado (sem perfil sugere classe de fantasia e mostra o porquê; foco "Saúde e corpo" sugere classe de Corpo, o que falha no código antigo). App não mudou, cache segue `ascensao-v37` / `ascensao-u-v47`. Placar: 13/13 arquivos verdes (classe 36/36).
 - 25/11/2026 19h30 · Revisão horária · Achado: na tela Hoje o título da tarefa (que abre os detalhes) aceitava toque só em 21px de altura e os selos do topo (🔥 sequência, 🛡️ escudo, classe) em 30px, abaixo dos 44px recomendados para o dedão. Mudou: área de toque invisível de ≥ 44px nos dois, sem mudar o visual e sem roubar o toque dos botões; cache `ascensao-v47` / `ascensao-u-v58`; teste novo `qa/alvo.test.js` (12/24 no código antigo, 24/24 no novo). Também: a main estava vermelha em `qa/liga.test.js` desde o #56 (o teste esperava o painel antigo do ranking; a pílula 🏆 agora leva à aba Amigos); o #61 corrigiu o teste ao mesmo tempo e ficou valendo a versão dele. Placar: 15/15 arquivos verdes (alvo 24/24).
+
+## 25/11/2026 · Funil anônimo só com opt-in (correção de privacidade)
+
+Achado: o funil anônimo (`A`) enviava etapas para quem tinha 14+ sem opt-in, e o convite enviava "1-convite" para qualquer visitante (sem idade nem consentimento). Fere a regra "beta anônimo só com opt-in".
+Mudou: `/convite/` e `/x/` não enviam nada nem criam id; no `/comecar/` as etapas só saem depois do aceite do painel ou do "sim" do beta anônimo; até 13 anos nada. Cache `/comecar/` `ascensao-u-v59`.
+**Placar:** `qa/funil.test.js` 16/16 (5 falham no código antigo). Suíte completa: 16/16 arquivos verdes.
+Efeito no painel: o funil passa a contar só quem aceitou; a etapa "convite" para de crescer.
