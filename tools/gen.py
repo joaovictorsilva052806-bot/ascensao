@@ -96,7 +96,7 @@ ci=open(SP+'checkin.js').read()
 rep('\nlet saveTimer=null, SYNC="";','\n'+ci+'\nlet saveTimer=null, SYNC="";')
 rep('applyCopy();renderEd();renderAdj();renderRPG();betaUI();','applyCopy();renderEd();renderAdj();renderRPG();betaUI();setTimeout(dailyCheckin,600);')
 s=s.replace('<h2>Check-in</h2>','<h2>Como você está</h2>')
-s=s.replace('String(e.q).startsWith("ach:")','/^(ach|checkin|tip|dun):/.test(String(e.q))')
+s=s.replace('String(e.q).startsWith("ach:")','/^(ach|checkin|tip|dun|sq):/.test(String(e.q))')
 rep('e qualquer pessoa com o app vê a lista.";','e qualquer pessoa com o app vê a lista. O criador do app também vê em que dias você fez check-in.";')
 rep('No ranking aparece só o seu apelido e o XP da semana. Nenhum','No ranking aparece só o seu apelido e o XP da semana (o criador do app também vê os dias de check-in). Nenhum')
 rep('</style></head>',open(SP+'quick.css').read()+'</style></head>')
@@ -117,5 +117,8 @@ rep('\nlet saveTimer=null, SYNC="";','\n'+open(SP+'streak.js').read()+'\nlet sav
 # liga da semana (tools/league.*): divisão que só sobe, rival mais próximo, fechamento da semana
 rep('</style></head>',open(SP+'league.css').read()+'</style></head>')
 rep('\nlet saveTimer=null, SYNC="";','\n'+open(SP+'league.js').read()+'\nlet saveTimer=null, SYNC="";')
+# esquadrão cooperativo (tools/squad.*): anomalia da semana derrotada com o XP do grupo
+rep('</style></head>',open(SP+'squad.css').read()+'</style></head>')
+rep('\nlet saveTimer=null, SYNC="";','\n'+open(SP+'squad.js').read()+'\nlet saveTimer=null, SYNC="";')
 open('comecar/index.html','w').write(s)
 pass
