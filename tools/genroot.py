@@ -38,4 +38,7 @@ rep('\nlet saveTimer=null, SYNC="";','\n'+R('chain.js')+'\nlet saveTimer=null, S
 # avatar por classe (tools/avatar.*)
 rep('</style></head>',R('avatar.css')+'</style></head>')
 rep('\nlet saveTimer=null, SYNC="";','\n'+R('avatar.js')+'\nlet saveTimer=null, SYNC="";')
+# tarefas limpas + horário certo (tools/qtidy.*)
+rep('</style></head>',R('qtidy.css')+'</style></head>')
+rep('\nlet saveTimer=null, SYNC="";','\n'+R('qtidy.js')+'\nlet saveTimer=null, SYNC="";')
 open(SP+'../index.html','w').write(s)

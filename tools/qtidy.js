@@ -1,0 +1,37 @@
+// ---------- Tarefas mais limpas + horário certo ----------
+// Cada tarefa mostra só o título, o XP e os botões. Tocar no título abre os detalhes (tipo, gatilho, mínimo, link).
+// Tarefas com hora certa ficam com cadeado até o horário: "antes de dormir" libera às 20h, as da manhã às 5h,
+// e quem tem "Quando der 19h" / "Às 14h" no gatilho libera 1 hora antes. Pode trocar em cfg: q.from = hora.
+function qtFrom(q){if(!q)return null;if(Number.isFinite(+q.from)&&q.from!==""&&q.from!=null)return Math.max(0,Math.min(23,+q.from));
+  const t=String(q.title||"").toLowerCase(),i=String(q.ifThen||"").toLowerCase();
+  if(q.id==="s_fech"||q.id==="q_fech"||/antes de dormir|fechamento|marcar o que fiz hoje/.test(t))return 20;
+  if(q.id==="s_mochila"||/depois do jantar/.test(i))return 18;
+  if(/almo[cç]/.test(t))return 11;
+  const m=/(?:quando der|às|as|a partir das)\s+(\d{1,2})\s*h/.exec(i);if(m){const h=+m[1];if(h>=6&&h<=23)return Math.max(5,h-1);}
+  if(/ao acordar|acordar|da manhã|primeira hora do dia/.test(t+" "+i))return 5;
+  return null;}
+function qtLocked(q){const f=qtFrom(q);if(f==null)return null;const h=new Date().getHours();
+  if(f>=12)return (h<f&&h>=5)?f:null; // noite: libera de f até 4h59
+  return h<f?f:null;}
+const QT_SHORT={s_fech:"🌙 Fechar o dia",q_fech:"🌙 Fechar o dia"};
+const QT_SHORT_RE=[[/^antes de dormir/i,"🌙 Fechar o dia"],[/trabalhar 90 min/i,"Bloco de foco: 90 min"],[/oferecer desenho/i,"Oferecer desenho técnico"],[/abordar 3 corretores/i,"Abordar 3 corretores"]];
+function qtTidy(){const box=$("quests");if(!box)return;let nextMoved=false;
+  for(const c of box.querySelectorAll(".quest[data-q]")){const q=((cfg&&cfg.quests)||[]).find(x=>x.id===c.dataset.q);if(!q)continue;
+    const nm=c.querySelector(".t > div:not(.xp)");const x=c.querySelector(".t .xp");
+    const sh=q.short||QT_SHORT[q.id]||(String(q.title).length>46&&QT_SHORT_RE.find(r=>r[0].test(q.title))||[])[1];
+    if(nm&&!nm.dataset.qt&&sh&&sh!==q.title){nm.textContent=sh;const d=document.createElement("div");d.className="qtdesc";d.textContent=q.title;nm.after(d);}
+    if(nm&&!nm.dataset.qt){nm.dataset.qt="1";nm.classList.add("tt");nm.setAttribute("role","button");nm.tabIndex=0;nm.setAttribute("aria-expanded","false");
+      const tg=()=>{c.classList.toggle("open");nm.setAttribute("aria-expanded",c.classList.contains("open")?"true":"false");};
+      nm.onclick=tg;nm.onkeydown=e=>{if(e.key==="Enter"||e.key===" "){e.preventDefault();tg();}};}
+    if(x&&!x.dataset.qt){x.dataset.qt="1";const parts=x.textContent.split("  ·  mínimo: ");x.textContent=parts[0];if(parts[1]){const mn=document.createElement("span");mn.className="qtmin";mn.textContent=" · mínimo: "+parts[1];x.append(mn);}}
+    const done=c.classList.contains("done")||c.classList.contains("min");
+    const lk=done?null:qtLocked(q);c.classList.toggle("qtlock",!!lk);
+    let lb=c.querySelector(".qtlb");if(lk!=null){if(!lb){lb=document.createElement("div");lb.className="qtlb";(c.querySelector(".t")||c).append(lb);}lb.textContent="🔒 libera às "+lk+"h";}else if(lb)lb.remove();
+    for(const b of c.querySelectorAll(".btns button")){b.disabled=lk!=null;if(lk!=null)b.title="Libera às "+lk+"h";}
+    if(c.classList.contains("next")&&lk!=null){c.classList.remove("next");const l=c.querySelector(".nextlbl");if(l)l.remove();nextMoved=true;}}
+  if(nextMoved||!box.querySelector(".quest.next")){const cand=[...box.querySelectorAll(".qgroup .quest[data-q]")].find(c=>!c.classList.contains("qtlock")&&!c.classList.contains("done")&&!c.classList.contains("min"));
+    if(cand&&!cand.classList.contains("next")){cand.classList.add("next");const nx=document.createElement("div");nx.className="nextlbl";nx.textContent="PRÓXIMA";cand.prepend(nx);}}}
+{const _r=render;render=function(){_r.apply(this,arguments);try{qtTidy();}catch(e){}};}
+setTimeout(()=>{try{qtTidy();}catch(e){}},0);
+// vira a hora com o app aberto: libera sozinho
+setInterval(()=>{try{if(!document.hidden&&document.querySelector("#quests .qtlock")){const h=new Date().getHours();if(h!==qtTidy.h){qtTidy.h=h;render();}}}catch(e){}},60000);
