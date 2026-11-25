@@ -21,6 +21,7 @@ function bxTier(){let n=0;try{n=streakDays()||0;}catch(e){}return n>=7?2:n>=3?1:
 const BX_TIER=[["Baú de madeira","#8b5a2b","#d9a066"],["Baú de prata","#8d99ae","#e9eef7"],["Baú de ouro","#b8860b","#ffe08a"]];
 // --- sorteio (com garantia: no máximo 4 baús seguidos sem item) ---
 function bxRoll(){const c=bxSt();const tier=bxTier();
+  if(typeof clsGrantScroll==="function"&&bxRnd()<[.03,.05,.08][tier])return {k:"s",n:"Pergaminho de Renascimento",r:2,xp:5,tier};
   const fr=BX_FR.filter(f=>!c.frames.includes(f[0])),tt=BX_TT.filter(t=>!c.titles.some(x=>x.id===t[0]));
   const pc=[.25,.35,.5][tier];const want=(fr.length||tt.length)&&(c.dry>=4||bxRnd()<pc);
   if(want){const w=tier===2?[0,4,4,2]:[0,6,3,1];
@@ -69,16 +70,17 @@ function bxOpen(){if($("bxModal"))return;const c=bxSt();const tk=todayKey();if(c
     if(taps<need){btn.classList.remove("shake");void btn.offsetWidth;btn.classList.add("shake");tap.textContent=need-taps===1?"Mais uma vez!":"Mais "+(need-taps)+"…";return;}
     btn.dataset.open="1";btn.classList.add("open");tap.hidden=true;hint.hidden=true;setTimeout(reveal,bxMotion()?650:0);});
   function reveal(){if(c.got[tk])return;c.got[tk]=1;for(const k in c.got)if(k<dkeyBack(30))delete c.got[k];
-    if(rw.k==="f"){if(!c.frames.includes(rw.id))c.frames.push(rw.id);c.dry=0;}else if(rw.k==="t"){bxGiveTitle(rw.id,rw.n,"baú");c.dry=0;}else c.dry++;
+    if(rw.k==="s"){try{clsGrantScroll(1,"baú");}catch(e){}c.dry=0;}else if(rw.k==="f"){if(!c.frames.includes(rw.id))c.frames.push(rw.id);c.dry=0;}else if(rw.k==="t"){bxGiveTitle(rw.id,rw.n,"baú");c.dry=0;}else c.dry++;
     save();
     if(!entries().some(e=>e.q==="ach:bau:"+tk))addXP({q:"ach:bau:"+tk,kind:"full",xp:rw.xp,stat:"mente",bonus:0,t:new Date().toISOString()},"");
     out.hidden=false;out.textContent="";out.style.setProperty("--rc",BX_RCOL[rw.r||0]);
     out.append(bxEl("div","bxrar",rw.r?BX_RAR[rw.r]:"Comum"));
     if(rw.k==="f"){const pv=bxEl("div","bxfpv");pv.style.cssText=bxFrameCss(rw.id);try{pv.innerHTML=avMine(84);}catch(e){}out.append(pv,bxEl("b","bxname","Moldura: "+rw.n),bxEl("span","sm muted","+"+rw.xp+" XP"));}
+    else if(rw.k==="s")out.append(bxEl("b","bxname","📜 "+rw.n),bxEl("span","sm muted","Vale 1 troca de classe · +"+rw.xp+" XP"));
     else if(rw.k==="t")out.append(bxEl("b","bxname","Título: « "+rw.n+" »"),bxEl("span","sm muted","+"+rw.xp+" XP"));
     else out.append(bxEl("b","bxname bxxp","+"+rw.xp+" XP"),bxEl("span","sm muted",c.dry>=3?"Item garantido em até "+Math.max(1,5-c.dry)+" baú(s).":"Amanhã tem outro."));
     row.hidden=false;row.textContent="";
-    if(rw.k!=="x"){const eq=bxEl("button","go","Usar agora");eq.type="button";eq.addEventListener("click",()=>{if(rw.k==="f"){c.frame=rw.id;save();bxApplyFrame();}else bxEquipTitle(rw.id);toast("Equipado: "+rw.n);close();});row.append(eq);}
+    if(rw.k==="f"||rw.k==="t"){const eq=bxEl("button","go","Usar agora");eq.type="button";eq.addEventListener("click",()=>{if(rw.k==="f"){c.frame=rw.id;save();bxApplyFrame();}else bxEquipTitle(rw.id);toast("Equipado: "+rw.n);close();});row.append(eq);}
     const ok=bxEl("button",rw.k==="x"?"go":"ghost","Fechar");ok.type="button";ok.addEventListener("click",close);row.append(ok);setTimeout(()=>(row.querySelector("button")||ok).focus(),50);
     try{if(typeof sparks==="function")sparks(true);}catch(e){}
     bxColUI();bxPill();}
