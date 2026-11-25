@@ -1,5 +1,18 @@
 # Relatório de QA (ATENA)
 
+## 25/11/2026 · liga da semana e classe em 1 toque
+
+Base: Duolingo (ligas semanais com promoção, rival próximo) e onboarding de 1 toque. Playwright 390x844 e 1280x800, relógio simulado, ranking simulado. Placar: 128/128.
+
+| Teste | Resultado |
+|---|---|
+| qa/liga.test.js: pílula 🏆 3º em Hoje abre o ranking; linha da liga com rival ("faltam N XP para passar Bia"); fechamento da semana em 2º sobe para Bronze (uma vez só); 4º mantém a liga; aviso "Bia te passou"; fora do ranking nada aparece | 12/12 |
+| qa/classe.test.js (/ e /comecar/): sugestão pela rotina (Universitário) ou Mago; lista escondida; 1 toque grava; "Ver outras" e troca pelo topo mostram a lista | 22/22 |
+| qa/sequencia, religar, rotas, segredos | 30 + 14 + 12 + 38 |
+
+Achado e corrigido antes de publicar: o fechamento da semana se perdia quando outro aviso (check-in) estava na fila, porque a foto da semana nova sobrescrevia a antiga. Agora fecha antes de atualizar.
+Dados: só adiciona `prog.league`. Caches: ascensao-v24 e ascensao-u-v33.
+
 ## 25/11/2026 · reinstalação segura: ligar a planilha não sobrescreve mais o progresso
 
 Bug achado: numa instalação nova, se a pessoa tocava em algo (classe, check-in) antes de ligar a planilha, o progresso local "novo" vencia pela data e subia por cima do progresso da planilha. Correção: na 1ª ligação de um aparelho, nada sobe antes de baixar; a planilha vence e o local vira backup em `ascensao-prog-prelink`.

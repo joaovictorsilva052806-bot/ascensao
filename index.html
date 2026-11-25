@@ -311,6 +311,8 @@ body.creator .tabbar{grid-template-columns:repeat(5,1fr)}
 body[data-tab=criador] .wrap>section[data-tab]:not([data-tab=criador]){display:none}
 body:not([data-tab=criador]) .wrap>section[data-tab=criador]{display:none}
 
+.clssug{display:flex;flex-direction:column;align-items:center;gap:10px;margin:14px 0 6px}.clssug .go.big{display:flex;flex-direction:column;gap:4px;width:100%;padding:16px}.clssug .go.big small{font-weight:500;opacity:.85}
+
 /* ---------- Segredos ---------- */
 .sectitle{font-family:var(--f-hud,monospace);font-size:.68rem;letter-spacing:.12em;color:var(--gold);margin:-2px 0 2px;text-shadow:0 0 8px rgba(242,193,78,.35)}
 .secb{font:inherit;text-align:left;cursor:default;width:100%}
@@ -1109,7 +1111,7 @@ document.body.classList.add("enter");setTimeout(()=>document.body.classList.remo
 
 // ---------- Escolha de classe (no começo; vale para quem já usa também) ----------
 let clsOpen=false;
-function openCls(){if(clsOpen||(rpgState().cls&&!openCls.force))return;openCls.force=false;clsOpen=true;let style="real";const occ=(cfg&&cfg.profile&&cfg.profile.occ)||"";
+function openCls(){if(clsOpen||(rpgState().cls&&!openCls.force))return;const full=!!openCls.force;openCls.force=false;clsOpen=true;let style="real";const occ=(cfg&&cfg.profile&&cfg.profile.occ)||"";
   const m=document.createElement("div");m.className="sysmodal";m.id="clsModal";m.setAttribute("role","dialog");const c=document.createElement("div");c.className="card clscard";
   const tag=document.createElement("div");tag.className="tag";tag.textContent="[ SISTEMA ] ESCOLHA DE CLASSE";const h=document.createElement("h3");h.textContent="Quem é você neste jogo?";
   const p=document.createElement("p");p.className="sm muted";p.textContent="Sua classe dá afinidade com um atributo: ele sobe 1,5x mais rápido. Dá para trocar quando quiser: toque na classe, no topo.";
@@ -1124,7 +1126,15 @@ function openCls(){if(clsOpen||(rpgState().cls&&!openCls.force))return;openCls.f
       b.addEventListener("click",()=>pick({style,id:x[0],name:x[1],stat:x[2]}));grid.append(b);}}
   for(const [v,l] of [["real","🧭 Vida real"],["fant","⚔️ Fantasia"]]){const b=document.createElement("button");b.type="button";b.dataset.v=v;b.textContent=l;b.addEventListener("click",()=>{style=v;fill();});seg.append(b);}
   const later=document.createElement("button");later.type="button";later.className="link";later.textContent="Escolher depois";later.addEventListener("click",()=>{m.remove();clsOpen="later";});
-  c.append(tag,h,p,seg,grid,own,later);m.append(c);document.body.append(m);fill();}
+  // Escolha enxuta (1 toque): o Sistema sugere uma classe; a lista completa fica atrás de "Ver outras".
+  const sx=CLS_REAL.find(x=>x[3]&&x[3]===occ),sg=sx?{style:"real",id:sx[0],name:sx[1],stat:sx[2]}:{style:"fant",id:CLS_FANT[0][0],name:CLS_FANT[0][1],stat:CLS_FANT[0][2]};
+  const sug=document.createElement("div");sug.className="clssug";const sb=document.createElement("button");sb.type="button";sb.className="go big";sb.id="clsSug";
+  const sbt=document.createElement("b");sbt.textContent=(sg.style==="fant"?"⚔️ ":"🧭 ")+sg.name;const sbs=document.createElement("small");sbs.textContent=RPG_IC[sg.stat]+" "+STATS[sg.stat]+" sobe 1,5x mais rápido";sb.append(sbt,sbs);
+  sb.addEventListener("click",()=>pick(sg));const more=document.createElement("button");more.type="button";more.className="link";more.id="clsMore";more.textContent="Ver outras classes";
+  sug.append(sb,more);const box=document.createElement("div");box.className="clsall";box.append(seg,grid,own);
+  more.addEventListener("click",()=>{sug.hidden=true;box.hidden=false;p.hidden=false;});
+  if(!full){h.textContent="O Sistema escolheu sua classe";p.hidden=true;box.hidden=true;style=sg.style;}else sug.hidden=true;
+  c.append(tag,h,p,sug,box,later);m.append(c);document.body.append(m);fill();}
 function chgCls(){openCls.force=true;clsOpen=false;openCls();}
 $("clsChange").addEventListener("click",chgCls);
 if($("clsPill")){const cp=$("clsPill");cp.setAttribute("role","button");cp.tabIndex=0;cp.addEventListener("click",chgCls);}

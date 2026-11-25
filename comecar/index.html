@@ -356,6 +356,8 @@ body.enter .quest{animation:qIn .35s ease-out backwards}
 body.creator .tabbar{grid-template-columns:repeat(5,1fr)}
 body[data-tab=criador] .wrap>section[data-tab]:not([data-tab=criador]){display:none}
 body:not([data-tab=criador]) .wrap>section[data-tab=criador]{display:none}
+
+.clssug{display:flex;flex-direction:column;align-items:center;gap:10px;margin:14px 0 6px}.clssug .go.big{display:flex;flex-direction:column;gap:4px;width:100%;padding:16px}.clssug .go.big small{font-weight:500;opacity:.85}
 .quick{position:fixed;inset:0;z-index:55;background:var(--bg);overflow:auto;padding:max(28px,env(safe-area-inset-top)) 18px 28px;display:flex;flex-direction:column;gap:16px}
 .quick .qbar{height:4px;background:rgba(0,212,255,.15);border-radius:2px;overflow:hidden}.quick .qbar i{display:block;height:100%;width:0;background:var(--accent);box-shadow:0 0 10px var(--glow);transition:width .4s}
 .qstep{display:flex;flex-direction:column;gap:14px;animation:sysIn .4s cubic-bezier(.2,.9,.3,1.2)}
@@ -433,6 +435,9 @@ body[data-tab=foco] #focusNote{font-size:.8rem;color:var(--muted)}
 .pill.fire.risk{filter:none;opacity:1;border-color:#ff6b4a;color:#ffd0c2;animation:strisk 1.6s ease-in-out infinite}
 @keyframes strisk{50%{box-shadow:0 0 16px rgba(255,107,74,.6)}}
 @media (prefers-reduced-motion:reduce){.pill.fire.risk{animation:none;box-shadow:0 0 0 2px rgba(255,107,74,.6)}}
+.pill.lg{border-color:rgba(242,193,78,.6);color:#ffe7a8;cursor:pointer}
+.lgline{font-size:.85rem;margin:0 0 10px;padding:8px 10px;border:1px solid rgba(242,193,78,.35);border-radius:3px;background:rgba(242,193,78,.06)}
+.lgline b{color:var(--gold);font-family:var(--f-mono)}
 </style></head><body>
 
 <div class="hudtop"><span>ASCENSION<i>//</i>SISTEMA ONLINE</span><span class="mono" id="clock">--:--</span></div>
@@ -1690,7 +1695,7 @@ document.body.classList.add("enter");setTimeout(()=>document.body.classList.remo
 
 // ---------- Escolha de classe (no começo; vale para quem já usa também) ----------
 let clsOpen=false;
-function openCls(){if(clsOpen||(rpgState().cls&&!openCls.force))return;openCls.force=false;clsOpen=true;let style="real";const occ=(cfg&&cfg.profile&&cfg.profile.occ)||"";
+function openCls(){if(clsOpen||(rpgState().cls&&!openCls.force))return;const full=!!openCls.force;openCls.force=false;clsOpen=true;let style="real";const occ=(cfg&&cfg.profile&&cfg.profile.occ)||"";
   const m=document.createElement("div");m.className="sysmodal";m.id="clsModal";m.setAttribute("role","dialog");const c=document.createElement("div");c.className="card clscard";
   const tag=document.createElement("div");tag.className="tag";tag.textContent="[ SISTEMA ] ESCOLHA DE CLASSE";const h=document.createElement("h3");h.textContent="Quem é você neste jogo?";
   const p=document.createElement("p");p.className="sm muted";p.textContent="Sua classe dá afinidade com um atributo: ele sobe 1,5x mais rápido. Dá para trocar quando quiser: toque na classe, no topo.";
@@ -1705,7 +1710,15 @@ function openCls(){if(clsOpen||(rpgState().cls&&!openCls.force))return;openCls.f
       b.addEventListener("click",()=>pick({style,id:x[0],name:x[1],stat:x[2]}));grid.append(b);}}
   for(const [v,l] of [["real","🧭 Vida real"],["fant","⚔️ Fantasia"]]){const b=document.createElement("button");b.type="button";b.dataset.v=v;b.textContent=l;b.addEventListener("click",()=>{style=v;fill();});seg.append(b);}
   const later=document.createElement("button");later.type="button";later.className="link";later.textContent="Escolher depois";later.addEventListener("click",()=>{m.remove();clsOpen="later";});
-  c.append(tag,h,p,seg,grid,own,later);m.append(c);document.body.append(m);fill();}
+  // Escolha enxuta (1 toque): o Sistema sugere uma classe; a lista completa fica atrás de "Ver outras".
+  const sx=CLS_REAL.find(x=>x[3]&&x[3]===occ),sg=sx?{style:"real",id:sx[0],name:sx[1],stat:sx[2]}:{style:"fant",id:CLS_FANT[0][0],name:CLS_FANT[0][1],stat:CLS_FANT[0][2]};
+  const sug=document.createElement("div");sug.className="clssug";const sb=document.createElement("button");sb.type="button";sb.className="go big";sb.id="clsSug";
+  const sbt=document.createElement("b");sbt.textContent=(sg.style==="fant"?"⚔️ ":"🧭 ")+sg.name;const sbs=document.createElement("small");sbs.textContent=RPG_IC[sg.stat]+" "+STATS[sg.stat]+" sobe 1,5x mais rápido";sb.append(sbt,sbs);
+  sb.addEventListener("click",()=>pick(sg));const more=document.createElement("button");more.type="button";more.className="link";more.id="clsMore";more.textContent="Ver outras classes";
+  sug.append(sb,more);const box=document.createElement("div");box.className="clsall";box.append(seg,grid,own);
+  more.addEventListener("click",()=>{sug.hidden=true;box.hidden=false;p.hidden=false;});
+  if(!full){h.textContent="O Sistema escolheu sua classe";p.hidden=true;box.hidden=true;style=sg.style;}else sug.hidden=true;
+  c.append(tag,h,p,sug,box,later);m.append(c);document.body.append(m);fill();}
 function chgCls(){openCls.force=true;clsOpen=false;openCls();}
 $("clsChange").addEventListener("click",chgCls);
 if($("clsPill")){const cp=$("clsPill");cp.setAttribute("role","button");cp.tabIndex=0;cp.addEventListener("click",chgCls);}
@@ -1992,6 +2005,36 @@ function stInfo(){const s=shieldSt();const n=streakDays();
   sysPop("SEQUÊNCIA","🔥 "+n+(n===1?" dia":" dias")+" · 🛡️ "+s.n,"1 tarefa por dia mantém o fogo (o mínimo vale). Se um dia passar em branco, um escudo salva a sequência sozinho. Você ganha 1 escudo a cada marco de 7, 14, 30 dias e guarda até "+ST_MAX+".",null,"Entendi");}
 {const _sl=sysLine;sysLine=function(){const t=_sl();if(!stRisk())return t;const ms=mainsFor(new Date()).filter(q=>!(prog.log[todayKey()]||[]).some(e=>e.q===q.id));const nx=ms[0];
   return "🔥 Sua sequência de "+streakDays()+" dias está em risco. "+(nx?"1 tarefa salva: "+(nx.minTitle||nx.title)+".":"Uma tarefa qualquer salva.")+(shieldSt().n?" Se não der, o escudo segura.":"");};}
+
+// ---------- Liga da semana (estilo Duolingo, leve): divisão que só sobe, rival mais próximo e fechamento da semana ----------
+// Só ADICIONA prog.league = {t, snap:{wk,pos,of,xp}, res:{semana:posição}}. Usa a lista do ranking que já existe (opt-in).
+const LG=[["🪨","Ferro"],["🥉","Bronze"],["🥈","Prata"],["🥇","Ouro"],["💠","Platina"],["👑","Mítica"]];
+function lgSt(){const l=prog.league||(prog.league={t:0,snap:null,res:{}});l.res=l.res||{};if(typeof l.t!=="number")l.t=0;return l;}
+const lgName=t=>LG[Math.min(t,LG.length-1)].join(" Liga ");
+function lgRows(){return (rankRows||[]).slice().sort((a,b)=>b.xp-a.xp);}
+function lgMe(){if(!(prog.rank&&prog.rank.on)||!rankRows)return null;const me=rankName();const rows=lgRows();const i=rows.findIndex(r=>r.n===me);
+  const xp=weekXP();if(i<0)return {pos:rows.filter(r=>r.xp>xp).length+1,of:rows.length+1,xp,rows,i:-1};return {pos:i+1,of:rows.length,xp:Math.max(xp,rows[i].xp),rows,i};}
+function lgClose(){const l=lgSt();const s=l.snap;const ws=weekStart(todayKey());if(!s||s.wk>=ws||l.res[s.wk])return;
+  l.res[s.wk]=s.pos;const up=s.of>=2&&s.pos<=3&&s.xp>0&&l.t<LG.length-1;if(up)l.t++;save();
+  const md=s.pos<=3?["🥇","🥈","🥉"][s.pos-1]:"#"+s.pos;
+  sysPop("SEMANA FECHADA","Você ficou em "+s.pos+"º de "+s.of+" "+md,up?"Subiu para a "+lgName(l.t)+". Placar zerado: nova semana, nova chance.":"Você segue na "+lgName(l.t)+". Na liga, ninguém cai: os 3 primeiros da semana sobem. Placar zerado.",null,up?"Bora subir mais":"Nova semana");}
+function lgUpdate(){const m=lgMe();const l=lgSt();if(!m){lgUI(null);return;}const ws=weekStart(todayKey());
+  const prev=l.snap&&l.snap.wk===ws?l.snap.pos:0;
+  if(!l.snap||l.snap.wk!==ws||l.snap.pos!==m.pos||l.snap.of!==m.of||l.snap.xp!==m.xp){l.snap={wk:ws,pos:m.pos,of:m.of,xp:m.xp};save();}
+  if(prev&&m.pos>prev){const a=m.rows[m.pos-2];if(a)toast("⚔️ "+a.n+" te passou no ranking. Faltam "+(a.xp-m.xp+1)+" XP.");}
+  lgUI(m);}
+function lgRival(m){if(m.pos===1){const b=m.rows.find(r=>r.n!==rankName());return b?"Você lidera a semana, "+(m.xp-b.xp)+" XP à frente de "+b.n+".":"Você lidera a semana.";}
+  const a=m.rows.filter(r=>r.n!==rankName())[m.pos-2];if(!a)return "";const d=a.xp-m.xp+1;
+  return "Faltam "+d+" XP para passar "+a.n+(d<=20?": 1 tarefa resolve.":".");}
+function lgUI(m){let pill=$("lgPill");const dp=$("dayPill");
+  if(!pill&&dp){pill=document.createElement("span");pill.className="pill lg";pill.id="lgPill";pill.setAttribute("role","button");pill.tabIndex=0;dp.after(pill);
+    const go=()=>{goTab("prog");const p=$("rankPanel");if(p&&p.classList.contains("fold")&&!p.classList.contains("open")){const h=p.querySelector(".fhd");if(h)h.click();}setTimeout(()=>p&&p.scrollIntoView({block:"start"}),60);};
+    pill.addEventListener("click",go);pill.addEventListener("keydown",e=>{if(e.key==="Enter"||e.key===" "){e.preventDefault();go();}});}
+  if(pill){pill.hidden=!m;if(m){pill.textContent="🏆 "+m.pos+"º";pill.title=lgRival(m);}}
+  let ln=$("lgLine");const rp=$("rankPanel");if(!ln&&rp){ln=document.createElement("div");ln.id="lgLine";ln.className="lgline";const ol=$("rkList");if(ol)ol.before(ln);}
+  if(ln){const l=lgSt();ln.hidden=!(prog.rank&&prog.rank.on);ln.innerHTML="";const b=document.createElement("b");b.textContent=lgName(l.t);const s=document.createElement("span");s.textContent=m?" · "+m.pos+"º de "+m.of+". "+lgRival(m):" · Os 3 primeiros da semana sobem de liga. Ninguém cai.";ln.append(b,s);}}
+{const _rr=renderRankUI;renderRankUI=function(){_rr();try{lgClose();if(rankRows)lgUpdate();else lgUI(null);}catch(e){}};}
+{const _rp=renderPills;renderPills=function(){_rp();try{const p=$("lgPill");if(p&&!p.hidden){const m=lgMe();if(m){p.textContent="🏆 "+m.pos+"º";p.title=lgRival(m);}}}catch(e){}};}
 
 let saveTimer=null, SYNC="";
 try{SYNC=localStorage.getItem("asc-u-sync")||"";}catch(e){}
