@@ -1,0 +1,8 @@
+/* ---- IA de 1 toque (tools/ai1.js) ---- */
+.aimode{display:grid;grid-template-columns:1fr 1fr;gap:6px;margin:10px 0}
+.aimode .chip{min-height:40px;justify-content:center;text-align:center}
+.aimode .chip.on{border-color:var(--accent);color:var(--glow);background:rgba(0,212,255,.1)}
+.aigo{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:6px;margin-top:10px}
+.aigo button{min-height:48px;font-weight:700}
+.aipaste{width:100%;min-height:50px;margin-top:12px}
+.aiman{margin-top:8px}
