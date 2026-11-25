@@ -41,6 +41,10 @@ Pontos de entrada no JS: `render()` desenha tudo; `toggle(quest, "full"|"min")` 
 
 Escolha de classe (`openCls` em `tools/rpg.js`): na 1ª vez o Sistema sugere uma classe pela rotina (1 toque); a lista completa fica em "Ver outras" e ao trocar pelo topo. Teste: `node qa/classe.test.js`.
 
+## Resumo do beta (Modo Criador)
+
+`tools/painel.js` e `tools/painel.css` (só no app pessoal, via `tools/genroot.py`): números agregados em cima das abas privadas que o painel já lê (testadores, ativos hoje e em 7 dias, volta no dia 2 e no dia 8, missões feitas, feedbacks, funil e ativos por dia). Colunas achadas pelo nome do cabeçalho. Não envia nada; guarda no aparelho do criador só a contagem diária em `ascensao-painel-hist`. Teste: `node qa/painel.test.js`. Integração com a EVA: `docs/integracao-eva.md`.
+
 ## Reinstalação do app pessoal
 
 Na 1ª ligação da planilha num aparelho (link `#s=` ou colar o endereço), a planilha vence e o progresso local vira backup em `ascensao-prog-prelink`. Teste: `node qa/religar.test.js`.

@@ -154,3 +154,11 @@ Falhou e foi corrigido no caminho: título duplicava "+10 XP" na mensagem; speed
 - 25/11/2026 18h · Revisão horária · Achado: na tela do Desafio relâmpago (#45) Esc não fechava, a tela não tinha nome para leitor de tela, o foco ficava atrás dela, cada toque no contador perdia o foco e a contagem não era anunciada; o contador encolhia ao tocar mesmo com reduce-motion. Mudou: nome na tela, foco entra e volta ao cartão, Esc fecha, região aria-live com "3 de 10" e "Pronto", reduce-motion no contador, cache `ascensao-v34` / `ascensao-u-v44`, teste novo `qa/relampago.test.js` (12/27 no código antigo, 27/27 no novo). Placar: 13/13 arquivos verdes.
 
 - 25/11/2026 18h35 · Revisão horária · Achado: main vermelha em `qa/classe.test.js` (2 falhas): o teste ainda esperava "Mago" para quem não tem rotina, mas o #47 passou a sugerir a classe pelo perfil (foco e meta). Mudou: teste atualizado para o comportamento novo e reforçado (sem perfil sugere classe de fantasia e mostra o porquê; foco "Saúde e corpo" sugere classe de Corpo, o que falha no código antigo). App não mudou, cache segue `ascensao-v37` / `ascensao-u-v47`. Placar: 13/13 arquivos verdes (classe 36/36).
+
+## 25/11/2026 · Resumo do beta no Modo Criador (PR rascunho, espera o ok do JV)
+
+**Placar: 34/34** em `qa/painel.test.js` (Playwright, 390x844 e 1280x800 com reduce-motion, relógio simulado, planilha simulada).
+
+Passou: contagens agregadas (repetido não conta duas vezes, datas em 4 formatos), retenção dia 2 e dia 8, % das principais, funil sem prefixo de etapa, aba `diario` opcional, nenhum apelido no resumo, nada enviado, progresso antigo intacto, sem rolagem lateral, console limpo, mensagem clara sem chave.
+Suíte completa: 15 arquivos; só `qa/liga.test.js` tem 1 falha ("tocar na pílula abre o ranking"), que **já falha na main sem esta mudança** (/comecar/ não mudou). Fica para a revisão horária.
+Cache: `ascensao-v46` (raiz). /comecar/ não mudou.
