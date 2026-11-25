@@ -123,5 +123,8 @@ rep('\nlet saveTimer=null, SYNC="";','\n'+open(SP+'league.js').read()+'\nlet sav
 # esquadrão cooperativo (tools/squad.*): anomalia da semana derrotada com o XP do grupo
 rep('</style></head>',open(SP+'squad.css').read()+'</style></head>')
 rep('\nlet saveTimer=null, SYNC="";','\n'+open(SP+'squad.js').read()+'\nlet saveTimer=null, SYNC="";')
+# painel do criador com aceite (LGPD) + contador anônimo de etapas (tools/tele.js)
+rep('</style></head>','.tlc .tll{display:grid;gap:6px;margin-top:4px}.tlc .tll input{width:100%;box-sizing:border-box;min-height:44px;padding:10px 12px;border-radius:8px;border:1px solid var(--line);background:#0a1222;color:var(--fg);font:inherit}.tlc .chk{display:flex;gap:8px;align-items:center;min-height:36px}.tlmsg{color:var(--gold);min-height:1.2em}</style></head>')
+rep('\nlet saveTimer=null, SYNC="";','\n'+open(SP+'tele.js').read()+'\nlet saveTimer=null, SYNC="";')
 open('comecar/index.html','w').write(s)
 pass

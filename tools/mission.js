@@ -119,6 +119,6 @@ function msDecorate(){for(const c of document.querySelectorAll("#quests .quest[d
   b.addEventListener("click",ev=>{ev.stopPropagation();msOpen(q);});bt.prepend(b);
   if(c.classList.contains("next")&&!c.querySelector(".mshint")&&!(prog.cards||prog.msUsed)){const h=msEl("div","mshint","Toque em ▶ para começar: o app te guia com timer e ferramenta.");c.append(h);}}}
 {const _r=render;render=function(){_r.apply(this,arguments);try{msDecorate();msChip();}catch(e){}};}
-document.addEventListener("click",e=>{if(e.target.closest&&e.target.closest(".msgo")){prog.msUsed=1;}},true);
+document.addEventListener("click",e=>{if(e.target.closest&&e.target.closest(".msgo")){prog.msUsed=(+prog.msUsed||0)+1;}},true);
 document.addEventListener("keydown",e=>{if(e.key==="Escape"&&$("msSheet")&&!$("msSheet").hidden)msClose();});
 setTimeout(()=>{try{msDecorate();msChip();}catch(e){}},0);
