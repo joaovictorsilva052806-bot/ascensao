@@ -20,3 +20,10 @@ $("crReload").addEventListener("click",crPlayers);
 $("crCls").addEventListener("click",()=>{if(typeof chgCls==="function")chgCls();});
 $("crFresh").addEventListener("click",async()=>{try{for(const r of await navigator.serviceWorker.getRegistrations())await r.update();for(const k of await caches.keys())await caches.delete(k);}catch(e){}location.reload();});
 document.querySelector('#tabbar [data-go="criador"]')&&document.querySelector('#tabbar [data-go="criador"]').addEventListener("click",()=>{crRender();crPlayers();});
+
+// Convite pelo menu nativo do celular (sem abrir link)
+const CR_INV=location.origin+location.pathname.replace(/(comecar\/)?(index\.html)?$/,"")+"x/";
+$("crInvite").addEventListener("click",()=>{const text="[ SINAL DETECTADO ] Você foi escolhido(a).";
+  if(navigator.share){navigator.share({title:"Ascension",text,url:CR_INV}).catch(()=>{});return;}
+  (navigator.clipboard?navigator.clipboard.writeText(text+" "+CR_INV):Promise.reject()).then(()=>toast("Convite copiado. Cole no WhatsApp."),()=>toast(CR_INV));});
+$("crInviteCopy").addEventListener("click",()=>{(navigator.clipboard?navigator.clipboard.writeText(CR_INV):Promise.reject()).then(()=>toast("Link copiado: "+CR_INV),()=>toast(CR_INV));});
