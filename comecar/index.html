@@ -262,6 +262,12 @@ input,select,textarea{font-size:16px!important}
 .aisteps{margin:8px 0;padding-left:20px}.aisteps li{margin:2px 0}
 .aiprev{list-style:none;padding:0;margin:10px 0 0;display:flex;flex-direction:column;gap:6px}.aiprev li{padding:8px 10px;border:1px solid var(--line);border-left:2px solid var(--accent);border-radius:3px;font-size:.86rem}.aiprev li small{display:block;color:var(--muted)}
 #o_bkBox{margin-top:12px}#o_bkBox textarea{font:inherit;width:100%;margin-top:6px;background:rgba(0,212,255,.04);border:1px solid var(--line);color:var(--fg);border-radius:3px;padding:9px 10px}
+.edlist{display:flex;flex-direction:column;gap:6px;margin-top:10px}.edlist button{font:inherit;text-align:left;padding:9px 10px;border:1px solid var(--line);border-left:2px solid var(--line);background:rgba(0,212,255,.03);color:var(--fg);border-radius:3px;font-size:.88rem}
+.edlist button.m{border-left-color:var(--accent)}.edlist small{display:block;color:var(--muted);font-size:.75rem}
+.edform{margin-top:10px;border:1px solid var(--accent);padding:10px;border-radius:3px}.edform label{display:flex;flex-direction:column;gap:4px;font-size:.84rem;color:var(--muted);margin-top:8px}.edform label.chk{flex-direction:row;align-items:center;gap:8px;color:var(--fg)}
+.edform input:not([type=checkbox]),.edform select{font:inherit;background:rgba(0,212,255,.04);border:1px solid var(--line);color:var(--fg);border-radius:3px;padding:8px 10px;min-width:0}
+.edform .two{display:grid;grid-template-columns:1fr 1fr;gap:8px}.edform .row{flex-wrap:wrap}.link.danger{color:#ff7a7a}
+.panel.tip:not([hidden])~.panel.tip{display:none!important}
 </style></head><body>
 
 <div class="hudtop"><span>ASCENSÃO<i>//</i>SISTEMA ONLINE</span><span class="mono" id="clock">--:--</span></div>
@@ -312,12 +318,18 @@ input,select,textarea{font-size:16px!important}
 
   <section data-tab="hoje" class="panel tip" id="newsCard" hidden>
     <h2>✨ Novidades no app</h2>
-    <ul class="sm news"><li><b>Novo:</b> gere suas tarefas com a sua IA (Claude ou ChatGPT) na aba Mais. Nada sai do seu celular.</li><li>Perfil novo: idade, escola, faculdade, ENEM ou curso, com turno.</li><li>Tarefas novas: dever de casa, menos tela, leitura e mais.</li><li>Ranking com apelido, se você preferir.</li></ul>
+    <ul class="sm news"><li><b>Novo:</b> edite, crie ou apague tarefas em Mais > Minhas tarefas.</li><li>O app sugere deixar mais leve a tarefa que vive ficando para trás.</li><li>Gere tarefas com a sua IA (Claude ou ChatGPT) na aba Mais.</li><li>Perfil novo: idade, escola, faculdade, ENEM ou curso, com turno.</li><li>Tarefas novas: dever de casa, menos tela, leitura e mais.</li><li>Ranking com apelido, se você preferir.</li></ul>
     <div class="sm muted">Atualize seu perfil para ganhar as tarefas novas. Seu XP, sequência e histórico continuam.</div>
     <div class="row"><button class="go" type="button" id="newsRedo">Atualizar meu perfil</button><button class="ghost" type="button" id="newsIntro">Ver apresentação</button></div>
     <button class="link" type="button" id="newsClose">Agora não</button>
   </section>
 
+  <section data-tab="hoje" class="panel tip" id="adjCard" hidden>
+    <h2>🔧 Ajuste sugerido</h2>
+    <div class="sm" id="adjText"></div>
+    <div class="row"><button class="go" type="button" id="adjLight">Deixar mais leve</button><button class="ghost" type="button" id="adjUnmain">Tirar de principal</button></div>
+    <button class="link" type="button" id="adjNo">Agora não</button>
+  </section>
   <section data-tab="hoje" class="panel tip" id="pingCard" hidden>
     <h2>🏆 Ranking da semana</h2>
     <div class="sm">Opcional: compare seu XP com quem também usa o Ascensão. Aparece só seu primeiro nome (ou um apelido) e o XP da semana. Nenhuma tarefa ou horário sai do seu celular.</div>
@@ -460,6 +472,21 @@ input,select,textarea{font-size:16px!important}
     <div class="sm" id="aiMsg"></div>
     <ul class="aiprev" id="aiPrev" hidden></ul>
     <div class="row" id="aiApply" hidden><button class="go" type="button" id="aiReplace">Trocar minhas tarefas</button><button class="ghost" type="button" id="aiAdd">Só adicionar</button></div>
+  </section>
+  <section data-tab="mais" class="panel" id="edPanel">
+    <div class="qhead"><h2>✏️ Minhas tarefas</h2><button class="link" type="button" id="edNew">+ Nova</button></div>
+    <div class="sm muted">Toque numa tarefa para mudar o nome, o horário ou apagar. Seus pontos não mudam.</div>
+    <div id="edList" class="edlist"></div>
+    <form class="edform" id="edForm" hidden>
+      <label>Tarefa<input id="edTitle" maxlength="90" autocomplete="off" required></label>
+      <label>Versão mínima (dia ruim)<input id="edMin" maxlength="50" autocomplete="off" placeholder="Ex.: 5 min"></label>
+      <label>Quando fazer<input id="edIf" maxlength="140" autocomplete="off" placeholder="Ex.: Quando chegar em casa, eu..."></label>
+      <div class="two"><label>Pontos<select id="edXp"><option>10</option><option>15</option><option>20</option><option>25</option><option>30</option><option>40</option></select></label>
+      <label>Área<select id="edStat"><option value="foco">Foco</option><option value="mente">Mente</option><option value="corpo">Corpo</option><option value="vendas">Metas</option></select></label></div>
+      <label class="chk"><input type="checkbox" id="edMain"> Principal (no máximo 3 por dia)</label>
+      <div class="dsel" id="edDays"></div>
+      <div class="row"><button class="go" type="submit">Salvar</button><button class="ghost" type="button" id="edCancel">Cancelar</button><button class="link danger" type="button" id="edDel">Apagar</button></div>
+    </form>
   </section>
   <section data-tab="mais" class="panel" id="calPanel">
     <h2>Lembretes na agenda</h2>
@@ -816,7 +843,7 @@ let ACH=[];function achList(){return [
 function activeDays(){return new Set(entries().filter(e=>!String(e.q).startsWith("ach:")).map(e=>e.date)).size;}
 function renderAch(){const box=$("achList");box.textContent="";prog.ach=prog.ach||{};let got=0;
   for(const [id,name,desc,xp] of (ACH=achList())){const on=!!prog.ach[id];if(on)got++;const d=document.createElement("div");d.className="badge"+(on?" on":"");const b=document.createElement("b");b.textContent=(on?"🏅 ":"🔒 ")+name;d.append(b,document.createTextNode(desc+" · +"+xp+" XP"));box.append(d);}
-  $("achCount").textContent=got+" / "+ACH.length;$("faithPanel").hidden=!(cfg&&cfg.faith);applyCopy();}
+  $("achCount").textContent=got+" / "+ACH.length;$("faithPanel").hidden=!(cfg&&cfg.faith);applyCopy();renderEd();renderAdj();}
 function checkAch(){prog.ach=prog.ach||{};for(const [id,name,,xp,test] of (ACH=achList())){if(!prog.ach[id]&&test()){prog.ach[id]=todayKey();pushEntry({q:"ach:"+id,kind:"full",xp,stat:"foco",bonus:0,t:new Date().toISOString()},"Conquista: "+name+"! +"+xp+" XP");return true;}}return false;}
 // ---------- Lembretes na agenda (sem servidor: arquivo .ics ou Google Agenda) ----------
 const BYD=["MO","TU","WE","TH","FR","SA","SU"];
@@ -987,7 +1014,7 @@ function applyCopy(){const P=(cfg&&cfg.profile)||{};const o=P.occ||"",m=isMinorA
   const mit=P.level==="escola"||o==="escola"?"Ex.: terminar o trabalho de Ciências":o==="estudante"?"Ex.: entregar a lista da faculdade":o==="motorista"?"Ex.: ligar para casa na parada":o==="casa"?"Ex.: pagar a conta de luz":o==="aposentado"?"Ex.: marcar a consulta":o==="autonomo"?"Ex.: mandar o orçamento que está parado":"Ex.: a coisa mais importante de hoje";
   $("mit").placeholder=mit;$("fIntent").placeholder=m?"Ex.: apresentar o trabalho sem travar":"Ex.: pedir ajuda com aquilo que estou adiando";}
 // ---------- Novidades (1x por versão, para quem já tinha perfil) e fluxos de Mais ----------
-const NEWS_V="3";
+const NEWS_V="4";
 function showNews(){let seen="";try{seen=localStorage.getItem("asc-u-news")||"";}catch(e){}$("newsCard").hidden=!(cfg&&!cfg.blank&&seen!==NEWS_V);}
 function newsDone(){try{localStorage.setItem("asc-u-news",NEWS_V);}catch(e){}$("newsCard").hidden=true;}
 $("newsRedo").addEventListener("click",()=>{newsDone();openOnb();});
@@ -1127,6 +1154,50 @@ function aiApply(replace){if(!aiNew)return;let Q=(cfg.quests||[]).slice();
   try{localStorage.setItem("asc-u-cfg",JSON.stringify(cfg));}catch(e){}save();aiNew=null;$("aiPrev").hidden=true;$("aiApply").hidden=true;$("aiIn").value="";
   $("aiMsg").textContent="";render();goTab("hoje");toast(replace?"Tarefas novas no ar! Seu XP e histórico continuam.":"Tarefas adicionadas!");}
 $("aiReplace").addEventListener("click",()=>aiApply(true));$("aiAdd").addEventListener("click",()=>aiApply(false));
+
+// ---------- Editar tarefas no app (sem refazer o perfil) ----------
+let edCur=null;const ED_DN=["seg","ter","qua","qui","sex","sáb","dom"];
+function edSave(){try{localStorage.setItem("asc-u-cfg",JSON.stringify(cfg));}catch(e){}}
+function renderEd(){const box=$("edList");if(!box)return;box.textContent="";const Q=((cfg&&cfg.quests)||[]);
+  if(!Q.length){const d=document.createElement("div");d.className="sm muted";d.textContent="Nenhuma tarefa ainda.";box.append(d);return;}
+  for(const q of Q){const b=document.createElement("button");b.type="button";if(q.main)b.className="m";b.textContent=(q.main?"★ ":"")+q.title;
+    const s=document.createElement("small");s.textContent=[q.xp+" XP",q.once?"uma vez":q.days?q.days.map(d=>ED_DN[d]).join(", "):"todo dia",q.ifThen||""].filter(Boolean).join(" · ");b.append(s);
+    b.addEventListener("click",()=>edOpen(q.id));box.append(b);}}
+function edOpen(id){const q=id?(cfg.quests||[]).find(x=>x.id===id):{title:"",xp:15,stat:"foco"};if(!q)return;edCur=id||null;
+  $("edTitle").value=q.title||"";$("edMin").value=q.minTitle||"";$("edIf").value=q.ifThen||"";$("edXp").value=String([10,15,20,25,30,40].reduce((a,v)=>Math.abs(v-(q.xp||15))<Math.abs(a-(q.xp||15))?v:a,15));
+  $("edStat").value=q.stat||"foco";$("edMain").checked=!!q.main;$("edMain").disabled=!!q.once;
+  toggles("edDays",ED_DN.map((l,i)=>[String(i),l]),(q.days||[0,1,2,3,4,5,6]).map(String));$("edDays").hidden=!!q.once;
+  $("edDel").hidden=!id;$("edDel").textContent="Apagar";$("edDel").dataset.arm="";$("edForm").hidden=false;$("edList").hidden=true;$("edTitle").focus();}
+function edClose(){$("edForm").hidden=true;$("edList").hidden=false;edCur=null;renderEd();}
+$("edNew").addEventListener("click",()=>edOpen(null));$("edCancel").addEventListener("click",edClose);
+$("edForm").addEventListener("submit",ev=>{ev.preventDefault();const t=$("edTitle").value.trim();if(!t)return;
+  let full=false;const Q=(cfg.quests||[]).slice();let q=edCur?Q.find(x=>x.id===edCur):null;const wasMain=!!(q&&q.main);
+  if(!q){q={id:"u"+Date.now().toString(36)};Q.push(q);}
+  q.title=t;const mt=$("edMin").value.trim(),it=$("edIf").value.trim();if(mt)q.minTitle=mt;else delete q.minTitle;if(it)q.ifThen=it;else delete q.ifThen;
+  q.xp=Number($("edXp").value)||15;q.stat=$("edStat").value;
+  if(!q.once){const days=picked("edDays").map(Number).sort();if(!days.length){toast("Escolha pelo menos um dia.");return;}if(days.length<7)q.days=days;else delete q.days;
+    let main=$("edMain").checked;if(main&&!wasMain&&Q.filter(x=>x.main&&x!==q).length>=3){full=true;main=false;}if(main)q.main=true;else delete q.main;
+    // mudou quem é principal: a contagem de dívida recomeça hoje, para não cobrar o passado
+    if(main!==wasMain)cfg.startDate=todayKey();}
+  cfg=Object.assign({},cfg,{quests:Q,blank:false});edSave();save();edClose();render();toast(full?"Salva como extra: já tem 3 principais.":"Tarefa salva.");});
+$("edDel").addEventListener("click",()=>{const b=$("edDel");if(!edCur)return;if(b.dataset.arm!=="1"){b.dataset.arm="1";b.textContent="Toque de novo para apagar";return;}
+  const q=(cfg.quests||[]).find(x=>x.id===edCur);cfg=Object.assign({},cfg,{quests:(cfg.quests||[]).filter(x=>x.id!==edCur)});if(q&&q.main)cfg.startDate=todayKey();
+  edSave();save();edClose();render();toast("Tarefa apagada. Os pontos que ela deu continuam.");});
+// ---------- Ajuste automático: principal que ficou para trás 3 vezes em 5 dias ----------
+function adjFind(){if(!cfg||cfg.blank)return null;const sn=(prog.adj||{});const now=todayKey();
+  for(const q of (cfg.quests||[]).filter(q=>q.main&&q.id!=="s_fech")){if(sn[q.id]&&sn[q.id]>now)continue;let elig=0,miss=0;
+    for(let i=1;i<=7&&elig<5;i++){const d=new Date();d.setDate(d.getDate()-i);const k=dkey(d);if(cfg.startDate&&k<cfg.startDate)break;const dow=(d.getDay()+6)%7;
+      if(q.days&&!q.days.includes(dow))continue;if((prog.rest||{})[k])continue;elig++;if(!(prog.log[k]||[]).some(e=>e.q===q.id))miss++;}
+    if(elig>=3&&miss>=3)return {q,miss,elig};}return null;}
+let adjQ=null;
+function renderAdj(){const f=adjFind();adjQ=f&&f.q;$("adjCard").hidden=!f;if(!f)return;
+  $("adjText").textContent="\""+f.q.title+"\" ficou para trás "+f.miss+" vezes nos últimos "+f.elig+" dias. Normal: talvez esteja grande demais ou no horário errado. "+(f.q.minTitle?"Mais leve = a meta passa a ser \""+f.q.minTitle+"\".":"Mais leve = metade do tempo e dos pontos.");}
+function adjSnooze(id,days){prog.adj=prog.adj||{};const d=new Date();d.setDate(d.getDate()+days);prog.adj[id]=dkey(d);save();}
+$("adjLight").addEventListener("click",()=>{const q=adjQ&&(cfg.quests||[]).find(x=>x.id===adjQ.id);if(!q)return;
+  if(q.minTitle){q.title=q.minTitle.charAt(0).toUpperCase()+q.minTitle.slice(1);delete q.minTitle;}else q.title=q.title+" (versão curta)";q.xp=Math.max(10,Math.round(q.xp/2/5)*5);
+  edSave();adjSnooze(q.id,7);render();toast("Pronto: ficou mais leve. Constância primeiro, tamanho depois.");});
+$("adjUnmain").addEventListener("click",()=>{const q=adjQ&&(cfg.quests||[]).find(x=>x.id===adjQ.id);if(!q)return;delete q.main;cfg.startDate=todayKey();edSave();adjSnooze(q.id,7);render();toast("Agora ela é extra: sem dívida se ficar para depois.");});
+$("adjNo").addEventListener("click",()=>{if(adjQ)adjSnooze(adjQ.id,7);$("adjCard").hidden=true;});
 
 let saveTimer=null, SYNC="";
 try{SYNC=localStorage.getItem("asc-u-sync")||"";}catch(e){}

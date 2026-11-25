@@ -38,3 +38,9 @@
 .aisteps{margin:8px 0;padding-left:20px}.aisteps li{margin:2px 0}
 .aiprev{list-style:none;padding:0;margin:10px 0 0;display:flex;flex-direction:column;gap:6px}.aiprev li{padding:8px 10px;border:1px solid var(--line);border-left:2px solid var(--accent);border-radius:3px;font-size:.86rem}.aiprev li small{display:block;color:var(--muted)}
 #o_bkBox{margin-top:12px}#o_bkBox textarea{font:inherit;width:100%;margin-top:6px;background:rgba(0,212,255,.04);border:1px solid var(--line);color:var(--fg);border-radius:3px;padding:9px 10px}
+.edlist{display:flex;flex-direction:column;gap:6px;margin-top:10px}.edlist button{font:inherit;text-align:left;padding:9px 10px;border:1px solid var(--line);border-left:2px solid var(--line);background:rgba(0,212,255,.03);color:var(--fg);border-radius:3px;font-size:.88rem}
+.edlist button.m{border-left-color:var(--accent)}.edlist small{display:block;color:var(--muted);font-size:.75rem}
+.edform{margin-top:10px;border:1px solid var(--accent);padding:10px;border-radius:3px}.edform label{display:flex;flex-direction:column;gap:4px;font-size:.84rem;color:var(--muted);margin-top:8px}.edform label.chk{flex-direction:row;align-items:center;gap:8px;color:var(--fg)}
+.edform input:not([type=checkbox]),.edform select{font:inherit;background:rgba(0,212,255,.04);border:1px solid var(--line);color:var(--fg);border-radius:3px;padding:8px 10px;min-width:0}
+.edform .two{display:grid;grid-template-columns:1fr 1fr;gap:8px}.edform .row{flex-wrap:wrap}.link.danger{color:#ff7a7a}
+.panel.tip:not([hidden])~.panel.tip{display:none!important}
