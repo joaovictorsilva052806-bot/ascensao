@@ -1,0 +1,157 @@
+<!-- Cópia de convite/index.html (link curto /ascensao/x). Edite convite/ e copie para cá. -->
+<!doctype html><html lang="pt-BR"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>[ SINAL DETECTADO ]</title>
+<meta name="description" content="Poucos foram escolhidos.">
+<meta property="og:title" content="[ SINAL DETECTADO ]">
+<meta property="og:description" content="Poucos foram escolhidos.">
+<meta property="og:image" content="https://joaovictorsilva052806-bot.github.io/ascensao/convite/olho.jpg">
+<meta property="og:image:width" content="1200"><meta property="og:image:height" content="630"><meta property="og:image:alt" content="Um olho dourado se abrindo no escuro">
+<meta name="twitter:card" content="summary_large_image">
+<meta property="og:type" content="website"><meta name="theme-color" content="#000000">
+<link rel="manifest" href="manifest.webmanifest"><link rel="canonical" href="https://joaovictorsilva052806-bot.github.io/ascensao/x/">
+<link rel="icon" href="../icon-192.png"><link rel="apple-touch-icon" href="../icon-180.png">
+<meta name="apple-mobile-web-app-capable" content="yes"><meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="Ascension"><meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<script>
+// Aberto pelo ícone da tela inicial: vai direto para o app.
+if(matchMedia("(display-mode: standalone)").matches||navigator.standalone)location.replace("../comecar/");
+</script>
+<style>
+:root{--g:#f3c969;--g2:#ffe7a8;--m:#6d6250;--l:rgba(243,201,105,.18)}
+*{box-sizing:border-box;margin:0}
+html,body{background:#000;color:var(--g2);min-height:100%}
+body{font:400 15px/1.5 ui-monospace,SFMono-Regular,Menlo,Consolas,"Roboto Mono",monospace;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:34px;padding:max(40px,env(safe-area-inset-top)) 16px max(32px,env(safe-area-inset-bottom));min-height:100vh;min-height:100dvh;overflow-x:hidden;text-align:center;
+  background:radial-gradient(circle at 50% 38%,rgba(243,201,105,.07),transparent 55%),#000}
+.sig{font-size:11px;letter-spacing:.42em;color:var(--g);opacity:.75;padding-left:.42em;min-height:1.5em}
+.sig::after{content:"_";animation:bl 1s steps(1) infinite}
+@keyframes bl{50%{opacity:0}}
+svg.eye{width:min(220px,62vw);height:auto;overflow:visible;cursor:pointer;-webkit-tap-highlight-color:transparent;touch-action:manipulation;transition:transform .25s}
+svg.eye:active{transform:scale(.96)}
+.tap svg.eye{animation:call 1.8s ease-in-out infinite}
+@keyframes call{50%{filter:drop-shadow(0 0 18px rgba(243,201,105,.55))}}
+.blink .lid{transform:scaleY(.04);transition:transform .12s}
+.pupil{transition:transform .25s ease-out}
+.flash .glow{animation:fl .9s}
+@keyframes fl{30%{opacity:1;transform:scale(1.6)}}
+.glow{transform-origin:100px 60px}
+.lid{transform-origin:50% 50%;transform:scaleY(.04);transition:transform 1.4s cubic-bezier(.7,0,.2,1)}
+.open .lid{transform:scaleY(1)}
+.iris{transform-origin:100px 60px;animation:look 9s ease-in-out 3s infinite}
+@keyframes look{0%,40%,100%{transform:translateX(0)}48%,60%{transform:translateX(-9px)}68%,80%{transform:translateX(8px)}}
+.glow{opacity:0;transition:opacity 2s 1s}.open .glow{opacity:1}
+h1{font-weight:500;font-size:13px;letter-spacing:.3em;padding-left:.3em;color:var(--g2);min-height:1.5em;text-transform:uppercase;transition:opacity .5s}
+h1.f{opacity:0}
+.how{width:100%;max-width:330px;display:flex;flex-direction:column;gap:14px;transition:opacity .8s,transform .8s}
+.wait .how,.wait .foot{opacity:0;transform:translateY(8px);pointer-events:none}
+ol{list-style:none;padding:0;display:flex;flex-direction:column;gap:0;text-align:left;border-top:1px solid var(--l)}
+li{display:flex;gap:14px;align-items:baseline;padding:13px 2px;border-bottom:1px solid var(--l);font-size:14px;color:#d9cfb8}
+li .n{color:var(--g);font-size:11px;min-width:1.4em}
+li b{color:var(--g2);font-weight:600}
+small{display:block;font-size:11px;color:var(--m)}
+.ico{display:inline-block;vertical-align:-3px;width:16px;height:16px}
+button{font:600 13px/1 inherit;font-family:inherit;letter-spacing:.3em;text-transform:uppercase;padding:17px 12px 17px calc(12px + .3em);cursor:pointer;width:100%;border:1px solid var(--g);background:transparent;color:var(--g2);border-radius:0;transition:background .3s,color .3s}
+button:active,button:hover{background:var(--g);color:#000}
+button.ghost{border-color:var(--l);color:var(--m);font-size:11px;padding:13px;margin-top:12px}
+.foot{font-size:10px;letter-spacing:.35em;color:var(--m);padding-left:.35em;transition:opacity .8s}
+[hidden]{display:none!important}
+@media (prefers-reduced-motion:reduce){*,*::after{animation:none!important;transition:none!important}.lid{transform:none}.glow{opacity:1}}
+</style></head><body class="wait">
+<div class="sig" id="sig" aria-hidden="true"></div>
+
+<svg class="eye" id="eye" role="button" aria-label="Tocar no olho" viewBox="0 0 200 120" aria-hidden="true">
+  <defs>
+    <radialGradient id="ir" cx="50%" cy="50%" r="50%"><stop offset="0" stop-color="#fff3c9"/><stop offset=".35" stop-color="#f3c969"/><stop offset="1" stop-color="#7a5414"/></radialGradient>
+    <radialGradient id="gl" cx="50%" cy="50%" r="50%"><stop offset="0" stop-color="#f3c969" stop-opacity=".35"/><stop offset="1" stop-color="#f3c969" stop-opacity="0"/></radialGradient>
+    <clipPath id="cl"><path d="M8 60Q100-6 192 60Q100 126 8 60Z"/></clipPath>
+  </defs>
+  <circle class="glow" cx="100" cy="60" r="95" fill="url(#gl)"/>
+  <g class="lid">
+    <path d="M8 60Q100-6 192 60Q100 126 8 60Z" fill="#050402" stroke="#f3c969" stroke-width="1.4"/>
+    <g clip-path="url(#cl)"><g class="iris">
+      <circle cx="100" cy="60" r="31" fill="url(#ir)"/>
+      <circle cx="100" cy="60" r="31" fill="none" stroke="#ffe7a8" stroke-opacity=".5" stroke-width=".8" stroke-dasharray="2 3"/>
+      <ellipse class="pupil" id="pu" cx="100" cy="60" rx="5" ry="18" fill="#000"/>
+      <circle cx="91" cy="50" r="3.2" fill="#fff" opacity=".85"/>
+    </g></g>
+  </g>
+</svg>
+
+<h1 id="t" class="f">&nbsp;</h1>
+
+<main class="how" id="how" aria-labelledby="t">
+  <div id="v-prompt" hidden><button type="button" id="inst">Aceitar</button></div>
+
+  <ol id="v-ios" hidden>
+    <li><span class="n">01</span><span>Toque em <b>Compartilhar</b> <svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-label="ícone de compartilhar"><path d="M12 3v12M7 8l5-5 5 5M5 12v8h14v-8"/></svg><small>no iOS 26, fica no menu ⋯</small></span></li>
+    <li><span class="n">02</span><span><b>Adicionar à Tela de Início</b></span></li>
+    <li><span class="n">03</span><span>Abra <b>Ascension</b></span></li>
+  </ol>
+
+  <div id="v-ios-other" hidden>
+    <ol><li><span class="n">01</span><span>Abra este link no <b>Safari</b></span></li></ol>
+    <button type="button" class="ghost copy">Copiar link</button>
+  </div>
+
+  <ol id="v-and" hidden>
+    <li><span class="n">01</span><span>Toque no menu <b>⋮</b></span></li>
+    <li><span class="n">02</span><span><b>Instalar app</b> ou <b>Adicionar à tela inicial</b></span></li>
+    <li><span class="n">03</span><span>Abra <b>Ascension</b></span></li>
+  </ol>
+
+  <div id="v-and-other" hidden>
+    <ol><li><span class="n">01</span><span>Toque em <b>⋮</b> e escolha <b>Abrir no Chrome</b></span></li></ol>
+    <button type="button" class="ghost copy">Copiar link</button>
+  </div>
+
+  <div id="v-pc" hidden>
+    <ol><li><span class="n">01</span><span>Abra este link <b>no seu celular</b></span></li></ol>
+    <button type="button" class="ghost copy">Copiar link</button>
+  </div>
+
+  <ol id="v-done" hidden>
+    <li><span class="n">✓</span><span>Missão aceita. Abra <b>Ascension</b> na tela inicial.</span></li>
+  </ol>
+</main>
+
+<div class="foot">só por convite</div>
+
+<script>
+const $=id=>document.getElementById(id),ua=navigator.userAgent;
+const IOS=/iPad|iPhone|iPod/.test(ua)||(navigator.platform==="MacIntel"&&navigator.maxTouchPoints>1);
+const AND=/Android/i.test(ua);
+const INAPP=/Instagram|FBAN|FBAV|FB_IAB|Line\/|WhatsApp|TikTok|musical_ly|Snapchat|Twitter|LinkedInApp|GSA\//i.test(ua);
+const IOS_SAFARI=IOS&&/Safari/.test(ua)&&!/CriOS|FxiOS|EdgiOS|OPiOS/.test(ua)&&!INAPP;
+let evt=null;
+function show(v){for(const id of ["v-prompt","v-ios","v-ios-other","v-and","v-and-other","v-pc","v-done"])$(id).hidden=id!==v;}
+function pick(){
+  if(IOS)return show(IOS_SAFARI?"v-ios":"v-ios-other");
+  if(AND)return show(INAPP?"v-and-other":"v-and");
+  show("v-pc");}
+pick();
+// Sequência: sinal digitado, o olho abre, "você foi escolhido(a)", toque no olho, depois o caminho.
+const B=document.body,h=$("t"),s=$("sig"),eye=$("eye"),RM=matchMedia("(prefers-reduced-motion: reduce)").matches,T="[ SINAL DETECTADO ]";
+let stage=0; // 0 intro, 1 aguardando toque, 2 revelado
+const say=txt=>{h.classList.add("f");setTimeout(()=>{h.textContent=txt;h.classList.remove("f");},RM?0:450);};
+const buzz=p=>{try{navigator.vibrate&&navigator.vibrate(p)}catch(e){}};
+function ready(){if(stage>0)return;stage=1;s.textContent=T;B.classList.add("open");say("Você foi escolhido(a)");
+  setTimeout(()=>{if(stage===1){B.classList.add("tap");say("Toque no olho");}},RM?0:1800);}
+function reveal(){if(stage===2)return;stage=2;B.classList.remove("tap");buzz([18,60,30]);
+  B.classList.add("blink","flash");setTimeout(()=>B.classList.remove("blink"),160);setTimeout(()=>B.classList.remove("flash"),900);
+  say("Aceite a missão");setTimeout(()=>B.classList.remove("wait"),RM?0:500);}
+if(RM)ready();else{let i=0;const ty=setInterval(()=>{s.textContent=T.slice(0,++i);if(i>=T.length){clearInterval(ty);setTimeout(()=>B.classList.add("open"),150);setTimeout(ready,1400);}},55);
+  window.__skip=()=>{clearInterval(ty);ready();};}
+eye.addEventListener("click",()=>{if(stage===0){window.__skip&&window.__skip();return;}
+  if(stage===1)return reveal();
+  // já revelado: no Android com instalação nativa, o olho também instala
+  buzz(12);B.classList.add("blink");setTimeout(()=>B.classList.remove("blink"),160);if(evt)$("inst").click();});
+addEventListener("pointerdown",e=>{if(stage===0&&e.target.closest&&!e.target.closest("#eye")&&window.__skip)window.__skip();});
+// a pupila segue o dedo / o mouse
+addEventListener("pointermove",e=>{const r=eye.getBoundingClientRect(),dx=e.clientX-(r.left+r.width/2),dy=e.clientY-(r.top+r.height/2),d=Math.hypot(dx,dy)||1,k=Math.min(1,d/200);
+  $("pu").style.transform="translate("+(dx/d*7*k).toFixed(1)+"px,"+(dy/d*4*k).toFixed(1)+"px)";},{passive:true});
+addEventListener("beforeinstallprompt",e=>{e.preventDefault();evt=e;if(!INAPP)show("v-prompt");});
+$("inst").addEventListener("click",async()=>{if(!evt)return;evt.prompt();let r=null;try{r=await evt.userChoice;}catch(e){}evt=null;
+  if(r&&r.outcome==="accepted")show("v-done");else pick();});
+addEventListener("appinstalled",()=>{evt=null;show("v-done");});
+for(const b of document.querySelectorAll(".copy"))b.addEventListener("click",async()=>{
+  try{await navigator.clipboard.writeText(location.href);b.textContent="Link copiado";}catch(e){b.textContent=location.href;}});
+</script></body></html>
