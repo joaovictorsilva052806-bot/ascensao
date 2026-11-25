@@ -1,5 +1,17 @@
 # Relatório de QA (ATENA)
 
+## 25/11/2026 · reinstalação segura: ligar a planilha não sobrescreve mais o progresso
+
+Bug achado: numa instalação nova, se a pessoa tocava em algo (classe, check-in) antes de ligar a planilha, o progresso local "novo" vencia pela data e subia por cima do progresso da planilha. Correção: na 1ª ligação de um aparelho, nada sobe antes de baixar; a planilha vence e o local vira backup em `ascensao-prog-prelink`.
+
+| Teste | Resultado |
+|---|---|
+| qa/religar.test.js (colar endereço e link #s=): progresso da planilha volta, nenhum POST antes do GET, local vira backup, aba Criador aparece | 14/14 passou (no código antigo: 6 falhas, o bug era real) |
+| qa/segredos.test.js | 38/38 (teste ajustado para abrir o acordeão do PR #20; estava quebrado desde ele) |
+| qa/rotas.test.js: /, /comecar/, /convite/ em 390 e 1280, com e sem reduce-motion, console sem erros | 12/12 passou |
+
+Caches: ascensao-v22 e ascensao-u-v31.
+
 ## 25/11/2026 · telas enxutas e centralizadas (feedback da Mô: "muita informação")
 
 Playwright, 390x844 e 1280x800, servidor local, em cima da main com onboarding v2, segredos e foco do celular.

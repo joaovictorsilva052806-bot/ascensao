@@ -7,6 +7,7 @@ const LS=(p,k='ascensao-prog')=>p.evaluate(k=>JSON.parse(localStorage.getItem(k)
 const sec=async(p,k)=>((await LS(p,k)).sec)||{};
 async function seed(p,o,pre='ascensao'){await p.evaluate(([c,o,pre])=>{localStorage.setItem(pre+'-cfg',JSON.stringify(c));localStorage.setItem(pre+'-prog',JSON.stringify(o));},[CFG,o,pre]);await p.reload();await p.waitForTimeout(1000);await clear(p);}
 async function clear(p){for(let i=0;i<8;i++){const m=p.locator('.sysmodal:not(.seczen) button.go');if(await m.count()){await m.first().dispatchEvent('click');await p.waitForTimeout(80);continue;}if(await p.locator('#levelup').isVisible()){await p.locator('#luClose').dispatchEvent('click');continue;}break;}}
+const abre=async(p,sel)=>{await p.evaluate(sel=>{const s=document.querySelector(sel);const f=s&&s.closest('.panel.fold');if(f&&!f.classList.contains('open')){const h=f.querySelector('.fhd');h&&h.click();}},sel);await p.waitForTimeout(80);};
 const modal=async p=>{const h=p.locator('.sysmodal:not(.seczen) h3').last();return (await h.count())?await h.textContent():'';};
 const tap=async(p,id)=>{await p.locator('#quests .quest[data-q="'+id+'"] button.go').dispatchEvent('click');await p.waitForTimeout(80);};
 (async()=>{const b=await chromium.launch();
@@ -15,7 +16,7 @@ let {ctx,p,errs}=await page({},new Date('2026-11-25T14:00:00'));
 await p.goto(U);await seed(p,base());
 ok('root: painel Segredos existe',await p.locator('#secPanel').count()===1);
 ok('root: 0 / 17',(await p.textContent('#secCount')).trim()==='0 / 17',await p.textContent('#secCount'));
-await p.click('#tabbar [data-go="mais"]');await p.fill('#secCode','  LÁRICA ');await p.press('#secCode','Enter');await p.waitForTimeout(400);
+await p.click('#tabbar [data-go="mais"]');await abre(p,'#secCode');await p.fill('#secCode','  LÁRICA ');await p.press('#secCode','Enter');await p.waitForTimeout(400);
 ok('código "LÁRICA" (maiúscula/acento) revela',(await modal(p)).includes('Larica'),await p.textContent('#secOut'));
 await p.screenshot({path:SP+'reveal.png'});
 await p.click('.sysmodal button.go');await p.click('#tabbar [data-go="hoje"]');
@@ -25,7 +26,7 @@ await p.reload();await p.waitForTimeout(900);await clear(p);
 let st=await LS(p);
 ok('persistiu prog.sec e secTitle',st.sec&&st.sec.s_larica&&st.secTitle==='s_larica');
 ok('campos antigos intactos',st.foo==='campo-antigo'&&st.money[0].v===5&&st.ach.a_first&&st.log["2026-11-20"][0].q==='q1'&&st.rpg.cls.id==='mago');
-await p.click('#tabbar [data-go="mais"]');await p.fill('#secCode','larica');await p.press('#secCode','Enter');
+await p.click('#tabbar [data-go="mais"]');await abre(p,'#secCode');await p.fill('#secCode','larica');await p.press('#secCode','Enter');
 ok('código repetido não dá XP de novo',(await p.textContent('#secOut')).includes('já usado'));
 await p.fill('#secCode','banana');await p.press('#secCode','Enter');ok('código desconhecido responde',(await p.textContent('#secOut')).includes('desconhecido'));
 await p.fill('#secCode','420');await p.press('#secCode','Enter');ok('código 420 dá pista',(await p.textContent('#secOut')).includes('hora marcada'));
@@ -62,7 +63,7 @@ await tap(p,'q1');await tap(p,'q2');await tap(p,'q3');await p.waitForTimeout(200
 ({ctx,p,errs}=await page({},new Date('2026-11-26T00:02:00')));await p.goto(U);await seed(p,b2);ok('meia-noite libera Ficha Limpa',!!(await sec(p)).s_meia);await ctx.close();
 // reduce-motion
 ({ctx,p,errs}=await page({reducedMotion:'reduce'}));await p.goto(U);await seed(p,b2);
-await p.click('#tabbar [data-go="mais"]');await p.fill('#secCode','deboa');await p.press('#secCode','Enter');await p.waitForTimeout(200);
+await p.click('#tabbar [data-go="mais"]');await abre(p,'#secCode');await p.fill('#secCode','deboa');await p.press('#secCode','Enter');await p.waitForTimeout(200);
 ok('reduce-motion: revelação sem animação',await p.evaluate(()=>getComputedStyle(document.querySelector('.sysmodal .card')).animationName==='none'));await clear(p);
 await p.fill('#secCode','modozen');await p.press('#secCode','Enter');await p.waitForTimeout(1300);
 ok('reduce-motion: zen sem movimento',await p.evaluate(()=>{const s=getComputedStyle(document.getElementById('zenDot'));return s.transform==='none'&&(s.transitionDuration==='0s');}));
@@ -71,7 +72,7 @@ ok('reduce: console sem erros',errs.length===0,errs.join(' | '));await ctx.close
 // /comecar/: bloqueado no onboarding; funciona com perfil
 ({ctx,p,errs}=await page());await p.goto(U+'comecar/');await p.waitForTimeout(900);
 for(let i=0;i<8;i++)await p.click('#clock',{force:true});ok('comecar: nada dispara durante o onboarding',!(await sec(p,'asc-u-prog')).s_tempo);
-await seed(p,b2,'asc-u');await p.click('#tabbar [data-go="mais"]');await p.fill('#secCode','naodesisto');await p.press('#secCode','Enter');await p.waitForTimeout(300);
+await seed(p,b2,'asc-u');await p.click('#tabbar [data-go="mais"]');await abre(p,'#secCode');await p.fill('#secCode','naodesisto');await p.press('#secCode','Enter');await p.waitForTimeout(300);
 ok('comecar: código funciona com perfil',(await modal(p)).includes('Inquebrável')&&!!(await sec(p,'asc-u-prog')).s_naodesisto);
 ok('comecar: console sem erros',errs.length===0,errs.join(' | '));await ctx.close();
 // desktop + convite
