@@ -1,0 +1,13 @@
+/* ---- Desafios relâmpago (tools/zap.*) ---- */
+.zaprank{font-family:var(--f-mono);font-size:.8rem;color:var(--glow);padding:8px 10px;border:1px dashed rgba(111,177,255,.35);border-radius:8px;background:rgba(0,212,255,.04)}
+.zapgrid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
+.zapc{position:relative;display:grid;gap:6px;justify-items:center;align-content:start;text-align:center;min-height:104px;padding:12px 6px;border-radius:12px;border:1px solid var(--glow);background:linear-gradient(160deg,#0f1d38,#0a1222);color:var(--fg);font:inherit;font-size:.82rem;line-height:1.25;box-shadow:0 0 10px rgba(111,177,255,.18)}
+.zapc .ic{font-size:1.6rem}
+.zapc.done{border-color:var(--good);opacity:.7}.zapc.done .ic{color:var(--good);font-weight:700}
+.zapc .ph{position:absolute;top:4px;right:6px;font-size:.8rem}
+.zaptap{justify-self:center;width:min(62vw,220px);aspect-ratio:1;border-radius:50%;border:2px solid var(--glow);background:radial-gradient(circle,#13284d,#0a1222 70%);color:var(--fg);display:grid;place-content:center;gap:4px;font:inherit;box-shadow:0 0 24px rgba(111,177,255,.35);touch-action:manipulation;-webkit-tap-highlight-color:transparent}
+.zaptap b{font-family:var(--f-mono);font-size:3.4rem;color:var(--glow);text-shadow:0 0 14px rgba(111,177,255,.7)}
+.zaptap:active{transform:scale(.96)}
+.zapproof{display:grid;grid-template-columns:auto 1fr;gap:10px;align-items:center}
+.zapproof img{width:64px;height:64px;object-fit:cover;border-radius:8px;border:1px solid var(--gold)}
+.zapcam{display:inline-flex;align-items:center;min-height:44px;padding:0 12px;border:1px solid var(--line);border-radius:8px;cursor:pointer}
