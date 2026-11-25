@@ -268,6 +268,59 @@ input,select,textarea{font-size:16px!important}
 .edform input:not([type=checkbox]),.edform select{font:inherit;background:rgba(0,212,255,.04);border:1px solid var(--line);color:var(--fg);border-radius:3px;padding:8px 10px;min-width:0}
 .edform .two{display:grid;grid-template-columns:1fr 1fr;gap:8px}.edform .row{flex-wrap:wrap}.link.danger{color:#ff7a7a}
 .panel.tip:not([hidden])~.panel.tip{display:none!important}
+.sysline{font-family:var(--f-mono);font-size:.74rem;color:var(--glow);letter-spacing:.04em;margin-top:6px;min-height:1.1em}
+.sysline::before{content:"[SISTEMA] ";color:var(--accent);opacity:.8}
+.rpgstats{display:flex;flex-direction:column;gap:10px;margin-top:8px}
+.rstat{border:1px solid var(--line);border-radius:10px;padding:10px;background:rgba(0,212,255,.04)}
+.rstat summary{display:flex;align-items:center;gap:10px;cursor:pointer;list-style:none}
+.rstat summary::-webkit-details-marker{display:none}
+.rstat .ic{font-size:1.3rem;width:1.6em;text-align:center}
+.rstat .nm{flex:1;min-width:0}
+.rstat .nm b{display:block;font-size:.9rem}
+.rstat .nm small{color:var(--muted);font-size:.72rem}
+.rstat .lv{font-family:var(--f-mono);color:var(--glow);font-size:.95rem}
+.rstat .bar{margin-top:6px;height:6px}
+.skills{list-style:none;margin:10px 0 0;padding:0;display:flex;flex-direction:column;gap:6px}
+.skills li{font-size:.82rem;padding:6px 8px;border-radius:8px;border:1px dashed var(--line);color:var(--muted)}
+.skills li.on{border-style:solid;border-color:var(--accent);color:var(--fg);background:rgba(0,212,255,.07)}
+.skills li b{display:block;font-size:.8rem;color:inherit}
+.skills li.on b{color:var(--glow)}
+.chestlist{display:flex;flex-direction:column;gap:6px;margin:8px 0}
+.chest{display:flex;align-items:center;gap:8px;border:1px solid var(--line);border-radius:8px;padding:8px}
+.chest span{flex:1;min-width:0;font-size:.88rem}
+.chest .mono{color:var(--gold)}
+.chest button{padding:6px 10px;font-size:.8rem}
+.coinin{max-width:76px}
+#coins{color:var(--gold)}
+.clspill{color:var(--gold)!important;border-color:var(--gold)!important}
+.sysmodal{position:fixed;inset:0;background:rgba(2,7,13,.86);display:grid;place-items:center;z-index:60;padding:24px}
+.sysmodal .card{border:1px solid var(--accent);border-radius:12px;background:var(--panel2);padding:22px 20px;text-align:center;max-width:340px;box-shadow:0 0 0 1px rgba(0,212,255,.3),0 0 40px rgba(0,212,255,.35);display:flex;flex-direction:column;gap:10px;animation:sysIn .45s cubic-bezier(.2,.9,.3,1.2)}
+.sysmodal .tag{font-family:var(--f-mono);font-size:.72rem;letter-spacing:.2em;color:var(--accent)}
+.sysmodal h3{margin:0;font-family:var(--f-hud,inherit);color:var(--glow);font-size:1.4rem}
+@keyframes sysIn{from{opacity:0;transform:scale(.85) translateY(10px);filter:blur(4px)}to{opacity:1;transform:none;filter:none}}
+/* movimento: flutuar, abrir/fechar, partículas */
+.rank{animation:floaty 5s ease-in-out infinite}
+@keyframes floaty{0%,100%{translate:0 0}50%{translate:0 -4px}}
+details>*:not(summary){animation:openIn .28s ease-out}
+@keyframes openIn{from{opacity:0;transform:translateY(-6px)}to{opacity:1;transform:none}}
+body.enter .quest{animation:qIn .35s ease-out backwards}
+.quest:nth-child(2){animation-delay:.04s}.quest:nth-child(3){animation-delay:.08s}.quest:nth-child(4){animation-delay:.12s}.quest:nth-child(5){animation-delay:.16s}.quest:nth-child(n+6){animation-delay:.2s}
+@keyframes qIn{from{opacity:0;transform:translateX(-10px)}to{opacity:1;transform:none}}
+.spark{position:fixed;width:6px;height:6px;border-radius:50%;background:var(--glow);box-shadow:0 0 8px var(--glow);pointer-events:none;z-index:70;animation:spark .7s ease-out forwards}
+.spark.g{background:var(--gold);box-shadow:0 0 8px var(--gold)}
+@keyframes spark{to{transform:translate(var(--dx),var(--dy)) scale(.2);opacity:0}}
+.levelup .card{animation:sysIn .5s cubic-bezier(.2,.9,.3,1.2)}
+.levelup .big{animation:lvPulse 1.6s ease-in-out infinite}
+@keyframes lvPulse{50%{text-shadow:0 0 24px var(--glow)}}
+@media (prefers-reduced-motion:reduce){.rank,.quest,details>*:not(summary),.sysmodal .card,.levelup .card,.levelup .big{animation:none}.spark{display:none}}
+.clscard{max-width:380px;max-height:88vh;overflow:auto;text-align:left}
+.clscard h3,.clscard .tag{text-align:center}
+.clsgrid{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.clsbtn{display:flex;flex-direction:column;align-items:flex-start;gap:2px;padding:10px;text-align:left}
+.clsbtn small{font-size:.72rem;color:var(--muted)}
+.clsbtn.sug{border-color:var(--gold);box-shadow:0 0 0 1px var(--gold)}
+#betaPanel label.chk{display:flex;align-items:center;gap:8px;margin:10px 0;font-size:.86rem}
+#betaRate button{font-size:1.3rem;padding:6px 10px}
 </style></head><body>
 
 <div class="hudtop"><span>ASCENSÃO<i>//</i>SISTEMA ONLINE</span><span class="mono" id="clock">--:--</span></div>
@@ -318,7 +371,7 @@ input,select,textarea{font-size:16px!important}
 
   <section data-tab="hoje" class="panel tip" id="newsCard" hidden>
     <h2>✨ Novidades no app</h2>
-    <ul class="sm news"><li><b>Novo:</b> edite, crie ou apague tarefas em Mais > Minhas tarefas.</li><li>O app sugere deixar mais leve a tarefa que vive ficando para trás.</li><li>Gere tarefas com a sua IA (Claude ou ChatGPT) na aba Mais.</li><li>Perfil novo: idade, escola, faculdade, ENEM ou curso, com turno.</li><li>Tarefas novas: dever de casa, menos tela, leitura e mais.</li><li>Ranking com apelido, se você preferir.</li></ul>
+    <ul class="sm news"><li><b>Novo:</b> escolha sua <b>classe</b> (vida real ou fantasia). Ela evolui nos níveis 10 e 20.</li><li>Cada atributo tem nível próprio e <b>habilidades</b> para desbloquear (em Progresso).</li><li><b>Baú de recompensas:</b> 10 XP = 1 moeda, troque por prêmios que você escolhe.</li><li><b>Treino do Sistema:</b> uma dica de 20 segundos por dia, +5 XP.</li><li>Quer ajudar a testar? Em Mais > Teste do app, você liga o envio anônimo.</li></ul>
     <div class="sm muted">Atualize seu perfil para ganhar as tarefas novas. Seu XP, sequência e histórico continuam.</div>
     <div class="row"><button class="go" type="button" id="newsRedo">Atualizar meu perfil</button><button class="ghost" type="button" id="newsIntro">Ver apresentação</button></div>
     <button class="link" type="button" id="newsClose">Agora não</button>
@@ -336,6 +389,11 @@ input,select,textarea{font-size:16px!important}
     <div class="row"><button class="go" type="button" id="pingYes">Entrar no ranking</button><button class="ghost" type="button" id="pingNo">Agora não</button></div>
   </section>
 
+  <section data-tab="hoje" class="panel tip" id="betaTip" hidden>
+    <h2>🧪 Ajude a melhorar o app</h2>
+    <p class="sm">O app é novo e eu quero saber se ele ajuda de verdade. Topa mandar <b>números anônimos</b> de uso? Nada de nome, texto ou contato.</p>
+    <div class="row"><button class="go" type="button" id="betaTipYes">Ver o que é enviado</button><button class="link" type="button" id="betaTipNo">Agora não</button></div>
+  </section>
   <section data-tab="hoje" class="panel tip" id="installTip" hidden>
     <h2>Instale como app</h2>
     <div class="sm" id="tipText">No Safari, toque em <b>Compartilhar</b> (quadrado com a seta) e depois em <b>Adicionar à Tela de Início</b>. Ele abre em tela cheia, como um app.</div>
@@ -351,7 +409,8 @@ input,select,textarea{font-size:16px!important}
         <div class="lvl"><span id="lvl">Nível 1</span> · <span class="muted sm" id="ptitle">Aprendiz</span></div>
         <div class="bar" aria-label="Progresso de XP"><i id="xpbar" style="width:0%"></i></div>
         <div class="sm muted mono" id="xptext">0 / 100 XP</div>
-        <div class="pills"><span class="pill fire" id="streak">🔥 0</span><span class="pill" id="dayPill">0/0 hoje</span></div>
+        <div class="pills"><span class="pill fire" id="streak">🔥 0</span><span class="pill" id="dayPill">0/0 hoje</span><span class="pill clspill" id="clsPill" hidden></span></div>
+        <div class="sysline" id="sysLine"></div>
       </div>
     </div>
   </section>
@@ -380,6 +439,12 @@ input,select,textarea{font-size:16px!important}
       <button class="go" type="submit">Adicionar</button>
     </form>
     <button class="link" type="button" id="fbQuick">💡 Sugerir uma melhoria no app</button>
+  </section>
+
+  <section data-tab="hoje" class="panel rpg" id="tipCard">
+    <div class="qhead"><h2>📘 Treino do Sistema</h2><span class="sm muted">+5 XP · 20 s</span></div>
+    <p id="tipText"></p>
+    <div class="row"><button class="go" type="button" id="tipOk">Li e vou testar hoje</button></div>
   </section>
 
   <section data-tab="hoje" class="panel">
@@ -420,6 +485,19 @@ input,select,textarea{font-size:16px!important}
     <button class="go" type="button" id="fSave">Salvar o dia</button>
   </section>
 
+  <section data-tab="prog" class="panel rpg" id="rpgPanel">
+    <div class="qhead"><h2>Atributos e habilidades</h2><span class="sm muted" id="rpgCls"></span></div>
+    <div class="sm muted" id="rpgAwake"></div>
+    <button class="link" type="button" id="clsChange">Escolher ou trocar classe</button>
+    <div id="rpgStats" class="rpgstats"></div>
+  </section>
+
+  <section data-tab="prog" class="panel rpg" id="chestPanel">
+    <div class="qhead"><h2>🎁 Baú de recompensas</h2><span class="mono" id="coins">0 moedas</span></div>
+    <p class="sm muted">Cada 10 XP vira 1 moeda. Troque por recompensas que você mesmo escolhe. Recompensa planejada não é culpa, é combustível.</p>
+    <div id="chestList" class="chestlist"></div>
+    <form class="add" id="chestForm"><input id="chestT" maxlength="40" autocomplete="off" placeholder="Ex.: um episódio da série"><input id="chestC" inputmode="numeric" maxlength="3" autocomplete="off" placeholder="moedas" class="coinin"><button class="go" type="submit">Criar</button></form>
+  </section>
   <section data-tab="prog" class="panel" id="rankPanel">
     <div class="qhead"><h2>🏆 Ranking da semana</h2><span class="sm muted">zera toda segunda</span></div>
     <ol class="rk" id="rkList"></ol>
@@ -428,10 +506,11 @@ input,select,textarea{font-size:16px!important}
     <div class="row"><button class="go" type="button" id="rkJoin">Entrar no ranking</button><button class="link" type="button" id="rkLeave" hidden>Sair do ranking</button></div>
   </section>
 
-  <section data-tab="prog" class="panel">
+  <section data-tab="prog" class="panel" hidden>
     <h2>Atributos</h2>
     <div class="stats" id="stats"></div>
   </section>
+
 
   <section data-tab="prog" class="panel boss" id="bossPanel" hidden>
     <div class="qhead"><h2>Chefe da semana</h2><span class="sm muted" id="bossDeadline"></span></div>
@@ -508,6 +587,21 @@ input,select,textarea{font-size:16px!important}
     <div class="sm muted">Simples: frases curtas e palavras do dia a dia ("pontos" e "tarefas"). Completo: explica mais, com os termos de jogo (XP, quests, boss).</div>
     <div class="chips" id="langPick"><button type="button" data-v="simples">Simples</button><button type="button" data-v="completo">Completo</button></div>
   </section>
+  <section data-tab="mais" class="panel" id="betaPanel">
+    <h2>🧪 Teste do app (beta)</h2>
+    <p class="sm muted">Se você ligar, o app manda <b>uma vez por dia</b> só números, sem nome, texto ou contato. Isso diz se o app está ajudando e o que precisa melhorar.</p>
+    <details><summary>O que exatamente é enviado</summary>
+      <ul class="sm news"><li>Um código aleatório deste aparelho (não é seu nome nem seu número).</li><li>Faixa de idade, tipo de rotina e classe escolhidos no perfil.</li><li>De ontem: quantas tarefas fez, quantas no mínimo, quantas principais, e quais telas abriu (só a contagem).</li><li>Nível, sequência e dias ativos nas últimas 2 semanas.</li><li><b>Nunca</b>: seu nome, o texto das tarefas, horários, anotações, gratidão ou mensagens.</li></ul>
+      <p class="sm muted">Você pode desligar quando quiser. Os números ficam numa planilha privada do criador do app e servem só para melhorar o app.</p>
+    </details>
+    <label class="chk" id="betaParentRow" hidden><input type="checkbox" id="betaParent"> Meu pai, minha mãe ou meu responsável sabe e autorizou.</label>
+    <div class="row"><button class="go" type="button" id="betaOn">Ligar envio anônimo</button><button class="ghost" type="button" id="betaOff" hidden>Desligar</button></div>
+    <div class="sm muted" id="betaMsg"></div>
+    <h3 class="sm" style="margin:14px 0 6px">Nota rápida para o app</h3>
+    <div class="chips" id="betaRate"><button type="button" data-v="1">😞</button><button type="button" data-v="2">😕</button><button type="button" data-v="3">😐</button><button type="button" data-v="4">🙂</button><button type="button" data-v="5">🤩</button></div>
+    <textarea id="betaText" rows="2" maxlength="280" placeholder="Opcional: o que mudaria? (não escreva nome ou contato)" style="font:inherit;width:100%;background:rgba(0,212,255,.04);border:1px solid var(--line);color:var(--fg);border-radius:3px;padding:9px 10px;margin-top:8px"></textarea>
+    <div class="row"><button class="ghost" type="button" id="betaSend">Enviar nota anônima</button></div>
+  </section>
   <section data-tab="mais" class="panel" id="fbPanel">
     <h2>Sugerir melhoria</h2>
     <div class="sm muted">O que está chato, confuso ou faltando? Pode ser curto. A mensagem sai pelo WhatsApp: é só escolher para quem mandar.</div>
@@ -531,6 +625,7 @@ input,select,textarea{font-size:16px!important}
       <summary>Começar do zero</summary>
       <p>Apaga perfil, tarefas, XP e histórico deste aparelho e mostra a apresentação de novo. Não dá para desfazer: copie o backup antes, se quiser guardar.</p>
       <div class="row"><button type="button" class="ghost" id="wipe">Apagar tudo e começar do zero</button></div>
+      <div class="row"><button type="button" class="link" id="seasonUndo" hidden>Recuperar meu progresso da temporada anterior</button></div>
     </details>
     <details>
       <summary>Backup do progresso</summary>
@@ -850,7 +945,7 @@ let ACH=[];function achList(){return [
 function activeDays(){return new Set(entries().filter(e=>!String(e.q).startsWith("ach:")).map(e=>e.date)).size;}
 function renderAch(){const box=$("achList");box.textContent="";prog.ach=prog.ach||{};let got=0;
   for(const [id,name,desc,xp] of (ACH=achList())){const on=!!prog.ach[id];if(on)got++;const d=document.createElement("div");d.className="badge"+(on?" on":"");const b=document.createElement("b");b.textContent=(on?"🏅 ":"🔒 ")+name;d.append(b,document.createTextNode(desc+" · +"+xp+" XP"));box.append(d);}
-  $("achCount").textContent=got+" / "+ACH.length;$("faithPanel").hidden=!(cfg&&cfg.faith);applyCopy();renderEd();renderAdj();}
+  $("achCount").textContent=got+" / "+ACH.length;$("faithPanel").hidden=!(cfg&&cfg.faith);applyCopy();renderEd();renderAdj();renderRPG();betaUI();}
 function checkAch(){prog.ach=prog.ach||{};for(const [id,name,,xp,test] of (ACH=achList())){if(!prog.ach[id]&&test()){prog.ach[id]=todayKey();pushEntry({q:"ach:"+id,kind:"full",xp,stat:"foco",bonus:0,t:new Date().toISOString()},"Conquista: "+name+"! +"+xp+" XP");return true;}}return false;}
 // ---------- Lembretes na agenda (sem servidor: arquivo .ics ou Google Agenda) ----------
 const BYD=["MO","TU","WE","TH","FR","SA","SU"];
@@ -1021,7 +1116,7 @@ function applyCopy(){const P=(cfg&&cfg.profile)||{};const o=P.occ||"",m=isMinorA
   const mit=P.level==="escola"||o==="escola"?"Ex.: terminar o trabalho de Ciências":o==="estudante"?"Ex.: entregar a lista da faculdade":o==="motorista"?"Ex.: ligar para casa na parada":o==="casa"?"Ex.: pagar a conta de luz":o==="aposentado"?"Ex.: marcar a consulta":o==="autonomo"?"Ex.: mandar o orçamento que está parado":"Ex.: a coisa mais importante de hoje";
   $("mit").placeholder=mit;$("fIntent").placeholder=m?"Ex.: apresentar o trabalho sem travar":"Ex.: pedir ajuda com aquilo que estou adiando";}
 // ---------- Novidades (1x por versão, para quem já tinha perfil) e fluxos de Mais ----------
-const NEWS_V="4";
+const NEWS_V="5";
 function showNews(){let seen="";try{seen=localStorage.getItem("asc-u-news")||"";}catch(e){}$("newsCard").hidden=!(cfg&&!cfg.blank&&seen!==NEWS_V);}
 function newsDone(){try{localStorage.setItem("asc-u-news",NEWS_V);}catch(e){}$("newsCard").hidden=true;}
 $("newsRedo").addEventListener("click",()=>{newsDone();openOnb();});
@@ -1206,6 +1301,165 @@ $("adjLight").addEventListener("click",()=>{const q=adjQ&&(cfg.quests||[]).find(
 $("adjUnmain").addEventListener("click",()=>{const q=adjQ&&(cfg.quests||[]).find(x=>x.id===adjQ.id);if(!q)return;delete q.main;cfg.startDate=todayKey();edSave();adjSnooze(q.id,7);render();toast("Agora ela é extra: sem dívida se ficar para depois.");});
 $("adjNo").addEventListener("click",()=>{if(adjQ)adjSnooze(adjQ.id,7);$("adjCard").hidden=true;});
 
+// ---------- RPG da vida real: atributos com nível, habilidades, classe, baú, treino diário ----------
+const RPG_IC={foco:"🎯",vendas:"🏁",mente:"🧠",corpo:"💪"};
+const SKILLS={
+  foco:[[2,"Partida de 2 minutos","Comece só 2 minutos. Começar é a parte mais difícil; depois o cérebro embala."],[4,"Bloco blindado","25 minutos com o celular em outro cômodo. Uma coisa só."],[6,"Lista de 3","Na noite anterior, escolha as 3 coisas que importam amanhã."],[8,"Túnel","Uma aba, uma tarefa. Fechou, comemorou, próxima."],[10,"Mestre do foco","Você já sabe entrar no modo foco quando quer. Ensine alguém."]],
+  vendas:[[2,"Primeiro passo visível","Quebre a meta até o passo ficar tão pequeno que dá preguiça de não fazer."],[4,"Placar","O que é medido melhora. Anote o número do dia."],[6,"Prazo curto","Metas de 7 dias vencem metas de 1 ano."],[8,"Pedido sem medo","Peça ajuda ou um sim. O pior não é o não, é não pedir."],[10,"Conquistador","Você termina o que começa. Escolha a próxima montanha."]],
+  mente:[[2,"Respiro 4-6","Inspire em 4, solte em 6, cinco vezes. O corpo desacelera."],[4,"Diário de 1 linha","Uma frase por dia sobre como foi. Só isso."],[6,"Despejo mental","Cabeça cheia? Tire tudo para o papel antes de decidir."],[8,"Pensamento justo","Troque 'sempre dá errado' pelo fato: 'hoje deu errado nisso'."],[10,"Mente serena","Você atravessa dia ruim sem se largar. Isso é força."]],
+  corpo:[[2,"Água ao acordar","Um copo de água antes do celular."],[4,"Caminhada de 10","Dez minutos andando já mudam o humor e o foco."],[6,"Sono no horário","Dormir e acordar no mesmo horário vale mais que dormir muito."],[8,"Força básica","Agachamento, flexão e prancha: 3 séries, 3 vezes por semana."],[10,"Corpo de aço","Seu corpo virou aliado. Mantenha o básico bem feito."]]};
+const CLS_REAL=[["estudante","Estudante","foco","escola"],["universitario","Universitário","mente","estudante"],["profissional","Profissional","vendas","clt"],["empreendedor","Empreendedor","vendas","autonomo"],["lar","Cuidador do lar","corpo","casa"],["caminhoneiro","Caminhoneiro","foco","motorista"],["motorista","Motorista","foco",""],["veterano","Veterano da vida","mente","aposentado"],["atleta","Atleta","corpo",""]];
+const CLS_FANT=[["mago","Mago","mente","Arquimago","Sábio Arcano"],["guerreiro","Guerreiro","corpo","Campeão","Lorde da Guerra"],["arqueiro","Arqueiro","foco","Atirador de Elite","Olho de Falcão"],["cavaleiro","Cavaleiro","vendas","Comandante","Cavaleiro Lendário"],["druida","Druida","corpo","Guardião da Floresta","Espírito Ancestral"]];
+const AFF=1.5;
+function clsName(c,lv){if(!c)return "";if(c.style==="fant"){const f=CLS_FANT.find(x=>x[0]===c.id);if(f)return lv>=20?f[4]:lv>=10?f[3]:f[1];}return lv>=20?"Mestre "+c.name:lv>=10?c.name+" Experiente":c.name;}
+const TIPS=["Deixe a roupa do treino ou o material separado na noite anterior. Menos decisões de manhã = mais energia.",
+"Use um timer visível. Ver o tempo passar ajuda o cérebro com TDAH a sentir o tempo.",
+"Faça a tarefa chata logo depois de uma que você gosta. Uma puxa a outra.",
+"Cansou no meio? Troque de lugar. Mudar o ambiente reinicia a atenção.",
+"Escreva a próxima ação, não a tarefa. Não 'trabalho de história', e sim 'abrir o caderno na página 30'.",
+"Celular longe da cama. O sono agradece e a manhã começa sua, não do feed.",
+"Música sem letra ou ruído branco ajuda muita gente a focar. Teste hoje.",
+"Esqueceu algo? Não brigue com você. Crie um lembrete na hora e siga.",
+"Comemore pequeno: punho fechado, 'boa!'. O cérebro aprende com recompensa, não com bronca.",
+"Regra do 'nunca dois': falhou um dia, tudo bem. Só não deixe virar dois seguidos.",
+"Beba água agora. Desidratação leve já derruba foco e humor.",
+"Antes de dormir, anote 1 coisa boa do dia. Treina o cérebro a enxergar progresso.",
+"Divida em pedaços de 10 minutos. Dez minutos sempre parecem possíveis.",
+"Avise alguém do que você vai fazer. Compromisso dito em voz alta pesa mais.",
+"Deixe à vista o que quer fazer e esconda o que te distrai. O ambiente decide por você.",
+"Sol de manhã, 5 a 10 minutos, ajusta o relógio do corpo e melhora o sono à noite.",
+"Pausa boa é sem tela: alongar, olhar pela janela, beber água.",
+"Se a tarefa leva menos de 2 minutos, faça agora.",
+"Escolha só 1 prioridade para amanhã. Uma. O resto é bônus.",
+"Movimento antes de estudar ou trabalhar (20 polichinelos) acorda a atenção.",
+"Erro não apaga o progresso. Seu XP continua aí. Volte na próxima quest.",
+"Use o 'modo mínimo': num dia ruim, a versão mínima mantém a sequência viva.",
+"Agrupe tarefas parecidas: todas as mensagens juntas, todas as compras juntas.",
+"Durma 8 horas na semana de prova. Memória se fixa no sono.",
+"Tédio é sinal, não inimigo. Torne a tarefa um desafio: cronometre e tente bater o tempo.",
+"Arrume só uma superfície (a mesa, a cama). Ordem visível acalma a cabeça.",
+"Diga 'eu sou alguém que treina' em vez de 'preciso treinar'. Identidade puxa hábito.",
+"Recompensa planejada funciona: decida antes o que ganha ao terminar.",
+"Quando travar, pergunte: qual é o menor passo possível agora?",
+"Revise a semana no domingo: o que funcionou fica, o que não funcionou ajusta."];
+const SXP=n=>15*n*(n-1);
+const slvl=x=>{let n=1;while(x>=SXP(n+1))n++;return n;};
+function rpgState(){if(!prog.rpg||typeof prog.rpg!=="object")prog.rpg={};const r=prog.rpg;r.rew=r.rew||null;r.spent=r.spent||0;r.seen=r.seen||null;r.tips=r.tips||{};return r;}
+function statXP(){const st={foco:0,vendas:0,mente:0,corpo:0};for(const e of entries()){if(st[e.stat]!=null&&(e.xp||0)>0)st[e.stat]+=e.xp;}
+  const c=rpgState().cls;if(c&&c.stat&&st[c.stat]!=null)st[c.stat]=Math.round(st[c.stat]*AFF);return st;}
+function coinsEarned(){let s=0;for(const e of entries())s+=Math.max(0,(e.xp||0)+(e.bonus||0));return Math.floor(s/10);}
+function rpgTip(){const d=new Date();const n=Math.floor((d-new Date(d.getFullYear(),0,0))/864e5);return TIPS[n%TIPS.length];}
+let sysQ=[];function sysPop(tag,title,text){sysQ.push([tag,title,text]);if(sysQ.length===1)sysNext();}
+function sysNext(){if(!sysQ.length)return;const [tag,title,text]=sysQ[0];const m=document.createElement("div");m.className="sysmodal";m.setAttribute("role","dialog");
+  const c=document.createElement("div");c.className="card";const a=document.createElement("div");a.className="tag";a.textContent="[ SISTEMA ] "+tag;const h=document.createElement("h3");h.textContent=title;const p=document.createElement("p");p.className="sm";p.textContent=text;
+  const b=document.createElement("button");b.className="go";b.type="button";b.textContent="Aceitar";b.addEventListener("click",()=>{m.remove();sysQ.shift();if(sysQ.length)sysNext();else setTimeout(render,50);});c.append(a,h,p,b);m.append(c);document.body.append(m);try{if(navigator.vibrate)navigator.vibrate([10,30,10]);}catch(e){}}
+function sparks(gold){if(matchMedia("(prefers-reduced-motion: reduce)").matches)return;const pt=lastPt||{x:innerWidth/2,y:innerHeight/2};
+  for(let i=0;i<14;i++){const s=document.createElement("i");s.className="spark"+(gold&&i%2?" g":"");const a=Math.PI*2*i/14+Math.random()*.4,r=40+Math.random()*50;
+    s.style.left=pt.x+"px";s.style.top=pt.y+"px";s.style.setProperty("--dx",Math.cos(a)*r+"px");s.style.setProperty("--dy",Math.sin(a)*r+"px");document.body.append(s);setTimeout(()=>s.remove(),800);}}
+{const _fx=fx;fx=function(xp,gold){_fx(xp,gold);if(xp>0)sparks(gold);};}
+function sysLine(){const dt=new Date();const h=dt.getHours();const nm=((cfg&&cfg.name)||"").split(" ")[0];
+  const hi=(h<5?"Boa madrugada":h<12?"Bom dia":h<18?"Boa tarde":"Boa noite")+(nm?", "+nm:"")+". ";
+  const ms=mainsFor(dt);const done=prog.log[todayKey()]||[];const left=ms.filter(q=>!done.some(e=>e.q===q.id));
+  if(!ms.length)return hi+(done.length?"Dia ativo. Quer pegar uma extra?":"Sem missão principal hoje. Uma tarefa já ativa o dia.");
+  if(!left.length)return hi+"Missão diária completa. Sequência protegida. Descanse, você mereceu.";
+  const nx=left[0];
+  if(h>=20)return hi+"Faltam "+left.length+". Sugestão: "+(nx.minTitle||nx.title)+" (o mínimo já vale).";
+  return hi+(left.length<ms.length?"Bom ritmo. ":"")+"Próxima missão: "+nx.title+".";}
+function typeSys(el,t){if(el.dataset.t===t)return;el.dataset.t=t;clearInterval(typeSys.i);
+  if(matchMedia("(prefers-reduced-motion: reduce)").matches||document.body.dataset.tab!=="hoje"){el.textContent=t;return;}
+  let n=0;el.textContent="";typeSys.i=setInterval(()=>{n+=2;el.textContent=t.slice(0,n);if(n>=t.length)clearInterval(typeSys.i);},22);}
+function renderRPG(){const r=rpgState();const st=statXP();const lv=levelOf(totalXP());
+  // primeira vez: marca o que já tinha sem soltar alertas antigos
+  const cur={};for(const k in STATS)cur[k]=slvl(st[k]);
+  if(!r.seen){r.seen=Object.assign({},cur);}
+  else{for(const k in STATS){const was=r.seen[k]||1;if(cur[k]>was){for(const [lvN,nm,tx] of SKILLS[k])if(lvN>was&&lvN<=cur[k])sysPop("HABILIDADE DESBLOQUEADA",nm,STATS[k]+" nível "+lvN+". "+tx);r.seen[k]=cur[k];}}}
+  if(typeof r.cls==="string")r.cls=null;
+  if(r.cls){const t=lv>=20?2:lv>=10?1:0;if(t>(r.evo||0)){r.evo=t;sysPop("EVOLUÇÃO DE CLASSE",clsName(r.cls,lv),"Nível "+lv+". Sua classe evoluiu. Continue no seu ritmo.");}}
+  else if(cfg&&!cfg.blank&&$("onb").hidden&&!clsOpen&&!sysQ.length)setTimeout(()=>{if(!sysQ.length)openCls();},400);
+  if(!r.rew)r.rew=[{t:"Um episódio da série",c:8},{t:"Lanche favorito",c:12},{t:"1 hora de jogo sem culpa",c:15}];
+  const sl=$("sysLine");if(sl)typeSys(sl,sysLine());
+  $("rpgCls").textContent=r.cls?clsName(r.cls,lv):"";
+  $("rpgAwake").textContent=r.cls?(lv<20?"Afinidade: "+STATS[r.cls.stat]+" sobe 1,5x mais rápido. Evolução da classe no nível "+(lv<10?10:20)+".":"Afinidade: "+STATS[r.cls.stat]+" sobe 1,5x mais rápido."):"Escolha sua classe para ganhar afinidade com um atributo.";
+  const cp=$("clsPill");if(cp){cp.hidden=!r.cls;cp.textContent=r.cls?(r.cls.style==="fant"?"⚔️ ":"🧭 ")+clsName(r.cls,lv):"";}
+  const box=$("rpgStats");const open=new Set([...box.querySelectorAll("details[open]")].map(d=>d.dataset.k));box.textContent="";
+  for(const k in STATS){const n=cur[k],a=SXP(n),b=SXP(n+1),pct=Math.min(100,(st[k]-a)/(b-a)*100);
+    const d=document.createElement("details");d.className="rstat";d.dataset.k=k;if(open.has(k))d.open=true;
+    const s=document.createElement("summary");const ic=document.createElement("span");ic.className="ic";ic.textContent=RPG_IC[k];
+    const nm=document.createElement("span");nm.className="nm";const bb=document.createElement("b");bb.textContent=STATS[k];const sm=document.createElement("small");
+    const nx=SKILLS[k].find(x=>x[0]>n);sm.textContent=nx?"Próxima habilidade no nível "+nx[0]+": "+nx[1]:"Todas as habilidades desbloqueadas";
+    const bar=document.createElement("div");bar.className="bar";const bi=document.createElement("i");bi.style.width=pct.toFixed(1)+"%";bar.append(bi);nm.append(bb,sm,bar);
+    const l=document.createElement("span");l.className="lv";l.textContent="Nv "+n;s.append(ic,nm,l);
+    const ul=document.createElement("ul");ul.className="skills";for(const [lvN,t,tx] of SKILLS[k]){const li=document.createElement("li");if(n>=lvN)li.className="on";const b2=document.createElement("b");b2.textContent=(n>=lvN?"✓ ":"🔒 Nv "+lvN+" · ")+t;li.append(b2,document.createTextNode(n>=lvN?tx:"Suba "+STATS[k]+" para liberar."));ul.append(li);}
+    d.append(s,ul);box.append(d);}
+  const coins=coinsEarned()-r.spent;$("coins").textContent=coins+" moeda"+(coins===1?"":"s");
+  const cl=$("chestList");cl.textContent="";r.rew.forEach((w,i)=>{const row=document.createElement("div");row.className="chest";const sp=document.createElement("span");sp.textContent=w.t;const c=document.createElement("b");c.className="mono";c.textContent=w.c+" 🪙";
+    const bt=document.createElement("button");bt.type="button";bt.className=coins>=w.c?"go":"ghost";bt.textContent="Resgatar";bt.addEventListener("click",()=>{if(rpgState().spent+w.c>coinsEarned()){toast("Faltam "+(w.c-(coinsEarned()-rpgState().spent))+" moedas. Bora numa quest.");return;}
+      rpgState().spent+=w.c;save();render();sysPop("RECOMPENSA","Aproveite: "+w.t,"Você ganhou isso. Curta sem culpa e volte com energia.");});
+    const del=document.createElement("button");del.type="button";del.className="link";del.textContent="✕";del.setAttribute("aria-label","Remover recompensa");del.addEventListener("click",()=>{rpgState().rew.splice(i,1);save();render();});
+    row.append(sp,c,bt,del);cl.append(row);});
+  const tk=todayKey();const tc=$("tipCard");tc.hidden=!!r.tips[tk];$("tipText").textContent=rpgTip();}
+$("tipOk").addEventListener("click",()=>{const r=rpgState(),tk=todayKey();if(r.tips[tk])return;r.tips[tk]=1;addXP({q:"tip:"+tk,kind:"tip",xp:5,stat:"mente",bonus:0,t:new Date().toISOString()},"Treino concluído: +5 XP");});
+$("chestForm").addEventListener("submit",e=>{e.preventDefault();const t=$("chestT").value.trim().slice(0,40);const c=Math.max(1,Math.min(500,parseInt($("chestC").value,10)||10));if(!t)return;
+  const r=rpgState();if(r.rew.length>=12){toast("Máximo de 12 recompensas.");return;}r.rew.push({t,c});$("chestT").value="";$("chestC").value="";save();render();});
+
+document.body.classList.add("enter");setTimeout(()=>document.body.classList.remove("enter"),1500);
+
+// ---------- Escolha de classe (no começo; vale para quem já usa também) ----------
+let clsOpen=false;
+function openCls(){if(clsOpen||(rpgState().cls&&!openCls.force))return;openCls.force=false;clsOpen=true;let style="real";const occ=(cfg&&cfg.profile&&cfg.profile.occ)||"";
+  const m=document.createElement("div");m.className="sysmodal";m.id="clsModal";m.setAttribute("role","dialog");const c=document.createElement("div");c.className="card clscard";
+  const tag=document.createElement("div");tag.className="tag";tag.textContent="[ SISTEMA ] ESCOLHA DE CLASSE";const h=document.createElement("h3");h.textContent="Quem é você neste jogo?";
+  const p=document.createElement("p");p.className="sm muted";p.textContent="Sua classe dá afinidade com um atributo: ele sobe 1,5x mais rápido. Dá para trocar depois em Progresso.";
+  const seg=document.createElement("div");seg.className="seg";const grid=document.createElement("div");grid.className="clsgrid";const own=document.createElement("div");own.className="add";own.hidden=true;
+  const oi=document.createElement("input");oi.maxLength=24;oi.placeholder="Ex.: Professora, Pedreiro, Enfermeiro";oi.autocomplete="off";const os=document.createElement("select");for(const k in STATS){const o=document.createElement("option");o.value=k;o.textContent=STATS[k];os.append(o);}
+  const ob=document.createElement("button");ob.type="button";ob.className="go";ob.textContent="Usar";own.append(oi,os,ob);
+  const pick=(cl)=>{const r=rpgState();r.cls=cl;r.evo=0;const lv=levelOf(totalXP());r.evo=lv>=20?2:lv>=10?1:0;r.seen=null;save();m.remove();clsOpen=false;render();sysPop("CLASSE DEFINIDA",clsName(cl,lv),"Afinidade: "+STATS[cl.stat]+". Evolui no nível 10 e no 20.");};
+  ob.addEventListener("click",()=>{const n=oi.value.trim().replace(/[<>]/g,"").slice(0,24);if(!n){oi.focus();return;}pick({style:"real",id:"outra",name:n.charAt(0).toUpperCase()+n.slice(1),stat:os.value});});
+  function fill(){grid.textContent="";own.hidden=style!=="real";for(const b of seg.children)b.classList.toggle("on",b.dataset.v===style);
+    const list=style==="real"?CLS_REAL.slice().sort((a,b)=>(b[3]===occ)-(a[3]===occ)):CLS_FANT;
+    for(const x of list){const b=document.createElement("button");b.type="button";b.className="clsbtn"+(style==="real"&&x[3]&&x[3]===occ?" sug":"");const t=document.createElement("b");t.textContent=x[1];const s2=document.createElement("small");s2.textContent=RPG_IC[x[2]]+" "+STATS[x[2]];b.append(t,s2);
+      b.addEventListener("click",()=>pick({style,id:x[0],name:x[1],stat:x[2]}));grid.append(b);}}
+  for(const [v,l] of [["real","🧭 Vida real"],["fant","⚔️ Fantasia"]]){const b=document.createElement("button");b.type="button";b.dataset.v=v;b.textContent=l;b.addEventListener("click",()=>{style=v;fill();});seg.append(b);}
+  const later=document.createElement("button");later.type="button";later.className="link";later.textContent="Escolher depois";later.addEventListener("click",()=>{m.remove();clsOpen="later";});
+  c.append(tag,h,p,seg,grid,own,later);m.append(c);document.body.append(m);fill();}
+$("clsChange").addEventListener("click",()=>{openCls.force=true;clsOpen=false;openCls();});
+
+// ---------- Beta: números anônimos com consentimento (LGPD). Nada sai sem o "sim". ----------
+const BETA_KEY="asc-u-beta";
+function betaGet(){try{return JSON.parse(localStorage.getItem(BETA_KEY)||"{}")||{};}catch(e){return {};}}
+function betaSet(b){try{localStorage.setItem(BETA_KEY,JSON.stringify(b));}catch(e){}}
+const betaAge=()=>(cfg&&cfg.profile&&cfg.profile.age)||"";
+const betaKid=()=>betaAge()==="kid";
+function betaId(){const b=betaGet();if(!b.id){const a=new Uint8Array(6);crypto.getRandomValues(a);b.id=[...a].map(x=>x.toString(16).padStart(2,"0")).join("");betaSet(b);}return b.id;}
+function betaPost(parts){const v=["B"].concat(parts).map(x=>String(x==null?"":x).replace(/[|\n\r]/g," ")).join("|");
+  try{fetch(RK_POST,{method:"POST",mode:"no-cors",keepalive:true,body:new URLSearchParams({"entry.807978446":v})}).catch(()=>{});}catch(e){}}
+function betaTab(t){const b=betaGet();if(!b.on)return;const k=todayKey();b.tabs=b.tabs||{};b.tabs[k]=b.tabs[k]||{};b.tabs[k][t]=(b.tabs[k][t]||0)+1;
+  for(const d in b.tabs)if(d<k&&Object.keys(b.tabs).length>3)delete b.tabs[d];betaSet(b);}
+function betaDaily(){const b=betaGet();if(!b.on||betaKid())return;const tk=todayKey();if(b.last===tk)return;
+  const y=new Date();y.setDate(y.getDate()-1);const yk=dkey(y);const L=(prog.log[yk]||[]).filter(e=>!String(e.q).startsWith("ach:"));
+  const ms=mainsFor(y);const mDone=ms.filter(q=>L.some(e=>e.q===q.id)).length;
+  let act=0;const d=new Date();for(let i=1;i<=14;i++){d.setDate(d.getDate()-1);if((prog.log[dkey(d)]||[]).length)act++;}
+  const P=(cfg&&cfg.profile)||{};const c=(prog.rpg&&prog.rpg.cls)||{};const tabs=(b.tabs&&b.tabs[yk])||{};
+  const tabStr=Object.keys(tabs).map(k=>k+":"+tabs[k]).join(",");
+  const days=cfg&&cfg.startDate?Math.round((new Date(tk)-new Date(cfg.startDate))/864e5):"";
+  betaPost([b.id||betaId(),"dia",yk.replace(/-/g,""),P.age||"",P.occ||"",(c.style||"")+":"+(c.id||""),days,L.length,L.filter(e=>e.kind==="min").length,mDone+"/"+ms.length,levelOf(totalXP()),streakDays(),act,tabStr,(cfg.quests||[]).length]);
+  b.last=tk;betaSet(b);}
+function betaUI(){const b=betaGet(),kid=betaKid(),teen=betaAge()==="teen";
+  $("betaParentRow").hidden=!teen||!!b.on;$("betaOn").hidden=!!b.on||kid;$("betaOff").hidden=!b.on;
+  $("betaMsg").textContent=kid?"Para quem tem até 13 anos o envio fica desligado. Você pode usar tudo normalmente.":b.on?"Ligado. Obrigado por ajudar! Envio 1 vez por dia, só números.":"Desligado. Nada sai deste aparelho.";
+  $("betaTip").hidden=!!(b.on||b.asked||kid||!cfg||cfg.blank);}
+$("betaOn").addEventListener("click",()=>{if(betaKid())return;if(betaAge()==="teen"&&!$("betaParent").checked){$("betaMsg").textContent="Marque que seu responsável autorizou para ligar.";return;}
+  const b=betaGet();b.on=true;b.asked=true;b.since=todayKey();b.parent=betaAge()==="teen"?1:0;betaSet(b);betaId();betaPost([betaGet().id,"optin",todayKey().replace(/-/g,""),betaAge(),(cfg.profile||{}).occ||""]);betaUI();toast("Obrigado! Envio anônimo ligado.");});
+$("betaOff").addEventListener("click",()=>{const b=betaGet();if(b.on)betaPost([b.id,"optout",todayKey().replace(/-/g,"")]);b.on=false;b.asked=true;delete b.tabs;betaSet(b);betaUI();toast("Envio desligado. Nada mais sai deste aparelho.");});
+$("betaTipYes").addEventListener("click",()=>{const b=betaGet();b.asked=true;betaSet(b);betaUI();goTab("mais");setTimeout(()=>{const p=$("betaPanel");p.querySelector("details").open=true;p.scrollIntoView({behavior:"smooth",block:"start"});},80);});
+$("betaTipNo").addEventListener("click",()=>{const b=betaGet();b.asked=true;betaSet(b);betaUI();});
+let betaRate=0;for(const x of $("betaRate").children)x.addEventListener("click",()=>{betaRate=+x.dataset.v;for(const y of $("betaRate").children)y.classList.toggle("on",y===x);});
+$("betaSend").addEventListener("click",()=>{if(betaKid()){toast("Para até 13 anos, mande pelo WhatsApp com ajuda de um adulto.");return;}if(!betaRate){toast("Escolha uma carinha primeiro.");return;}
+  const t=$("betaText").value.trim().replace(/\S+@\S+/g,"[email]").replace(/\+?\d[\d\s().-]{7,}\d/g,"[número]").slice(0,280);
+  const b=betaGet();const lr=b.rated||"";if(lr===todayKey()+":"+betaRate+":"+t){toast("Essa nota já foi enviada.");return;}
+  betaPost([betaId(),"nota",todayKey().replace(/-/g,""),betaRate,betaAge(),t]);b.rated=todayKey()+":"+betaRate+":"+t;betaSet(b);$("betaText").value="";toast("Valeu! Nota enviada sem seu nome.");});
+for(const bt of document.querySelectorAll("#tabbar button"))bt.addEventListener("click",()=>betaTab(bt.dataset.go));
+
 let saveTimer=null, SYNC="";
 try{SYNC=localStorage.getItem("asc-u-sync")||"";}catch(e){}
 function save(){
@@ -1255,10 +1509,28 @@ addEventListener("hashchange",()=>{if(/[#&][cs]=/.test(location.hash))location.r
 try{const c=JSON.parse(localStorage.getItem("asc-u-cfg")||"null");cfg=(c&&(c.version||1)>=DEFAULT_CFG.version)?c:DEFAULT_CFG;}catch(e){cfg=DEFAULT_CFG;}
 if(cfg.name)$("titleName").textContent=cfg.name;
 try{const s=JSON.parse(localStorage.getItem("asc-u-prog")||"null");if(s&&s.log)prog=Object.assign({log:{},extra:{},faith:{},energy:{},mit:{},reviews:{}},s);}catch(e){}
+// ---------- Nova temporada: zera XP uma vez por aparelho, com cópia de segurança local ----------
+const SEASON="2";
+(function(){let cur="";try{cur=localStorage.getItem("asc-u-season")||"";}catch(e){}
+  if(cur===SEASON)return;
+  const had=prog&&prog.log&&Object.keys(prog.log).length>0;
+  try{if(had){localStorage.setItem("asc-u-prog-t1",JSON.stringify(prog));}localStorage.setItem("asc-u-season",SEASON);}catch(e){return;}
+  if(!had)return;
+  const keep={rank:prog.rank,money:prog.money};
+  prog={log:{},extra:{},faith:{},energy:{},mit:{},reviews:{},money:keep.money||[],rest:{},ach:{}};if(keep.rank)prog.rank=keep.rank;
+  if(cfg&&!cfg.blank){cfg.startDate=todayKey();try{localStorage.setItem("asc-u-cfg",JSON.stringify(cfg));}catch(e){}}
+  save();
+  setTimeout(()=>sysPop("NOVA TEMPORADA","Novo despertar","O Ascensão foi atualizado e todo mundo recomeça do nível 1, junto. Suas tarefas continuam. Agora tem classe, habilidades, baú de recompensas e o Sistema te guiando. Seu progresso antigo ficou guardado neste aparelho."),300);})();
+function seasonUI(){let has=false;try{has=!!localStorage.getItem("asc-u-prog-t1");}catch(e){}const b=$("seasonUndo");if(b)b.hidden=!has;}
+$("seasonUndo").addEventListener("click",()=>{const b=$("seasonUndo");if(!b.dataset.arm){b.dataset.arm=1;b.textContent="Toque de novo para trazer o progresso antigo (o desta temporada é substituído)";setTimeout(()=>{delete b.dataset.arm;b.textContent="Recuperar meu progresso da temporada anterior";},5000);return;}
+  try{const o=JSON.parse(localStorage.getItem("asc-u-prog-t1")||"null");if(o&&o.log){o.rpg=prog.rpg;prog=Object.assign({log:{},extra:{},faith:{},energy:{},mit:{},reviews:{}},o);prog.updatedAt=null;save();render();toast("Progresso antigo de volta.");}}catch(e){toast("Não consegui recuperar.");}
+  delete b.dataset.arm;b.textContent="Recuperar meu progresso da temporada anterior";});
+seasonUI();
+
 try{if(navigator.storage&&navigator.storage.persist)navigator.storage.persist().catch(()=>{});}catch(e){}
 if(!cfg||cfg.blank||!cfg.quests||!cfg.quests.length)openOnb();
 render();
-setInterval(()=>{if($("today").dataset.k!==todayKey()){$("today").dataset.k=todayKey();render();pull(true);}},60000);
+setTimeout(betaDaily,3000);setInterval(()=>{betaDaily();if($("today").dataset.k!==todayKey()){$("today").dataset.k=todayKey();render();pull(true);}},60000);
 $("today").dataset.k=todayKey();
 focusUI();
 function goTab(t){document.body.dataset.tab=t;for(const b of document.querySelectorAll("#tabbar button"))b.classList.toggle("on",b.dataset.go===t);window.scrollTo(0,0);try{sessionStorage.setItem("asc-tab",t);}catch(e){}}

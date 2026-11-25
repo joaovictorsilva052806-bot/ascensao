@@ -1,0 +1,53 @@
+.sysline{font-family:var(--f-mono);font-size:.74rem;color:var(--glow);letter-spacing:.04em;margin-top:6px;min-height:1.1em}
+.sysline::before{content:"[SISTEMA] ";color:var(--accent);opacity:.8}
+.rpgstats{display:flex;flex-direction:column;gap:10px;margin-top:8px}
+.rstat{border:1px solid var(--line);border-radius:10px;padding:10px;background:rgba(0,212,255,.04)}
+.rstat summary{display:flex;align-items:center;gap:10px;cursor:pointer;list-style:none}
+.rstat summary::-webkit-details-marker{display:none}
+.rstat .ic{font-size:1.3rem;width:1.6em;text-align:center}
+.rstat .nm{flex:1;min-width:0}
+.rstat .nm b{display:block;font-size:.9rem}
+.rstat .nm small{color:var(--muted);font-size:.72rem}
+.rstat .lv{font-family:var(--f-mono);color:var(--glow);font-size:.95rem}
+.rstat .bar{margin-top:6px;height:6px}
+.skills{list-style:none;margin:10px 0 0;padding:0;display:flex;flex-direction:column;gap:6px}
+.skills li{font-size:.82rem;padding:6px 8px;border-radius:8px;border:1px dashed var(--line);color:var(--muted)}
+.skills li.on{border-style:solid;border-color:var(--accent);color:var(--fg);background:rgba(0,212,255,.07)}
+.skills li b{display:block;font-size:.8rem;color:inherit}
+.skills li.on b{color:var(--glow)}
+.chestlist{display:flex;flex-direction:column;gap:6px;margin:8px 0}
+.chest{display:flex;align-items:center;gap:8px;border:1px solid var(--line);border-radius:8px;padding:8px}
+.chest span{flex:1;min-width:0;font-size:.88rem}
+.chest .mono{color:var(--gold)}
+.chest button{padding:6px 10px;font-size:.8rem}
+.coinin{max-width:76px}
+#coins{color:var(--gold)}
+.clspill{color:var(--gold)!important;border-color:var(--gold)!important}
+.sysmodal{position:fixed;inset:0;background:rgba(2,7,13,.86);display:grid;place-items:center;z-index:60;padding:24px}
+.sysmodal .card{border:1px solid var(--accent);border-radius:12px;background:var(--panel2);padding:22px 20px;text-align:center;max-width:340px;box-shadow:0 0 0 1px rgba(0,212,255,.3),0 0 40px rgba(0,212,255,.35);display:flex;flex-direction:column;gap:10px;animation:sysIn .45s cubic-bezier(.2,.9,.3,1.2)}
+.sysmodal .tag{font-family:var(--f-mono);font-size:.72rem;letter-spacing:.2em;color:var(--accent)}
+.sysmodal h3{margin:0;font-family:var(--f-hud,inherit);color:var(--glow);font-size:1.4rem}
+@keyframes sysIn{from{opacity:0;transform:scale(.85) translateY(10px);filter:blur(4px)}to{opacity:1;transform:none;filter:none}}
+/* movimento: flutuar, abrir/fechar, partículas */
+.rank{animation:floaty 5s ease-in-out infinite}
+@keyframes floaty{0%,100%{translate:0 0}50%{translate:0 -4px}}
+details>*:not(summary){animation:openIn .28s ease-out}
+@keyframes openIn{from{opacity:0;transform:translateY(-6px)}to{opacity:1;transform:none}}
+body.enter .quest{animation:qIn .35s ease-out backwards}
+.quest:nth-child(2){animation-delay:.04s}.quest:nth-child(3){animation-delay:.08s}.quest:nth-child(4){animation-delay:.12s}.quest:nth-child(5){animation-delay:.16s}.quest:nth-child(n+6){animation-delay:.2s}
+@keyframes qIn{from{opacity:0;transform:translateX(-10px)}to{opacity:1;transform:none}}
+.spark{position:fixed;width:6px;height:6px;border-radius:50%;background:var(--glow);box-shadow:0 0 8px var(--glow);pointer-events:none;z-index:70;animation:spark .7s ease-out forwards}
+.spark.g{background:var(--gold);box-shadow:0 0 8px var(--gold)}
+@keyframes spark{to{transform:translate(var(--dx),var(--dy)) scale(.2);opacity:0}}
+.levelup .card{animation:sysIn .5s cubic-bezier(.2,.9,.3,1.2)}
+.levelup .big{animation:lvPulse 1.6s ease-in-out infinite}
+@keyframes lvPulse{50%{text-shadow:0 0 24px var(--glow)}}
+@media (prefers-reduced-motion:reduce){.rank,.quest,details>*:not(summary),.sysmodal .card,.levelup .card,.levelup .big{animation:none}.spark{display:none}}
+.clscard{max-width:380px;max-height:88vh;overflow:auto;text-align:left}
+.clscard h3,.clscard .tag{text-align:center}
+.clsgrid{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.clsbtn{display:flex;flex-direction:column;align-items:flex-start;gap:2px;padding:10px;text-align:left}
+.clsbtn small{font-size:.72rem;color:var(--muted)}
+.clsbtn.sug{border-color:var(--gold);box-shadow:0 0 0 1px var(--gold)}
+#betaPanel label.chk{display:flex;align-items:center;gap:8px;margin:10px 0;font-size:.86rem}
+#betaRate button{font-size:1.3rem;padding:6px 10px}
