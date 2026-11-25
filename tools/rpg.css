@@ -75,3 +75,6 @@ body:not([data-tab=criador]) .wrap>section[data-tab=criador]{display:none}
 .clssug{display:flex;flex-direction:column;align-items:center;gap:10px;margin:14px 0 6px}.clssug .go.big{display:flex;flex-direction:column;gap:4px;width:100%;padding:16px}.clssug .go.big small{font-weight:500;opacity:.85}
 /* sem movimento: barra de XP e anel do rank mudam na hora (a regra antiga em base.html era anulada pela de .bar>i mais abaixo) */
 @media (prefers-reduced-motion:reduce){.bar>i,.rank{transition:none}}
+.crtabs button{font-size:.8rem}
+.crdata{margin:6px 0}.crscroll{overflow-x:auto;max-width:100%;margin-top:6px;border:1px solid var(--line);border-radius:8px}
+.crtbl{border-collapse:collapse;font-size:.74rem;white-space:nowrap}.crtbl th,.crtbl td{padding:5px 8px;border-bottom:1px solid var(--line);text-align:left}.crtbl th{color:var(--glow);position:sticky;top:0;background:var(--panel)}

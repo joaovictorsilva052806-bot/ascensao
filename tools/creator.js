@@ -27,3 +27,15 @@ $("crInvite").addEventListener("click",()=>{const text="[ SINAL DETECTADO ] Voc�
   if(navigator.share){navigator.share({title:"Ascension",text,url:CR_INV}).catch(()=>{});return;}
   (navigator.clipboard?navigator.clipboard.writeText(text+" "+CR_INV):Promise.reject()).then(()=>toast("Convite copiado. Cole no WhatsApp."),()=>toast(CR_INV));});
 $("crInviteCopy").addEventListener("click",()=>{(navigator.clipboard?navigator.clipboard.writeText(CR_INV):Promise.reject()).then(()=>toast("Link copiado: "+CR_INV),()=>toast(CR_INV));});
+
+// Painel dentro do app: lê as abas privadas pelo script do criador (endereço e chave vêm da SUA planilha, nunca do repositório)
+let crDataK="usuarios",crDataC=null;
+function crTable(rows){const tb=document.createElement("table");tb.className="crtbl";rows.forEach((r,i)=>{const tr=document.createElement("tr");for(const v of r){const td=document.createElement(i?"td":"th");td.textContent=v;tr.append(td);}tb.append(tr);});return tb;}
+async function crData(force){const el=$("crData");if(!el)return;for(const b of document.querySelectorAll("#crDataTabs button"))b.className=b.dataset.k===crDataK?"go":"";
+  const P=cfg&&cfg.painel;if(!P||!P.url||!P.k){el.textContent="Painel ainda não ligado. Use os atalhos abaixo por enquanto.";return;}
+  if(!crDataC||force){el.textContent="Carregando…";try{const j=await (await fetch(P.url+"?k="+encodeURIComponent(P.k)+"&t="+Date.now(),{credentials:"omit"})).json();if(!j.ok)throw 0;crDataC=j;}catch(e){el.textContent="Sem conexão com o painel agora.";return;}}
+  const rows=(crDataC[crDataK]||[]).filter(r=>r.some(c=>c!==""));el.textContent="";
+  const at=new Date(crDataC.at);const hd=document.createElement("div");hd.textContent=(rows.length>1?(rows.length-1)+" linha(s)":"Nada ainda")+" · atualizado "+at.toLocaleTimeString("pt-BR",{hour:"2-digit",minute:"2-digit"});el.append(hd);
+  if(rows.length){const w=document.createElement("div");w.className="crscroll";w.append(crTable(rows));el.append(w);}}
+for(const b of document.querySelectorAll("#crDataTabs button"))b.addEventListener("click",()=>{crDataK=b.dataset.k;crData(false);});
+document.querySelector('#tabbar [data-go="criador"]')&&document.querySelector('#tabbar [data-go="criador"]').addEventListener("click",()=>crData(true));

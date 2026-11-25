@@ -1,0 +1,12 @@
+/* ---- Quebrar correntes (tools/chain.*) ---- */
+.chc{display:grid;gap:8px;padding:12px;border:1px solid var(--line);border-radius:12px;background:linear-gradient(160deg,#0f1d38,#0a1222);margin-bottom:10px}
+.chc.done{border-color:var(--good)}
+.chtop{display:grid;grid-template-columns:auto 1fr auto;gap:8px;align-items:center}
+.chtop .ic{font-size:1.4rem}.chrun{font-family:var(--f-mono);color:var(--glow);font-size:.9rem}
+.chlinks{display:grid;grid-template-columns:repeat(10,1fr);gap:4px}
+.chlinks i{height:8px;border-radius:4px;border:1px solid rgba(111,177,255,.35);background:transparent}
+.chlinks i.on{background:var(--glow);box-shadow:0 0 6px rgba(111,177,255,.6)}
+.chc.done .chlinks i.on{background:var(--good)}
+.chpick{display:flex;flex-wrap:wrap;gap:6px;margin:6px 0}
+.chpick .chip{font:inherit;font-size:.82rem;padding:8px 10px;min-height:40px;border:1px solid rgba(0,212,255,.35);background:transparent;color:inherit;border-radius:8px;cursor:pointer}
+.chapoio{font-size:.76rem;color:var(--muted,#9aa7bd);border-top:1px dashed var(--line);padding-top:6px}
