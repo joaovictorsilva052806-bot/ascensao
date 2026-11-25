@@ -46,10 +46,10 @@ function statXP(){const st={foco:0,vendas:0,mente:0,corpo:0};for(const e of entr
   const c=rpgState().cls;if(c&&c.stat&&st[c.stat]!=null)st[c.stat]=Math.round(st[c.stat]*AFF);return st;}
 function coinsEarned(){let s=0;for(const e of entries())s+=Math.max(0,(e.xp||0)+(e.bonus||0));return Math.floor(s/10);}
 function rpgTip(){const d=new Date();const n=Math.floor((d-new Date(d.getFullYear(),0,0))/864e5);return TIPS[n%TIPS.length];}
-let sysQ=[];function sysPop(tag,title,text){sysQ.push([tag,title,text]);if(sysQ.length===1)sysNext();}
-function sysNext(){if(!sysQ.length)return;const [tag,title,text]=sysQ[0];const m=document.createElement("div");m.className="sysmodal";m.setAttribute("role","dialog");
+let sysQ=[];function sysPop(tag,title,text,cb,lbl){sysQ.push([tag,title,text,cb,lbl]);if(sysQ.length===1)sysNext();}
+function sysNext(){if(!sysQ.length)return;const [tag,title,text,cb,lbl]=sysQ[0];const m=document.createElement("div");m.className="sysmodal";m.setAttribute("role","dialog");
   const c=document.createElement("div");c.className="card";const a=document.createElement("div");a.className="tag";a.textContent="[ SISTEMA ] "+tag;const h=document.createElement("h3");h.textContent=title;const p=document.createElement("p");p.className="sm";p.textContent=text;
-  const b=document.createElement("button");b.className="go";b.type="button";b.textContent="Aceitar";b.addEventListener("click",()=>{m.remove();sysQ.shift();if(sysQ.length)sysNext();else setTimeout(render,50);});c.append(a,h,p,b);m.append(c);document.body.append(m);try{if(navigator.vibrate)navigator.vibrate([10,30,10]);}catch(e){}}
+  const b=document.createElement("button");b.className="go";b.type="button";b.textContent=lbl||"Aceitar";b.addEventListener("click",()=>{m.remove();sysQ.shift();if(cb)try{cb();}catch(e){}if(sysQ.length)sysNext();else setTimeout(render,50);});c.append(a,h,p,b);m.append(c);document.body.append(m);try{if(navigator.vibrate)navigator.vibrate([10,30,10]);}catch(e){}}
 function sparks(gold){if(matchMedia("(prefers-reduced-motion: reduce)").matches)return;const pt=lastPt||{x:innerWidth/2,y:innerHeight/2};
   for(let i=0;i<14;i++){const s=document.createElement("i");s.className="spark"+(gold&&i%2?" g":"");const a=Math.PI*2*i/14+Math.random()*.4,r=40+Math.random()*50;
     s.style.left=pt.x+"px";s.style.top=pt.y+"px";s.style.setProperty("--dx",Math.cos(a)*r+"px");s.style.setProperty("--dy",Math.sin(a)*r+"px");document.body.append(s);setTimeout(()=>s.remove(),800);}}

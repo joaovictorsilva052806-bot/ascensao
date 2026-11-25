@@ -1,0 +1,59 @@
+<!doctype html><html lang="pt-BR"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Ascensão · Teste de Despertar</title>
+<meta name="description" content="[SISTEMA] Você foi selecionado(a) para o Teste de Despertar. 7 dias. Aceita a missão?">
+<meta property="og:title" content="[SISTEMA] Você foi selecionado(a)">
+<meta property="og:description" content="Teste de Despertar: 7 dias para transformar sua rotina num RPG da vida real. Aceita a missão?">
+<meta property="og:image" content="https://joaovictorsilva052806-bot.github.io/ascensao/convite/card.png">
+<meta property="og:type" content="website"><meta name="theme-color" content="#02070d">
+<link rel="icon" href="../icon-192.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Orbitron:wght@500;700;800&family=Inter:wght@400;600&family=JetBrains+Mono:wght@500;700&display=swap">
+<style>
+:root{--bg:#02070d;--line:rgba(0,220,255,.25);--fg:#dff9ff;--muted:#7fa6b5;--acc:#00d4ff;--glow:#7cf4ff;--gold:#ffc857}
+*{box-sizing:border-box}html,body{margin:0;min-height:100%;background:var(--bg);color:var(--fg);font-family:Inter,system-ui,sans-serif}
+body{background:radial-gradient(ellipse at 50% -10%,rgba(0,212,255,.18),transparent 60%),linear-gradient(rgba(0,212,255,.05) 1px,transparent 1px) 0 0/28px 28px,linear-gradient(90deg,rgba(0,212,255,.05) 1px,transparent 1px) 0 0/28px 28px,var(--bg);display:grid;place-items:center;padding:20px 16px;min-height:100vh;overflow-x:hidden}
+.win{width:100%;max-width:420px;border:1px solid var(--acc);background:rgba(6,20,30,.86);padding:22px 18px 18px;position:relative;box-shadow:0 0 0 1px rgba(0,212,255,.2),0 0 50px rgba(0,212,255,.25);clip-path:polygon(0 0,calc(100% - 18px) 0,100% 18px,100% 100%,18px 100%,0 calc(100% - 18px));animation:in .7s cubic-bezier(.2,.9,.3,1.2) both}
+@keyframes in{from{opacity:0;transform:scale(.9);filter:blur(6px) brightness(2)}to{opacity:1;transform:none;filter:none}}
+.tag{font-family:"JetBrains Mono",monospace;font-size:.72rem;letter-spacing:.22em;color:var(--acc);text-align:center}
+.tag i{display:inline-block;width:7px;height:7px;border-radius:50%;background:var(--acc);margin-right:8px;box-shadow:0 0 8px var(--acc);animation:blink 1s infinite}
+@keyframes blink{50%{opacity:.2}}
+h1{font-family:Orbitron,sans-serif;font-size:1.45rem;line-height:1.25;text-align:center;color:var(--glow);margin:14px 0 6px;text-shadow:0 0 18px rgba(124,244,255,.5)}
+.log{font-family:"JetBrains Mono",monospace;font-size:.86rem;line-height:1.6;min-height:9.6em;margin:14px 0;color:var(--fg)}
+.log p{margin:0 0 6px}.log b{color:var(--gold);font-weight:700}
+.cur::after{content:"▌";color:var(--acc);animation:blink .8s infinite}
+.cls{display:flex;flex-wrap:wrap;gap:8px;justify-content:center;margin:10px 0 16px;opacity:0;transition:opacity .6s}
+.cls.on{opacity:1}.cls span{border:1px solid var(--line);padding:6px 10px;font-size:.8rem;border-radius:3px;animation:float 4s ease-in-out infinite}
+.cls span:nth-child(2n){animation-delay:-1.3s}.cls span:nth-child(3n){animation-delay:-2.6s}
+@keyframes float{50%{transform:translateY(-4px)}}
+.btns{display:flex;flex-direction:column;gap:10px;opacity:0;transform:translateY(8px);transition:.5s}.btns.on{opacity:1;transform:none}
+a.go,button{font:600 1rem Inter,sans-serif;padding:14px;border-radius:3px;text-align:center;text-decoration:none;cursor:pointer;border:1px solid var(--acc)}
+a.go{background:var(--acc);color:#02121a;box-shadow:0 0 20px rgba(0,212,255,.45)}
+button.no{background:transparent;color:var(--muted);border-color:var(--line)}
+.shake{animation:shake .4s}@keyframes shake{25%{transform:translateX(-6px)}75%{transform:translateX(6px)}}
+.note{font-size:.76rem;color:var(--muted);text-align:center;margin-top:12px;line-height:1.5}
+.xp{position:fixed;font-family:"JetBrains Mono",monospace;color:var(--gold);font-weight:700;pointer-events:none;animation:up 1.2s ease-out forwards}
+@keyframes up{to{transform:translateY(-70px);opacity:0}}
+@media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+</style></head><body>
+<main class="win" role="dialog" aria-labelledby="t">
+  <div class="tag"><i></i>[ SISTEMA ] SINAL DETECTADO</div>
+  <h1 id="t">Você foi selecionado(a)</h1>
+  <div class="log" id="log" aria-live="polite"></div>
+  <div class="cls" id="cls"><span>⚔️ Guerreiro</span><span>🧙 Mago</span><span>🏹 Arqueiro</span><span>🛡️ Cavaleiro</span><span>🌿 Druida</span><span>🧭 ou a sua profissão</span></div>
+  <div class="btns" id="btns">
+    <a class="go" id="yes" href="../comecar/">Aceitar a missão</a>
+    <button class="no" id="no" type="button">Recusar</button>
+  </div>
+  <div class="note">Grátis · sem cadastro · seus dados ficam no seu celular.<br>Depois de abrir: no iPhone, Compartilhar › Adicionar à Tela de Início. No Android, ⋮ › Instalar app.</div>
+</main>
+<script>
+const L=["Teste de Despertar disponível.","Missão: <b>7 dias</b> transformando sua rotina num RPG da vida real.","Escolha sua classe. Cumpra missões diárias. Suba de nível.","Recompensa: descobrir do que você é capaz."];
+const log=document.getElementById("log"),RM=matchMedia("(prefers-reduced-motion: reduce)").matches;
+function show(){document.getElementById("cls").classList.add("on");document.getElementById("btns").classList.add("on");}
+if(RM){log.innerHTML=L.map(x=>"<p>"+x+"</p>").join("");show();}
+else{let i=0;(function line(){if(i>=L.length){show();return;}const p=document.createElement("p");p.className="cur";log.append(p);const txt=L[i].replace(/<[^>]+>/g,"");let n=0;
+  const t=setInterval(()=>{n++;p.textContent=txt.slice(0,n);if(n>=txt.length){clearInterval(t);p.innerHTML=L[i];p.className="";i++;setTimeout(line,280);}},24);})();}
+const msgs=["O Sistema não aceita recusa. 😏","Tem certeza? São só 7 dias.","Último aviso: o Sistema é paciente."];let k=0;
+document.getElementById("no").addEventListener("click",e=>{const b=e.currentTarget;b.textContent=msgs[k%msgs.length];k++;b.classList.remove("shake");void b.offsetWidth;b.classList.add("shake");});
+document.getElementById("yes").addEventListener("click",e=>{const x=document.createElement("div");x.className="xp";x.textContent="+10 XP";x.style.left=(e.clientX||innerWidth/2)+"px";x.style.top=(e.clientY||innerHeight/2)+"px";document.body.append(x);});
+</script></body></html>
