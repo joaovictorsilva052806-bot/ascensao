@@ -44,5 +44,5 @@ rep('\nlet saveTimer=null, SYNC="";','\n'+R('qtidy.js')+'\nlet saveTimer=null, S
 # jogar junto: ranking, liga, esquadrão, convites, amigos e aba Amigos (mesmo canal dos testadores)
 rep('</style></head>',R('onb.css').split('.rk{')[0][:0]+'.rk{'+R('onb.css').split('.rk{')[1].split('\n.',5)[0]+'\n'+'\n'.join(l for l in R('onb.css').splitlines() if l.startswith('.rk '))+'\n'+R('league.css')+R('squad.css')+R('turma.css')+R('card.css')+'</style></head>')
 rep('    </details>\n  </section>\n'+R('creator.html'),'    </details>\n  </section>\n'+R('rankroot.html')+R('creator.html'))
-rep('\nlet saveTimer=null, SYNC="";','\n'+R('rankroot.js')+R('league.js')+R('squad.js')+R('sqinv.js')+R('friends.js')+R('turma.js')+R('card.js')+'\nlet saveTimer=null, SYNC="";')
+rep('\nlet saveTimer=null, SYNC="";','\n'+R('rankroot.js')+R('league.js')+R('squad.js')+R('sqinv.js')+R('friends.js')+R('daily.js').replace('"asc-u-dia"','"ascensao-dia"')+R('turma.js')+R('card.js')+'\nlet saveTimer=null, SYNC="";')
 open(SP+'../index.html','w').write(s)

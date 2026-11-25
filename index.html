@@ -500,7 +500,7 @@ body[data-tab=amigos] .wrap>section[data-tab]:not([data-tab=amigos]){display:non
 .tmjoin{display:flex;flex-direction:column;gap:10px;padding:14px;border:1px dashed var(--line);border-radius:10px}
 .tmlg{display:flex;flex-direction:column;gap:2px;padding:12px 14px;border-radius:10px;background:linear-gradient(135deg,rgba(242,193,78,.14),rgba(0,212,255,.06));border:1px solid rgba(242,193,78,.35);margin-bottom:10px}
 .tmlg b{font-family:var(--f-hud);letter-spacing:.08em;font-size:.95rem;color:var(--gold)}
-.tmseg{display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-bottom:10px}
+.tmseg{display:grid;grid-template-columns:repeat(auto-fit,minmax(0,1fr));gap:6px;margin-bottom:10px}
 .tmseg button{min-height:38px;border-radius:999px;border:1px solid var(--line);background:transparent;color:var(--muted);font-size:.86rem}
 .tmseg button.on{border-color:var(--accent);color:var(--glow);background:rgba(0,212,255,.08)}
 .tmempty{display:flex;flex-direction:column;gap:8px;padding:12px;border:1px dashed var(--line);border-radius:10px;margin-bottom:10px}
@@ -529,6 +529,13 @@ body[data-tab=amigos] .wrap>section[data-tab]:not([data-tab=amigos]){display:non
 .tmhd h2{white-space:nowrap}
 body[data-tab=amigos] #frPanel .frlist{display:none}
 .wrap>section.tmoff{display:none!important}
+/* ---- Ranking do dia (tools/daily.js) ---- */
+.dybox{display:flex;flex-direction:column;gap:6px;margin-bottom:10px}
+.dyriv{font-family:var(--f-mono);font-size:.8rem;color:var(--glow);padding:8px 10px;border:1px dashed rgba(111,177,255,.35);border-radius:8px;background:rgba(0,212,255,.04)}
+.dybox .dyntf{align-self:flex-start;min-height:40px;padding:0 4px}
+.tmlist li{position:relative}
+.dyup{position:absolute;top:-9px;right:10px;padding:1px 8px;border-radius:999px;border:1px solid var(--good);background:#0a1222;font-family:var(--f-mono);font-size:.72rem;color:var(--good);letter-spacing:.06em}
+.zaprival{margin-top:6px}
 /* ---- Card de jogador + convite + destaque (tools/card.js) ---- */
 .cdmodal .cdcard{position:relative;max-width:360px;padding:16px 16px 14px;border:2px solid var(--cd);border-radius:16px;background:radial-gradient(120% 70% at 50% 0%,color-mix(in srgb,var(--cd) 28%,transparent),transparent 60%),linear-gradient(180deg,#0c1628,#060b15);box-shadow:0 0 0 1px rgba(255,255,255,.04) inset,0 0 34px color-mix(in srgb,var(--cd) 35%,transparent);text-align:center}
 .cdtop{display:flex;justify-content:space-between;align-items:center;gap:8px}
@@ -1918,7 +1925,7 @@ function avUI(){let p=$("avPanel");const first=document.querySelector('.wrap>sec
 {const _r=render;render=function(){_r.apply(this,arguments);try{avUI();}catch(e){}};}
 setTimeout(()=>{try{avUI();}catch(e){}},0);
 // ---- Perfil público (só para quem está no ranking, 14+): sequência, desafios da semana e avatar ----
-function avZapWeek(){let n=0;try{const ws=weekStart(todayKey());for(const e of entries())if(String(e.q).startsWith("zap:")&&weekStart(e.date)===ws)n++;}catch(e){}return n;}
+function avZapWeek(){let n=0;try{const ws=weekStart(todayKey());for(const e of entries())if(String(e.q).startsWith("zap:")&&!String(e.q).startsWith("zap:duo:")&&weekStart(e.date)===ws)n++;}catch(e){}return n;}
 // atributos públicos no card (nível de Foco-Metas-Mente-Corpo), ex.: "4-2-3-1"
 function avAttrs(){try{const st=statXP();return ["foco","vendas","mente","corpo"].map(k=>slvl(st[k]||0)).join("-");}catch(e){return "";}}
 function avPost(force){if(typeof RK_POST==="undefined"||ageNow()==="kid"||!(prog.rank&&prog.rank.on))return;const me=rankName();if(!me)return;
@@ -2228,11 +2235,82 @@ function frUI(){let p=$("frPanel");const anchor=$("sqPanel")||$("rankPanel");if(
 function frRankAv(){for(const li of document.querySelectorAll("#rkList li")){const sp=li.querySelector("span");if(!sp||li.querySelector(".av"))continue;const nm=sp.textContent.split(" · ")[0];const me=frN(nm)===frN(rankName());const code=me?avCode():(sqPub[frN(nm)]||{}).av;if(!code)continue;const w=frEl("span","rkav");w.innerHTML=frAv(code,26);li.insertBefore(w,sp);}}
 {const _rr=renderRankUI;renderRankUI=function(){_rr();try{frUI();frRankAv();}catch(e){}};}
 setTimeout(()=>{try{frUI();}catch(e){}},0);
+// ---------- Ranking do dia + rival do dia + avisos (etapa 2 do ranking) ----------
+// Sem servidor novo e sem dado novo saindo do celular: o XP de hoje dos outros vem da diferença entre o XP da semana
+// que a lista pública mostra agora e o que este aparelho viu ontem (ou na 1ª abertura de hoje). O seu é exato (log local).
+// Guarda só neste aparelho, em chave separada (asc-u-dia), fora do progresso: {d,base,ex,bt,last,ld,pos,ntf,nt}.
+const DY_KEY="ascensao-dia";
+function dySt(){let s={};try{s=JSON.parse(localStorage.getItem(DY_KEY)||"{}")||{};}catch(e){s={};}s.base=s.base||{};s.last=s.last||{};s.pos=s.pos||{};s.nt=s.nt||{};return s;}
+function dySave(s){try{localStorage.setItem(DY_KEY,JSON.stringify(s));}catch(e){}}
+const dyN=v=>String(v||"").trim().toLowerCase();
+function dyYest(k){const [y,m,d]=k.split("-").map(Number);const t=new Date(y,m-1,d);t.setDate(t.getDate()-1);return dkey(t);}
+function dyMyXP(){const tk=todayKey();let s=0;for(const e of (prog.log[tk]||[]))s+=(e.xp||0)+(e.bonus||0);return s;}
+// virada do dia e foto da lista: chamada a cada carga do ranking
+function dyRoll(){if(!rankRows)return dySt();const s=dySt();const td=todayKey(),ws=weekStart(td);const cur={};for(const r of rankRows)cur[dyN(r.n)]=r.xp||0;
+  if(s.d!==td){const now=new Date().toTimeString().slice(0,5);
+    if(td===ws&&!(s.ld===td)){s.base={};s.ex=true;s.bt="";}                       // segunda: a semana zerou, XP da semana = XP de hoje
+    else if(s.ld===dyYest(td)&&weekStart(s.ld)===ws){s.base=s.last||{};s.ex=true;s.bt="";} // viu a lista ontem: conta exato
+    else{s.base=cur;s.ex=false;s.bt=now;}                                          // sem foto de ontem: conta a partir de agora
+    s.d=td;s.pos={};s.up={};for(const k in s.nt)if(s.nt[k]!==td)delete s.nt[k];}
+  s.last=cur;s.ld=td;dySave(s);return s;}
+// lista de hoje (você + todos do ranking), maior XP de hoje primeiro
+function dyBoard(){const s=dySt();const me=rankName()||"Você";const mx=dyMyXP();const out=[];
+  for(const r of (rankRows||[])){if(dyN(r.n)===dyN(me))continue;const b=s.d===todayKey()?(s.base[dyN(r.n)]||0):(r.xp||0);out.push(Object.assign({},r,{xp:Math.max(0,(r.xp||0)-b),wk:r.xp}));}
+  out.push({n:me,xp:mx,me:true});
+  return out.sort((a,b)=>(b.xp||0)-(a.xp||0)||(a.me?-1:b.me?1:0));}
+// rival do dia: quem está logo acima de você hoje (ou logo abaixo, se você lidera)
+function dyRival(){if(!(prog.rank&&prog.rank.on)||!rankRows||!rankRows.length)return null;const L=dyBoard();const i=L.findIndex(r=>r.me);if(i<0)return null;const my=L[i].xp||0;
+  if(i===0){const b=L[1];if(!b)return null;return {pos:1,n:b.n,txt:b.xp>0?"Você lidera o dia, "+(my-b.xp)+" XP à frente de "+b.n+".":"Você lidera o dia. Ninguém pontuou hoje ainda."};}
+  const a=L[i-1];const gap=(a.xp||0)-my+1;const zp=typeof ZAP_XP!=="undefined"?ZAP_XP:10;const nz=Math.ceil(gap/zp);
+  return {pos:i+1,n:a.n,gap,txt:"⚔️ Rival do dia: "+a.n+" ("+a.xp+" XP hoje) · faltam "+gap+" XP"+(typeof zapToday==="function"?" ("+nz+" desafio"+(nz>1?"s":"")+")":"")};}
+function dyNote(){const s=dySt();if(s.d!==todayKey()||s.ex)return "";return s.bt?"Os outros contam desde as "+s.bt+" (quando o app abriu hoje). O seu é exato.":"";}
+// animação de subida: guarda sua posição por lista; se melhorou, a sua linha sobe até o lugar novo
+function dyRM(){return matchMedia("(prefers-reduced-motion: reduce)").matches;}
+function dyClimb(ol,view){if(!ol)return;const li=ol.querySelector("li.me");if(!li||!li.getClientRects().length||!rankRows)return;
+  const items=[...ol.children].filter(x=>!x.classList.contains("tmzone"));const pos=items.indexOf(li)+1;if(pos<1)return;
+  const s=dySt();const prev=+s.pos[view]||0;s.pos[view]=pos;s.up=s.up||{};const now=Date.now();let up=0,anim=true;
+  if(prev&&pos<prev){up=prev-pos;s.up[view]={n:up,t:now};}
+  else{const u=s.up[view];if(u&&now-u.t<6000&&pos<=prev){up=u.n;anim=now-u.t<1000;}}   // a lista foi redesenhada logo depois: mantém o selo
+  dySave(s);if(!up)return;
+  const bd=document.createElement("span");bd.className="dyup";bd.textContent="▲ "+up;bd.setAttribute("aria-label","Subiu "+up+" posição"+(up>1?"ões":""));li.append(bd);
+  if(prev&&pos<prev){try{haptic([12,40,12]);}catch(e){}}
+  if(!anim||dyRM()||!li.animate)return;const h=li.getBoundingClientRect().height+6;
+  li.style.zIndex="2";
+  const a=li.animate([{transform:"translateY("+(up*h)+"px)",boxShadow:"0 0 0 2px var(--good)"},{transform:"translateY(0)",boxShadow:"0 0 18px rgba(77,255,170,.45)"},{transform:"none",boxShadow:"none"}],{duration:900,easing:"cubic-bezier(.2,.8,.2,1)"});
+  a.onfinish=()=>{li.style.zIndex="";};}
+// ---- avisos locais (só se a pessoa ligar): alguém te passou hoje / à noite, se faltar desafio ----
+const dyCanNtf=()=>"Notification" in window;
+function dyNtfOn(){return !!dySt().ntf&&dyCanNtf()&&Notification.permission==="granted";}
+function dyShow(kind,title,body){const s=dySt();const td=todayKey();if(s.nt[kind]===td)return false;s.nt[kind]=td;dySave(s);
+  if(!document.hidden){toast(title+" "+body);return true;}
+  if(!dyNtfOn())return false;
+  const ic=location.pathname.replace(/(comecar\/)?[^/]*$/,"")+"icon-192.png";const o={body,icon:ic,badge:ic,tag:"asc-"+kind,lang:"pt-BR"};
+  try{if(navigator.serviceWorker&&navigator.serviceWorker.controller){navigator.serviceWorker.ready.then(r=>r.showNotification(title,o)).catch(()=>{});}else new Notification(title,o);}catch(e){}return true;}
+async function dyNtfToggle(){const s=dySt();if(s.ntf){s.ntf=0;dySave(s);toast("Avisos desligados.");dyNtfUI();return;}
+  if(!dyCanNtf()){toast(IOS?"No iPhone, os avisos só funcionam com o app instalado na tela de início.":"Este navegador não mostra avisos.");return;}
+  let p=Notification.permission;try{if(p==="default")p=await Notification.requestPermission();}catch(e){}
+  if(p!=="granted"){toast("Sem permissão para avisos. Dá para liberar nas configurações do navegador.");dyNtfUI();return;}
+  s.ntf=1;dySave(s);toast("🔔 Avisos ligados: quando alguém te passar hoje"+(typeof zapToday==="function"?" e às 20h, se faltar desafio.":"."));dyNtfUI();}
+function dyNtfUI(){for(const b of document.querySelectorAll(".dyntf")){const on=!!dySt().ntf&&dyCanNtf()&&Notification.permission==="granted";b.textContent=on?"🔔 Avisos ligados":"🔕 Me avise quando alguém me passar";b.setAttribute("aria-pressed",on?"true":"false");}}
+function dyNtfBtn(){const b=document.createElement("button");b.type="button";b.className="link dyntf";b.addEventListener("click",dyNtfToggle);setTimeout(dyNtfUI,0);return b;}
+function dyEvening(){if(typeof zapToday!=="function"||!cfg||cfg.blank||!dySt().ntf||new Date().getHours()<20)return;
+  const left=zapToday().filter(z=>!zapDone(z.id)).length;if(!left)return;
+  dyShow("noite","⚡ Ascension",(left>1?"Faltam ":"Falta ")+left+" desafio"+(left>1?"s":"")+" relâmpago hoje. "+(left*10)+" XP te esperando.");}
+// a cada carga do ranking: virada do dia, ultrapassagem e posição na pílula
+function dyAfterLoad(){if(!(prog.rank&&prog.rank.on)||!rankRows)return;const before=dySt();const was=before.d===todayKey()?+before.pos.rnow||0:0;dyRoll();
+  const L=dyBoard();const i=L.findIndex(r=>r.me);if(i<0)return;const pos=i+1;const s=dySt();s.pos.rnow=pos;dySave(s);
+  if(was&&pos>was){const a=L[i-1];if(a)dyShow("passou","⚔️ "+a.n+" te passou hoje.","Faltam "+((a.xp||0)-(L[i].xp||0)+1)+" XP para retomar o "+(pos-1)+"º lugar do dia.");}
+  dyEvening();}
+{const _rr=renderRankUI;renderRankUI=function(){_rr();try{dyAfterLoad();}catch(e){}};}
+// com o aviso ligado e o app em segundo plano, confere de vez em quando (o celular pode segurar quando o app está fechado)
+setInterval(()=>{try{if(document.hidden&&dySt().ntf){if(typeof loadRank==="function")loadRank();dyEvening();}}catch(e){}},15*60*1000);
+document.addEventListener("visibilitychange",()=>{try{if(!document.hidden)dyEvening();}catch(e){}});
+setTimeout(()=>{try{dyEvening();}catch(e){}},4000);
 // ---------- Aba Amigos: todo mundo joga junto (liga da semana, turma, novidades, parabéns e cutucar) ----------
 // Cada um faz as suas tarefas; aqui todo mundo vê nível, classe, sequência e XP da semana dos amigos.
 // Só usa o que já é público por opção (ranking 14+: apelido, XP da semana, nível, sequência, avatar). Até 13 anos: aba some.
 // Canal novo: K|de|para|p (parabéns) ou c (cutucar)|data, no mesmo formulário. Só ADICIONA prog.turma = {snap,feed,sent,seen,view}.
-function tmSt(){const t=prog.turma&&typeof prog.turma==="object"?prog.turma:(prog.turma={});t.snap=t.snap||{};t.feed=t.feed||[];t.sent=t.sent||{};t.seen=t.seen||{};t.view=t.view||"turma";return t;}
+function tmSt(){const t=prog.turma&&typeof prog.turma==="object"?prog.turma:(prog.turma={});t.snap=t.snap||{};t.feed=t.feed||[];t.sent=t.sent||{};t.seen=t.seen||{};t.view=t.view||"hoje";return t;}
 function tmEl(t,cl,x){const e=document.createElement(t);if(cl)e.className=cl;if(x!=null)e.textContent=x;return e;}
 const tmN=v=>String(v||"").trim().toLowerCase();
 function tmClsName(id){try{const all=(typeof CLS_REAL!=="undefined"?CLS_REAL:[]).concat(typeof CLS_FANT!=="undefined"?CLS_FANT:[]);const c=all.find(x=>x[0]===id);return c?c[1]:"";}catch(e){return "";}}
@@ -2256,7 +2334,8 @@ function tmPlace(){const wrap=document.querySelector(".wrap");if(!wrap)return;le
 function tmMe(){let sq=0;try{sq=streakDays()||0;}catch(e){}let av="";try{av=avCode();}catch(e){}return {n:rankName()||"Você",xp:weekXP(),lv:levelOf(totalXP()),seq:sq,av,me:true};}
 function tmFriends(){try{return frSt().l.map(n=>frRow(n));}catch(e){return [];}}
 function tmAll(){return (rankRows||[]).map(r=>{const p=(typeof sqPub!=="undefined"&&sqPub[tmN(r.n)])||{};return {n:r.n,xp:r.xp,lv:r.lv,seq:p.seq||0,av:p.av||""};});}
-function tmBoard(view){const me=tmMe();const L=view==="geral"?tmAll().filter(r=>tmN(r.n)!==tmN(me.n)):tmFriends();
+function tmBoard(view){if(view==="hoje"&&typeof dyBoard==="function"){const pub=r=>(typeof sqPub!=="undefined"&&sqPub[tmN(r.n)])||{};return dyBoard().map(r=>{const m=r.me?tmMe():{};return Object.assign({},r,{lv:r.me?m.lv:r.lv,seq:r.me?m.seq:(pub(r).seq||0),av:r.me?m.av:(pub(r).av||"")});});}
+  const me=tmMe();const L=view==="geral"?tmAll().filter(r=>tmN(r.n)!==tmN(me.n)):tmFriends();
   return [me,...L].sort((a,b)=>(b.xp||0)-(a.xp||0)||(b.lv||0)-(a.lv||0));}
 // --- novidades: compara com a última vez que viu cada amigo ---
 function tmFeedAdd(k,n,t){const s=tmSt();const id=k+":"+tmN(n)+":"+todayKey();if(s.feed.some(f=>f.id===id))return;s.feed.unshift({id,k,n,t,d:todayKey()});s.feed=s.feed.slice(0,20);}
@@ -2280,31 +2359,36 @@ function tmInbox(){const me=rankName();if(!me||typeof sqInvRows==="undefined")re
 function tmLeft(){const d=new Date();const nx=new Date(d);nx.setHours(24,0,0,0);while(nx.getDay()!==1)nx.setDate(nx.getDate()+1);const h=Math.max(0,Math.round((nx-d)/36e5));
   return h>=24?Math.floor(h/24)+"d "+(h%24)+"h":h+"h";}
 function tmAv(code,sz){try{return frAv(code,sz);}catch(e){return "";}}
+function tmLeftDay(){const d=new Date();const nx=new Date(d);nx.setHours(24,0,0,0);const m=Math.max(0,Math.round((nx-d)/6e4));return m>=60?Math.floor(m/60)+"h "+(m%60)+"min":m+"min";}
 // --- tela ---
 function tmUI(){const p=tmPlace();if(!p)return;if(tmKid()||!cfg||cfg.blank){p.hidden=true;return;}p.hidden=false;
   if(p.contains(document.activeElement)&&document.activeElement.tagName==="INPUT")return;p.textContent="";const s=tmSt();
   let tier="";try{tier=lgName(lgSt().t);}catch(e){}
-  const hd=tmEl("div","tmhd");hd.append(tmEl("h2",null,"👥 Turma"),tmEl("span","tmclock","⏳ fecha em "+tmLeft()));p.append(hd);
+  const hd=tmEl("div","tmhd");hd.append(tmEl("h2",null,"👥 Turma"),tmEl("span","tmclock","⏳ "+(s.view==="hoje"?"o dia fecha em "+tmLeftDay():"fecha em "+tmLeft())));p.append(hd);
   if(!tmOn()){const c=tmEl("div","tmjoin");c.append(tmEl("b",null,"Entre na turma"),tmEl("p","sm muted","Cada um faz as suas tarefas. Aqui vocês veem o nível, a sequência e o XP uns dos outros, sobem de liga juntos e mandam parabéns. Só aparece o seu apelido."));
     const b=tmEl("button","go","Entrar no ranking");b.type="button";b.addEventListener("click",()=>{const j=$("rkJoin");if(j&&!j.hidden){j.click();setTimeout(tmUI,600);}else{const r=$("rankPanel");if(r)r.scrollIntoView({block:"start",behavior:"smooth"});}});c.append(b);p.append(c);return;}
   // liga + seletor
   const lg=tmEl("div","tmlg");lg.append(tmEl("b",null,tier||"Liga"),tmEl("span","sm muted","Os 3 primeiros da semana sobem. Ninguém cai."));p.append(lg);
-  const fr=tmFriends();const seg=tmEl("div","tmseg");for(const [k,l] of [["turma","Meus amigos"+(fr.length?" ("+fr.length+")":"")],["geral","Todos"]]){const b=tmEl("button",s.view===k?"on":"",l);b.type="button";b.addEventListener("click",()=>{s.view=k;save();tmUI();});seg.append(b);}p.append(seg);
+  const fr=tmFriends();const seg=tmEl("div","tmseg");const VW=[["turma","Amigos"+(fr.length?" ("+fr.length+")":"")],["geral","Semana"]];if(typeof dyBoard==="function")VW.unshift(["hoje","Hoje"]);else if(s.view==="hoje")s.view="turma";
+  for(const [k,l] of VW){const b=tmEl("button",s.view===k?"on":"",l);b.type="button";b.setAttribute("aria-pressed",s.view===k?"true":"false");b.addEventListener("click",()=>{s.view=k;save();tmUI();});seg.append(b);}p.append(seg);
   const L=tmBoard(s.view);
+  if(s.view==="hoje"){const box=tmEl("div","dybox");const rv=typeof dyRival==="function"?dyRival():null;box.append(tmEl("div","dyriv",rv?rv.txt:"Ranking de hoje: zera à meia-noite. Cada XP de hoje conta."));
+    const nt=dyNote();if(nt)box.append(tmEl("div","sm muted",nt));box.append(dyNtfBtn());p.append(box);}
   if(s.view==="turma"&&!fr.length){const e=tmEl("div","tmempty");e.append(tmEl("p",null,"Sua turma ainda está vazia. Chame alguém para jogar com você."));
     const b=tmEl("button","go","+ Adicionar amigo");b.type="button";b.addEventListener("click",()=>{try{frAdd=true;frUI();}catch(e){}const f=$("frPanel");if(f)f.scrollIntoView({block:"start",behavior:"smooth"});});e.append(b);p.append(e);}
   if(!rankRows){p.append(tmEl("div","sm muted","Carregando a turma…"));}
   const ol=tmEl("ol","tmlist");L.slice(0,30).forEach((r,i)=>{const li=tmEl("li",(r.me?"me ":"")+(i<3&&L.length>=2?"up":""));
     li.append(tmEl("span","tmpos",i<3?["🥇","🥈","🥉"][i]:String(i+1)));const av=tmEl("span","tmav");av.innerHTML=tmAv(r.av,44);li.append(av);
     const tx=tmEl("div","tmtx");const cls=tmCls(r.av);tx.append(tmEl("b",null,r.n+(r.me?" (você)":"")),tmEl("span","tmmeta",(r.lv?"Nv "+r.lv:"")+(cls?" · "+cls:"")+(r.seq?" · 🔥 "+r.seq:"")));li.append(tx);
-    li.append(tmEl("span","tmxp",(r.xp||0)+" XP"));
+    li.append(tmEl("span","tmxp",s.view==="hoje"?"+"+(r.xp||0)+" hoje":(r.xp||0)+" XP"));
     if(!r.me){const fz=fr.some(f=>tmN(f.n)===tmN(r.n));const act=tmEl("div","tmact");
       if(fz){for(const k of ["p","c"]){const t=TM_K[k];const done=s.sent[k+":"+tmN(r.n)+":"+todayKey()];const b=tmEl("button","tmbtn"+(done?" done":""),t[0]);b.type="button";b.title=(k==="p"?"Dar parabéns para ":"Cutucar ")+r.n;b.setAttribute("aria-label",b.title);b.addEventListener("click",ev=>{ev.stopPropagation();tmSend(r.n,k);});act.append(b);}
         li.classList.add("tap");li.addEventListener("click",()=>{try{frCompare(r.n);}catch(e){}});}
       else if(!frSt().pend[r.n]){const b=tmEl("button","tmbtn add","+");b.type="button";b.title="Pedir amizade para "+r.n;b.setAttribute("aria-label",b.title);b.addEventListener("click",ev=>{ev.stopPropagation();frRequest(r.n);tmUI();});act.append(b);}
       else act.append(tmEl("span","sm muted","pedido enviado"));
       li.append(act);}
-    ol.append(li);if(i===2&&L.length>3)ol.append(tmEl("li","tmzone","▲ zona de subida"));});p.append(ol);
+    ol.append(li);if(i===2&&L.length>3&&s.view!=="hoje")ol.append(tmEl("li","tmzone","▲ zona de subida"));});p.append(ol);
+  try{dyClimb(ol,s.view);}catch(e){}
   if(fr.length)p.append(tmEl("div","sm muted tmhint","Toque num amigo para ver o card dele. 🎉 dá parabéns, 👉 cutuca (1 de cada por dia)."));
   // novidades
   const F=s.feed.slice(0,6);if(F.length){const fd=tmEl("div","tmfeed");fd.append(tmEl("h3",null,"Novidades da turma"));
