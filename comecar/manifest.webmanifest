@@ -1,2 +1,2 @@
-{"name":"Ascensão","short_name":"Ascensão","start_url":"./","scope":"./","display":"standalone","background_color":"#070c17","theme_color":"#070c17","lang":"pt-BR",
+{"name":"Ascension","short_name":"Ascension","start_url":"./","scope":"./","display":"standalone","background_color":"#070c17","theme_color":"#070c17","lang":"pt-BR",
 "icons":[{"src":"../icon-192.png","sizes":"192x192","type":"image/png"},{"src":"../icon-512.png","sizes":"512x512","type":"image/png","purpose":"any maskable"}]}

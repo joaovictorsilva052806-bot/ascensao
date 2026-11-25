@@ -1,4 +1,4 @@
-<!doctype html><html lang="pt-BR"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><title>Ascensão</title><link rel="manifest" href="manifest.webmanifest"><meta name="theme-color" content="#02070d"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"><meta name="apple-mobile-web-app-title" content="Ascensão"><link rel="apple-touch-icon" href="../icon-180.png"><link rel="icon" href="../icon-192.png"><link rel="preconnect" href="https://fonts.googleapis.com"><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Chakra+Petch:wght@500;600;700&family=Orbitron:wght@500;700;800&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@500;700&display=swap"><style>:root{padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html,body{margin:0}img{max-width:100%}[hidden]{display:none!important}
+<!doctype html><html lang="pt-BR"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><title>Ascension</title><link rel="manifest" href="manifest.webmanifest"><meta name="theme-color" content="#02070d"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"><meta name="apple-mobile-web-app-title" content="Ascension"><link rel="apple-touch-icon" href="../icon-180.png"><link rel="icon" href="../icon-192.png"><link rel="preconnect" href="https://fonts.googleapis.com"><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Chakra+Petch:wght@500;600;700&family=Orbitron:wght@500;700;800&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@500;700&display=swap"><style>:root{padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html,body{margin:0}img{max-width:100%}[hidden]{display:none!important}
 /* Layout: one column "painel de missão" — status no topo, quests do dia, chefe, constância, recordes */
 :root{
   --bg:#070c17; --panel:#0d1526; --panel2:#111c33; --line:#1f2e4d;
@@ -330,6 +330,17 @@ body.enter .quest{animation:qIn .35s ease-out backwards}
 .dun>.rest{border-style:dashed}
 @media (prefers-reduced-motion:reduce){.dun>.now{animation:none}}
 .dun>.pre{opacity:.25}
+.clspill{cursor:pointer}
+.crhide{display:none!important}
+.crh{margin:16px 0 6px;font-size:.8rem;letter-spacing:.12em;text-transform:uppercase;color:var(--glow)}
+.crmods{display:grid;gap:6px;margin-top:6px}.crmods label{display:flex;gap:10px;align-items:center;padding:8px 10px;border:1px solid var(--line);border-radius:8px;font-size:.9rem}
+.crmods input{width:20px;height:20px;accent-color:var(--accent)}
+.btnlink{display:inline-flex;align-items:center;min-height:40px;padding:0 12px;border:1px solid var(--line);border-radius:8px;color:var(--glow);text-decoration:none;font-size:.85rem}
+.crxp button{min-width:64px}
+#crPlayers table{width:100%;margin-top:6px}#crPlayers td{padding:5px 4px;border-bottom:1px solid var(--line)}
+body.creator .tabbar{grid-template-columns:repeat(5,1fr)}
+body[data-tab=criador] .wrap>section[data-tab]:not([data-tab=criador]){display:none}
+body:not([data-tab=criador]) .wrap>section[data-tab=criador]{display:none}
 .quick{position:fixed;inset:0;z-index:55;background:var(--bg);overflow:auto;padding:max(28px,env(safe-area-inset-top)) 18px 28px;display:flex;flex-direction:column;gap:16px}
 .quick .qbar{height:4px;background:rgba(0,212,255,.15);border-radius:2px;overflow:hidden}.quick .qbar i{display:block;height:100%;width:0;background:var(--accent);box-shadow:0 0 10px var(--glow);transition:width .4s}
 .qstep{display:flex;flex-direction:column;gap:14px;animation:sysIn .4s cubic-bezier(.2,.9,.3,1.2)}
@@ -346,15 +357,15 @@ button.big{padding:16px;font-size:1.05rem}
 @media (prefers-reduced-motion:reduce){.qstep,.qspin{animation:none}}
 .shake{animation:shake .4s}@keyframes shake{25%{transform:translateX(-6px)}75%{transform:translateX(6px)}}
 .onboarding .wrap>section#quick:not([hidden]){display:flex!important}
-</style></head><body>
+#betaTip,#bossPanel{display:none!important}</style></head><body>
 
-<div class="hudtop"><span>ASCENSÃO<i>//</i>SISTEMA ONLINE</span><span class="mono" id="clock">--:--</span></div>
+<div class="hudtop"><span>ASCENSION<i>//</i>SISTEMA ONLINE</span><span class="mono" id="clock">--:--</span></div>
 <div class="wrap">
   <section class="intro" id="intro" hidden>
     <div class="slides" id="slides">
       <div class="slide"><div class="ring">XP</div><h2>Sua rotina vira um jogo</h2><p>Cada tarefa que você faz no dia vale pontos (XP). Os pontos sobem seu nível.</p></div>
       <div class="slide"><div class="ring">3</div><h2>Como funciona</h2><p><b>3 tarefas principais</b> por dia, curtas e no seu horário.</p><p>Deu tudo? Toque em <b>Feito</b>. Dia corrido? <b>Mínimo</b> já conta.</p><p>🔥 Sequência de dias, 🎁 baú surpresa e ranks de E até S.</p></div>
-      <div class="slide"><div class="ring">S</div><h2>Por que "Ascensão"?</h2><p>Porque quem sobe de nível é você, na vida real. Pouco por dia, todo dia.</p><p class="muted">Tudo fica só no seu celular. Grátis.</p></div>
+      <div class="slide"><div class="ring">S</div><h2>Por que "Ascension"?</h2><p>Porque quem sobe de nível é você, na vida real. Pouco por dia, todo dia.</p><p class="muted">Tudo fica só no seu celular. Grátis.</p></div>
     </div>
     <div class="dots" id="dots"><i></i><i></i><i></i></div>
     <div class="row"><button class="link" type="button" id="introSkip">Pular</button><button class="go" type="button" id="introNext">Próximo</button></div>
@@ -444,7 +455,7 @@ button.big{padding:16px;font-size:1.05rem}
   </section>
   <section data-tab="hoje" class="panel tip" id="pingCard" hidden>
     <h2>🏆 Ranking da semana</h2>
-    <div class="sm">Opcional: compare seu XP com quem também usa o Ascensão. Aparece só seu primeiro nome (ou um apelido) e o XP da semana. Nenhuma tarefa ou horário sai do seu celular.</div>
+    <div class="sm">Opcional: compare seu XP com quem também usa o Ascension. Aparece só seu primeiro nome (ou um apelido) e o XP da semana. Nenhuma tarefa ou horário sai do seu celular.</div>
     <div class="row"><button class="go" type="button" id="pingYes">Entrar no ranking</button><button class="ghost" type="button" id="pingNo">Agora não</button></div>
   </section>
 
@@ -710,7 +721,7 @@ button.big{padding:16px;font-size:1.05rem}
         <li><b>Feito</b> dá o XP inteiro. <b>Mínimo</b> dá metade e já conta como dia ativo.</li>
         <li><b>Dívida:</b> cada quest principal sem nem o mínimo custa 10 XP. Fez todas as principais no dia seguinte? A dívida de ontem é perdoada.</li>
         <li><b>Baú surpresa:</b> 1 chance em 5 de XP extra ao concluir uma quest.</li>
-        <li><b>Chefe da semana:</b> suas quests principais tiram vida dele. Derrotou, ganha XP extra. Ele volta toda segunda.</li>
+        <li><b>Masmorra da semana:</b> cada dia com as tarefas principais feitas limpa um andar. 5 andares abrem o baú (+50 XP). Ela volta toda segunda.</li>
         <li><b>Dia de descanso:</b> 1 por semana. Nesse dia nenhuma quest gera dívida. Use em dia de doença ou cansaço de verdade.</li>
         <li><b>Ranks:</b> E (nível 1), D (5), C (10), B (15), A (20), S (30).</li>
         <li><b>Por que assim:</b> plano "se-então" para cada quest, meta mínima e nada de zerar sequência. É o que a pesquisa sobre hábitos mostra que funciona.</li>
@@ -1020,16 +1031,16 @@ function checkAch(){prog.ach=prog.ach||{};for(const [id,name,,xp,test] of (ACH=a
 // ---------- Lembretes na agenda (sem servidor: arquivo .ics ou Google Agenda) ----------
 const BYD=["MO","TU","WE","TH","FR","SA","SU"];
 function remPlan(){const P=cfg&&cfg.profile;const W=[0,1,2,3,4];
-  const SYS={t:"[SISTEMA] Missão diária disponível",d:[0,1,2,3,4,5,6],n:"Check-in vale XP. Abra o Ascensão e veja a próxima missão."};
-  if(!P)return [Object.assign({h:"07:30"},SYS),{t:"Ascensão: 1ª quest do dia",h:"08:00",d:W,n:"Abra o app e faça a quest PRÓXIMA."},{t:"Ascensão: fechamento",h:"22:30",d:[0,1,2,3,4,5,6],n:"Marcar as quests e escolher a nº 1 de amanhã."}];
+  const SYS={t:"[SISTEMA] Missão diária disponível",d:[0,1,2,3,4,5,6],n:"Check-in vale XP. Abra o Ascension e veja a próxima missão."};
+  if(!P)return [Object.assign({h:"07:30"},SYS),{t:"Ascension: 1ª quest do dia",h:"08:00",d:W,n:"Abra o app e faça a quest PRÓXIMA."},{t:"Ascension: fechamento",h:"22:30",d:[0,1,2,3,4,5,6],n:"Marcar as quests e escolher a nº 1 de amanhã."}];
   const hmm=t=>{const [h,m]=(t||"0:0").split(":").map(Number);return h*60+(m||0);},f2=m=>{m=((m%1440)+1440)%1440;return String(Math.floor(m/60)).padStart(2,"0")+":"+String(m%60).padStart(2,"0");};
   const out=[];const q=id=>(cfg.quests||[]).find(x=>x.id===id);
   out.push(Object.assign({h:f2(hmm(P.wake)+20)},SYS));
-  const rev=q("s_rev");if(rev){const bus=P.transport==="onibus";const at=P.level==="escola"?(P.shift==="tarde"||P.shift==="noite"?hmm(P.wake)+90:hmm(P.classEnd)+75):bus&&P.works?hmm(P.workStart)-25:(P.works&&P.lunch?hmm(P.lunch)+30:hmm(P.wake)+60);out.push({t:"Ascensão: revisão",h:f2(at),d:rev.days||W,n:rev.title+" (mínimo: "+(rev.minTitle||"")+")"});}
-  const bl=q("s_bloco");if(bl)out.push({t:"Ascensão: bloco de estudo",h:"09:00",d:[5],n:bl.title});
-  const ALL=[0,1,2,3,4,5,6],re=q("s_remed");if(re)out.push({t:"Ascensão: remédios",h:f2(hmm(P.wake)+10),d:ALL,n:re.title});
-  if(!rev){const fq=(cfg.quests||[]).find(x=>x.main&&x.id!=="s_fech"&&x.id!=="s_remed"&&x.id!=="s_sono");if(fq)out.push({t:"Ascensão: tarefa principal",h:f2(P.works&&P.workStart?hmm(P.workStart)-60:hmm(P.wake)+60),d:fq.days||ALL,n:fq.title+(fq.minTitle?" (mínimo: "+fq.minTitle+")":"")});}
-  const so=q("s_sono");out.push({t:so?"Ascensão: hora de desligar":"Ascensão: fechamento",h:f2(hmm(P.sleep)-30),d:[0,1,2,3,4,5,6],n:(so?so.title+". ":"")+"Abra o app, marque as quests e escolha a nº 1 de amanhã."});
+  const rev=q("s_rev");if(rev){const bus=P.transport==="onibus";const at=P.level==="escola"?(P.shift==="tarde"||P.shift==="noite"?hmm(P.wake)+90:hmm(P.classEnd)+75):bus&&P.works?hmm(P.workStart)-25:(P.works&&P.lunch?hmm(P.lunch)+30:hmm(P.wake)+60);out.push({t:"Ascension: revisão",h:f2(at),d:rev.days||W,n:rev.title+" (mínimo: "+(rev.minTitle||"")+")"});}
+  const bl=q("s_bloco");if(bl)out.push({t:"Ascension: bloco de estudo",h:"09:00",d:[5],n:bl.title});
+  const ALL=[0,1,2,3,4,5,6],re=q("s_remed");if(re)out.push({t:"Ascension: remédios",h:f2(hmm(P.wake)+10),d:ALL,n:re.title});
+  if(!rev){const fq=(cfg.quests||[]).find(x=>x.main&&x.id!=="s_fech"&&x.id!=="s_remed"&&x.id!=="s_sono");if(fq)out.push({t:"Ascension: tarefa principal",h:f2(P.works&&P.workStart?hmm(P.workStart)-60:hmm(P.wake)+60),d:fq.days||ALL,n:fq.title+(fq.minTitle?" (mínimo: "+fq.minTitle+")":"")});}
+  const so=q("s_sono");out.push({t:so?"Ascension: hora de desligar":"Ascension: fechamento",h:f2(hmm(P.sleep)-30),d:[0,1,2,3,4,5,6],n:(so?so.title+". ":"")+"Abra o app, marque as quests e escolha a nº 1 de amanhã."});
   return out;}
 function nextDate(h,days){const d=new Date();const [hh,mm]=h.split(":").map(Number);for(let i=0;i<8;i++){const x=new Date(d);x.setDate(d.getDate()+i);x.setHours(hh,mm,0,0);if(days.includes((x.getDay()+6)%7)&&x>d)return x;}return d;}
 const icsDT=x=>x.getFullYear()+String(x.getMonth()+1).padStart(2,"0")+String(x.getDate()).padStart(2,"0")+"T"+String(x.getHours()).padStart(2,"0")+String(x.getMinutes()).padStart(2,"0")+"00";
@@ -1043,7 +1054,7 @@ function gcalLink(r){const s=nextDate(r.h,r.d),e=new Date(s.getTime()+10*60000);
   return "https://calendar.google.com/calendar/render?action=TEMPLATE&text="+encodeURIComponent(r.t)+"&dates="+icsDT(s)+"/"+icsDT(e)+"&ctz=America/Sao_Paulo&recur="+encodeURIComponent("RRULE:FREQ=WEEKLY;BYDAY="+r.d.map(x=>BYD[x]).join(","))+"&details="+encodeURIComponent(r.n+"\n"+location.href.split("#")[0]);}
 function renderCal(){const box=$("calList");if(!box)return;box.textContent="";const DNs=["seg","ter","qua","qui","sex","sáb","dom"];
   for(const r of remPlan()){const a=document.createElement("a");a.className="calrow";a.href=gcalLink(r);a.target="_blank";a.rel="noopener";
-    const b=document.createElement("b");b.textContent=r.h.replace(":","h");const s=document.createElement("span");s.textContent=r.t.replace("Ascensão: ","")+" · "+(r.d.length===7?"todo dia":r.d.length===5&&r.d[4]===4&&r.d[0]===0?"seg a sex":r.d.map(x=>DNs[x]).join(", "));
+    const b=document.createElement("b");b.textContent=r.h.replace(":","h");const s=document.createElement("span");s.textContent=r.t.replace("Ascension: ","")+" · "+(r.d.length===7?"todo dia":r.d.length===5&&r.d[4]===4&&r.d[0]===0?"seg a sex":r.d.map(x=>DNs[x]).join(", "));
     const g=document.createElement("i");g.textContent="Google ↗";a.append(b,s,g);box.append(a);}}
 $("calIcs").addEventListener("click",()=>{const blob=new Blob([buildICS()],{type:"text/calendar;charset=utf-8"});const u=URL.createObjectURL(blob);
   const a=document.createElement("a");a.href=u;a.download="lembretes-ascensao.ics";document.body.append(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(u),60000);
@@ -1208,7 +1219,7 @@ $("o_bkGo").addEventListener("click",()=>{let withCfg=false;try{withCfg=restoreB
 // ---------- Sugestões (sai pelo WhatsApp; fica salva no aparelho) ----------
 $("fbSend").addEventListener("click",()=>{const t=$("fbText").value.trim();if(!t){$("fbMsg").textContent="Escreva a sugestão primeiro.";return;}
   prog.feedback=(prog.feedback||[]).concat([{t,d:new Date().toISOString()}]);save();
-  const lv=levelOf(totalXP());const msg="💡 Sugestão para o app Ascensão\n\n"+t+"\n\n(nível "+lv+", "+activeDays()+" dias ativos, "+(cfg&&cfg.quests?cfg.quests.length:0)+" quests)";
+  const lv=levelOf(totalXP());const msg="💡 Sugestão para o app Ascension\n\n"+t+"\n\n(nível "+lv+", "+activeDays()+" dias ativos, "+(cfg&&cfg.quests?cfg.quests.length:0)+" quests)";
   window.open("https://wa.me/?text="+encodeURIComponent(msg),"_blank");$("fbText").value="";$("fbMsg").textContent="Valeu! Sugestão salva ("+prog.feedback.length+" no total).";});
 $("fbQuick").addEventListener("click",()=>{goTab("mais");setTimeout(()=>$("fbText").focus(),60);});
 // ---------- Dica de instalação (iPhone e Android fora da tela de início) ----------
@@ -1295,7 +1306,7 @@ function aiPrompt(){const P=(cfg&&cfg.profile)||{};const DNs=["seg","ter","qua",
     P.transport?"Deslocamento: "+({onibus:"ônibus",carro:"carro ou moto",ape:"a pé ou bicicleta",casa:"fico em casa"}[P.transport]||P.transport):"",(P.focus||[]).length?"Prioridades: "+P.focus.join(", "):"",P.goal?"Meta grande: "+P.goal:""].filter(Boolean).join("\n");
   const hist=aiHistory().map(h=>"- "+h.t+": "+h.feitas+" feitas, "+h.minimo+" no mínimo, de "+h.dias+" dias").join("\n")||"- comecei agora, ainda sem histórico";
   const wish=$("aiWish").value.trim();
-  return "Você é um coach de hábitos. Uso o app Ascensão: minha rotina vira um jogo, cada tarefa feita vale XP. Monte minhas tarefas diárias.\n\n"+
+  return "Você é um coach de hábitos. Uso o app Ascension: minha rotina vira um jogo, cada tarefa feita vale XP. Monte minhas tarefas diárias.\n\n"+
   "MEU PERFIL\n"+perfil+"\n\nCOMO FOI NAS ÚLTIMAS 2 SEMANAS\n"+hist+"\n"+(wish?"\nO QUE EU QUERO MUDAR\n"+wish+"\n":"")+
   "\nREGRAS\n- De 4 a 7 tarefas. Cada uma cabe em até 30 minutos e começa com um verbo.\n- No máximo 2 com \"main\": true (as mais importantes do dia).\n- Tarefa que eu fiz pouco: deixe menor ou troque. Tarefa que fiz quase sempre: pode subir um pouco.\n- \"ifThen\" é um gatilho concreto do meu dia: \"Quando [situação], eu [ação]\".\n- \"minTitle\" é a versão mínima para um dia ruim.\n- \"xp\" de 10 a 40. \"stat\" é um de: foco, mente, corpo, vendas (vendas = metas e dinheiro).\n- \"days\" é opcional: lista de 0 (seg) a 6 (dom). Sem \"days\" = todo dia.\n- Linguagem simples, em português do Brasil."+(["kid","teen"].includes(P.age)?" Sou menor de idade: nada de dieta, remédio ou desafio arriscado.":"")+
   "\n\nRESPONDA ASSIM: uma frase curta explicando a ideia e, depois, um único bloco de código exatamente neste formato:\n```\n"+AI_TAG+"\n[{\"title\":\"Ler 10 páginas\",\"minTitle\":\"2 páginas\",\"ifThen\":\"Quando deitar, leio antes de pegar o celular\",\"xp\":15,\"stat\":\"mente\",\"main\":false,\"days\":[0,1,2,3,4]}]\n```";}
@@ -1453,7 +1464,7 @@ function renderRPG(){renderDun();sysTipUI();const r=rpgState();const st=statXP()
   const sl=$("sysLine");if(sl)typeSys(sl,sysLine());
   $("rpgCls").textContent=r.cls?clsName(r.cls,lv):"";
   $("rpgAwake").textContent=r.cls?(lv<20?"Afinidade: "+STATS[r.cls.stat]+" sobe 1,5x mais rápido. Evolução da classe no nível "+(lv<10?10:20)+".":"Afinidade: "+STATS[r.cls.stat]+" sobe 1,5x mais rápido."):"Escolha sua classe para ganhar afinidade com um atributo.";
-  const cp=$("clsPill");if(cp){cp.hidden=!r.cls;cp.textContent=r.cls?(r.cls.style==="fant"?"⚔️ ":"🧭 ")+clsName(r.cls,lv):"";}
+  const cp=$("clsPill");if(cp){cp.hidden=false;cp.textContent=r.cls?(r.cls.style==="fant"?"⚔️ ":"🧭 ")+clsName(r.cls,lv)+" ⇄":"🧭 Escolher classe";cp.title="Trocar classe";}
   const box=$("rpgStats");const open=new Set([...box.querySelectorAll("details[open]")].map(d=>d.dataset.k));box.textContent="";
   for(const k in STATS){const n=cur[k],a=SXP(n),b=SXP(n+1),pct=Math.min(100,(st[k]-a)/(b-a)*100);
     const d=document.createElement("details");d.className="rstat";d.dataset.k=k;if(open.has(k))d.open=true;
@@ -1482,7 +1493,7 @@ let clsOpen=false;
 function openCls(){if(clsOpen||(rpgState().cls&&!openCls.force))return;openCls.force=false;clsOpen=true;let style="real";const occ=(cfg&&cfg.profile&&cfg.profile.occ)||"";
   const m=document.createElement("div");m.className="sysmodal";m.id="clsModal";m.setAttribute("role","dialog");const c=document.createElement("div");c.className="card clscard";
   const tag=document.createElement("div");tag.className="tag";tag.textContent="[ SISTEMA ] ESCOLHA DE CLASSE";const h=document.createElement("h3");h.textContent="Quem é você neste jogo?";
-  const p=document.createElement("p");p.className="sm muted";p.textContent="Sua classe dá afinidade com um atributo: ele sobe 1,5x mais rápido. Dá para trocar depois em Progresso.";
+  const p=document.createElement("p");p.className="sm muted";p.textContent="Sua classe dá afinidade com um atributo: ele sobe 1,5x mais rápido. Dá para trocar quando quiser: toque na classe, no topo.";
   const seg=document.createElement("div");seg.className="seg";const grid=document.createElement("div");grid.className="clsgrid";const own=document.createElement("div");own.className="add";own.hidden=true;
   const oi=document.createElement("input");oi.maxLength=24;oi.placeholder="Ex.: Professora, Pedreiro, Enfermeiro";oi.autocomplete="off";const os=document.createElement("select");for(const k in STATS){const o=document.createElement("option");o.value=k;o.textContent=STATS[k];os.append(o);}
   const ob=document.createElement("button");ob.type="button";ob.className="go";ob.textContent="Usar";own.append(oi,os,ob);
@@ -1495,7 +1506,9 @@ function openCls(){if(clsOpen||(rpgState().cls&&!openCls.force))return;openCls.f
   for(const [v,l] of [["real","🧭 Vida real"],["fant","⚔️ Fantasia"]]){const b=document.createElement("button");b.type="button";b.dataset.v=v;b.textContent=l;b.addEventListener("click",()=>{style=v;fill();});seg.append(b);}
   const later=document.createElement("button");later.type="button";later.className="link";later.textContent="Escolher depois";later.addEventListener("click",()=>{m.remove();clsOpen="later";});
   c.append(tag,h,p,seg,grid,own,later);m.append(c);document.body.append(m);fill();}
-$("clsChange").addEventListener("click",()=>{openCls.force=true;clsOpen=false;openCls();});
+function chgCls(){openCls.force=true;clsOpen=false;openCls();}
+$("clsChange").addEventListener("click",chgCls);
+if($("clsPill")){const cp=$("clsPill");cp.setAttribute("role","button");cp.tabIndex=0;cp.addEventListener("click",chgCls);}
 
 // ---------- Masmorra da semana: 7 andares (seg a dom). Andar limpo = todas as principais do dia (ou 1 tarefa, se não houver principal). 5 andares abrem o baú. ----------
 const DUN_NEED=5,DUN_XP=50;
@@ -1515,7 +1528,7 @@ $("dunOpen").addEventListener("click",()=>{const wk=dkey(dunWeek());if(Object.ke
 // ---------- Aviso diário do Sistema: vai pela agenda do celular (arquivo .ics com todos os lembretes) ----------
 const SYSTIP_KEY=document.getElementById("o_go")?"asc-"+"u-systip":"ascensao-systip";
 function sysTipUI(){let d="";try{d=localStorage.getItem(SYSTIP_KEY)||"";}catch(e){}const el=$("sysTip");if(!el)return;
-  const days=Object.keys(prog.log||{}).length;el.hidden=!!d||!cfg||cfg.blank||!!document.querySelector(".sysmodal")||days<2;}
+  const days=1;el.hidden=!!d||!cfg||cfg.blank||!!document.querySelector(".sysmodal")||days<1;}
 $("sysTipYes").addEventListener("click",()=>{try{localStorage.setItem(SYSTIP_KEY,"1");}catch(e){}$("sysTip").hidden=true;if($("calIcs"))$("calIcs").click();toast("Abriu a agenda? Toque em Adicionar tudo. O aviso do Sistema vem junto.");});
 $("sysTipNo").addEventListener("click",()=>{try{localStorage.setItem(SYSTIP_KEY,"0");}catch(e){}$("sysTip").hidden=true;});
 
@@ -1652,7 +1665,7 @@ const SEASON="2";
   prog={log:{},extra:{},faith:{},energy:{},mit:{},reviews:{},money:keep.money||[],rest:{},ach:{}};if(keep.rank)prog.rank=keep.rank;
   if(cfg&&!cfg.blank){cfg.startDate=todayKey();try{localStorage.setItem("asc-u-cfg",JSON.stringify(cfg));}catch(e){}}
   save();
-  setTimeout(()=>sysPop("NOVA TEMPORADA","Novo despertar","O Ascensão foi atualizado e todo mundo recomeça do nível 1, junto. Suas tarefas continuam. Agora tem classe, habilidades, baú de recompensas e o Sistema te guiando. Seu progresso antigo ficou guardado neste aparelho."),300);})();
+  setTimeout(()=>sysPop("NOVA TEMPORADA","Novo despertar","O Ascension foi atualizado e todo mundo recomeça do nível 1, junto. Suas tarefas continuam. Agora tem classe, habilidades, baú de recompensas e o Sistema te guiando. Seu progresso antigo ficou guardado neste aparelho."),300);})();
 function seasonUI(){let has=false;try{has=!!localStorage.getItem("asc-u-prog-t1");}catch(e){}const b=$("seasonUndo");if(b)b.hidden=!has;}
 $("seasonUndo").addEventListener("click",()=>{const b=$("seasonUndo");if(!b.dataset.arm){b.dataset.arm=1;b.textContent="Toque de novo para trazer o progresso antigo (o desta temporada é substituído)";setTimeout(()=>{delete b.dataset.arm;b.textContent="Recuperar meu progresso da temporada anterior";},5000);return;}
   try{const o=JSON.parse(localStorage.getItem("asc-u-prog-t1")||"null");if(o&&o.log){o.rpg=prog.rpg;prog=Object.assign({log:{},extra:{},faith:{},energy:{},mit:{},reviews:{}},o);prog.updatedAt=null;save();render();toast("Progresso antigo de volta.");}}catch(e){toast("Não consegui recuperar.");}

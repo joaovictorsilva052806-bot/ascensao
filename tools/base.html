@@ -1,4 +1,4 @@
-<!doctype html><html lang="pt-BR"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><title>Ascensão Bellardi</title><link rel="manifest" href="manifest.webmanifest"><meta name="theme-color" content="#02070d"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"><meta name="apple-mobile-web-app-title" content="Ascensão"><link rel="apple-touch-icon" href="icon-180.png"><link rel="icon" href="icon-192.png"><link rel="preconnect" href="https://fonts.googleapis.com"><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Chakra+Petch:wght@500;600;700&family=Orbitron:wght@500;700;800&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@500;700&display=swap"><style>:root{padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html,body{margin:0}img{max-width:100%}[hidden]{display:none!important}
+<!doctype html><html lang="pt-BR"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><title>Ascension</title><link rel="manifest" href="manifest.webmanifest"><meta name="theme-color" content="#02070d"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"><meta name="apple-mobile-web-app-title" content="Ascension"><link rel="apple-touch-icon" href="icon-180.png"><link rel="icon" href="icon-192.png"><link rel="preconnect" href="https://fonts.googleapis.com"><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Chakra+Petch:wght@500;600;700&family=Orbitron:wght@500;700;800&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@500;700&display=swap"><style>:root{padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html,body{margin:0}img{max-width:100%}[hidden]{display:none!important}
 /* Layout: one column "painel de missão" — status no topo, quests do dia, chefe, constância, recordes */
 :root{
   --bg:#070c17; --panel:#0d1526; --panel2:#111c33; --line:#1f2e4d;
@@ -224,7 +224,7 @@ input:focus,select:focus,textarea:focus{outline:none;border-color:var(--accent)!
 input,select,textarea{font-size:16px!important}
 </style></head><body>
 
-<div class="hudtop"><span>ASCENSÃO<i>//</i>SISTEMA ONLINE</span><span class="mono" id="clock">--:--</span></div>
+<div class="hudtop"><span>ASCENSION<i>//</i>SISTEMA ONLINE</span><span class="mono" id="clock">--:--</span></div>
 <div class="wrap">
   <section data-tab="hoje" class="panel">
     <div class="status">
@@ -677,14 +677,14 @@ function checkAch(){prog.ach=prog.ach||{};for(const [id,name,,xp,test] of ACH){i
 // ---------- Lembretes na agenda (sem servidor: arquivo .ics ou Google Agenda) ----------
 const BYD=["MO","TU","WE","TH","FR","SA","SU"];
 function remPlan(){const P=cfg&&cfg.profile;const W=[0,1,2,3,4];
-  const SYS={t:"[SISTEMA] Missão diária disponível",d:[0,1,2,3,4,5,6],n:"Check-in vale XP. Abra o Ascensão e veja a próxima missão."};
-  if(!P)return [Object.assign({h:"07:30"},SYS),{t:"Ascensão: 1ª quest do dia",h:"08:00",d:W,n:"Abra o app e faça a quest PRÓXIMA."},{t:"Ascensão: estudo",h:"13:00",d:W,n:"25 min de estudo. Mínimo: 10 min."},{t:"Ascensão: follow-ups",h:"17:00",d:W,n:"Responder leads e follow-ups."},{t:"Ascensão: fechamento",h:"22:30",d:[0,1,2,3,4,5,6],n:"Marcar as quests e escolher a nº 1 de amanhã."}];
+  const SYS={t:"[SISTEMA] Missão diária disponível",d:[0,1,2,3,4,5,6],n:"Check-in vale XP. Abra o Ascension e veja a próxima missão."};
+  if(!P)return [Object.assign({h:"07:30"},SYS),{t:"Ascension: 1ª quest do dia",h:"08:00",d:W,n:"Abra o app e faça a quest PRÓXIMA."},{t:"Ascension: estudo",h:"13:00",d:W,n:"25 min de estudo. Mínimo: 10 min."},{t:"Ascension: follow-ups",h:"17:00",d:W,n:"Responder leads e follow-ups."},{t:"Ascension: fechamento",h:"22:30",d:[0,1,2,3,4,5,6],n:"Marcar as quests e escolher a nº 1 de amanhã."}];
   const hmm=t=>{const [h,m]=(t||"0:0").split(":").map(Number);return h*60+(m||0);},f2=m=>{m=((m%1440)+1440)%1440;return String(Math.floor(m/60)).padStart(2,"0")+":"+String(m%60).padStart(2,"0");};
   const out=[];const q=id=>(cfg.quests||[]).find(x=>x.id===id);
   out.push(Object.assign({h:f2(hmm(P.wake)+20)},SYS));
-  const rev=q("s_rev");if(rev){const bus=P.transport==="onibus";const at=bus&&P.works?hmm(P.workStart)-25:(P.works&&P.lunch?hmm(P.lunch)+30:hmm(P.wake)+60);out.push({t:"Ascensão: revisão",h:f2(at),d:rev.days||W,n:rev.title+" (mínimo: "+(rev.minTitle||"")+")"});}
-  const bl=q("s_bloco");if(bl)out.push({t:"Ascensão: bloco de estudo",h:"09:00",d:[5],n:bl.title});
-  const so=q("s_sono");out.push({t:so?"Ascensão: hora de desligar":"Ascensão: fechamento",h:f2(hmm(P.sleep)-30),d:[0,1,2,3,4,5,6],n:(so?so.title+". ":"")+"Abra o app, marque as quests e escolha a nº 1 de amanhã."});
+  const rev=q("s_rev");if(rev){const bus=P.transport==="onibus";const at=bus&&P.works?hmm(P.workStart)-25:(P.works&&P.lunch?hmm(P.lunch)+30:hmm(P.wake)+60);out.push({t:"Ascension: revisão",h:f2(at),d:rev.days||W,n:rev.title+" (mínimo: "+(rev.minTitle||"")+")"});}
+  const bl=q("s_bloco");if(bl)out.push({t:"Ascension: bloco de estudo",h:"09:00",d:[5],n:bl.title});
+  const so=q("s_sono");out.push({t:so?"Ascension: hora de desligar":"Ascension: fechamento",h:f2(hmm(P.sleep)-30),d:[0,1,2,3,4,5,6],n:(so?so.title+". ":"")+"Abra o app, marque as quests e escolha a nº 1 de amanhã."});
   return out;}
 function nextDate(h,days){const d=new Date();const [hh,mm]=h.split(":").map(Number);for(let i=0;i<8;i++){const x=new Date(d);x.setDate(d.getDate()+i);x.setHours(hh,mm,0,0);if(days.includes((x.getDay()+6)%7)&&x>d)return x;}return d;}
 const icsDT=x=>x.getFullYear()+String(x.getMonth()+1).padStart(2,"0")+String(x.getDate()).padStart(2,"0")+"T"+String(x.getHours()).padStart(2,"0")+String(x.getMinutes()).padStart(2,"0")+"00";
@@ -698,7 +698,7 @@ function gcalLink(r){const s=nextDate(r.h,r.d),e=new Date(s.getTime()+10*60000);
   return "https://calendar.google.com/calendar/render?action=TEMPLATE&text="+encodeURIComponent(r.t)+"&dates="+icsDT(s)+"/"+icsDT(e)+"&ctz=America/Sao_Paulo&recur="+encodeURIComponent("RRULE:FREQ=WEEKLY;BYDAY="+r.d.map(x=>BYD[x]).join(","))+"&details="+encodeURIComponent(r.n+"\n"+location.href.split("#")[0]);}
 function renderCal(){const box=$("calList");if(!box)return;box.textContent="";const DNs=["seg","ter","qua","qui","sex","sáb","dom"];
   for(const r of remPlan()){const a=document.createElement("a");a.className="calrow";a.href=gcalLink(r);a.target="_blank";a.rel="noopener";
-    const b=document.createElement("b");b.textContent=r.h.replace(":","h");const s=document.createElement("span");s.textContent=r.t.replace("Ascensão: ","")+" · "+(r.d.length===7?"todo dia":r.d.length===5&&r.d[4]===4&&r.d[0]===0?"seg a sex":r.d.map(x=>DNs[x]).join(", "));
+    const b=document.createElement("b");b.textContent=r.h.replace(":","h");const s=document.createElement("span");s.textContent=r.t.replace("Ascension: ","")+" · "+(r.d.length===7?"todo dia":r.d.length===5&&r.d[4]===4&&r.d[0]===0?"seg a sex":r.d.map(x=>DNs[x]).join(", "));
     const g=document.createElement("i");g.textContent="Google ↗";a.append(b,s,g);box.append(a);}}
 $("calIcs").addEventListener("click",()=>{const blob=new Blob([buildICS()],{type:"text/calendar;charset=utf-8"});const u=URL.createObjectURL(blob);
   const a=document.createElement("a");a.href=u;a.download="lembretes-ascensao.ics";document.body.append(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(u),60000);

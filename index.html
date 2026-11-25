@@ -1,4 +1,4 @@
-<!doctype html><html lang="pt-BR"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><title>Ascensão Bellardi</title><link rel="manifest" href="manifest.webmanifest"><meta name="theme-color" content="#02070d"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"><meta name="apple-mobile-web-app-title" content="Ascensão"><link rel="apple-touch-icon" href="icon-180.png"><link rel="icon" href="icon-192.png"><link rel="preconnect" href="https://fonts.googleapis.com"><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Chakra+Petch:wght@500;600;700&family=Orbitron:wght@500;700;800&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@500;700&display=swap"><style>:root{padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html,body{margin:0}img{max-width:100%}[hidden]{display:none!important}
+<!doctype html><html lang="pt-BR"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><title>Ascension</title><link rel="manifest" href="manifest.webmanifest"><meta name="theme-color" content="#02070d"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"><meta name="apple-mobile-web-app-title" content="Ascension"><link rel="apple-touch-icon" href="icon-180.png"><link rel="icon" href="icon-192.png"><link rel="preconnect" href="https://fonts.googleapis.com"><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Chakra+Petch:wght@500;600;700&family=Orbitron:wght@500;700;800&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@500;700&display=swap"><style>:root{padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html,body{margin:0}img{max-width:100%}[hidden]{display:none!important}
 /* Layout: one column "painel de missão" — status no topo, quests do dia, chefe, constância, recordes */
 :root{
   --bg:#070c17; --panel:#0d1526; --panel2:#111c33; --line:#1f2e4d;
@@ -284,9 +284,20 @@ body.enter .quest{animation:qIn .35s ease-out backwards}
 .dun>.rest{border-style:dashed}
 @media (prefers-reduced-motion:reduce){.dun>.now{animation:none}}
 .dun>.pre{opacity:.25}
+.clspill{cursor:pointer}
+.crhide{display:none!important}
+.crh{margin:16px 0 6px;font-size:.8rem;letter-spacing:.12em;text-transform:uppercase;color:var(--glow)}
+.crmods{display:grid;gap:6px;margin-top:6px}.crmods label{display:flex;gap:10px;align-items:center;padding:8px 10px;border:1px solid var(--line);border-radius:8px;font-size:.9rem}
+.crmods input{width:20px;height:20px;accent-color:var(--accent)}
+.btnlink{display:inline-flex;align-items:center;min-height:40px;padding:0 12px;border:1px solid var(--line);border-radius:8px;color:var(--glow);text-decoration:none;font-size:.85rem}
+.crxp button{min-width:64px}
+#crPlayers table{width:100%;margin-top:6px}#crPlayers td{padding:5px 4px;border-bottom:1px solid var(--line)}
+body.creator .tabbar{grid-template-columns:repeat(5,1fr)}
+body[data-tab=criador] .wrap>section[data-tab]:not([data-tab=criador]){display:none}
+body:not([data-tab=criador]) .wrap>section[data-tab=criador]{display:none}
 </style></head><body>
 
-<div class="hudtop"><span>ASCENSÃO<i>//</i>SISTEMA ONLINE</span><span class="mono" id="clock">--:--</span></div>
+<div class="hudtop"><span>ASCENSION<i>//</i>SISTEMA ONLINE</span><span class="mono" id="clock">--:--</span></div>
 <div class="wrap">
   <section data-tab="hoje" class="panel">
     <div class="status">
@@ -468,12 +479,28 @@ body.enter .quest{animation:qIn .35s ease-out backwards}
       </ul>
     </details>
   </section>
+  <section data-tab="criador" class="panel" id="crPanel">
+    <div class="qhead"><h2>⚙️ Modo Criador</h2><span class="sm mono" id="crSync"></span></div>
+    <div class="sm muted">Só aparece no seu aparelho. Os jogadores não veem nada disto.</div>
+    <h3 class="crh">Jogadores da semana</h3>
+    <div id="crPlayers" class="sm muted">Carregando…</div>
+    <div class="row"><button type="button" id="crReload">Atualizar</button><a class="btnlink" target="_blank" rel="noopener" href="https://docs.google.com/spreadsheets/d/1EY8bqpvjYVeXaOKTs35MVeG9Upp07wvvhTxY2quMkfc/edit#gid=1127574012">Quem entrou por dia ↗</a></div>
+    <h3 class="crh">Seu XP</h3>
+    <div class="row crxp"><button type="button" data-xp="10">+10</button><button type="button" data-xp="50">+50</button><button type="button" data-xp="100">+100</button><button type="button" data-xp="-10">−10</button></div>
+    <h3 class="crh">O que aparece no seu app</h3>
+    <div class="sm muted">Desmarque para esconder. Dá para voltar quando quiser.</div>
+    <div id="crMods" class="crmods"></div>
+    <h3 class="crh">Atalhos</h3>
+    <div class="row crlinks"><a class="btnlink" target="_blank" rel="noopener" href="./comecar/">Ver como jogador ↗</a><a class="btnlink" target="_blank" rel="noopener" href="./convite/">Convite ↗</a><a class="btnlink" target="_blank" rel="noopener" href="https://docs.google.com/spreadsheets/d/1Ab9KkDNhPQepIZ4wrwsRiBkdMP4WsquMLH-YIlP-Nzs/edit">Planilha do seu jogo ↗</a></div>
+    <div class="row"><button type="button" id="crCls">Trocar classe</button><button type="button" id="crFresh">Forçar atualização</button></div>
+  </section>
 </div>
 <nav class="tabbar" id="tabbar">
   <button type="button" data-go="hoje"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="8"/><circle cx="12" cy="12" r="3"/></svg>Hoje</button>
   <button type="button" data-go="foco"><svg viewBox="0 0 24 24"><circle cx="12" cy="13" r="8"/><path d="M12 9v4l3 2M9 2h6"/></svg>Foco</button>
   <button type="button" data-go="prog"><svg viewBox="0 0 24 24"><path d="M4 20V10M10 20V4M16 20v-7M22 20H2"/></svg>Progresso</button>
   <button type="button" data-go="mais"><svg viewBox="0 0 24 24"><circle cx="5" cy="12" r="1.5"/><circle cx="12" cy="12" r="1.5"/><circle cx="19" cy="12" r="1.5"/></svg>Mais</button>
+  <button type="button" data-go="criador" hidden><svg viewBox="0 0 24 24"><path d="M12 2l2.6 6.3L21 9l-5 4.4L17.5 20 12 16.6 6.5 20 8 13.4 3 9l6.4-.7z"/></svg>Criador</button>
 </nav>
 <div class="toast" id="toast" hidden></div>
 <div class="levelup" id="levelup" hidden><div class="card"><div class="sm muted">SUBIU DE NÍVEL</div><div class="big" id="luLevel">2</div><div id="luRank"></div><div class="sm muted" id="luMsg">Constância vence intensidade.</div><button class="go" type="button" id="luClose">Continuar</button></div></div>
@@ -518,7 +545,7 @@ function totalXP(){return Math.max(0,earnedXP()-debtXP());}
 function questById(id){return (cfg&&cfg.quests||[]).find(q=>q.id===id)||((prog.extra[todayKey()]||[]).find(q=>q.id===id));}
 
 function render(){
-  if(typeof ACH!=="undefined"&&checkAch())return;renderAch();fillRest();renderMoney();fillFaith();fillMorning();fillFocusSelect();renderReview();renderRPG();setTimeout(dailyCheckin,600);
+  if(typeof ACH!=="undefined"&&checkAch())return;renderAch();fillRest();renderMoney();fillFaith();fillMorning();fillFocusSelect();renderReview();renderRPG();crApply();crRender();setTimeout(dailyCheckin,600);
   const xp=totalXP(), l=levelOf(xp), r=rankOf(l);
   $("rank").textContent=r[1]; $("lvl").textContent="Nível "+l; $("ptitle").textContent="Rank "+r[1]+" · "+r[2];
   const a=xpFor(l), b=xpFor(l+1);
@@ -608,10 +635,10 @@ function fx(xp,gold){try{if(navigator.vibrate)navigator.vibrate(gold?[12,40,18]:
   if(!xp)return;const f=document.createElement("div");f.className="xpfloat"+(gold?" gold":"");f.textContent="+"+xp+" XP";
   const pt=lastPt||{x:innerWidth/2,y:innerHeight/2};f.style.left=pt.x+"px";f.style.top=(pt.y-20)+"px";document.body.append(f);setTimeout(()=>f.remove(),1200);}
 // ---------- Sequência (estilo Duolingo: descanso congela, não quebra) ----------
-function streakDays(){const act=k=>(prog.log[k]||[]).some(e=>!/^(ach|checkin|tip|dun):/.test(String(e.q)));const rest=k=>!!(prog.rest||{})[k];
+function streakDays(){const act=k=>(prog.log[k]||[]).some(e=>!/^(ach|checkin|tip|dun|adm):/.test(String(e.q)));const rest=k=>!!(prog.rest||{})[k];
   const d=new Date();let n=0;if(!act(dkey(d))&&!rest(dkey(d)))d.setDate(d.getDate()-1);
   for(let i=0;i<400;i++){const k=dkey(d);if(act(k))n++;else if(!rest(k))break;d.setDate(d.getDate()-1);}return n;}
-function renderPills(){const n=streakDays();const today=(prog.log[todayKey()]||[]).some(e=>!/^(ach|checkin|tip|dun):/.test(String(e.q)));
+function renderPills(){const n=streakDays();const today=(prog.log[todayKey()]||[]).some(e=>!/^(ach|checkin|tip|dun|adm):/.test(String(e.q)));
   const st=$("streak");st.textContent="🔥 "+n+(n===1?" dia":" dias");st.classList.toggle("cold",!today);st.title=today?"Sequência garantida hoje":"Faça 1 quest hoje para manter a sequência";
   const dt=new Date();const ms=mainsFor(dt);const done=prog.log[todayKey()]||[];const ok=ms.filter(q=>done.some(e=>e.q===q.id)).length;
   $("dayPill").textContent=ok+"/"+ms.length+" principais";$("dayPill").classList.toggle("full",ms.length>0&&ok===ms.length);}
@@ -753,7 +780,7 @@ $("restBtn").addEventListener("click",()=>{const tk=todayKey();prog.rest=prog.re
 
 // ---------- Conquistas (novidade que não acaba) ----------
 const ACH=[
- ["a_first","Primeiro passo","1ª quest concluída",10,()=>entries().some(e=>!/^(ach|checkin|tip|dun):/.test(String(e.q)))],
+ ["a_first","Primeiro passo","1ª quest concluída",10,()=>entries().some(e=>!/^(ach|checkin|tip|dun|adm):/.test(String(e.q)))],
  ["a_3d","Esquentando","3 dias ativos",20,()=>activeDays()>=3],
  ["a_7d","Uma semana inteira","7 dias ativos",50,()=>activeDays()>=7],
  ["a_21d","Hábito formando","21 dias ativos",100,()=>activeDays()>=21],
@@ -763,7 +790,7 @@ const ACH=[
  ["a_review","Olhar de dono","1ª revisão da semana",20,()=>Object.keys(prog.reviews||{}).length>0],
  ["a_faith","Fé sobre o medo","7 dias com o painel de fé",40,()=>Object.keys(prog.faith||{}).length>=7],
  ["a_once","Missão cumprida","Concluir as 3 missões únicas",60,()=>["u_dommo","u_konstit","u_catalogo"].every(id=>entries().some(e=>e.q===id))]];
-function activeDays(){return new Set(entries().filter(e=>!/^(ach|checkin|tip|dun):/.test(String(e.q))).map(e=>e.date)).size;}
+function activeDays(){return new Set(entries().filter(e=>!/^(ach|checkin|tip|dun|adm):/.test(String(e.q))).map(e=>e.date)).size;}
 function renderAch(){const box=$("achList");box.textContent="";prog.ach=prog.ach||{};let got=0;
   for(const [id,name,desc,xp] of ACH){const on=!!prog.ach[id];if(on)got++;const d=document.createElement("div");d.className="badge"+(on?" on":"");const b=document.createElement("b");b.textContent=(on?"🏅 ":"🔒 ")+name;d.append(b,document.createTextNode(desc+" · +"+xp+" XP"));box.append(d);}
   $("achCount").textContent=got+" / "+ACH.length;}
@@ -771,14 +798,14 @@ function checkAch(){prog.ach=prog.ach||{};for(const [id,name,,xp,test] of ACH){i
 // ---------- Lembretes na agenda (sem servidor: arquivo .ics ou Google Agenda) ----------
 const BYD=["MO","TU","WE","TH","FR","SA","SU"];
 function remPlan(){const P=cfg&&cfg.profile;const W=[0,1,2,3,4];
-  const SYS={t:"[SISTEMA] Missão diária disponível",d:[0,1,2,3,4,5,6],n:"Check-in vale XP. Abra o Ascensão e veja a próxima missão."};
-  if(!P)return [Object.assign({h:"07:30"},SYS),{t:"Ascensão: 1ª quest do dia",h:"08:00",d:W,n:"Abra o app e faça a quest PRÓXIMA."},{t:"Ascensão: estudo",h:"13:00",d:W,n:"25 min de estudo. Mínimo: 10 min."},{t:"Ascensão: follow-ups",h:"17:00",d:W,n:"Responder leads e follow-ups."},{t:"Ascensão: fechamento",h:"22:30",d:[0,1,2,3,4,5,6],n:"Marcar as quests e escolher a nº 1 de amanhã."}];
+  const SYS={t:"[SISTEMA] Missão diária disponível",d:[0,1,2,3,4,5,6],n:"Check-in vale XP. Abra o Ascension e veja a próxima missão."};
+  if(!P)return [Object.assign({h:"07:30"},SYS),{t:"Ascension: 1ª quest do dia",h:"08:00",d:W,n:"Abra o app e faça a quest PRÓXIMA."},{t:"Ascension: estudo",h:"13:00",d:W,n:"25 min de estudo. Mínimo: 10 min."},{t:"Ascension: follow-ups",h:"17:00",d:W,n:"Responder leads e follow-ups."},{t:"Ascension: fechamento",h:"22:30",d:[0,1,2,3,4,5,6],n:"Marcar as quests e escolher a nº 1 de amanhã."}];
   const hmm=t=>{const [h,m]=(t||"0:0").split(":").map(Number);return h*60+(m||0);},f2=m=>{m=((m%1440)+1440)%1440;return String(Math.floor(m/60)).padStart(2,"0")+":"+String(m%60).padStart(2,"0");};
   const out=[];const q=id=>(cfg.quests||[]).find(x=>x.id===id);
   out.push(Object.assign({h:f2(hmm(P.wake)+20)},SYS));
-  const rev=q("s_rev");if(rev){const bus=P.transport==="onibus";const at=bus&&P.works?hmm(P.workStart)-25:(P.works&&P.lunch?hmm(P.lunch)+30:hmm(P.wake)+60);out.push({t:"Ascensão: revisão",h:f2(at),d:rev.days||W,n:rev.title+" (mínimo: "+(rev.minTitle||"")+")"});}
-  const bl=q("s_bloco");if(bl)out.push({t:"Ascensão: bloco de estudo",h:"09:00",d:[5],n:bl.title});
-  const so=q("s_sono");out.push({t:so?"Ascensão: hora de desligar":"Ascensão: fechamento",h:f2(hmm(P.sleep)-30),d:[0,1,2,3,4,5,6],n:(so?so.title+". ":"")+"Abra o app, marque as quests e escolha a nº 1 de amanhã."});
+  const rev=q("s_rev");if(rev){const bus=P.transport==="onibus";const at=bus&&P.works?hmm(P.workStart)-25:(P.works&&P.lunch?hmm(P.lunch)+30:hmm(P.wake)+60);out.push({t:"Ascension: revisão",h:f2(at),d:rev.days||W,n:rev.title+" (mínimo: "+(rev.minTitle||"")+")"});}
+  const bl=q("s_bloco");if(bl)out.push({t:"Ascension: bloco de estudo",h:"09:00",d:[5],n:bl.title});
+  const so=q("s_sono");out.push({t:so?"Ascension: hora de desligar":"Ascension: fechamento",h:f2(hmm(P.sleep)-30),d:[0,1,2,3,4,5,6],n:(so?so.title+". ":"")+"Abra o app, marque as quests e escolha a nº 1 de amanhã."});
   return out;}
 function nextDate(h,days){const d=new Date();const [hh,mm]=h.split(":").map(Number);for(let i=0;i<8;i++){const x=new Date(d);x.setDate(d.getDate()+i);x.setHours(hh,mm,0,0);if(days.includes((x.getDay()+6)%7)&&x>d)return x;}return d;}
 const icsDT=x=>x.getFullYear()+String(x.getMonth()+1).padStart(2,"0")+String(x.getDate()).padStart(2,"0")+"T"+String(x.getHours()).padStart(2,"0")+String(x.getMinutes()).padStart(2,"0")+"00";
@@ -792,7 +819,7 @@ function gcalLink(r){const s=nextDate(r.h,r.d),e=new Date(s.getTime()+10*60000);
   return "https://calendar.google.com/calendar/render?action=TEMPLATE&text="+encodeURIComponent(r.t)+"&dates="+icsDT(s)+"/"+icsDT(e)+"&ctz=America/Sao_Paulo&recur="+encodeURIComponent("RRULE:FREQ=WEEKLY;BYDAY="+r.d.map(x=>BYD[x]).join(","))+"&details="+encodeURIComponent(r.n+"\n"+location.href.split("#")[0]);}
 function renderCal(){const box=$("calList");if(!box)return;box.textContent="";const DNs=["seg","ter","qua","qui","sex","sáb","dom"];
   for(const r of remPlan()){const a=document.createElement("a");a.className="calrow";a.href=gcalLink(r);a.target="_blank";a.rel="noopener";
-    const b=document.createElement("b");b.textContent=r.h.replace(":","h");const s=document.createElement("span");s.textContent=r.t.replace("Ascensão: ","")+" · "+(r.d.length===7?"todo dia":r.d.length===5&&r.d[4]===4&&r.d[0]===0?"seg a sex":r.d.map(x=>DNs[x]).join(", "));
+    const b=document.createElement("b");b.textContent=r.h.replace(":","h");const s=document.createElement("span");s.textContent=r.t.replace("Ascension: ","")+" · "+(r.d.length===7?"todo dia":r.d.length===5&&r.d[4]===4&&r.d[0]===0?"seg a sex":r.d.map(x=>DNs[x]).join(", "));
     const g=document.createElement("i");g.textContent="Google ↗";a.append(b,s,g);box.append(a);}}
 $("calIcs").addEventListener("click",()=>{const blob=new Blob([buildICS()],{type:"text/calendar;charset=utf-8"});const u=URL.createObjectURL(blob);
   const a=document.createElement("a");a.href=u;a.download="lembretes-ascensao.ics";document.body.append(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(u),60000);
@@ -877,7 +904,7 @@ function renderRPG(){renderDun();sysTipUI();const r=rpgState();const st=statXP()
   const sl=$("sysLine");if(sl)typeSys(sl,sysLine());
   $("rpgCls").textContent=r.cls?clsName(r.cls,lv):"";
   $("rpgAwake").textContent=r.cls?(lv<20?"Afinidade: "+STATS[r.cls.stat]+" sobe 1,5x mais rápido. Evolução da classe no nível "+(lv<10?10:20)+".":"Afinidade: "+STATS[r.cls.stat]+" sobe 1,5x mais rápido."):"Escolha sua classe para ganhar afinidade com um atributo.";
-  const cp=$("clsPill");if(cp){cp.hidden=!r.cls;cp.textContent=r.cls?(r.cls.style==="fant"?"⚔️ ":"🧭 ")+clsName(r.cls,lv):"";}
+  const cp=$("clsPill");if(cp){cp.hidden=false;cp.textContent=r.cls?(r.cls.style==="fant"?"⚔️ ":"🧭 ")+clsName(r.cls,lv)+" ⇄":"🧭 Escolher classe";cp.title="Trocar classe";}
   const box=$("rpgStats");const open=new Set([...box.querySelectorAll("details[open]")].map(d=>d.dataset.k));box.textContent="";
   for(const k in STATS){const n=cur[k],a=SXP(n),b=SXP(n+1),pct=Math.min(100,(st[k]-a)/(b-a)*100);
     const d=document.createElement("details");d.className="rstat";d.dataset.k=k;if(open.has(k))d.open=true;
@@ -906,7 +933,7 @@ let clsOpen=false;
 function openCls(){if(clsOpen||(rpgState().cls&&!openCls.force))return;openCls.force=false;clsOpen=true;let style="real";const occ=(cfg&&cfg.profile&&cfg.profile.occ)||"";
   const m=document.createElement("div");m.className="sysmodal";m.id="clsModal";m.setAttribute("role","dialog");const c=document.createElement("div");c.className="card clscard";
   const tag=document.createElement("div");tag.className="tag";tag.textContent="[ SISTEMA ] ESCOLHA DE CLASSE";const h=document.createElement("h3");h.textContent="Quem é você neste jogo?";
-  const p=document.createElement("p");p.className="sm muted";p.textContent="Sua classe dá afinidade com um atributo: ele sobe 1,5x mais rápido. Dá para trocar depois em Progresso.";
+  const p=document.createElement("p");p.className="sm muted";p.textContent="Sua classe dá afinidade com um atributo: ele sobe 1,5x mais rápido. Dá para trocar quando quiser: toque na classe, no topo.";
   const seg=document.createElement("div");seg.className="seg";const grid=document.createElement("div");grid.className="clsgrid";const own=document.createElement("div");own.className="add";own.hidden=true;
   const oi=document.createElement("input");oi.maxLength=24;oi.placeholder="Ex.: Professora, Pedreiro, Enfermeiro";oi.autocomplete="off";const os=document.createElement("select");for(const k in STATS){const o=document.createElement("option");o.value=k;o.textContent=STATS[k];os.append(o);}
   const ob=document.createElement("button");ob.type="button";ob.className="go";ob.textContent="Usar";own.append(oi,os,ob);
@@ -919,7 +946,9 @@ function openCls(){if(clsOpen||(rpgState().cls&&!openCls.force))return;openCls.f
   for(const [v,l] of [["real","🧭 Vida real"],["fant","⚔️ Fantasia"]]){const b=document.createElement("button");b.type="button";b.dataset.v=v;b.textContent=l;b.addEventListener("click",()=>{style=v;fill();});seg.append(b);}
   const later=document.createElement("button");later.type="button";later.className="link";later.textContent="Escolher depois";later.addEventListener("click",()=>{m.remove();clsOpen="later";});
   c.append(tag,h,p,seg,grid,own,later);m.append(c);document.body.append(m);fill();}
-$("clsChange").addEventListener("click",()=>{openCls.force=true;clsOpen=false;openCls();});
+function chgCls(){openCls.force=true;clsOpen=false;openCls();}
+$("clsChange").addEventListener("click",chgCls);
+if($("clsPill")){const cp=$("clsPill");cp.setAttribute("role","button");cp.tabIndex=0;cp.addEventListener("click",chgCls);}
 
 // ---------- Masmorra da semana: 7 andares (seg a dom). Andar limpo = todas as principais do dia (ou 1 tarefa, se não houver principal). 5 andares abrem o baú. ----------
 const DUN_NEED=5,DUN_XP=50;
@@ -939,7 +968,7 @@ $("dunOpen").addEventListener("click",()=>{const wk=dkey(dunWeek());if(Object.ke
 // ---------- Aviso diário do Sistema: vai pela agenda do celular (arquivo .ics com todos os lembretes) ----------
 const SYSTIP_KEY=document.getElementById("o_go")?"asc-"+"u-systip":"ascensao-systip";
 function sysTipUI(){let d="";try{d=localStorage.getItem(SYSTIP_KEY)||"";}catch(e){}const el=$("sysTip");if(!el)return;
-  const days=Object.keys(prog.log||{}).length;el.hidden=!!d||!cfg||cfg.blank||!!document.querySelector(".sysmodal")||days<2;}
+  const days=1;el.hidden=!!d||!cfg||cfg.blank||!!document.querySelector(".sysmodal")||days<1;}
 $("sysTipYes").addEventListener("click",()=>{try{localStorage.setItem(SYSTIP_KEY,"1");}catch(e){}$("sysTip").hidden=true;if($("calIcs"))$("calIcs").click();toast("Abriu a agenda? Toque em Adicionar tudo. O aviso do Sistema vem junto.");});
 $("sysTipNo").addEventListener("click",()=>{try{localStorage.setItem(SYSTIP_KEY,"0");}catch(e){}$("sysTip").hidden=true;});
 // ---------- Check-in diário: abriu o app, ganha XP. Sequência de check-ins dá bônus (até +10). ----------
@@ -950,6 +979,30 @@ function dailyCheckin(){if(!cfg||cfg.blank||($("onb")&&!$("onb").hidden)||docume
     if((prog.log[todayKey()]||[]).some(e=>String(e.q).startsWith("checkin:")))return;
     addXP({q:"checkin:"+todayKey(),kind:"checkin",xp:10,stat:"foco",bonus,t:new Date().toISOString()},"Check-in feito: +"+(10+bonus)+" XP");
     if(typeof sendRank==="function")sendRank("checkin",true);},"Fazer check-in");}
+// ---------- Modo Criador (só no app do JV): jogadores, XP manual, esconder módulos, atalhos ----------
+const CR_KEY="ascensao-creator",CR_HIDE="ascensao-hide",CR_CSV="https://docs.google.com/spreadsheets/d/e/2PACX-1vTyr0ZbAqlFWbOWEZXpjcRPXPE04u9EfktPhrq5Mf_vnQ2YjeVEARfhqGrrpqVXxkIVsvnE_x8DMdpr/pub?gid=1002&single=true&output=csv";
+const crLS=(k,v)=>{try{if(v===undefined)return localStorage.getItem(k);localStorage.setItem(k,v);}catch(e){return null;}};
+function crOn(){return crLS(CR_KEY)==="1"||!!crLS("ascensao-sync");}
+function crMods(){return [...document.querySelectorAll(".wrap>section[data-tab]")].filter(s=>s.dataset.tab!=="criador"&&!s.querySelector("#titleName")&&!(s.hasAttribute("hidden")&&!s.id)).map((s,i)=>{const h=s.querySelector("h2");const k=s.id||(h?h.textContent.trim():"m"+i);return {s,k,n:h?h.textContent.trim():k};}).filter(m=>m.n&&m.s.id!=="syncCard"&&m.s.id!=="sysTip");}
+function crApply(){let hide=[];try{hide=JSON.parse(crLS(CR_HIDE)||"[]");}catch(e){}for(const m of crMods()){const off=hide.includes(m.k);m.s.classList.toggle("crhide",off);if(off)m.s.dataset.crh="1";}}
+function crRender(){const on=crOn();document.body.classList.toggle("creator",on);const tb=document.querySelector('#tabbar [data-go="criador"]');if(tb)tb.hidden=!on;if(!on)return;
+  $("crSync").textContent=crLS("ascensao-sync")?"● planilha ligada":"○ sem planilha";
+  let hide=[];try{hide=JSON.parse(crLS(CR_HIDE)||"[]");}catch(e){}const box=$("crMods");box.textContent="";
+  for(const m of crMods()){const l=document.createElement("label");const c=document.createElement("input");c.type="checkbox";c.checked=!hide.includes(m.k);
+    c.addEventListener("change",()=>{let h=[];try{h=JSON.parse(crLS(CR_HIDE)||"[]");}catch(e){}h=h.filter(x=>x!==m.k);if(!c.checked)h.push(m.k);crLS(CR_HIDE,JSON.stringify(h));crApply();});
+    const tab={hoje:"Hoje",foco:"Foco",prog:"Progresso",mais:"Mais"}[m.s.dataset.tab]||"";const sp=document.createElement("span");sp.textContent=m.n.replace(/^[^\wÀ-ú]+/,"")+(tab?" · "+tab:"");l.append(c,sp);box.append(l);}}
+async function crPlayers(){const el=$("crPlayers");el.textContent="Carregando…";try{const t=await (await fetch(CR_CSV+"&t="+Date.now(),{credentials:"omit"})).text();
+  const rows=t.trim().split(/\r?\n/).slice(1).map(l=>l.split(",")).filter(r=>r[0]);if(!rows.length){el.textContent="Ninguém no ranking desta semana ainda.";return;}
+  const tb=document.createElement("table");for(const [i,r] of rows.entries()){const tr=document.createElement("tr");for(const v of [(i+1)+".",r[0],r[1]+" XP","nv "+(r[2]||1)]){const td=document.createElement("td");td.textContent=v;tr.append(td);}tb.append(tr);}
+  el.textContent="";const p=document.createElement("div");p.textContent=rows.length+" jogador(es) no ranking desta semana. Só aparece quem aceitou entrar no ranking.";el.append(p,tb);}
+  catch(e){el.textContent="Sem conexão com a planilha agora.";}}
+document.querySelectorAll(".crxp button").forEach(b=>b.addEventListener("click",()=>{const n=+b.dataset.xp;addXP({q:"adm:"+Date.now(),kind:"adm",xp:n,stat:"foco",bonus:0,t:new Date().toISOString()},"");toast((n>0?"+":"")+n+" XP (criador)");}));
+$("crReload").addEventListener("click",crPlayers);
+$("crCls").addEventListener("click",()=>{if(typeof chgCls==="function")chgCls();});
+$("crFresh").addEventListener("click",async()=>{try{for(const r of await navigator.serviceWorker.getRegistrations())await r.update();for(const k of await caches.keys())await caches.delete(k);}catch(e){}location.reload();});
+// destravar em outro aparelho: tocar 7 vezes no nome
+{let n=0,t=0;$("titleName").addEventListener("click",()=>{const now=Date.now();n=now-t<700?n+1:1;t=now;if(n>=7){crLS(CR_KEY,crOn()&&crLS(CR_KEY)==="1"?"0":"1");n=0;crRender();toast(crOn()?"Modo Criador ligado":"Modo Criador desligado");}});}
+document.querySelector('#tabbar [data-go="criador"]')&&document.querySelector('#tabbar [data-go="criador"]').addEventListener("click",()=>{crRender();crPlayers();});
 
 let saveTimer=null, SYNC="";
 try{SYNC=localStorage.getItem("ascensao-sync")||"";}catch(e){}
@@ -1011,7 +1064,7 @@ const SEASON="2";
   prog={log:{},extra:{},faith:{},energy:{},mit:{},reviews:{},money:keep.money||[],rest:{},ach:{}};if(keep.rank)prog.rank=keep.rank;
   if(cfg&&!cfg.blank){cfg.startDate=todayKey();try{localStorage.setItem("ascensao-cfg",JSON.stringify(cfg));}catch(e){}}
   save();
-  setTimeout(()=>sysPop("NOVA TEMPORADA","Novo despertar","O Ascensão foi atualizado e todo mundo recomeça do nível 1, junto. Suas tarefas continuam. Agora tem classe, habilidades, baú de recompensas e o Sistema te guiando. Seu progresso antigo ficou guardado neste aparelho."),300);})();
+  setTimeout(()=>sysPop("NOVA TEMPORADA","Novo despertar","O Ascension foi atualizado e todo mundo recomeça do nível 1, junto. Suas tarefas continuam. Agora tem classe, habilidades, baú de recompensas e o Sistema te guiando. Seu progresso antigo ficou guardado neste aparelho."),300);})();
 function seasonUI(){let has=false;try{has=!!localStorage.getItem("ascensao-prog-t1");}catch(e){}const b=$("seasonUndo");if(b)b.hidden=!has;}
 $("seasonUndo").addEventListener("click",()=>{const b=$("seasonUndo");if(!b.dataset.arm){b.dataset.arm=1;b.textContent="Toque de novo para trazer o progresso antigo (o desta temporada é substituído)";setTimeout(()=>{delete b.dataset.arm;b.textContent="Recuperar meu progresso da temporada anterior";},5000);return;}
   try{const o=JSON.parse(localStorage.getItem("ascensao-prog-t1")||"null");if(o&&o.log){o.rpg=prog.rpg;prog=Object.assign({log:{},extra:{},faith:{},energy:{},mit:{},reviews:{}},o);prog.updatedAt=null;save();render();toast("Progresso antigo de volta.");}}catch(e){toast("Não consegui recuperar.");}
@@ -1025,7 +1078,7 @@ $("today").dataset.k=todayKey();
 focusUI();
 function goTab(t){document.body.dataset.tab=t;for(const b of document.querySelectorAll("#tabbar button"))b.classList.toggle("on",b.dataset.go===t);window.scrollTo(0,0);try{sessionStorage.setItem("asc-tab",t);}catch(e){}}
 for(const b of document.querySelectorAll("#tabbar button"))b.addEventListener("click",()=>goTab(b.dataset.go));
-let t0="hoje";try{t0=sessionStorage.getItem("asc-tab")||"hoje";}catch(e){}goTab(t0);
+let t0="hoje";try{t0=sessionStorage.getItem("asc-tab")||"hoje";}catch(e){}if(t0==="criador"&&!crOn())t0="hoje";goTab(t0);
 const tickClock=()=>{const d=new Date();$("clock").textContent=d.toLocaleTimeString("pt-BR",{hour:"2-digit",minute:"2-digit"})+" · "+d.toLocaleDateString("pt-BR",{weekday:"short"}).replace(".","").toUpperCase();};tickClock();setInterval(tickClock,15000);
 pull();
 document.addEventListener("visibilitychange",()=>{if(!document.hidden)pull();});
