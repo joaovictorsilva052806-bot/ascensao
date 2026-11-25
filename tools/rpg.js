@@ -77,7 +77,7 @@ function renderRPG(){renderDun();sysTipUI();const r=rpgState();const st=statXP()
   const sl=$("sysLine");if(sl)typeSys(sl,sysLine());
   $("rpgCls").textContent=r.cls?clsName(r.cls,lv):"";
   $("rpgAwake").textContent=r.cls?(lv<20?"Afinidade: "+STATS[r.cls.stat]+" sobe 1,5x mais rápido. Evolução da classe no nível "+(lv<10?10:20)+".":"Afinidade: "+STATS[r.cls.stat]+" sobe 1,5x mais rápido."):"Escolha sua classe para ganhar afinidade com um atributo.";
-  const cp=$("clsPill");if(cp){cp.hidden=!r.cls;cp.textContent=r.cls?(r.cls.style==="fant"?"⚔️ ":"🧭 ")+clsName(r.cls,lv):"";}
+  const cp=$("clsPill");if(cp){cp.hidden=false;cp.textContent=r.cls?(r.cls.style==="fant"?"⚔️ ":"🧭 ")+clsName(r.cls,lv)+" ⇄":"🧭 Escolher classe";cp.title="Trocar classe";}
   const box=$("rpgStats");const open=new Set([...box.querySelectorAll("details[open]")].map(d=>d.dataset.k));box.textContent="";
   for(const k in STATS){const n=cur[k],a=SXP(n),b=SXP(n+1),pct=Math.min(100,(st[k]-a)/(b-a)*100);
     const d=document.createElement("details");d.className="rstat";d.dataset.k=k;if(open.has(k))d.open=true;
@@ -106,7 +106,7 @@ let clsOpen=false;
 function openCls(){if(clsOpen||(rpgState().cls&&!openCls.force))return;openCls.force=false;clsOpen=true;let style="real";const occ=(cfg&&cfg.profile&&cfg.profile.occ)||"";
   const m=document.createElement("div");m.className="sysmodal";m.id="clsModal";m.setAttribute("role","dialog");const c=document.createElement("div");c.className="card clscard";
   const tag=document.createElement("div");tag.className="tag";tag.textContent="[ SISTEMA ] ESCOLHA DE CLASSE";const h=document.createElement("h3");h.textContent="Quem é você neste jogo?";
-  const p=document.createElement("p");p.className="sm muted";p.textContent="Sua classe dá afinidade com um atributo: ele sobe 1,5x mais rápido. Dá para trocar depois em Progresso.";
+  const p=document.createElement("p");p.className="sm muted";p.textContent="Sua classe dá afinidade com um atributo: ele sobe 1,5x mais rápido. Dá para trocar quando quiser: toque na classe, no topo.";
   const seg=document.createElement("div");seg.className="seg";const grid=document.createElement("div");grid.className="clsgrid";const own=document.createElement("div");own.className="add";own.hidden=true;
   const oi=document.createElement("input");oi.maxLength=24;oi.placeholder="Ex.: Professora, Pedreiro, Enfermeiro";oi.autocomplete="off";const os=document.createElement("select");for(const k in STATS){const o=document.createElement("option");o.value=k;o.textContent=STATS[k];os.append(o);}
   const ob=document.createElement("button");ob.type="button";ob.className="go";ob.textContent="Usar";own.append(oi,os,ob);
@@ -119,7 +119,9 @@ function openCls(){if(clsOpen||(rpgState().cls&&!openCls.force))return;openCls.f
   for(const [v,l] of [["real","🧭 Vida real"],["fant","⚔️ Fantasia"]]){const b=document.createElement("button");b.type="button";b.dataset.v=v;b.textContent=l;b.addEventListener("click",()=>{style=v;fill();});seg.append(b);}
   const later=document.createElement("button");later.type="button";later.className="link";later.textContent="Escolher depois";later.addEventListener("click",()=>{m.remove();clsOpen="later";});
   c.append(tag,h,p,seg,grid,own,later);m.append(c);document.body.append(m);fill();}
-$("clsChange").addEventListener("click",()=>{openCls.force=true;clsOpen=false;openCls();});
+function chgCls(){openCls.force=true;clsOpen=false;openCls();}
+$("clsChange").addEventListener("click",chgCls);
+if($("clsPill")){const cp=$("clsPill");cp.setAttribute("role","button");cp.tabIndex=0;cp.addEventListener("click",chgCls);}
 
 // ---------- Masmorra da semana: 7 andares (seg a dom). Andar limpo = todas as principais do dia (ou 1 tarefa, se não houver principal). 5 andares abrem o baú. ----------
 const DUN_NEED=5,DUN_XP=50;
@@ -139,6 +141,6 @@ $("dunOpen").addEventListener("click",()=>{const wk=dkey(dunWeek());if(Object.ke
 // ---------- Aviso diário do Sistema: vai pela agenda do celular (arquivo .ics com todos os lembretes) ----------
 const SYSTIP_KEY=document.getElementById("o_go")?"asc-"+"u-systip":"ascensao-systip";
 function sysTipUI(){let d="";try{d=localStorage.getItem(SYSTIP_KEY)||"";}catch(e){}const el=$("sysTip");if(!el)return;
-  const days=Object.keys(prog.log||{}).length;el.hidden=!!d||!cfg||cfg.blank||!!document.querySelector(".sysmodal")||days<2;}
+  const days=1;el.hidden=!!d||!cfg||cfg.blank||!!document.querySelector(".sysmodal")||days<1;}
 $("sysTipYes").addEventListener("click",()=>{try{localStorage.setItem(SYSTIP_KEY,"1");}catch(e){}$("sysTip").hidden=true;if($("calIcs"))$("calIcs").click();toast("Abriu a agenda? Toque em Adicionar tudo. O aviso do Sistema vem junto.");});
 $("sysTipNo").addEventListener("click",()=>{try{localStorage.setItem(SYSTIP_KEY,"0");}catch(e){}$("sysTip").hidden=true;});

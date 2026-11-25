@@ -60,3 +60,14 @@ body.enter .quest{animation:qIn .35s ease-out backwards}
 .dun>.rest{border-style:dashed}
 @media (prefers-reduced-motion:reduce){.dun>.now{animation:none}}
 .dun>.pre{opacity:.25}
+.clspill{cursor:pointer}
+.crhide{display:none!important}
+.crh{margin:16px 0 6px;font-size:.8rem;letter-spacing:.12em;text-transform:uppercase;color:var(--glow)}
+.crmods{display:grid;gap:6px;margin-top:6px}.crmods label{display:flex;gap:10px;align-items:center;padding:8px 10px;border:1px solid var(--line);border-radius:8px;font-size:.9rem}
+.crmods input{width:20px;height:20px;accent-color:var(--accent)}
+.btnlink{display:inline-flex;align-items:center;min-height:40px;padding:0 12px;border:1px solid var(--line);border-radius:8px;color:var(--glow);text-decoration:none;font-size:.85rem}
+.crxp button{min-width:64px}
+#crPlayers table{width:100%;margin-top:6px}#crPlayers td{padding:5px 4px;border-bottom:1px solid var(--line)}
+body.creator .tabbar{grid-template-columns:repeat(5,1fr)}
+body[data-tab=criador] .wrap>section[data-tab]:not([data-tab=criador]){display:none}
+body:not([data-tab=criador]) .wrap>section[data-tab=criador]{display:none}
