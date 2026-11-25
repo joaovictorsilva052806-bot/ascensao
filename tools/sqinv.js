@@ -15,19 +15,23 @@ async function sqiLoad(){if(ageNow()==="kid"||!(prog.rank&&prog.rank.on))return;
     sqInvRows=all.filter(r=>/^[IJFGK]$/.test(String(r[4]||"").trim())).map(r=>({k:r[4].trim(),a:String(r[5]||"").trim(),b:String(r[6]||"").trim(),s:String(r[7]||"").trim(),d:String(r[8]||"").trim()}));}catch(e){return;}
   sqiCheck();try{if(typeof frCheck==="function")frCheck();}catch(e){}}
 // convite que o Esquadrão manda ao tocar no nome
-function sqiInvite(to){const s=sqSt();const me=rankName();if(!s||!me||!to)return;sqiPost(["I",me,to,s.n,sqiDk()]);}
+function sqiInvite(to){const s=sqSt();const me=rankName();if(!s||!me||!to)return;const st=sqiSt();st.sent=st.sent||{};st.sent[sqiN(to)]=1;save();sqiPost(["I",me,to,s.n,sqiDk()]);}
 // quem aceitou o meu convite entra sozinho no meu esquadrão
 function sqiMerge(){const s=sqSt();const me=sqiN(rankName());if(!s||!me)return false;let ch=false;
   for(const r of sqInvRows){if(r.k!=="J"||sqiN(r.b)!==me||sqiN(r.s)!==sqiN(s.n)||!r.a)continue;
     if(sqiN(r.a)===me||s.m.some(n=>sqiN(n)===sqiN(r.a))||s.m.length>=SQ_MAX)continue;
+    if(!sqiOk(r.a))continue;
     const key="j:"+sqiN(r.a)+":"+sqiN(r.s);const st=sqiSt();s.m.push(r.a);ch=true;if(!st.seen[key]){st.seen[key]=1;toast(r.a+" aceitou e entrou no esquadrão "+s.n+".");}}
   if(ch){save();try{sqUI();sqCheckWin();}catch(e){}}return ch;}
+// só entra sozinho quem é meu amigo ou aceitou um convite que eu mandei (ninguém se força no esquadrão alheio)
+function sqiOk(n){try{if(frHas(n))return true;}catch(e){}return !!sqiSt().sent&&!!sqiSt().sent[sqiN(n)];}
 // aliados do mesmo esquadrão (quem já aceitou o mesmo líder)
 function sqiAllies(from,squad,me){const out=[from];for(const r of sqInvRows)if(r.k==="J"&&sqiN(r.b)===sqiN(from)&&sqiN(r.s)===sqiN(squad)&&sqiN(r.a)!==sqiN(me)&&!out.some(n=>sqiN(n)===sqiN(r.a)))out.push(r.a);return out.slice(0,SQ_MAX);}
 function sqiCheck(){sqiMerge();const me=rankName();if(!me||$("sqiModal")||[...document.querySelectorAll(".sysmodal")].some(x=>x.getClientRects().length)||document.body.classList.contains("inmission"))return;
   const st=sqiSt();const s=sqSt();
   const inv=sqInvRows.filter(r=>r.k==="I"&&sqiN(r.b)===sqiN(me)&&r.a&&r.s&&sqiFresh(r.d)&&!st.seen["i:"+sqiN(r.a)+":"+sqiN(r.s)]&&!(s&&sqiN(s.n)===sqiN(r.s)&&s.m.some(n=>sqiN(n)===sqiN(r.a))));
-  if(inv.length)sqiAsk(inv[inv.length-1]);}
+  const td=todayKey();if(!st.ask||st.ask.d!==td)st.ask={d:td,n:0};
+  if(inv.length&&st.ask.n<3){st.ask.n++;save();sqiAsk(inv[inv.length-1]);}}
 function sqiAsk(r){const st=sqiSt();const key="i:"+sqiN(r.a)+":"+sqiN(r.s);const s=sqSt();const me=rankName();
   const m=document.createElement("div");m.className="sysmodal";m.id="sqiModal";m.setAttribute("role","dialog");m.setAttribute("aria-modal","true");
   const c=document.createElement("div");c.className="card";const el=(t,cl,x)=>{const e=document.createElement(t);if(cl)e.className=cl;if(x!=null)e.textContent=x;return e;};
