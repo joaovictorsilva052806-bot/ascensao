@@ -1,0 +1,15 @@
+  <section data-tab="mais" class="panel" id="edPanel">
+    <div class="qhead"><h2>✏️ Minhas tarefas</h2><button class="link" type="button" id="edNew">+ Nova</button></div>
+    <div class="sm muted">Toque numa tarefa para mudar o nome, o horário ou apagar. Seus pontos não mudam.</div>
+    <div id="edList" class="edlist"></div>
+    <form class="edform" id="edForm" hidden>
+      <label>Tarefa<input id="edTitle" maxlength="90" autocomplete="off" required></label>
+      <label>Versão mínima (dia ruim)<input id="edMin" maxlength="50" autocomplete="off" placeholder="Ex.: 5 min"></label>
+      <label>Quando fazer<input id="edIf" maxlength="140" autocomplete="off" placeholder="Ex.: Quando chegar em casa, eu..."></label>
+      <div class="two"><label>Pontos<select id="edXp"><option>10</option><option>15</option><option>20</option><option>25</option><option>30</option><option>40</option></select></label>
+      <label>Área<select id="edStat"><option value="foco">Foco</option><option value="mente">Mente</option><option value="corpo">Corpo</option><option value="vendas">Metas</option></select></label></div>
+      <label class="chk"><input type="checkbox" id="edMain"> Principal (no máximo 3 por dia)</label>
+      <div class="dsel" id="edDays"></div>
+      <div class="row"><button class="go" type="submit">Salvar</button><button class="ghost" type="button" id="edCancel">Cancelar</button><button class="link danger" type="button" id="edDel">Apagar</button></div>
+    </form>
+  </section>
