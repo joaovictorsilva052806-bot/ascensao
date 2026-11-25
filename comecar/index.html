@@ -1,4 +1,4 @@
-<!doctype html><html lang="pt-BR"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><title>Ascension</title><link rel="manifest" href="manifest.webmanifest"><meta name="theme-color" content="#02070d"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"><meta name="apple-mobile-web-app-title" content="Ascension"><link rel="apple-touch-icon" href="../icon-180.png"><link rel="icon" href="../icon-192.png"><link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Chakra+Petch:wght@500;600;700&family=Orbitron:wght@500;700;800&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@500;700&display=swap" media="print" onload="this.media='all'"><noscript><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Chakra+Petch:wght@500;600;700&family=Orbitron:wght@500;700;800&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@500;700&display=swap"></noscript><style>:root{padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html,body{margin:0}img{max-width:100%}[hidden]{display:none!important}
+<!doctype html><html lang="pt-BR"><head><meta charset="utf-8"><meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' data: https://fonts.gstatic.com; img-src 'self' data: blob:; media-src 'self' data: blob:; connect-src 'self' https://docs.google.com https://script.google.com https://*.googleusercontent.com; worker-src 'self'; manifest-src 'self'; frame-src 'none'; object-src 'none'; base-uri 'self'; form-action 'self' https://docs.google.com"><meta name="referrer" content="strict-origin-when-cross-origin"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><title>Ascension</title><link rel="manifest" href="manifest.webmanifest"><meta name="theme-color" content="#02070d"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"><meta name="apple-mobile-web-app-title" content="Ascension"><link rel="apple-touch-icon" href="../icon-180.png"><link rel="icon" href="../icon-192.png"><link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Chakra+Petch:wght@500;600;700&family=Orbitron:wght@500;700;800&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@500;700&display=swap" media="print" onload="this.media='all'"><noscript><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Chakra+Petch:wght@500;600;700&family=Orbitron:wght@500;700;800&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@500;700&display=swap"></noscript><style>:root{padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html,body{margin:0}img{max-width:100%}[hidden]{display:none!important}
 /* Layout: one column "painel de missão" — status no topo, quests do dia, chefe, constância, recordes */
 :root{
   --bg:#070c17; --panel:#0d1526; --panel2:#111c33; --line:#1f2e4d;
@@ -2630,19 +2630,23 @@ async function sqiLoad(){if(ageNow()==="kid"||!(prog.rank&&prog.rank.on))return;
     sqInvRows=all.filter(r=>/^[IJFGK]$/.test(String(r[4]||"").trim())).map(r=>({k:r[4].trim(),a:String(r[5]||"").trim(),b:String(r[6]||"").trim(),s:String(r[7]||"").trim(),d:String(r[8]||"").trim()}));}catch(e){return;}
   sqiCheck();try{if(typeof frCheck==="function")frCheck();}catch(e){}}
 // convite que o Esquadrão manda ao tocar no nome
-function sqiInvite(to){const s=sqSt();const me=rankName();if(!s||!me||!to)return;sqiPost(["I",me,to,s.n,sqiDk()]);}
+function sqiInvite(to){const s=sqSt();const me=rankName();if(!s||!me||!to)return;const st=sqiSt();st.sent=st.sent||{};st.sent[sqiN(to)]=1;save();sqiPost(["I",me,to,s.n,sqiDk()]);}
 // quem aceitou o meu convite entra sozinho no meu esquadrão
 function sqiMerge(){const s=sqSt();const me=sqiN(rankName());if(!s||!me)return false;let ch=false;
   for(const r of sqInvRows){if(r.k!=="J"||sqiN(r.b)!==me||sqiN(r.s)!==sqiN(s.n)||!r.a)continue;
     if(sqiN(r.a)===me||s.m.some(n=>sqiN(n)===sqiN(r.a))||s.m.length>=SQ_MAX)continue;
+    if(!sqiOk(r.a))continue;
     const key="j:"+sqiN(r.a)+":"+sqiN(r.s);const st=sqiSt();s.m.push(r.a);ch=true;if(!st.seen[key]){st.seen[key]=1;toast(r.a+" aceitou e entrou no esquadrão "+s.n+".");}}
   if(ch){save();try{sqUI();sqCheckWin();}catch(e){}}return ch;}
+// só entra sozinho quem é meu amigo ou aceitou um convite que eu mandei (ninguém se força no esquadrão alheio)
+function sqiOk(n){try{if(frHas(n))return true;}catch(e){}return !!sqiSt().sent&&!!sqiSt().sent[sqiN(n)];}
 // aliados do mesmo esquadrão (quem já aceitou o mesmo líder)
 function sqiAllies(from,squad,me){const out=[from];for(const r of sqInvRows)if(r.k==="J"&&sqiN(r.b)===sqiN(from)&&sqiN(r.s)===sqiN(squad)&&sqiN(r.a)!==sqiN(me)&&!out.some(n=>sqiN(n)===sqiN(r.a)))out.push(r.a);return out.slice(0,SQ_MAX);}
 function sqiCheck(){sqiMerge();const me=rankName();if(!me||$("sqiModal")||[...document.querySelectorAll(".sysmodal")].some(x=>x.getClientRects().length)||document.body.classList.contains("inmission"))return;
   const st=sqiSt();const s=sqSt();
   const inv=sqInvRows.filter(r=>r.k==="I"&&sqiN(r.b)===sqiN(me)&&r.a&&r.s&&sqiFresh(r.d)&&!st.seen["i:"+sqiN(r.a)+":"+sqiN(r.s)]&&!(s&&sqiN(s.n)===sqiN(r.s)&&s.m.some(n=>sqiN(n)===sqiN(r.a))));
-  if(inv.length)sqiAsk(inv[inv.length-1]);}
+  const td=todayKey();if(!st.ask||st.ask.d!==td)st.ask={d:td,n:0};
+  if(inv.length&&st.ask.n<3){st.ask.n++;save();sqiAsk(inv[inv.length-1]);}}
 function sqiAsk(r){const st=sqiSt();const key="i:"+sqiN(r.a)+":"+sqiN(r.s);const s=sqSt();const me=rankName();
   const m=document.createElement("div");m.className="sysmodal";m.id="sqiModal";m.setAttribute("role","dialog");m.setAttribute("aria-modal","true");
   const c=document.createElement("div");c.className="card";const el=(t,cl,x)=>{const e=document.createElement(t);if(cl)e.className=cl;if(x!=null)e.textContent=x;return e;};
@@ -2863,11 +2867,13 @@ function frRequest(n){const me=rankName();n=cleanNick(n);if(!me||!n||frN(n)===fr
   sqiPost(["F",me,n,"",sqiDk()]);if(back){f.l.push(n);delete f.pend[n];sqiPost(["G",me,n,"",sqiDk()]);toast(n+" agora é seu amigo.");}
   else{f.pend[n]=todayKey();toast("Pedido enviado para "+n+". Aparece no app dele.");}save();frUI();}
 function frCheck(){const me=rankName();if(!me)return;const f=frSt();let ch=false;
-  for(const r of sqInvRows){if(r.k==="G"&&frN(r.b)===frN(me)&&r.a&&!frHas(r.a)){f.l.push(r.a);for(const k in f.pend)if(frN(k)===frN(r.a))delete f.pend[k];ch=true;const key="g:"+frN(r.a);if(!f.seen[key]){f.seen[key]=1;toast(r.a+" aceitou seu pedido de amizade.");}}}
+  const frPend=n=>Object.keys(f.pend).some(k=>frN(k)===frN(n));
+  for(const r of sqInvRows){if(r.k==="G"&&frN(r.b)===frN(me)&&r.a&&!frHas(r.a)&&frPend(r.a)){f.l.push(r.a);for(const k in f.pend)if(frN(k)===frN(r.a))delete f.pend[k];ch=true;const key="g:"+frN(r.a);if(!f.seen[key]){f.seen[key]=1;toast(r.a+" aceitou seu pedido de amizade.");}}}
   if(ch){save();}frUI();try{frRankAv();}catch(e){}
   if($("frModal")||$("sqiModal")||[...document.querySelectorAll(".sysmodal")].some(x=>x.getClientRects().length)||document.body.classList.contains("inmission"))return;
   const inc=sqInvRows.filter(r=>r.k==="F"&&frN(r.b)===frN(me)&&r.a&&!frHas(r.a)&&!f.seen["f:"+frN(r.a)]&&sqiFresh(r.d));
-  if(inc.length)frAsk(inc[inc.length-1].a);}
+  const td=todayKey();if(!f.ask||f.ask.d!==td)f.ask={d:td,n:0};
+  if(inc.length&&f.ask.n<3){f.ask.n++;save();frAsk(inc[inc.length-1].a);}}
 function frAsk(n){const f=frSt();const m=frEl("div","sysmodal");m.id="frModal";m.setAttribute("role","dialog");m.setAttribute("aria-modal","true");const c=frEl("div","card");
   const av=frEl("div","fravbig");av.innerHTML=frAv((sqPub[frN(n)]||{}).av,84);
   c.append(frEl("div","tag","[ SISTEMA ] PEDIDO DE AMIZADE"),av,frEl("h3",null,n+" quer ser seu amigo"),frEl("p","sm","Amigos se comparam lado a lado: XP da semana, nível, sequência e desafios."));
@@ -3008,8 +3014,9 @@ function tmSend(n,k){const me=rankName();if(!me||!n)return;const s=tmSt();const 
   sqiPost(["K",me,n,k,sqiDk()]);s.sent[key]=1;for(const x in s.sent)if(!x.endsWith(todayKey()))delete s.sent[x];save();try{haptic([12,30,12]);}catch(e){}
   toast(k==="p"?"🎉 Parabéns enviado para "+n+".":"👉 Cutucada enviada. "+n+" vê no app dele.");tmUI();}
 function tmInbox(){const me=rankName();if(!me||typeof sqInvRows==="undefined")return;const s=tmSt();let ch=false;
-  for(const r of sqInvRows){if(r.k!=="K"||tmN(r.b)!==tmN(me)||!r.a||!TM_K[r.s]||!sqiFresh(r.d))continue;const key="k:"+tmN(r.a)+":"+r.s+":"+r.d;if(s.seen[key])continue;
-    s.seen[key]=1;ch=true;const t=TM_K[r.s];tmFeedAdd("in"+r.s,r.a,t[0]+" "+r.a+" "+t[2]);toast(t[0]+" "+r.a+" "+t[2]);}
+  const td=todayKey();if(!s.inN||s.inN.d!==td)s.inN={d:td,n:0};
+  for(const r of sqInvRows){if(r.k!=="K"||tmN(r.b)!==tmN(me)||!r.a||!TM_K[r.s]||!sqiFresh(r.d))continue;if(!frHas(r.a)||s.inN.n>=5)continue;const key="k:"+tmN(r.a)+":"+r.s+":"+r.d;if(s.seen[key])continue;
+    s.seen[key]=1;s.inN.n++;ch=true;const t=TM_K[r.s];tmFeedAdd("in"+r.s,r.a,t[0]+" "+r.a+" "+t[2]);toast(t[0]+" "+r.a+" "+t[2]);}
   if(ch){save();tmUI();}}
 // --- contagem até a semana fechar (segunda 0h) ---
 function tmLeft(){const d=new Date();const nx=new Date(d);nx.setHours(24,0,0,0);while(nx.getDay()!==1)nx.setDate(nx.getDate()+1);const h=Math.max(0,Math.round((nx-d)/36e5));
@@ -3088,18 +3095,21 @@ function tmCard(n){const me=!n||tmN(n)===tmN(rankName());const d=me?cdMine():cdO
   m.append(c);document.body.append(m);try{haptic([10]);}catch(e){}setTimeout(()=>x.focus(),60);}
 // --- convite pessoal ---
 async function cdInvite(){const me=rankName();if(!tmOn()||!me){toast("Entre no ranking primeiro: o convite usa o seu apelido.");return;}
-  const s=tmSt();if(!s.inv){s.inv=Math.random().toString(36).slice(2,8);save();}const url=CD_URL+"?amigo="+encodeURIComponent(me)+"&c="+s.inv;const text="Bora jogar comigo no Ascension? É um jogo pra subir de nível na vida real. Entra pelo meu link que a gente já vira amigo lá dentro:";
+  const s=tmSt();if(!s.inv){const a=new Uint8Array(8);crypto.getRandomValues(a);s.inv=[...a].map(x=>(x%36).toString(36)).join("");save();}const url=CD_URL+"?amigo="+encodeURIComponent(me)+"&c="+s.inv;const text="Bora jogar comigo no Ascension? É um jogo pra subir de nível na vida real. Entra pelo meu link que a gente já vira amigo lá dentro:";
   try{if(navigator.share){await navigator.share({title:"Ascension",text,url});return;}}catch(e){if(e&&e.name==="AbortError")return;}
   try{await navigator.clipboard.writeText(text+" "+url);toast("Link copiado. Cole no WhatsApp do seu amigo.");}catch(e){window.open("https://wa.me/?text="+encodeURIComponent(text+" "+url),"_blank");}}
+async function cdSig(tk,n){const b=await crypto.subtle.digest("SHA-256",new TextEncoder().encode(tk+"|"+tmN(n)));return "cv"+[...new Uint8Array(b)].slice(0,6).map(x=>x.toString(16).padStart(2,"0")).join("");}
 // quem chegou por convite: guarda quem convidou até poder virar amigo
 (function(){try{const u=new URLSearchParams(location.search);const a=cleanNick(u.get("amigo")||"");if(a){localStorage.setItem("asc-amigo",a);localStorage.setItem("asc-amigo-c",String(u.get("c")||"").replace(/[^a-z0-9]/g,"").slice(0,12));u.delete("amigo");u.delete("c");history.replaceState(null,"",location.pathname+(u.toString()?"?"+u:""));}}catch(e){}})();
 function cdInvBy(){try{return localStorage.getItem("asc-amigo")||"";}catch(e){return "";}}
-function cdInvDo(){const a=cdInvBy();const me=rankName();if(!a||!tmOn()||!me||tmKid())return;if(tmN(a)===tmN(me)){try{localStorage.removeItem("asc-amigo");}catch(e){}return;}
-  const f=frSt();if(!frHas(a)){f.l.push(a);delete f.pend[a];}let tk="";try{tk=localStorage.getItem("asc-amigo-c")||"";}catch(e){}sqiPost(["F",me,a,"conv"+tk,sqiDk()]);save();try{localStorage.removeItem("asc-amigo");localStorage.removeItem("asc-amigo-c");}catch(e){}
+let cdBusy=false;async function cdInvDo(){if(cdBusy)return;const a=cdInvBy();const me=rankName();if(!a||!tmOn()||!me||tmKid())return;if(tmN(a)===tmN(me)){try{localStorage.removeItem("asc-amigo");}catch(e){}return;}
+  const f=frSt();if(!frHas(a)){f.l.push(a);delete f.pend[a];}let tk="";try{tk=localStorage.getItem("asc-amigo-c")||"";}catch(e){}let sg="";cdBusy=true;try{sg=tk?await cdSig(tk,me):"";}catch(e){}cdBusy=false;sqiPost(["F",me,a,sg,sqiDk()]);save();try{localStorage.removeItem("asc-amigo");localStorage.removeItem("asc-amigo-c");}catch(e){}
   tmFeedAdd("conv",a,"🤝 Você e "+a+" agora são amigos");toast("Pronto: você e "+a+" agora são amigos.");try{frUI();tmUI();}catch(e){}}
 // lado de quem convidou: aceita sozinho quem veio pelo link
-function cdInbox(){const me=rankName();if(!me||typeof sqInvRows==="undefined")return;const f=frSt();let ch=false;
-  const tk=tmSt().inv;if(!tk)return;for(const r of sqInvRows){if(r.k!=="F"||r.s!=="conv"+tk||tmN(r.b)!==tmN(me)||!r.a||frHas(r.a))continue;f.l.push(r.a);delete f.pend[r.a];sqiPost(["G",me,r.a,"",sqiDk()]);ch=true;
+async function cdInbox(){const me=rankName();if(!me||typeof sqInvRows==="undefined")return;const f=frSt();let ch=false;
+  const tk=tmSt().inv;if(!tk)return;for(const r of sqInvRows){if(r.k!=="F"||tmN(r.b)!==tmN(me)||!r.a||frHas(r.a))continue;
+    // formato antigo (código aberto na planilha) só vale para linhas até 25/11/2026
+    const old=r.s==="conv"+tk&&String(r.d).replace(/\D/g,"")<="20261125";let ok=old;if(!ok&&/^cv[0-9a-f]{12}$/.test(r.s)){try{ok=r.s===await cdSig(tk,r.a);}catch(e){}}if(!ok||frHas(r.a))continue;f.l.push(r.a);delete f.pend[r.a];sqiPost(["G",me,r.a,"",sqiDk()]);ch=true;
     tmFeedAdd("conv",r.a,"🤝 "+r.a+" entrou pelo seu convite e agora é seu amigo");cdBadge(1);toast("🤝 "+r.a+" entrou pelo seu convite. Agora são amigos!");}
   if(ch){save();try{frUI();tmUI();}catch(e){}}}
 // cartão "Fulano te chamou" para quem chegou pelo link
@@ -3158,6 +3168,7 @@ async function pull(force){
   if(!force&&Date.now()-lastPull<20000)return;lastPull=Date.now();
   $("sync").textContent="Sincronizando…";
   try{const r=await fetch(SYNC+(SYNC.includes("?")?"&":"?")+"t="+Date.now());const d=await r.json();
+    if(d.config&&d.config.painel){try{localStorage.setItem("ascensao-painel",JSON.stringify(d.config.painel));}catch(e){}}
     if(d.config&&d.config.quests&&(d.config.version||1)>=DEFAULT_CFG.version){cfg=d.config;try{localStorage.setItem("asc-u-cfg",JSON.stringify(cfg));}catch(e){}}
     const p=d.progress;
     if(syncFirst()){if(p&&p.log&&Object.keys(p.log).length)adoptSheet(p);try{localStorage.removeItem(SYNC_FIRST);}catch(e){}if(!(p&&p.log&&Object.keys(p.log).length))save();}
@@ -3180,14 +3191,15 @@ async function pasteSync(){let t="";
 $("syncSave").addEventListener("click",()=>setSync($("syncUrl").value));
 $("syncPaste1").addEventListener("click",pasteSync);$("syncPaste2").addEventListener("click",pasteSync);
 // Link de um toque: ...#s=<código da implantação>. O endereço fica só no aparelho, nunca no código.
-try{const m=location.hash.match(/[#&]s=([\w-]{20,})/);if(m){const v="https://script.google.com/macros/s/"+m[1]+"/exec";if(v!==SYNC)markSyncFirst();SYNC=v;localStorage.setItem("asc-u-sync",v);history.replaceState(null,"",location.pathname);}}catch(e){}
+try{const m=location.hash.match(/[#&]s=([\w-]{20,})/);if(m){const v="https://script.google.com/macros/s/"+m[1]+"/exec";history.replaceState(null,"",location.pathname);if(!SYNC||v===SYNC||confirm("Este link troca a planilha ligada a este app. Só aceite se foi você quem pediu. Trocar?")){if(v!==SYNC)markSyncFirst();SYNC=v;localStorage.setItem("asc-u-sync",v);}}}catch(e){}
 syncUI();
 
 const DEFAULT_CFG={"version":1,"quests":[],"blank":true};
 // Config pessoal nunca fica no código: vem do aparelho (link pessoal #c=...) ou da planilha do usuário.
 try{const m=location.hash.match(/[#&]c=([^&]+)/);if(m){const c=JSON.parse(decodeURIComponent(escape(atob(m[1].replace(/-/g,"+").replace(/_/g,"/")))));
-  if(c&&c.quests&&c.quests.length){localStorage.setItem("asc-u-cfg",JSON.stringify(c));}history.replaceState(null,"",location.pathname);}}catch(e){}
-addEventListener("hashchange",()=>{if(/[#&][cs]=/.test(location.hash))location.reload();});
+  history.replaceState(null,"",location.pathname);let had=null;try{had=JSON.parse(localStorage.getItem("asc-u-cfg")||"null");}catch(e){}
+  if(c&&c.quests&&c.quests.length&&(!had||!had.quests||!had.quests.length||confirm("Este link substitui as tarefas deste app. Trocar?"))){delete c.painel;localStorage.setItem("asc-u-cfg",JSON.stringify(c));}}}catch(e){}
+addEventListener("hashchange",()=>{if(/[#&][csk]=/.test(location.hash))location.reload();});
 try{const c=JSON.parse(localStorage.getItem("asc-u-cfg")||"null");cfg=(c&&(c.version||1)>=DEFAULT_CFG.version)?c:DEFAULT_CFG;}catch(e){cfg=DEFAULT_CFG;}
 if(cfg.name)$("titleName").textContent=cfg.name;
 try{const s=JSON.parse(localStorage.getItem("asc-u-prog")||"null");if(s&&s.log)prog=Object.assign({log:{},extra:{},faith:{},energy:{},mit:{},reviews:{}},s);}catch(e){}

@@ -42,8 +42,9 @@ function tmSend(n,k){const me=rankName();if(!me||!n)return;const s=tmSt();const 
   sqiPost(["K",me,n,k,sqiDk()]);s.sent[key]=1;for(const x in s.sent)if(!x.endsWith(todayKey()))delete s.sent[x];save();try{haptic([12,30,12]);}catch(e){}
   toast(k==="p"?"🎉 Parabéns enviado para "+n+".":"👉 Cutucada enviada. "+n+" vê no app dele.");tmUI();}
 function tmInbox(){const me=rankName();if(!me||typeof sqInvRows==="undefined")return;const s=tmSt();let ch=false;
-  for(const r of sqInvRows){if(r.k!=="K"||tmN(r.b)!==tmN(me)||!r.a||!TM_K[r.s]||!sqiFresh(r.d))continue;const key="k:"+tmN(r.a)+":"+r.s+":"+r.d;if(s.seen[key])continue;
-    s.seen[key]=1;ch=true;const t=TM_K[r.s];tmFeedAdd("in"+r.s,r.a,t[0]+" "+r.a+" "+t[2]);toast(t[0]+" "+r.a+" "+t[2]);}
+  const td=todayKey();if(!s.inN||s.inN.d!==td)s.inN={d:td,n:0};
+  for(const r of sqInvRows){if(r.k!=="K"||tmN(r.b)!==tmN(me)||!r.a||!TM_K[r.s]||!sqiFresh(r.d))continue;if(!frHas(r.a)||s.inN.n>=5)continue;const key="k:"+tmN(r.a)+":"+r.s+":"+r.d;if(s.seen[key])continue;
+    s.seen[key]=1;s.inN.n++;ch=true;const t=TM_K[r.s];tmFeedAdd("in"+r.s,r.a,t[0]+" "+r.a+" "+t[2]);toast(t[0]+" "+r.a+" "+t[2]);}
   if(ch){save();tmUI();}}
 // --- contagem até a semana fechar (segunda 0h) ---
 function tmLeft(){const d=new Date();const nx=new Date(d);nx.setHours(24,0,0,0);while(nx.getDay()!==1)nx.setDate(nx.getDate()+1);const h=Math.max(0,Math.round((nx-d)/36e5));

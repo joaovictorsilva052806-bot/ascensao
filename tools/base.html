@@ -770,7 +770,7 @@ const DEFAULT_CFG={"version":3,"blank":true,"name":"","quests":[]};
 try{const m=location.hash.match(/[#&]c=([^&]+)/);if(m){const c=JSON.parse(decodeURIComponent(escape(atob(m[1].replace(/-/g,"+").replace(/_/g,"/")))));
   history.replaceState(null,"",location.pathname);let had=null;try{had=JSON.parse(localStorage.getItem("ascensao-cfg")||"null");}catch(e){}
   if(c&&c.quests&&c.quests.length&&(!had||!had.quests||!had.quests.length||confirm("Este link substitui as tarefas deste app. Trocar?"))){delete c.painel;localStorage.setItem("ascensao-cfg",JSON.stringify(c));}}}catch(e){}
-addEventListener("hashchange",()=>{if(/[#&][cs]=/.test(location.hash))location.reload();});
+addEventListener("hashchange",()=>{if(/[#&][csk]=/.test(location.hash))location.reload();});
 try{const c=JSON.parse(localStorage.getItem("ascensao-cfg")||"null");cfg=(c&&(c.version||1)>=DEFAULT_CFG.version)?c:DEFAULT_CFG;}catch(e){cfg=DEFAULT_CFG;}
 if(cfg.name)$("titleName").textContent=cfg.name;
 try{const s=JSON.parse(localStorage.getItem("ascensao-prog")||"null");if(s&&s.log)prog=Object.assign({log:{},extra:{},faith:{},energy:{},mit:{},reviews:{}},s);}catch(e){}

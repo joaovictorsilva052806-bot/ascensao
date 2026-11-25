@@ -36,18 +36,21 @@ function tmCard(n){const me=!n||tmN(n)===tmN(rankName());const d=me?cdMine():cdO
   m.append(c);document.body.append(m);try{haptic([10]);}catch(e){}setTimeout(()=>x.focus(),60);}
 // --- convite pessoal ---
 async function cdInvite(){const me=rankName();if(!tmOn()||!me){toast("Entre no ranking primeiro: o convite usa o seu apelido.");return;}
-  const s=tmSt();if(!s.inv){s.inv=Math.random().toString(36).slice(2,8);save();}const url=CD_URL+"?amigo="+encodeURIComponent(me)+"&c="+s.inv;const text="Bora jogar comigo no Ascension? É um jogo pra subir de nível na vida real. Entra pelo meu link que a gente já vira amigo lá dentro:";
+  const s=tmSt();if(!s.inv){const a=new Uint8Array(8);crypto.getRandomValues(a);s.inv=[...a].map(x=>(x%36).toString(36)).join("");save();}const url=CD_URL+"?amigo="+encodeURIComponent(me)+"&c="+s.inv;const text="Bora jogar comigo no Ascension? É um jogo pra subir de nível na vida real. Entra pelo meu link que a gente já vira amigo lá dentro:";
   try{if(navigator.share){await navigator.share({title:"Ascension",text,url});return;}}catch(e){if(e&&e.name==="AbortError")return;}
   try{await navigator.clipboard.writeText(text+" "+url);toast("Link copiado. Cole no WhatsApp do seu amigo.");}catch(e){window.open("https://wa.me/?text="+encodeURIComponent(text+" "+url),"_blank");}}
+async function cdSig(tk,n){const b=await crypto.subtle.digest("SHA-256",new TextEncoder().encode(tk+"|"+tmN(n)));return "cv"+[...new Uint8Array(b)].slice(0,6).map(x=>x.toString(16).padStart(2,"0")).join("");}
 // quem chegou por convite: guarda quem convidou até poder virar amigo
 (function(){try{const u=new URLSearchParams(location.search);const a=cleanNick(u.get("amigo")||"");if(a){localStorage.setItem("asc-amigo",a);localStorage.setItem("asc-amigo-c",String(u.get("c")||"").replace(/[^a-z0-9]/g,"").slice(0,12));u.delete("amigo");u.delete("c");history.replaceState(null,"",location.pathname+(u.toString()?"?"+u:""));}}catch(e){}})();
 function cdInvBy(){try{return localStorage.getItem("asc-amigo")||"";}catch(e){return "";}}
-function cdInvDo(){const a=cdInvBy();const me=rankName();if(!a||!tmOn()||!me||tmKid())return;if(tmN(a)===tmN(me)){try{localStorage.removeItem("asc-amigo");}catch(e){}return;}
-  const f=frSt();if(!frHas(a)){f.l.push(a);delete f.pend[a];}let tk="";try{tk=localStorage.getItem("asc-amigo-c")||"";}catch(e){}sqiPost(["F",me,a,"conv"+tk,sqiDk()]);save();try{localStorage.removeItem("asc-amigo");localStorage.removeItem("asc-amigo-c");}catch(e){}
+let cdBusy=false;async function cdInvDo(){if(cdBusy)return;const a=cdInvBy();const me=rankName();if(!a||!tmOn()||!me||tmKid())return;if(tmN(a)===tmN(me)){try{localStorage.removeItem("asc-amigo");}catch(e){}return;}
+  const f=frSt();if(!frHas(a)){f.l.push(a);delete f.pend[a];}let tk="";try{tk=localStorage.getItem("asc-amigo-c")||"";}catch(e){}let sg="";cdBusy=true;try{sg=tk?await cdSig(tk,me):"";}catch(e){}cdBusy=false;sqiPost(["F",me,a,sg,sqiDk()]);save();try{localStorage.removeItem("asc-amigo");localStorage.removeItem("asc-amigo-c");}catch(e){}
   tmFeedAdd("conv",a,"🤝 Você e "+a+" agora são amigos");toast("Pronto: você e "+a+" agora são amigos.");try{frUI();tmUI();}catch(e){}}
 // lado de quem convidou: aceita sozinho quem veio pelo link
-function cdInbox(){const me=rankName();if(!me||typeof sqInvRows==="undefined")return;const f=frSt();let ch=false;
-  const tk=tmSt().inv;if(!tk)return;for(const r of sqInvRows){if(r.k!=="F"||r.s!=="conv"+tk||tmN(r.b)!==tmN(me)||!r.a||frHas(r.a))continue;f.l.push(r.a);delete f.pend[r.a];sqiPost(["G",me,r.a,"",sqiDk()]);ch=true;
+async function cdInbox(){const me=rankName();if(!me||typeof sqInvRows==="undefined")return;const f=frSt();let ch=false;
+  const tk=tmSt().inv;if(!tk)return;for(const r of sqInvRows){if(r.k!=="F"||tmN(r.b)!==tmN(me)||!r.a||frHas(r.a))continue;
+    // formato antigo (código aberto na planilha) só vale para linhas até 25/11/2026
+    const old=r.s==="conv"+tk&&String(r.d).replace(/\D/g,"")<="20261125";let ok=old;if(!ok&&/^cv[0-9a-f]{12}$/.test(r.s)){try{ok=r.s===await cdSig(tk,r.a);}catch(e){}}if(!ok||frHas(r.a))continue;f.l.push(r.a);delete f.pend[r.a];sqiPost(["G",me,r.a,"",sqiDk()]);ch=true;
     tmFeedAdd("conv",r.a,"🤝 "+r.a+" entrou pelo seu convite e agora é seu amigo");cdBadge(1);toast("🤝 "+r.a+" entrou pelo seu convite. Agora são amigos!");}
   if(ch){save();try{frUI();tmUI();}catch(e){}}}
 // cartão "Fulano te chamou" para quem chegou pelo link
