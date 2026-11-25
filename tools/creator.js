@@ -1,7 +1,7 @@
 // ---------- Modo Criador (só no app do JV): jogadores, XP manual, esconder módulos, atalhos ----------
-const CR_KEY="ascensao-creator",CR_HIDE="ascensao-hide",CR_CSV="https://docs.google.com/spreadsheets/d/e/2PACX-1vTyr0ZbAqlFWbOWEZXpjcRPXPE04u9EfktPhrq5Mf_vnQ2YjeVEARfhqGrrpqVXxkIVsvnE_x8DMdpr/pub?gid=1002&single=true&output=csv";
+const CR_HIDE="ascensao-hide",CR_CSV="https://docs.google.com/spreadsheets/d/e/2PACX-1vTyr0ZbAqlFWbOWEZXpjcRPXPE04u9EfktPhrq5Mf_vnQ2YjeVEARfhqGrrpqVXxkIVsvnE_x8DMdpr/pub?gid=1002&single=true&output=csv";
 const crLS=(k,v)=>{try{if(v===undefined)return localStorage.getItem(k);localStorage.setItem(k,v);}catch(e){return null;}};
-function crOn(){return crLS(CR_KEY)==="1"||!!crLS("ascensao-sync");}
+function crOn(){return !!crLS("ascensao-sync");}
 function crMods(){return [...document.querySelectorAll(".wrap>section[data-tab]")].filter(s=>s.dataset.tab!=="criador"&&!s.querySelector("#titleName")&&!(s.hasAttribute("hidden")&&!s.id)).map((s,i)=>{const h=s.querySelector("h2");const k=s.id||(h?h.textContent.trim():"m"+i);return {s,k,n:h?h.textContent.trim():k};}).filter(m=>m.n&&m.s.id!=="syncCard"&&m.s.id!=="sysTip");}
 function crApply(){let hide=[];try{hide=JSON.parse(crLS(CR_HIDE)||"[]");}catch(e){}for(const m of crMods()){const off=hide.includes(m.k);m.s.classList.toggle("crhide",off);if(off)m.s.dataset.crh="1";}}
 function crRender(){const on=crOn();document.body.classList.toggle("creator",on);const tb=document.querySelector('#tabbar [data-go="criador"]');if(tb)tb.hidden=!on;if(!on)return;
@@ -19,6 +19,4 @@ document.querySelectorAll(".crxp button").forEach(b=>b.addEventListener("click",
 $("crReload").addEventListener("click",crPlayers);
 $("crCls").addEventListener("click",()=>{if(typeof chgCls==="function")chgCls();});
 $("crFresh").addEventListener("click",async()=>{try{for(const r of await navigator.serviceWorker.getRegistrations())await r.update();for(const k of await caches.keys())await caches.delete(k);}catch(e){}location.reload();});
-// destravar em outro aparelho: tocar 7 vezes no nome
-{let n=0,t=0;$("titleName").addEventListener("click",()=>{const now=Date.now();n=now-t<700?n+1:1;t=now;if(n>=7){crLS(CR_KEY,crOn()&&crLS(CR_KEY)==="1"?"0":"1");n=0;crRender();toast(crOn()?"Modo Criador ligado":"Modo Criador desligado");}});}
 document.querySelector('#tabbar [data-go="criador"]')&&document.querySelector('#tabbar [data-go="criador"]').addEventListener("click",()=>{crRender();crPlayers();});
