@@ -72,7 +72,7 @@ tr.cur td{color:var(--glow);font-weight:600}
 .faith textarea,.faith input{font:inherit;width:100%;background:#0a1222;border:1px solid var(--line);color:var(--fg);border-radius:7px;padding:9px 10px;resize:vertical}
 .faith label{font-size:.82rem;color:var(--muted);display:flex;flex-direction:column;gap:6px}
 .motto{font-family:var(--f-display);font-size:1.1rem;color:var(--gold);letter-spacing:.04em}
-.seg{display:grid;grid-template-columns:repeat(3,1fr);gap:6px}
+.seg{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:6px}
 .seg button{padding:10px 6px}
 .seg button.on{background:var(--accent);border-color:var(--accent);color:#fff}
 .low{font-size:.85rem;padding:10px 12px;border-radius:8px;border:1px solid rgba(242,193,78,.5);background:rgba(242,193,78,.07)}
@@ -99,7 +99,7 @@ details p,details li{color:var(--muted);font-size:.86rem}
 .badge{border:1px solid var(--line);border-radius:8px;padding:8px;font-size:.78rem;color:var(--muted);background:#0a1222}
 .badge.on{border-color:var(--gold);color:var(--fg);box-shadow:0 0 10px rgba(242,193,78,.2)}
 .badge b{display:block;font-family:var(--f-display);font-size:.86rem}
-.kpis{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
+.kpis{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px}
 .empty{padding:14px;border:1px dashed var(--line);border-radius:8px;color:var(--muted);font-size:.88rem}
 @media (max-width:440px){.stats{grid-template-columns:repeat(2,1fr)}.rank{width:64px;height:64px;font-size:2rem}}
 @media (prefers-reduced-motion:reduce){.bar>i{transition:none}}

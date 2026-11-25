@@ -1,0 +1,8 @@
+/* ---- Tarefas limpas + horário (tools/qtidy.js) ---- */
+.quest:not(.open) .tag,.quest:not(.open) .if,.quest:not(.open) .qlink,.quest:not(.open) .qtmin,.quest:not(.open) .mshint{display:none!important}
+.quest:not(.open) .btns .ghost{display:none}
+.quest .tt::after{content:" ›";color:var(--muted)}.quest.open .tt::after{content:" ⌄"}
+.quest.next .tt::after{content:" ›"}.quest.next.open .tt::after{content:" ⌄"}
+.quest.qtlock{opacity:.6}.quest.qtlock .btns button{cursor:not-allowed}
+.qtlb{font-size:.74rem;color:var(--gold);margin-top:2px}
+.qtdesc{font-size:.84rem;color:var(--muted);margin:2px 0}.quest:not(.open) .qtdesc{display:none}

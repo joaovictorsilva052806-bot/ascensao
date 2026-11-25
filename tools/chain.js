@@ -34,8 +34,8 @@ function chAdd(item,custom){const L=chSt();if(L.length>=CH_MAX){toast("Até "+CH
   L.push({id:Math.random().toString(36).slice(2,8),h:item.h,n,ic:item.ic,since:chDk(),run:0,best:0,bank:0,restarts:0,last:null});save();chOpen=false;chUI();
   toast("Corrente criada. Marque todo dia que conseguir.");}
 let chOpen=false;
-function chUI(){let p=$("chPanel");const anchor=$("zapPanel")||($("quests")&&$("quests").closest("section"));if(!anchor)return;
-  if(!p){p=chEl("section","panel chn");p.id="chPanel";p.dataset.tab="hoje";if(anchor.id==="zapPanel")anchor.after(p);else anchor.before(p);}
+function chUI(){let p=$("chPanel");const anchor=$("quests")&&$("quests").closest("section");if(!anchor)return;
+  if(!p){p=chEl("section","panel chn");p.id="chPanel";p.dataset.tab="hoje";anchor.after(p);}
   if(!cfg||cfg.blank){p.hidden=true;return;}p.hidden=false;p.textContent="";const L=chSt();
   const hd=chEl("div","qhead");hd.append(chEl("h2",null,"⛓️ Quebrar correntes"),chEl("span","xp",L.length?L.filter(c=>c.last===chDk()).length+"/"+L.length+" hoje":"um dia de cada vez"));p.append(hd);
   if(!L.length&&!chOpen){p.append(chEl("div","sm muted","Escolha um hábito que você quer largar. Cada dia limpo dá XP, e a sequência enche um cofre que abre nos marcos."));}

@@ -138,5 +138,8 @@ rep('\nlet saveTimer=null, SYNC="";','\n'+open(SP+'sqinv.js').read()+open(SP+'ch
 # avatar por classe + amigos com comparação (tools/avatar.*, tools/friends.js)
 rep('</style></head>',open(SP+'avatar.css').read()+'</style></head>')
 rep('\nlet saveTimer=null, SYNC="";','\n'+open(SP+'avatar.js').read()+open(SP+'friends.js').read()+'\nlet saveTimer=null, SYNC="";')
+# tarefas limpas + horário certo (tools/qtidy.*)
+rep('</style></head>',open(SP+'qtidy.css').read()+'</style></head>')
+rep('\nlet saveTimer=null, SYNC="";','\n'+open(SP+'qtidy.js').read()+'\nlet saveTimer=null, SYNC="";')
 open('comecar/index.html','w').write(s)
 pass

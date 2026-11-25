@@ -72,7 +72,7 @@ tr.cur td{color:var(--glow);font-weight:600}
 .faith textarea,.faith input{font:inherit;width:100%;background:#0a1222;border:1px solid var(--line);color:var(--fg);border-radius:7px;padding:9px 10px;resize:vertical}
 .faith label{font-size:.82rem;color:var(--muted);display:flex;flex-direction:column;gap:6px}
 .motto{font-family:var(--f-display);font-size:1.1rem;color:var(--gold);letter-spacing:.04em}
-.seg{display:grid;grid-template-columns:repeat(3,1fr);gap:6px}
+.seg{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:6px}
 .seg button{padding:10px 6px}
 .seg button.on{background:var(--accent);border-color:var(--accent);color:#fff}
 .low{font-size:.85rem;padding:10px 12px;border-radius:8px;border:1px solid rgba(242,193,78,.5);background:rgba(242,193,78,.07)}
@@ -99,7 +99,7 @@ details p,details li{color:var(--muted);font-size:.86rem}
 .badge{border:1px solid var(--line);border-radius:8px;padding:8px;font-size:.78rem;color:var(--muted);background:#0a1222}
 .badge.on{border-color:var(--gold);color:var(--fg);box-shadow:0 0 10px rgba(242,193,78,.2)}
 .badge b{display:block;font-family:var(--f-display);font-size:.86rem}
-.kpis{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
+.kpis{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px}
 .empty{padding:14px;border:1px dashed var(--line);border-radius:8px;color:var(--muted);font-size:.88rem}
 @media (max-width:440px){.stats{grid-template-columns:repeat(2,1fr)}.rank{width:64px;height:64px;font-size:2rem}}
 @media (prefers-reduced-motion:reduce){.bar>i{transition:none}}
@@ -290,8 +290,8 @@ body.enter .quest{animation:qIn .35s ease-out backwards}
 .clsbtn.sug{border-color:var(--gold);box-shadow:0 0 0 1px var(--gold)}
 #betaPanel label.chk{display:flex;align-items:center;gap:8px;margin:10px 0;font-size:.86rem}
 #betaRate button{font-size:1.3rem;padding:6px 10px}
-.dun{display:grid;grid-template-columns:repeat(7,1fr);gap:6px;margin:10px 0 8px}
-.dun>div{aspect-ratio:1;border:1px solid var(--line);border-radius:6px;display:flex;flex-direction:column;align-items:center;justify-content:center;font-size:.66rem;color:var(--muted);gap:2px}
+.dun{display:grid;grid-template-columns:repeat(7,minmax(0,1fr));gap:4px;margin:10px 0 8px}
+.dun>div{min-width:0;overflow:hidden;aspect-ratio:1;border:1px solid var(--line);border-radius:6px;display:flex;flex-direction:column;align-items:center;justify-content:center;font-size:.66rem;color:var(--muted);gap:2px}
 .dun>div b{font-size:1rem}
 .dun>.ok{border-color:var(--good,#35d49a);color:var(--good,#35d49a);background:rgba(53,212,154,.08)}
 .dun>.miss{opacity:.45}
@@ -435,6 +435,14 @@ svg.av{display:block;flex:none}
 .frst .l{font-size:.75rem;color:var(--muted)}.frst .v{font-family:var(--f-mono);font-size:1.05rem}.frst .v.win{color:var(--good);text-shadow:0 0 8px rgba(53,212,154,.5)}
 .frmsg{color:var(--glow);margin-top:10px}
 .rkav{display:inline-flex;margin-right:6px;vertical-align:middle}
+/* ---- Tarefas limpas + horário (tools/qtidy.js) ---- */
+.quest:not(.open) .tag,.quest:not(.open) .if,.quest:not(.open) .qlink,.quest:not(.open) .qtmin,.quest:not(.open) .mshint{display:none!important}
+.quest:not(.open) .btns .ghost{display:none}
+.quest .tt::after{content:" ›";color:var(--muted)}.quest.open .tt::after{content:" ⌄"}
+.quest.next .tt::after{content:" ›"}.quest.next.open .tt::after{content:" ⌄"}
+.quest.qtlock{opacity:.6}.quest.qtlock .btns button{cursor:not-allowed}
+.qtlb{font-size:.74rem;color:var(--gold);margin-top:2px}
+.qtdesc{font-size:.84rem;color:var(--muted);margin:2px 0}.quest:not(.open) .qtdesc{display:none}
 </style></head><body>
 
 <div class="hudtop"><span>ASCENSION<i>//</i>SISTEMA ONLINE</span><span class="mono" id="clock">--:--</span></div>
@@ -1641,8 +1649,8 @@ function chAdd(item,custom){const L=chSt();if(L.length>=CH_MAX){toast("Até "+CH
   L.push({id:Math.random().toString(36).slice(2,8),h:item.h,n,ic:item.ic,since:chDk(),run:0,best:0,bank:0,restarts:0,last:null});save();chOpen=false;chUI();
   toast("Corrente criada. Marque todo dia que conseguir.");}
 let chOpen=false;
-function chUI(){let p=$("chPanel");const anchor=$("zapPanel")||($("quests")&&$("quests").closest("section"));if(!anchor)return;
-  if(!p){p=chEl("section","panel chn");p.id="chPanel";p.dataset.tab="hoje";if(anchor.id==="zapPanel")anchor.after(p);else anchor.before(p);}
+function chUI(){let p=$("chPanel");const anchor=$("quests")&&$("quests").closest("section");if(!anchor)return;
+  if(!p){p=chEl("section","panel chn");p.id="chPanel";p.dataset.tab="hoje";anchor.after(p);}
   if(!cfg||cfg.blank){p.hidden=true;return;}p.hidden=false;p.textContent="";const L=chSt();
   const hd=chEl("div","qhead");hd.append(chEl("h2",null,"⛓️ Quebrar correntes"),chEl("span","xp",L.length?L.filter(c=>c.last===chDk()).length+"/"+L.length+" hoje":"um dia de cada vez"));p.append(hd);
   if(!L.length&&!chOpen){p.append(chEl("div","sm muted","Escolha um hábito que você quer largar. Cada dia limpo dá XP, e a sequência enche um cofre que abre nos marcos."));}
@@ -1770,6 +1778,44 @@ function avPost(force){if(typeof RK_POST==="undefined"||ageNow()==="kid"||!(prog
   const v=["P",me,sq,avZapWeek(),avCode(),todayKey().replace(/-/g,"")].join("|");
   try{fetch(RK_POST,{method:"POST",mode:"no-cors",keepalive:true,body:new URLSearchParams({"entry.807978446":v})}).catch(()=>{});}catch(e){}}
 if(typeof sendRank==="function"){const _sr=sendRank;sendRank=function(){_sr.apply(this,arguments);try{avPost();}catch(e){}};}
+
+// ---------- Tarefas mais limpas + horário certo ----------
+// Cada tarefa mostra só o título, o XP e os botões. Tocar no título abre os detalhes (tipo, gatilho, mínimo, link).
+// Tarefas com hora certa ficam com cadeado até o horário: "antes de dormir" libera às 20h, as da manhã às 5h,
+// e quem tem "Quando der 19h" / "Às 14h" no gatilho libera 1 hora antes. Pode trocar em cfg: q.from = hora.
+function qtFrom(q){if(!q)return null;if(Number.isFinite(+q.from)&&q.from!==""&&q.from!=null)return Math.max(0,Math.min(23,+q.from));
+  const t=String(q.title||"").toLowerCase(),i=String(q.ifThen||"").toLowerCase();
+  if(q.id==="s_fech"||q.id==="q_fech"||/antes de dormir|fechamento|marcar o que fiz hoje/.test(t))return 20;
+  if(q.id==="s_mochila"||/depois do jantar/.test(i))return 18;
+  if(/almo[cç]/.test(t))return 11;
+  const m=/(?:quando der|às|as|a partir das)\s+(\d{1,2})\s*h/.exec(i);if(m){const h=+m[1];if(h>=6&&h<=23)return Math.max(5,h-1);}
+  if(/ao acordar|acordar|da manhã|primeira hora do dia/.test(t+" "+i))return 5;
+  return null;}
+function qtLocked(q){const f=qtFrom(q);if(f==null)return null;const h=new Date().getHours();
+  if(f>=12)return (h<f&&h>=5)?f:null; // noite: libera de f até 4h59
+  return h<f?f:null;}
+const QT_SHORT={s_fech:"🌙 Fechar o dia",q_fech:"🌙 Fechar o dia"};
+const QT_SHORT_RE=[[/^antes de dormir/i,"🌙 Fechar o dia"],[/trabalhar 90 min/i,"Bloco de foco: 90 min"],[/oferecer desenho/i,"Oferecer desenho técnico"],[/abordar 3 corretores/i,"Abordar 3 corretores"]];
+function qtTidy(){const box=$("quests");if(!box)return;let nextMoved=false;
+  for(const c of box.querySelectorAll(".quest[data-q]")){const q=((cfg&&cfg.quests)||[]).find(x=>x.id===c.dataset.q);if(!q)continue;
+    const nm=c.querySelector(".t > div:not(.xp)");const x=c.querySelector(".t .xp");
+    const sh=q.short||QT_SHORT[q.id]||(String(q.title).length>46&&QT_SHORT_RE.find(r=>r[0].test(q.title))||[])[1];
+    if(nm&&!nm.dataset.qt&&sh&&sh!==q.title){nm.textContent=sh;const d=document.createElement("div");d.className="qtdesc";d.textContent=q.title;nm.after(d);}
+    if(nm&&!nm.dataset.qt){nm.dataset.qt="1";nm.classList.add("tt");nm.setAttribute("role","button");nm.tabIndex=0;nm.setAttribute("aria-expanded","false");
+      const tg=()=>{c.classList.toggle("open");nm.setAttribute("aria-expanded",c.classList.contains("open")?"true":"false");};
+      nm.onclick=tg;nm.onkeydown=e=>{if(e.key==="Enter"||e.key===" "){e.preventDefault();tg();}};}
+    if(x&&!x.dataset.qt){x.dataset.qt="1";const parts=x.textContent.split("  ·  mínimo: ");x.textContent=parts[0];if(parts[1]){const mn=document.createElement("span");mn.className="qtmin";mn.textContent=" · mínimo: "+parts[1];x.append(mn);}}
+    const done=c.classList.contains("done")||c.classList.contains("min");
+    const lk=done?null:qtLocked(q);c.classList.toggle("qtlock",!!lk);
+    let lb=c.querySelector(".qtlb");if(lk!=null){if(!lb){lb=document.createElement("div");lb.className="qtlb";(c.querySelector(".t")||c).append(lb);}lb.textContent="🔒 libera às "+lk+"h";}else if(lb)lb.remove();
+    for(const b of c.querySelectorAll(".btns button")){b.disabled=lk!=null;if(lk!=null)b.title="Libera às "+lk+"h";}
+    if(c.classList.contains("next")&&lk!=null){c.classList.remove("next");const l=c.querySelector(".nextlbl");if(l)l.remove();nextMoved=true;}}
+  if(nextMoved||!box.querySelector(".quest.next")){const cand=[...box.querySelectorAll(".qgroup .quest[data-q]")].find(c=>!c.classList.contains("qtlock")&&!c.classList.contains("done")&&!c.classList.contains("min"));
+    if(cand&&!cand.classList.contains("next")){cand.classList.add("next");const nx=document.createElement("div");nx.className="nextlbl";nx.textContent="PRÓXIMA";cand.prepend(nx);}}}
+{const _r=render;render=function(){_r.apply(this,arguments);try{qtTidy();}catch(e){}};}
+setTimeout(()=>{try{qtTidy();}catch(e){}},0);
+// vira a hora com o app aberto: libera sozinho
+setInterval(()=>{try{if(!document.hidden&&document.querySelector("#quests .qtlock")){const h=new Date().getHours();if(h!==qtTidy.h){qtTidy.h=h;render();}}}catch(e){}},60000);
 
 let saveTimer=null, SYNC="";
 try{SYNC=localStorage.getItem("ascensao-sync")||"";}catch(e){}

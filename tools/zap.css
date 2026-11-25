@@ -1,7 +1,7 @@
 /* ---- Desafios relâmpago (tools/zap.*) ---- */
 .zaprank{font-family:var(--f-mono);font-size:.8rem;color:var(--glow);padding:8px 10px;border:1px dashed rgba(111,177,255,.35);border-radius:8px;background:rgba(0,212,255,.04)}
-.zapgrid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
-.zapc{position:relative;display:grid;gap:6px;justify-items:center;align-content:start;text-align:center;min-height:104px;padding:12px 6px;border-radius:12px;border:1px solid var(--glow);background:linear-gradient(160deg,#0f1d38,#0a1222);color:var(--fg);font:inherit;font-size:.82rem;line-height:1.25;box-shadow:0 0 10px rgba(111,177,255,.18)}
+.zapgrid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:6px}
+.zapc{position:relative;min-width:0;overflow-wrap:anywhere;hyphens:auto;display:grid;gap:6px;justify-items:center;align-content:start;text-align:center;min-height:104px;padding:12px 6px;border-radius:12px;border:1px solid var(--glow);background:linear-gradient(160deg,#0f1d38,#0a1222);color:var(--fg);font:inherit;font-size:.82rem;line-height:1.25;box-shadow:0 0 10px rgba(111,177,255,.18)}
 .zapc .ic{font-size:1.6rem}
 .zapc.done{border-color:var(--good);opacity:.7}.zapc.done .ic{color:var(--good);font-weight:700}
 .zapc .ph{position:absolute;top:4px;right:6px;font-size:.8rem}
