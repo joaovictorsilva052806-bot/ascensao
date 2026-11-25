@@ -149,4 +149,4 @@ Passou:
 
 Falhou e foi corrigido no caminho: título duplicava "+10 XP" na mensagem; speedrun contava a mesma quest marcada 3x.
 
-- 25/11/2026 16h30 · Revisão horária · Achado: 13 campos de texto só com placeholder, sem nome para leitor de tela (5 na raiz, 13 em /comecar/: quest rápida, nome, meta, backup, recompensa…). Mudou: `aria-label` em todos, cache `ascensao-v30` / `ascensao-u-v39`, teste novo `qa/rotulos.test.js` (9/17 no código antigo, 17/17 no novo). Placar: 12/12 arquivos verdes.
+- 25/11/2026 16h30 · Revisão horária · Achado: 13 campos de texto só com placeholder, sem nome para leitor de tela (5 na raiz, 13 em /comecar/: quest rápida, nome, meta, backup, recompensa…). Mudou: `aria-label` em todos, cache `ascensao-v31` / `ascensao-u-v40`, teste novo `qa/rotulos.test.js` (9/17 no código antigo, 17/17 no novo). Placar: 12/12 arquivos verdes.
