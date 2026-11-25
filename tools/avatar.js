@@ -112,7 +112,7 @@ function avUI(){let p=$("avPanel");const first=document.querySelector('.wrap>sec
 {const _r=render;render=function(){_r.apply(this,arguments);try{avUI();}catch(e){}};}
 setTimeout(()=>{try{avUI();}catch(e){}},0);
 // ---- Perfil público (só para quem está no ranking, 14+): sequência, desafios da semana e avatar ----
-function avZapWeek(){let n=0;try{const ws=weekStart(todayKey());for(const e of entries())if(String(e.q).startsWith("zap:")&&weekStart(e.date)===ws)n++;}catch(e){}return n;}
+function avZapWeek(){let n=0;try{const ws=weekStart(todayKey());for(const e of entries())if(String(e.q).startsWith("zap:")&&!String(e.q).startsWith("zap:duo:")&&weekStart(e.date)===ws)n++;}catch(e){}return n;}
 // atributos públicos no card (nível de Foco-Metas-Mente-Corpo), ex.: "4-2-3-1"
 function avAttrs(){try{const st=statXP();return ["foco","vendas","mente","corpo"].map(k=>slvl(st[k]||0)).join("-");}catch(e){return "";}}
 function avPost(force){if(typeof RK_POST==="undefined"||ageNow()==="kid"||!(prog.rank&&prog.rank.on))return;const me=rankName();if(!me)return;

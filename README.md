@@ -42,6 +42,15 @@ Pontos de entrada no JS: `render()` desenha tudo; `toggle(quest, "full"|"min")` 
 
 Escolha de classe (`openCls` em `tools/rpg.js`): na 1ª vez o Sistema sugere uma classe pela rotina (1 toque); a lista completa fica em "Ver outras" e ao trocar pelo topo. Teste: `node qa/classe.test.js`.
 
+## Ranking do dia, sensor, avisos e dupla (etapa 2 do ranking)
+
+- `tools/daily.js` (nos dois apps): aba **Hoje** na Turma, com o XP de hoje de cada um, **rival do dia** (quem está logo acima, também no card dos Desafios relâmpago) e a sua linha subindo quando você ganha posição (só o selo ▲ com reduce-motion). Não sai dado novo do celular: o XP de hoje dos outros é a diferença entre o XP da semana da lista pública e o que o aparelho viu ontem (sem foto de ontem, conta a partir da 1ª abertura do dia e avisa). Guarda só em `asc-u-dia` / `ascensao-dia`, fora do progresso.
+- Avisos locais (só se a pessoa ligar, permissão pedida no toque): alguém te passou hoje e, às 20h, se faltar desafio. Funcionam com o app aberto ou em segundo plano; sem servidor de push, o celular pode segurar com o app fechado.
+- Sensor de movimento no contador do relâmpago (`tools/zap.js`): "📳 Contar pelo movimento"; no iPhone a permissão é pedida só no toque. Sem sensor, sem sinal em 2,5 s ou sem permissão: volta para o toque.
+- Desafio em dupla (`tools/duo.js`, só no /comecar/): chama um amigo ou aliado do Esquadrão para o mesmo desafio do dia pela linha `K` (`d-`, `da-`, `dk-`). Os dois fizeram: +10 XP para cada (`zap:duo:<dia>`). Grava só `prog.duo`.
+
+Teste: `node qa/ranking-dia.test.js`.
+
 ## Reinstalação do app pessoal
 
 Na 1ª ligação da planilha num aparelho (link `#s=` ou colar o endereço), a planilha vence e o progresso local vira backup em `ascensao-prog-prelink`. Teste: `node qa/religar.test.js`.
