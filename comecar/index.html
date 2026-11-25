@@ -441,6 +441,23 @@ body[data-tab=foco] #focusNote{font-size:.8rem;color:var(--muted)}
 .pill.lg{border-color:rgba(242,193,78,.6);color:#ffe7a8;cursor:pointer}
 .lgline{font-size:.85rem;margin:0 0 10px;padding:8px 10px;border:1px solid rgba(242,193,78,.35);border-radius:3px;background:rgba(242,193,78,.06)}
 .lgline b{color:var(--gold);font-family:var(--f-mono)}
+.sq .sqsys{font-family:var(--f-mono);font-size:.82rem;color:var(--muted,#8fb3c2);margin:4px 0 10px;line-height:1.5}
+.sqboss{border:1px solid rgba(255,95,95,.45);background:linear-gradient(180deg,rgba(255,60,60,.08),transparent);padding:10px 12px;border-radius:3px;margin-bottom:12px}
+.sqtag{font-family:var(--f-mono);font-size:.7rem;letter-spacing:.18em;opacity:.7;margin-bottom:4px}
+.sqbt{display:flex;justify-content:space-between;gap:8px;font-family:var(--f-mono);font-size:.85rem;margin-bottom:6px}
+.sqbt b{color:#ff8a8a;letter-spacing:.06em}
+.sqbar{height:8px;background:rgba(255,255,255,.06);border-radius:2px;overflow:hidden;margin-bottom:6px}
+.sqbar i{display:block;height:100%;background:linear-gradient(90deg,#ff5f5f,#ffb36b);transition:width .8s}
+.sqm{list-style:none;margin:0 0 10px;padding:0}
+.sqm li{display:grid;grid-template-columns:1fr auto auto;align-items:center;gap:4px 10px;padding:7px 0;border-bottom:1px solid rgba(255,255,255,.06);font-size:.9rem}
+.sqm li.me .n{color:var(--acc,#7cf4ff)}
+.sqm .x{font-family:var(--f-mono);font-size:.8rem;opacity:.85}
+.sqm .g{grid-column:1/-1;height:3px;background:rgba(255,255,255,.05)}
+.sqm .g i{display:block;height:100%;background:var(--acc,#00d4ff)}
+.sqm .n{grid-column:1;grid-row:1}.sqm .x{grid-column:2;grid-row:1}.sqm button.link{grid-column:3;grid-row:1;padding:2px 6px;min-height:0;width:auto}
+.sqchips{display:flex;flex-wrap:wrap;gap:6px;margin:6px 0 10px}
+.sqchips .chip{font-size:.8rem;padding:6px 10px;border:1px solid rgba(0,212,255,.35);background:transparent;color:inherit;border-radius:3px;cursor:pointer}
+@media (prefers-reduced-motion:reduce){.sqbar i{transition:none}}
 </style></head><body>
 
 <div class="hudtop"><span>ASCENSION<i>//</i>SISTEMA ONLINE</span><span class="mono" id="clock">--:--</span></div>
@@ -578,8 +595,8 @@ body[data-tab=foco] #focusNote{font-size:.8rem;color:var(--muted)}
   </section>
 
   <section data-tab="hoje" class="panel" id="syncCard" hidden>
-    <h2>Ligar à planilha</h2>
-    <p class="sm muted">Copie o endereço que a Eva te mandou e toque no botão. É uma vez só: depois as tarefas chegam sozinhas toda vez que você abrir o app.</p>
+    <h2>⚡ Conectar ao Sistema</h2>
+    <p class="sm muted">1. Copie o endereço que a Eva te mandou no WhatsApp. 2. Toque no botão. É uma vez só: depois tudo chega sozinho sempre que você abrir o app.</p>
     <button class="go" type="button" id="syncPaste1">Colar endereço e sincronizar</button>
   </section>
 
@@ -1000,10 +1017,10 @@ function fx(xp,gold){try{if(navigator.vibrate)navigator.vibrate(gold?[12,40,18]:
   const pt=lastPt||{x:innerWidth/2,y:innerHeight/2};f.style.left=pt.x+"px";f.style.top=(pt.y-20)+"px";document.body.append(f);setTimeout(()=>f.remove(),1200);}
 // ---------- Sequência (estilo Duolingo: descanso congela, não quebra) ----------
 function isRest(k){return !!(prog.rest||{})[k]||!!(prog.shield&&prog.shield.used&&prog.shield.used[k]);}
-function streakDays(){const act=k=>(prog.log[k]||[]).some(e=>!/^(ach|checkin|tip|dun):/.test(String(e.q)));const rest=isRest;
+function streakDays(){const act=k=>(prog.log[k]||[]).some(e=>!/^(ach|checkin|tip|dun|sq):/.test(String(e.q)));const rest=isRest;
   const d=new Date();let n=0;if(!act(dkey(d))&&!rest(dkey(d)))d.setDate(d.getDate()-1);
   for(let i=0;i<400;i++){const k=dkey(d);if(act(k))n++;else if(!rest(k))break;d.setDate(d.getDate()-1);}return n;}
-function renderPills(){const n=streakDays();const today=(prog.log[todayKey()]||[]).some(e=>!/^(ach|checkin|tip|dun):/.test(String(e.q)));
+function renderPills(){const n=streakDays();const today=(prog.log[todayKey()]||[]).some(e=>!/^(ach|checkin|tip|dun|sq):/.test(String(e.q)));
   const st=$("streak");st.textContent="🔥 "+n+(n===1?" dia":" dias");st.classList.toggle("cold",!today);st.title=today?"Sequência garantida hoje":"Faça 1 quest hoje para manter a sequência";
   const dt=new Date();const ms=mainsFor(dt);const done=prog.log[todayKey()]||[];const ok=ms.filter(q=>done.some(e=>e.q===q.id)).length;
   $("dayPill").textContent=ok+"/"+ms.length+" principais";$("dayPill").classList.toggle("full",ms.length>0&&ok===ms.length);}
@@ -1221,7 +1238,7 @@ $("restBtn").addEventListener("click",()=>{const tk=todayKey();prog.rest=prog.re
 
 // ---------- Conquistas (novidade que não acaba) ----------
 let ACH=[];function achList(){return [
- ["a_first","Primeiro passo","1ª quest concluída",10,()=>entries().some(e=>!/^(ach|checkin|tip|dun):/.test(String(e.q)))],
+ ["a_first","Primeiro passo","1ª quest concluída",10,()=>entries().some(e=>!/^(ach|checkin|tip|dun|sq):/.test(String(e.q)))],
  ["a_3d","Esquentando","3 dias ativos",20,()=>activeDays()>=3],
  ["a_7d","Uma semana inteira","7 dias ativos",50,()=>activeDays()>=7],
  ["a_21d","Hábito formando","21 dias ativos",100,()=>activeDays()>=21],
@@ -1231,7 +1248,7 @@ let ACH=[];function achList(){return [
  ["a_review","Olhar de dono","1ª revisão da semana",20,()=>Object.keys(prog.reviews||{}).length>0],
  ["a_faith","Coração grato","7 dias com o painel de gratidão",40,()=>Object.keys(prog.faith||{}).length>=7,()=>!!(cfg&&cfg.faith)],
  ["a_once","Missão cumprida","Concluir todas as missões únicas",60,()=>{const o=((cfg&&cfg.quests)||[]).filter(q=>q.once);return o.length>0&&o.every(q=>entries().some(e=>e.q===q.id));}]].filter(a=>!a[5]||a[5]());}
-function activeDays(){return new Set(entries().filter(e=>!/^(ach|checkin|tip|dun):/.test(String(e.q))).map(e=>e.date)).size;}
+function activeDays(){return new Set(entries().filter(e=>!/^(ach|checkin|tip|dun|sq):/.test(String(e.q))).map(e=>e.date)).size;}
 function renderAch(){const box=$("achList");box.textContent="";prog.ach=prog.ach||{};let got=0;
   for(const [id,name,desc,xp] of (ACH=achList())){const on=!!prog.ach[id];if(on)got++;const d=document.createElement("div");d.className="badge"+(on?" on":"");const b=document.createElement("b");b.textContent=(on?"🏅 ":"🔒 ")+name;d.append(b,document.createTextNode(desc+" · +"+xp+" XP"));box.append(d);}
   $("achCount").textContent=got+" / "+ACH.length;$("faithPanel").hidden=!(cfg&&cfg.faith);applyCopy();renderEd();renderAdj();renderRPG();betaUI();setTimeout(dailyCheckin,600);}
@@ -1761,7 +1778,7 @@ function betaPost(parts){const v=["B"].concat(parts).map(x=>String(x==null?"":x)
 function betaTab(t){const b=betaGet();if(!b.on)return;const k=todayKey();b.tabs=b.tabs||{};b.tabs[k]=b.tabs[k]||{};b.tabs[k][t]=(b.tabs[k][t]||0)+1;
   for(const d in b.tabs)if(d<k&&Object.keys(b.tabs).length>3)delete b.tabs[d];betaSet(b);}
 function betaDaily(){const b=betaGet();if(!b.on||betaKid())return;const tk=todayKey();if(b.last===tk)return;
-  const y=new Date();y.setDate(y.getDate()-1);const yk=dkey(y);const L=(prog.log[yk]||[]).filter(e=>!/^(ach|checkin|tip|dun):/.test(String(e.q)));
+  const y=new Date();y.setDate(y.getDate()-1);const yk=dkey(y);const L=(prog.log[yk]||[]).filter(e=>!/^(ach|checkin|tip|dun|sq):/.test(String(e.q)));
   const ms=mainsFor(y);const mDone=ms.filter(q=>L.some(e=>e.q===q.id)).length;
   let act=0;const d=new Date();for(let i=1;i<=14;i++){d.setDate(d.getDate()-1);if((prog.log[dkey(d)]||[]).length)act++;}
   const P=(cfg&&cfg.profile)||{};const c=(prog.rpg&&prog.rpg.cls)||{};const tabs=(b.tabs&&b.tabs[yk])||{};
@@ -1948,7 +1965,7 @@ setTimeout(secMount,0);
 // ---------- Telas enxutas: cada aba mostra uma coisa principal; o resto vira linha que abre com um toque ----------
 // Não apaga nada: só recolhe. O que fica aberto é lembrado nesta sessão (preferência de tela, não é progresso).
 (function(){
-  const KEEP=new Set(["focusPanel","dunPanel","invPanel","onb","quick"]);
+  const KEEP=new Set(["focusPanel","dunPanel","invPanel","onb","quick","syncCard"]);
   const openKey="asc-ui-open";let opened={};try{opened=JSON.parse(sessionStorage.getItem(openKey)||"{}")||{};}catch(e){}
   const saveOpen=()=>{try{sessionStorage.setItem(openKey,JSON.stringify(opened));}catch(e){}};
   function foldAll(){for(const sec of document.querySelectorAll(".wrap>section.panel[data-tab]:not([data-sf])")){
@@ -2039,6 +2056,59 @@ function lgUI(m){let pill=$("lgPill");const dp=$("dayPill");
   if(ln){const l=lgSt();ln.hidden=!(prog.rank&&prog.rank.on);ln.innerHTML="";const b=document.createElement("b");b.textContent=lgName(l.t);const s=document.createElement("span");s.textContent=m?" · "+m.pos+"º de "+m.of+". "+lgRival(m):" · Os 3 primeiros da semana sobem de liga. Ninguém cai.";ln.append(b,s);}}
 {const _rr=renderRankUI;renderRankUI=function(){_rr();try{lgClose();if(rankRows)lgUpdate();else lgUI(null);}catch(e){}};}
 {const _rp=renderPills;renderPills=function(){_rp();try{const p=$("lgPill");if(p&&!p.hidden){const m=lgMe();if(m){p.textContent="🏆 "+m.pos+"º";p.title=lgRival(m);}}}catch(e){}};}
+
+// ---------- Esquadrão (modo cooperativo): até 5 jogadores do ranking enfrentam juntos a Anomalia da semana ----------
+// Sem servidor novo: usa a lista do ranking (opt-in). Cada um monta o esquadrão no próprio app tocando nos nomes.
+// Só ADICIONA prog.squad = {n:nome, m:[nomes], won:{semana:1}}.
+const SQ_MAX=4,SQ_HP=250,SQ_PRIZE=50;
+const SQ_BOSS=["Anomalia Zero","Eco Fantasma","Núcleo Corrompido","Sentinela Vazia","Vírus da Inércia","Ruído Infinito","Espelho Quebrado","Maré Estática"];
+function sqSt(){return prog.squad||null;}
+function sqWk(){return weekStart(todayKey());}
+function sqBoss(){const ws=sqWk();let h=0;for(const c of ws)h=(h*31+c.charCodeAt(0))>>>0;return SQ_BOSS[h%SQ_BOSS.length];}
+function sqRows(){const s=sqSt();if(!s)return [];const me=rankName()||"Você";const rows=[{n:me,xp:weekXP(),me:true}];
+  for(const n of s.m){const r=(rankRows||[]).find(x=>x.n===n);rows.push({n,xp:r?r.xp:0,off:!r});}return rows;}
+function sqState(){const rows=sqRows();const hp=SQ_HP*rows.length;const dmg=rows.reduce((a,r)=>a+r.xp,0);return {rows,hp,dmg,left:Math.max(0,hp-dmg),pct:Math.min(100,Math.round(dmg/hp*100))};}
+function sqCheckWin(){const s=sqSt();if(!s||!s.m.length)return;const st=sqState();const ws=sqWk();s.won=s.won||{};
+  if(st.left>0||s.won[ws])return;s.won[ws]=1;save();
+  sysPop("ESQUADRÃO",sqBoss()+" derrotada","O esquadrão "+s.n+" venceu a anomalia da semana. Recompensa: +"+SQ_PRIZE+" XP para você.",()=>{
+    if((prog.log[todayKey()]||[]).some(e=>String(e.q)==="sq:"+ws))return;
+    addXP({q:"sq:"+ws,kind:"squad",xp:SQ_PRIZE,stat:"foco",t:new Date().toISOString()},"Vitória do esquadrão: +"+SQ_PRIZE+" XP");},"Coletar");}
+function sqEl(tag,cls,txt){const e=document.createElement(tag);if(cls)e.className=cls;if(txt!=null)e.textContent=txt;return e;}
+function sqShare(){const s=sqSt();if(!s)return;const me=rankName()||"eu";
+  const url=location.origin+location.pathname.replace(/(comecar\/)?(index\.html)?$/,"")+"x/";
+  const t="[ ESQUADRÃO "+s.n.toUpperCase()+" ] Anomalia da semana detectada. Entra no Ascension, vai em Progresso > Esquadrão e me recruta: "+me+". "+url;
+  if(navigator.share){navigator.share({title:"Ascension",text:t}).catch(()=>{});return;}
+  window.open("https://wa.me/?text="+encodeURIComponent(t),"_blank");}
+function sqUI(){let p=$("sqPanel");const rp=$("rankPanel");if(!rp)return;
+  if(!p){p=sqEl("section","panel sq");p.id="sqPanel";p.dataset.tab="prog";rp.after(p);}
+  const kid=ageNow()==="kid";p.hidden=kid||!cfg||cfg.blank;if(p.hidden)return;p.textContent="";
+  const hd=sqEl("div","qhead");hd.append(sqEl("h2",null,"🛰️ Esquadrão"),sqEl("span","sm muted","modo cooperativo"));p.append(hd);
+  const on=!!(prog.rank&&prog.rank.on);const s=sqSt();
+  if(!on){p.append(sqEl("div","sqsys","[SISTEMA] Para formar um esquadrão, entre no ranking acima. Seus aliados precisam estar lá também."));return;}
+  if(!s){p.append(sqEl("div","sqsys","[SISTEMA] Junte até "+SQ_MAX+" aliados. Toda semana uma anomalia aparece, e o XP de todos tira a vida dela. Venceu, cada um ganha +"+SQ_PRIZE+" XP."));
+    const row=sqEl("div","add");const inp=sqEl("input");inp.maxLength=16;inp.placeholder="Nome do esquadrão";inp.autocomplete="off";const b=sqEl("button","go","Formar");b.type="button";
+    b.addEventListener("click",()=>{const n=String(inp.value||"").trim().replace(/[|,;"<>]/g,"").slice(0,16);if(!n){inp.focus();return;}prog.squad={n,m:[],won:{}};save();sqUI();toast("Esquadrão "+n+" formado. Recrute aliados.");});
+    row.append(inp,b);p.append(row);return;}
+  const st=sqState();
+  const boss=sqEl("div","sqboss");const top=sqEl("div","sqbt");top.append(sqEl("b",null,"⚠ "+sqBoss().toUpperCase()),sqEl("span",null,st.left?st.left+" HP":"DERROTADA"));
+  const bar=sqEl("div","sqbar");const fill=sqEl("i");fill.style.width=(100-st.pct)+"%";bar.append(fill);
+  boss.append(sqEl("div","sqtag","ESQUADRÃO "+s.n.toUpperCase()+" · SEMANA"),top,bar,sqEl("div","sm muted",st.left?"Dano do esquadrão: "+st.dmg+" de "+st.hp+". Cada XP de vocês conta.":"Anomalia derrotada. Nova ameaça na segunda."));
+  p.append(boss);
+  const ol=sqEl("ol","sqm");const mx=Math.max(1,...st.rows.map(r=>r.xp));
+  for(const r of st.rows){const li=sqEl("li",r.me?"me":"");const nm=sqEl("span","n",r.n+(r.me?" (você)":""));const xb=sqEl("span","x",r.off?"fora do ranking":r.xp+" XP");
+    const g=sqEl("div","g");const gi=sqEl("i");gi.style.width=Math.round(r.xp/mx*100)+"%";g.append(gi);li.append(nm,xb,g);
+    if(!r.me){const x=sqEl("button","link","✕");x.type="button";x.title="Remover";x.addEventListener("click",()=>{s.m=s.m.filter(n=>n!==r.n);save();sqUI();});li.append(x);}
+    ol.append(li);}
+  p.append(ol);
+  const cand=(rankRows||[]).map(r=>r.n).filter(n=>n&&n!==rankName()&&!s.m.includes(n));
+  if(s.m.length<SQ_MAX&&cand.length){p.append(sqEl("div","sm muted","Recrutar do ranking:"));const ch=sqEl("div","sqchips");
+    for(const n of cand.slice(0,24)){const c=sqEl("button","chip","+ "+n);c.type="button";c.addEventListener("click",()=>{if(s.m.length>=SQ_MAX)return;s.m.push(n);save();sqUI();toast(n+" entrou no esquadrão.");sqCheckWin();});ch.append(c);}
+    p.append(ch);}
+  const row=sqEl("div","row");const sh=sqEl("button","ghost","📡 Chamar aliados");sh.type="button";sh.addEventListener("click",sqShare);
+  const lv=sqEl("button","link","Desfazer esquadrão");lv.type="button";lv.addEventListener("click",()=>{if(!confirm("Desfazer o esquadrão "+s.n+"?"))return;prog.squad=null;save();sqUI();});
+  row.append(sh,lv);p.append(row);}
+{const _rr=renderRankUI;renderRankUI=function(){_rr();try{sqUI();sqCheckWin();}catch(e){}};}
+setTimeout(()=>{try{sqUI();}catch(e){}},0);
 
 let saveTimer=null, SYNC="";
 try{SYNC=localStorage.getItem("asc-u-sync")||"";}catch(e){}
