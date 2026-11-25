@@ -69,8 +69,9 @@ function tbHitFx(box,n){if(!box||n<=0||!tbMotion())return;const f=tbEl("span","t
   setTimeout(()=>f.remove(),1300);try{haptic([8,20,8]);}catch(e){}}
 function tbCheckWin(st){const s=tbSt();const ws=tbWk();if(st.left>0||s.won[ws]||st.rows.length<1)return;s.won[ws]=1;save();const b=st.boss;
   const solo=st.rows.length===1;if(!tbSocial())s.won[ws]=1;
-  sysPop("CHEFÃO DERROTADO",b[0]+" caiu!",(solo?"Você derrubou o chefão sozinho.":"A turma ("+st.rows.length+" pessoas) derrubou o chefão antes de domingo.")+" Recompensa: +"+TB_PRIZE+" XP e o título raro « Ruína de "+b[1]+" ».",()=>{
+  sysPop("CHEFÃO DERROTADO",b[0]+" caiu!",(solo?"Você derrubou o chefão sozinho.":"A turma ("+st.rows.length+" pessoas) derrubou o chefão antes de domingo.")+" Recompensa: +"+TB_PRIZE+" XP e o título raro « Ruína de "+b[1]+" »"+(typeof clsGrantScroll==="function"&&!tbSt().scroll?" + 1 Pergaminho de Renascimento (1ª vitória).":"."),()=>{
     if(!entries().some(e=>e.q==="ach:tb:"+ws))addXP({q:"ach:tb:"+ws,kind:"full",xp:TB_PRIZE,stat:"foco",bonus:0,t:new Date().toISOString()},"Chefão derrotado: +"+TB_PRIZE+" XP");
+    try{if(typeof clsGrantScroll==="function"&&!tbSt().scroll){tbSt().scroll=1;save();clsGrantScroll(1,"chefão");}}catch(e){}
     try{if(typeof bxGiveTitle==="function")bxGiveTitle("tb_"+tbN(b[1]),"Ruína de "+b[1],"chefão");}catch(e){}
     try{tbUI();}catch(e){}},"Coletar recompensa");}
 // --- painel na aba Amigos (logo acima da turma) ---
