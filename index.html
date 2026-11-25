@@ -904,7 +904,7 @@ function appBadge(){try{if(!navigator.setAppBadge)return;const tk=todayKey(),log
   const n=todaysQuests().filter(q=>q.main&&!log.some(e=>e.q===q.id)).length;(n?navigator.setAppBadge(n):navigator.clearAppBadge()).catch(()=>{});}catch(e){}}
 // Convidar amigo pela folha de compartilhar do celular.
 function invite(){const url=location.origin+location.pathname.replace(/(comecar\/)?(index\.html)?$/,"")+"convite/";
-  const text="Tô upando a vida real no Ascension. Missões curtas, XP e rank. Bora?";
+  const text="[ SINAL DETECTADO ] Poucos foram escolhidos. Você é um deles.";
   if(navigator.share){navigator.share({title:"Ascension",text,url}).catch(()=>{});return;}
   const t=text+" "+url;(navigator.clipboard?navigator.clipboard.writeText(t):Promise.reject()).then(()=>toast("Convite copiado. Cole no WhatsApp."),()=>toast(t));}
 $("inviteBtn").addEventListener("click",invite);
