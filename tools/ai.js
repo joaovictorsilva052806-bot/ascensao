@@ -11,7 +11,7 @@ function aiPrompt(){const P=(cfg&&cfg.profile)||{};const DNs=["seg","ter","qua",
     "Acordo "+(P.wake||"?")+", durmo "+(P.sleep||"?"),
     P.works?"Trabalho "+(P.workDays||[]).map(d=>DNs[d]).join(",")+" das "+P.workStart+" às "+P.workEnd+(P.lunch?", almoço "+P.lunch:""):"",
     P.studies?"Estudo ("+(P.level||"curso")+(P.course?", "+P.course:"")+") "+(P.classDays||[]).map(d=>DNs[d]).join(",")+" das "+P.classStart+" às "+P.classEnd:"",
-    P.transport?"Deslocamento: "+({onibus:"ônibus",carro:"carro ou moto",ape:"a pé ou bicicleta",casa:"fico em casa"}[P.transport]||P.transport):"",(P.focus||[]).length?"Prioridades: "+P.focus.join(", "):"",P.goal?"Meta grande: "+P.goal:""].filter(Boolean).join("\n");
+    P.transport?"Deslocamento: "+({onibus:"ônibus",carro:"carro ou moto",ape:"a pé ou bicicleta",casa:"fico em casa"}[P.transport]||P.transport):"",(P.focus||[]).length?"Prioridades: "+P.focus.join(", "):"",P.goal?"Meta grande: "+P.goal:"",P.ctx?"Meu dia: "+P.ctx:""].filter(Boolean).join("\n");
   const hist=aiHistory().map(h=>"- "+h.t+": "+h.feitas+" feitas, "+h.minimo+" no mínimo, de "+h.dias+" dias").join("\n")||"- comecei agora, ainda sem histórico";
   const wish=$("aiWish").value.trim();
   return "Você é um coach de hábitos. Uso o app Ascension: minha rotina vira um jogo, cada tarefa feita vale XP. Monte minhas tarefas diárias.\n\n"+

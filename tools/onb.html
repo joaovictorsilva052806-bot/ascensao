@@ -29,8 +29,9 @@
       <div class="dsel" id="o_classDays"></div>
       <div class="two"><label>Aula começa<input type="time" id="o_classStart" value="19:00"></label><label>Aula termina<input type="time" id="o_classEnd" value="22:30"></label></div></div>
     </fieldset>
-    <label>Como você se desloca?<select id="o_transport"><option value="onibus">Ônibus</option><option value="carro">Carro ou moto</option><option value="ape">A pé ou bicicleta</option><option value="casa">Fico em casa / trabalho de casa</option></select></label>
-    <fieldset><legend>O que mais importa agora? (até 4)</legend><div class="chips" id="o_focus"></div></fieldset>
+    <label>Como você se desloca?<select id="o_transport"><option value="">Escolha</option><option value="onibus">Ônibus</option><option value="carro">Carro ou moto</option><option value="ape">A pé ou bicicleta</option><option value="casa">Fico em casa / trabalho de casa</option></select></label>
+    <fieldset><legend>O que mais importa agora? (até 6)</legend><div class="chips" id="o_focus"></div></fieldset>
+    <label>Conte seu dia em uma frase (opcional, deixa as tarefas mais a sua cara)<textarea id="o_ctx" rows="2" maxlength="240" placeholder="Ex.: faço cursinho de manhã, treino à tarde e uso Anki para revisar"></textarea></label>
     <label>Uma meta grande para os próximos meses (opcional)<input id="o_goal" maxlength="80" autocomplete="off" placeholder="Ex.: passar de ano com nota boa"></label>
     <div class="two"><label>Juntar dinheiro R$ (opcional)<input id="o_money" inputmode="decimal" placeholder="Ex.: 1500"></label><label>Até<input type="date" id="o_moneyDate"></label></div>
     <label class="chk"><input type="checkbox" id="o_faith"> Quero o painel de coragem e gratidão (tem espaço para fé, se quiser)</label>

@@ -13,7 +13,7 @@ const OCC_SET={escola:{works:false,studies:true,level:"escola",shift:"manha",tra
   aposentado:{works:false,studies:false,transport:"ape",focus:["corpo","relac","remedio"],hint:"Saúde, remédios e gente por perto."},outro:{hint:""}};
 function pickOcc(v,apply){[...$("o_occ").children].forEach(b=>b.classList.toggle("on",b.dataset.v===v));const s=OCC_SET[v]||{};$("o_occHint").textContent=s.hint||"";
   if(!apply)return;if(s.works!=null)$("o_works").checked=s.works;if(s.studies!=null)$("o_studies").checked=s.studies;if(s.transport)$("o_transport").value=s.transport;if(s.level){$("o_level").value=s.level;levelUI();}if(s.shift){$("o_shift").value=s.shift;shiftTimes();}
-  if(s.focus)toggles("o_focus",FOCI,s.focus,4);syncBoxes();}
+  if(s.focus)toggles("o_focus",FOCI,s.focus,6);syncBoxes();}
 const SHIFT_T={manha:["07:00","12:20"],tarde:["13:00","17:30"],noite:["19:00","22:30"],integral:["07:00","16:30"]};
 function shiftTimes(){const t=SHIFT_T[$("o_shift").value];if(t){$("o_classStart").value=t[0];$("o_classEnd").value=t[1];}}
 function levelUI(){const l=$("o_level").value;$("o_courseLbl").textContent=l==="escola"?"Série":l==="enem"?"Curso que você quer":"Curso";
@@ -31,20 +31,20 @@ function toggles(id,items,sel,max){const box=$(id);box.textContent="";for(const 
   b.addEventListener("click",()=>{if(!b.classList.contains("on")&&max&&box.querySelectorAll(".on").length>=max){$("o_msg").textContent="Escolha no máximo "+max+".";return;}b.classList.toggle("on");});box.append(b);}}
 const picked=id=>[...$(id).querySelectorAll(".on")].map(b=>b.dataset.v);
 function fillOnb(a){a=a||{};const v=(id,x)=>{if(x!=null)$(id).value=x;};
-  v("o_name",a.name);v("o_wake",a.wake);v("o_sleep",a.sleep);v("o_workStart",a.workStart);v("o_lunch",a.lunch);v("o_workEnd",a.workEnd);v("o_course",a.course);v("o_classStart",a.classStart);v("o_classEnd",a.classEnd);v("o_transport",a.transport);$("o_level").value=a.level||(a.studies?"faculdade":"escola");$("o_shift").value=a.shift||(a.level==="escola"?"manha":"noite");levelUI();v("o_goal",a.goal);v("o_money",a.money);v("o_moneyDate",a.moneyDate);
+  v("o_name",a.name);v("o_wake",a.wake);v("o_sleep",a.sleep);v("o_workStart",a.workStart);v("o_lunch",a.lunch);v("o_workEnd",a.workEnd);v("o_course",a.course);v("o_classStart",a.classStart);v("o_classEnd",a.classEnd);v("o_transport",a.transport);$("o_level").value=a.level||(a.studies?"faculdade":"escola");$("o_shift").value=a.shift||(a.level==="escola"?"manha":"noite");levelUI();v("o_goal",a.goal);v("o_ctx",a.ctx);v("o_money",a.money);v("o_moneyDate",a.moneyDate);
   if(a.works!=null)$("o_works").checked=a.works;if(a.studies!=null)$("o_studies").checked=a.studies;if(a.faith!=null)$("o_faith").checked=a.faith;if(a.ping!=null)$("o_ping").checked=a.ping;
   const dd=DN.map((l,i)=>[String(i),l]);toggles("o_workDays",dd,(a.workDays||[0,1,2,3,4]).map(String));toggles("o_classDays",dd,(a.classDays||[0,1,2,3,4]).map(String));
-  toggles("o_focus",FOCI,a.focus||["sono","corpo"],4);syncBoxes();
+  toggles("o_focus",FOCI,a.focus||["sono","corpo"],6);syncBoxes();
   const ob=$("o_occ");ob.textContent="";for(const [v,l] of OCC){const b=document.createElement("button");b.type="button";b.textContent=l;b.dataset.v=v;b.addEventListener("click",()=>pickOcc(v,true));ob.append(b);}pickOcc(a.occ||"",false);
   const ab=$("o_age");ab.textContent="";for(const [v,l] of AGE){const b=document.createElement("button");b.type="button";b.textContent=l;b.dataset.v=v;b.addEventListener("click",()=>pickAge(v,true));ab.append(b);}pickAge(a.age||"",false);}
 function syncBoxes(){$("o_workBox").hidden=!$("o_works").checked;$("o_studyBox").hidden=!$("o_studies").checked;}
 $("o_works").addEventListener("change",syncBoxes);$("o_studies").addEventListener("change",syncBoxes);
 function readOnb(){const g=id=>$(id).value.trim();const oc=$("o_occ").querySelector(".on");const ag=curAge();return {age:ag,level:$("o_studies").checked?$("o_level").value:"",shift:$("o_shift").value,occ:oc?oc.dataset.v:"",name:g("o_name"),wake:g("o_wake")||"07:00",sleep:g("o_sleep")||"23:00",works:$("o_works").checked,workDays:picked("o_workDays").map(Number),workStart:g("o_workStart"),lunch:g("o_lunch"),workEnd:g("o_workEnd"),
-  studies:$("o_studies").checked,course:g("o_course"),classDays:picked("o_classDays").map(Number),classStart:g("o_classStart"),classEnd:g("o_classEnd"),transport:g("o_transport"),focus:picked("o_focus"),goal:g("o_goal"),money:g("o_money"),moneyDate:g("o_moneyDate"),faith:$("o_faith").checked,ping:!isMinorAge(ag)&&$("o_ping").checked};}
+  studies:$("o_studies").checked,course:g("o_course"),classDays:picked("o_classDays").map(Number),classStart:g("o_classStart"),classEnd:g("o_classEnd"),transport:g("o_transport"),focus:picked("o_focus"),goal:g("o_goal"),ctx:g("o_ctx").replace(/[<>]/g,"").slice(0,240),money:g("o_money"),moneyDate:g("o_moneyDate"),faith:$("o_faith").checked,ping:!isMinorAge(ag)&&$("o_ping").checked};}
 const hm=t=>{const [h,m]=(t||"0:0").split(":").map(Number);return h*60+(m||0);};
 const fm=m=>{m=((m%1440)+1440)%1440;return String(Math.floor(m/60)).padStart(2,"0")+"h"+(m%60?String(m%60).padStart(2,"0"):"");};
 function buildCfg(a){const Q=[];let n=0;const add=q=>{q.id=q.id||("g"+(++n));Q.push(q);return q;};
-  const bus=a.transport==="onibus", busy=a.works&&a.studies, f=x=>a.focus.includes(x);
+  const bus=a.transport==="onibus"||(!a.transport&&/ônibus|onibus|busão/i.test(a.ctx||"")), busy=a.works&&a.studies, f=x=>a.focus.includes(x);
   const sleepH=((hm(a.wake)-hm(a.sleep)+1440)%1440)/60;
   const tech=/comput|sistem|software|dados|ti\b|informát|ciência da/i.test(a.course||"");
   const studyIds=[], minor=isMinorAge(a.age), school=a.studies&&a.level==="escola", enem=a.studies&&a.level==="enem";
