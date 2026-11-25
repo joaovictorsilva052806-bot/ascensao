@@ -396,7 +396,7 @@ function entries(){const out=[];for(const k in prog.log){for(const e of (prog.lo
 function earnedXP(){return entries().reduce((s,e)=>s+(e.xp||0)+(e.bonus||0),0);}
 // Punição leve e recuperável: cada quest principal não feita (nem no mínimo) num dia passado = -10 XP.
 // Redenção: fazer todas as principais no dia seguinte perdoa a dívida do dia anterior.
-const PEN=10;
+const PEN=10, DEBT_DAYS=3;
 function mainsFor(dt){const dow=(dt.getDay()+6)%7;return ((cfg&&cfg.quests)||[]).filter(q=>q.main&&!q.once&&(!q.days||q.days.includes(dow)));}
 function onceDoneBefore(q,tk){if(!q.once)return false;for(const k in prog.log){if(k!==tk&&(prog.log[k]||[]).some(e=>e.q===q.id))return true;}return false;}
 function visibleToday(q,dow,tk){return (!q.days||q.days.includes(dow))&&!onceDoneBefore(q,tk);}
@@ -404,6 +404,8 @@ function allMainsDone(dt){const k=dkey(dt);const done=prog.log[k]||[];const m=ma
 function penalties(){
   const out=[];if(!cfg||!cfg.startDate)return out;
   const [y,m,d]=cfg.startDate.split("-").map(Number);const dt=new Date(y,m-1,d);const tk=todayKey();
+  // Punição leve: só os últimos DEBT_DAYS dias contam. Quem some uma semana volta sem o XP zerado.
+  const lim=new Date();lim.setHours(0,0,0,0);lim.setDate(lim.getDate()-DEBT_DAYS);if(dt<lim)dt.setTime(lim.getTime());
   while(dkey(dt)<tk){const k=dkey(dt);const done=prog.log[k]||[];if((prog.rest||{})[k]){dt.setDate(dt.getDate()+1);continue;}
     const missed=mainsFor(dt).filter(q=>!done.some(e=>e.q===q.id));
     if(missed.length){const nx=new Date(dt);nx.setDate(nx.getDate()+1);
@@ -614,9 +616,14 @@ $("revSave").addEventListener("click",()=>{const ws=weekStart(todayKey());const 
   if(first)addXP({q:"q_review:"+ws,kind:"full",xp:30,stat:"mente",bonus:0,t:new Date().toISOString()},"Revisão salva. +30 XP");else{save();render();toast("Revisão atualizada.");}});
 
 // ---------- Backup ----------
-$("bkCopy").addEventListener("click",()=>{const txt=JSON.stringify(prog);const done=()=>toast("Backup copiado. Cole numa nota do iPhone.");
+$("bkCopy").addEventListener("click",()=>{const txt=JSON.stringify({ascensao:2,cfg:(cfg&&!cfg.blank)?cfg:null,prog});const done=()=>toast("Backup copiado. Cole numa nota do iPhone.");
   if(navigator.clipboard&&navigator.clipboard.writeText)navigator.clipboard.writeText(txt).then(done,()=>{$("bkText").value=txt;$("bkText").select();toast("Selecionei o backup: toque em Copiar.");});else{$("bkText").value=txt;$("bkText").select();}});
-$("bkRestore").addEventListener("click",()=>{try{const d=JSON.parse($("bkText").value);if(!d||!d.log)throw 0;prog=Object.assign({log:{},extra:{},faith:{},energy:{},mit:{},reviews:{}},d);save();render();toast("Backup restaurado.");$("bkText").value="";}catch(e){toast("Esse texto não é um backup válido.");}});
+function restoreBackup(raw){let d=JSON.parse(String(raw||"").trim());let c=null;if(d&&d.ascensao&&d.prog){c=d.cfg;d=d.prog;}if(!d||!d.log)throw 0;
+  prog=Object.assign({log:{},extra:{},faith:{},energy:{},mit:{},reviews:{}},d);
+  if(c&&c.quests&&c.quests.length){cfg=c;try{localStorage.setItem(CFG_KEY,JSON.stringify(cfg));}catch(e){}if(cfg.name)$("titleName").textContent=cfg.name;}
+  save();render();return !!c;}
+const CFG_KEY="ascensao-cfg";
+$("bkRestore").addEventListener("click",()=>{try{const withCfg=restoreBackup($("bkText").value);toast(withCfg?"Backup restaurado, com suas tarefas.":"Backup restaurado.");$("bkText").value="";}catch(e){toast("Esse texto não é um backup válido.");}});
 
 
 // ---------- Placar de dinheiro (Pix até a meta) ----------
@@ -724,6 +731,7 @@ addEventListener("hashchange",()=>{if(/[#&]c=/.test(location.hash))location.relo
 try{const c=JSON.parse(localStorage.getItem("ascensao-cfg")||"null");cfg=(c&&(c.version||1)>=DEFAULT_CFG.version)?c:DEFAULT_CFG;}catch(e){cfg=DEFAULT_CFG;}
 if(cfg.name)$("titleName").textContent=cfg.name;
 try{const s=JSON.parse(localStorage.getItem("ascensao-prog")||"null");if(s&&s.log)prog=Object.assign({log:{},extra:{},faith:{},energy:{},mit:{},reviews:{}},s);}catch(e){}
+try{if(navigator.storage&&navigator.storage.persist)navigator.storage.persist().catch(()=>{});}catch(e){}
 render();
 setInterval(()=>{if($("today").dataset.k!==todayKey()){$("today").dataset.k=todayKey();render();}},60000);
 $("today").dataset.k=todayKey();

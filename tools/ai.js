@@ -42,7 +42,9 @@ $("aiRead").addEventListener("click",()=>{const box=$("aiPrev");box.textContent=
 function aiApply(replace){if(!aiNew)return;let Q=(cfg.quests||[]).slice();
   if(replace)Q=Q.filter(q=>q.id==="s_fech");
   const room=3-Q.filter(q=>q.main).length;let k=0;for(const q of aiNew){if(q.main){k++;if(k>room)q.main=false;}}
-  Q=aiNew.concat(Q);cfg=Object.assign({},cfg,{quests:Q,blank:false,aiAt:todayKey()});
+  Q=aiNew.concat(Q);
+  // tarefas novas não geram dívida retroativa: a contagem recomeça hoje
+  const fresh=replace||aiNew.some(q=>q.main);cfg=Object.assign({},cfg,{quests:Q,blank:false,aiAt:todayKey()},fresh?{startDate:todayKey()}:{});
   try{localStorage.setItem("asc-u-cfg",JSON.stringify(cfg));}catch(e){}save();aiNew=null;$("aiPrev").hidden=true;$("aiApply").hidden=true;$("aiIn").value="";
   $("aiMsg").textContent="";render();goTab("hoje");toast(replace?"Tarefas novas no ar! Seu XP e histórico continuam.":"Tarefas adicionadas!");}
 $("aiReplace").addEventListener("click",()=>aiApply(true));$("aiAdd").addEventListener("click",()=>aiApply(false));
