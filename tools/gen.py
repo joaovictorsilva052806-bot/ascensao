@@ -114,5 +114,8 @@ rep('\nlet saveTimer=null, SYNC="";','\n'+open(SP+'simple.js').read()+'\nlet sav
 # sequência estilo Duolingo: escudo automático, marcos e aviso de risco (tools/streak.*)
 rep('</style></head>',open(SP+'streak.css').read()+'</style></head>')
 rep('\nlet saveTimer=null, SYNC="";','\n'+open(SP+'streak.js').read()+'\nlet saveTimer=null, SYNC="";')
+# liga da semana (tools/league.*): divisão que só sobe, rival mais próximo, fechamento da semana
+rep('</style></head>',open(SP+'league.css').read()+'</style></head>')
+rep('\nlet saveTimer=null, SYNC="";','\n'+open(SP+'league.js').read()+'\nlet saveTimer=null, SYNC="";')
 open('comecar/index.html','w').write(s)
 pass

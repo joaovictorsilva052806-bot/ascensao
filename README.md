@@ -27,6 +27,12 @@ Pontos de entrada no JS: `render()` desenha tudo; `toggle(quest, "full"|"min")` 
 
 `tools/streak.js` e `tools/streak.css` (entram nos dois geradores): escudo de sequência automático (começa com 1, +1 nos marcos de 7, 14, 30…, máx. 2), marcos comemorados (1, 3, 7…), "Dia perfeito" quando todas as principais saem, e aviso de risco depois das 18h. Grava só `prog.shield`; dia com escudo conta como descanso em `isRest()`. Teste: `node qa/sequencia.test.js`.
 
+## Liga da semana e classe em 1 toque
+
+`tools/league.js`/`league.css` (só no /comecar/, em cima do ranking opt-in que já existe): divisão de Ferro a Mítica que só sobe (os 3 primeiros da semana sobem, ninguém cai), pílula 🏆 com a posição em Hoje, rival mais próximo ("faltam N XP para passar Fulano"), aviso quando alguém te passa e fechamento da semana na segunda. Grava só `prog.league`. Teste: `node qa/liga.test.js`.
+
+Escolha de classe (`openCls` em `tools/rpg.js`): na 1ª vez o Sistema sugere uma classe pela rotina (1 toque); a lista completa fica em "Ver outras" e ao trocar pelo topo. Teste: `node qa/classe.test.js`.
+
 ## Reinstalação do app pessoal
 
 Na 1ª ligação da planilha num aparelho (link `#s=` ou colar o endereço), a planilha vence e o progresso local vira backup em `ascensao-prog-prelink`. Teste: `node qa/religar.test.js`.
