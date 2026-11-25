@@ -138,7 +138,7 @@ function applyCopy(){const P=(cfg&&cfg.profile)||{};const o=P.occ||"",m=isMinorA
   const mit=P.level==="escola"||o==="escola"?"Ex.: terminar o trabalho de Ciências":o==="estudante"?"Ex.: entregar a lista da faculdade":o==="motorista"?"Ex.: ligar para casa na parada":o==="casa"?"Ex.: pagar a conta de luz":o==="aposentado"?"Ex.: marcar a consulta":o==="autonomo"?"Ex.: mandar o orçamento que está parado":"Ex.: a coisa mais importante de hoje";
   $("mit").placeholder=mit;$("fIntent").placeholder=m?"Ex.: apresentar o trabalho sem travar":"Ex.: pedir ajuda com aquilo que estou adiando";}
 // ---------- Novidades (1x por versão, para quem já tinha perfil) e fluxos de Mais ----------
-const NEWS_V="4";
+const NEWS_V="5";
 function showNews(){let seen="";try{seen=localStorage.getItem("asc-u-news")||"";}catch(e){}$("newsCard").hidden=!(cfg&&!cfg.blank&&seen!==NEWS_V);}
 function newsDone(){try{localStorage.setItem("asc-u-news",NEWS_V);}catch(e){}$("newsCard").hidden=true;}
 $("newsRedo").addEventListener("click",()=>{newsDone();openOnb();});

@@ -1,0 +1,15 @@
+  <section data-tab="mais" class="panel" id="betaPanel">
+    <h2>🧪 Teste do app (beta)</h2>
+    <p class="sm muted">Se você ligar, o app manda <b>uma vez por dia</b> só números, sem nome, texto ou contato. Isso diz se o app está ajudando e o que precisa melhorar.</p>
+    <details><summary>O que exatamente é enviado</summary>
+      <ul class="sm news"><li>Um código aleatório deste aparelho (não é seu nome nem seu número).</li><li>Faixa de idade, tipo de rotina e classe escolhidos no perfil.</li><li>De ontem: quantas tarefas fez, quantas no mínimo, quantas principais, e quais telas abriu (só a contagem).</li><li>Nível, sequência e dias ativos nas últimas 2 semanas.</li><li><b>Nunca</b>: seu nome, o texto das tarefas, horários, anotações, gratidão ou mensagens.</li></ul>
+      <p class="sm muted">Você pode desligar quando quiser. Os números ficam numa planilha privada do criador do app e servem só para melhorar o app.</p>
+    </details>
+    <label class="chk" id="betaParentRow" hidden><input type="checkbox" id="betaParent"> Meu pai, minha mãe ou meu responsável sabe e autorizou.</label>
+    <div class="row"><button class="go" type="button" id="betaOn">Ligar envio anônimo</button><button class="ghost" type="button" id="betaOff" hidden>Desligar</button></div>
+    <div class="sm muted" id="betaMsg"></div>
+    <h3 class="sm" style="margin:14px 0 6px">Nota rápida para o app</h3>
+    <div class="chips" id="betaRate"><button type="button" data-v="1">😞</button><button type="button" data-v="2">😕</button><button type="button" data-v="3">😐</button><button type="button" data-v="4">🙂</button><button type="button" data-v="5">🤩</button></div>
+    <textarea id="betaText" rows="2" maxlength="280" placeholder="Opcional: o que mudaria? (não escreva nome ou contato)" style="font:inherit;width:100%;background:rgba(0,212,255,.04);border:1px solid var(--line);color:var(--fg);border-radius:3px;padding:9px 10px;margin-top:8px"></textarea>
+    <div class="row"><button class="ghost" type="button" id="betaSend">Enviar nota anônima</button></div>
+  </section>
