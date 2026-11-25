@@ -6,7 +6,7 @@ function devSave(){try{localStorage.setItem(DEV_KEY,JSON.stringify(dev));}catch(
 const F_IOS=/iP(hone|ad|od)/.test(navigator.userAgent)||(navigator.platform==="MacIntel"&&navigator.maxTouchPoints>1);
 const F_AND=/Android/i.test(navigator.userAgent);
 const SC_NAME="Ascension Foco";
-const SC_LINK=""; // link do iCloud do atalho pronto (quando existir, vira 1 toque)
+const SC_LINK="https://www.icloud.com/shortcuts/e1277fb50e5843498731ef5a9727f806"; // link do iCloud do atalho pronto (quando existir, vira 1 toque)
 // Háptica: Android usa vibrate; iPhone (iOS 18+) usa o clique de um switch invisível.
 function haptic(p){try{if(navigator.vibrate&&navigator.vibrate(p))return;}catch(e){}
   if(!F_IOS)return;try{const l=document.createElement("label");l.setAttribute("aria-hidden","true");l.style.display="none";const i=document.createElement("input");i.type="checkbox";i.setAttribute("switch","");l.append(i);document.head.append(l);l.click();l.remove();}catch(e){}}
@@ -52,10 +52,10 @@ function fxTick(){const f=prog.focus;if(!(f&&f.end)||$("froom").hidden)return;$(
 // iPhone: Não Perturbe pelo Atalho "Ascension Foco" (o app passa os minutos do bloco).
 function runShortcut(min){location.href="shortcuts://run-shortcut?name="+encodeURIComponent(SC_NAME)+"&input=text&text="+min;}
 function silenceUI(){$("fSilence").hidden=!F_IOS||!!dev.sc;$("fSilenceOn").hidden=!F_IOS||!dev.sc;$("fDroid").hidden=!F_AND;
-  $("fScGet").hidden=!SC_LINK;$("fScSteps").hidden=!!SC_LINK;}
+  $("fScGet").hidden=!SC_LINK;$("fScSteps").hidden=!!SC_LINK;$("fScOk").textContent=SC_LINK?"2. Pronto, adicionei":"Pronto, criei";}
 $("fSilence").addEventListener("click",()=>{$("fSc").hidden=false;$("fSilence").hidden=true;});
 $("fScClose").addEventListener("click",()=>{$("fSc").hidden=true;silenceUI();});
-$("fScGet").addEventListener("click",()=>{if(SC_LINK)location.href=SC_LINK;});
+$("fScGet").addEventListener("click",()=>{if(!SC_LINK)return;const w=window.open(SC_LINK,"_blank");if(!w)location.href=SC_LINK;});
 $("fScTest").addEventListener("click",()=>runShortcut(1));
 $("fScOk").addEventListener("click",()=>{dev.sc=true;devSave();$("fSc").hidden=true;silenceUI();haptic([10,30,10]);toast("Pronto. No próximo foco o iPhone fica em silêncio.");});
 $("fScOff").addEventListener("click",()=>{dev.sc=false;devSave();silenceUI();});

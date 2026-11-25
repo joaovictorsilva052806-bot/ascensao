@@ -1,5 +1,12 @@
 # Relatório de QA (ATENA)
 
+## 25/11/2026 · Atalho "Ascension Foco" em 1 toque no iPhone
+
+- Link do JV conferido pelo conteúdo do atalho: Adjust Date (+Shortcut Input em minutos) e Não Perturbe até a Data Ajustada. O 1º link ficava ligado sem fim e foi recusado.
+- App: botão "1. Adicionar o atalho" abre o link do iCloud; passos manuais só aparecem se não houver link.
+- Testes: qa/foco.test.js 32/32; classe, liga, movimento, religar, rotas, segredos e sequência sem falha. Caches ascensao-v27 / ascensao-u-v36.
+- Não testado aqui: rodar o atalho num iPhone real.
+
 ## 25/11/2026 · liga da semana e classe em 1 toque
 
 Base: Duolingo (ligas semanais com promoção, rival próximo) e onboarding de 1 toque. Playwright 390x844 e 1280x800, relógio simulado, ranking simulado. Placar: 128/128.
