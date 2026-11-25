@@ -1,37 +1,36 @@
   <section class="quick" id="quick" hidden>
-    <div class="qbar"><i id="qBar"></i></div>
+    <div class="qbar"><i id="qBar"></i></div><div class="qsync" id="qSync" aria-hidden="true"></div>
     <div class="qstep qperm" id="qPerm" hidden>
-      <div class="tag">[ SISTEMA ] ACESSO</div>
-      <h2>Permita para começar</h2>
-      <ul class="qplist">
-        <li><span>💾</span><div><b>Salvar seu progresso neste aparelho</b><small>Seu XP não some quando o celular libera espaço.</small></div></li>
-      </ul>
-      <p class="sm muted">Sem conta. Sem localização, câmera ou contatos.</p>
-      <button class="go big" type="button" id="q_perm">Permitir e continuar</button>
+      <div class="qorb" aria-hidden="true"><i></i></div>
+      <div class="qtype" id="qType" aria-live="polite"></div>
+      <div class="qwake" id="qWake">
+        <button class="go big" type="button" id="q_perm">⚡ Despertar</button>
+        <p class="sm muted">Seu progresso fica salvo só neste aparelho. Sem conta.</p>
+      </div>
     </div>
     <div class="qstep" data-s="0">
       <div class="tag">[ SISTEMA ] NOVO JOGADOR DETECTADO</div>
-      <h2>Qual é o seu nome de jogador?</h2>
+      <h2>Como o Sistema deve te chamar?</h2>
       <input id="q_name" maxlength="24" autocomplete="off" placeholder="Seu nome ou apelido" enterkeyhint="next">
       <button class="go big" type="button" id="q_n0">Continuar ▸</button>
       <button class="link" type="button" id="q_bk">Já usava o app? Restaurar backup</button>
     </div>
     <div class="qstep" data-s="1" hidden>
       <div class="tag">[ SISTEMA ] CALIBRANDO</div>
-      <h2>Quantos anos você tem?</h2>
+      <h2 id="q_h1">Quantos anos você tem?</h2>
       <div class="qgrid" id="q_age"></div>
     </div>
     <div class="qstep" data-s="2" hidden>
       <div class="tag">[ SISTEMA ] SUA ROTINA</div>
-      <h2>O que você faz no dia a dia?</h2>
+      <h2 id="q_h2">O que você faz no dia a dia?</h2>
       <div class="qgrid" id="q_occ"></div>
     </div>
     <div class="qstep" data-s="3" hidden>
       <div class="tag">[ SISTEMA ] MISSÃO PRINCIPAL</div>
-      <h2>No que você quer evoluir?</h2>
-      <p class="sm muted">Toque em até 3. Ou escreva a sua.</p>
+      <h2 id="q_h3">No que você quer evoluir?</h2>
+      <p class="sm muted">Já marquei o que combina com você. Troque se quiser.</p>
       <div class="qgrid sm3" id="q_focus"></div>
-      <input id="q_goal" maxlength="60" autocomplete="off" placeholder="Escreva a sua (ex.: tirar 8 em matemática)">
+      <input id="q_goal" maxlength="60" autocomplete="off" placeholder="Ou escreva a sua (opcional)">
       <button class="go big" type="button" id="q_done">Gerar meu jogo ⚡</button>
     </div>
     <div class="qstep" data-s="4" hidden>

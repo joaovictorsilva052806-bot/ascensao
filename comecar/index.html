@@ -358,7 +358,18 @@ button.big{padding:16px;font-size:1.05rem}
 .shake{animation:shake .4s}@keyframes shake{25%{transform:translateX(-6px)}75%{transform:translateX(6px)}}
 .onboarding .wrap>section#quick:not([hidden]){display:flex!important}
 
-.qplist{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:10px}.qplist li{display:flex;gap:12px;align-items:flex-start;border:1px solid var(--line);background:rgba(0,212,255,.05);padding:14px;border-radius:4px}.qplist li>span{font-size:1.4rem;line-height:1}.qplist b{display:block}.qplist small{display:block;color:var(--muted);margin-top:4px;font-size:.85rem;line-height:1.4}
+.qperm{flex:1;align-items:center;justify-content:center;text-align:center;gap:22px;padding-bottom:10vh}
+.qorb{width:104px;height:104px;border-radius:50%;border:1px solid var(--accent);box-shadow:0 0 40px rgba(0,212,255,.35),inset 0 0 24px rgba(0,212,255,.25);display:grid;place-items:center;animation:qpulse 3.2s ease-in-out infinite}
+.qorb i{width:11px;height:11px;border-radius:50%;background:var(--glow);box-shadow:0 0 14px var(--glow)}
+@keyframes qpulse{50%{box-shadow:0 0 70px rgba(0,212,255,.55),inset 0 0 30px rgba(0,212,255,.35);transform:scale(1.05)}}
+.qtype{font-family:var(--f-mono);font-size:.95rem;line-height:1.7;min-height:5.2em;color:var(--fg)}
+.qtype p{margin:0}.qtype p:last-child{color:var(--glow)}
+.qtype .cur::after{content:"▌";color:var(--accent);animation:qblink .8s infinite}@keyframes qblink{50%{opacity:0}}
+.qwake{width:100%;max-width:360px;display:flex;flex-direction:column;gap:10px;opacity:0;transform:translateY(8px);transition:opacity .5s,transform .5s;pointer-events:none}
+.qwake.on{opacity:1;transform:none;pointer-events:auto}
+.qsync{font-family:var(--f-mono);font-size:.68rem;letter-spacing:.2em;color:var(--accent);text-align:right;margin-top:-8px;min-height:1em}
+.quick.waking .qbar,.quick.waking .qsync{visibility:hidden}
+@media (prefers-reduced-motion:reduce){.qorb,.qtype .cur::after{animation:none}.qwake{transition:none}}
 #betaTip,#bossPanel{display:none!important}</style></head><body>
 
 <div class="hudtop"><span>ASCENSION<i>//</i>SISTEMA ONLINE</span><span class="mono" id="clock">--:--</span></div>
@@ -374,39 +385,38 @@ button.big{padding:16px;font-size:1.05rem}
   </section>
 
   <section class="quick" id="quick" hidden>
-    <div class="qbar"><i id="qBar"></i></div>
+    <div class="qbar"><i id="qBar"></i></div><div class="qsync" id="qSync" aria-hidden="true"></div>
     <div class="qstep qperm" id="qPerm" hidden>
-      <div class="tag">[ SISTEMA ] ACESSO</div>
-      <h2>Permita para começar</h2>
-      <ul class="qplist">
-        <li><span>💾</span><div><b>Salvar seu progresso neste aparelho</b><small>Seu XP não some quando o celular libera espaço.</small></div></li>
-      </ul>
-      <p class="sm muted">Sem conta. Sem localização, câmera ou contatos.</p>
-      <button class="go big" type="button" id="q_perm">Permitir e continuar</button>
+      <div class="qorb" aria-hidden="true"><i></i></div>
+      <div class="qtype" id="qType" aria-live="polite"></div>
+      <div class="qwake" id="qWake">
+        <button class="go big" type="button" id="q_perm">⚡ Despertar</button>
+        <p class="sm muted">Seu progresso fica salvo só neste aparelho. Sem conta.</p>
+      </div>
     </div>
     <div class="qstep" data-s="0">
       <div class="tag">[ SISTEMA ] NOVO JOGADOR DETECTADO</div>
-      <h2>Qual é o seu nome de jogador?</h2>
+      <h2>Como o Sistema deve te chamar?</h2>
       <input id="q_name" maxlength="24" autocomplete="off" placeholder="Seu nome ou apelido" enterkeyhint="next">
       <button class="go big" type="button" id="q_n0">Continuar ▸</button>
       <button class="link" type="button" id="q_bk">Já usava o app? Restaurar backup</button>
     </div>
     <div class="qstep" data-s="1" hidden>
       <div class="tag">[ SISTEMA ] CALIBRANDO</div>
-      <h2>Quantos anos você tem?</h2>
+      <h2 id="q_h1">Quantos anos você tem?</h2>
       <div class="qgrid" id="q_age"></div>
     </div>
     <div class="qstep" data-s="2" hidden>
       <div class="tag">[ SISTEMA ] SUA ROTINA</div>
-      <h2>O que você faz no dia a dia?</h2>
+      <h2 id="q_h2">O que você faz no dia a dia?</h2>
       <div class="qgrid" id="q_occ"></div>
     </div>
     <div class="qstep" data-s="3" hidden>
       <div class="tag">[ SISTEMA ] MISSÃO PRINCIPAL</div>
-      <h2>No que você quer evoluir?</h2>
-      <p class="sm muted">Toque em até 3. Ou escreva a sua.</p>
+      <h2 id="q_h3">No que você quer evoluir?</h2>
+      <p class="sm muted">Já marquei o que combina com você. Troque se quiser.</p>
       <div class="qgrid sm3" id="q_focus"></div>
-      <input id="q_goal" maxlength="60" autocomplete="off" placeholder="Escreva a sua (ex.: tirar 8 em matemática)">
+      <input id="q_goal" maxlength="60" autocomplete="off" placeholder="Ou escreva a sua (opcional)">
       <button class="go big" type="button" id="q_done">Gerar meu jogo ⚡</button>
     </div>
     <div class="qstep" data-s="4" hidden>
@@ -1592,32 +1602,41 @@ function dailyCheckin(){if(!cfg||cfg.blank||($("onb")&&!$("onb").hidden)||docume
 const Q_ICON={kid:"🧒",teen:"🎮",young:"⚡",adult:"💼",senior:"🌳",escola:"🎒",estudante:"🎓",clt:"🏢",autonomo:"🚀",casa:"🏠",motorista:"🚚",aposentado:"☕",outro:"✨"};
 const Q_FOC_ICON={estudos:"📚",sono:"😴",corpo:"💪",carreira:"📈",dinheiro:"💰",relac:"❤️",casa:"🧹",remedio:"💊",agua:"💧",tela:"📵",leitura:"📖"};
 let qStep=0,qData={};
-function qGo(n){qStep=n;for(const s of document.querySelectorAll("#quick .qstep"))s.hidden=+s.dataset.s!==n;$("qBar").style.width=(n/4*100)+"%";$("q_full").hidden=n>=4;
+function qGo(n){qStep=n;for(const s of document.querySelectorAll("#quick .qstep"))s.hidden=+s.dataset.s!==n;$("qBar").style.width=(n/4*100)+"%";$("qSync").textContent=n<4?"SINCRONIA "+Math.round(n/4*100)+"%":"SINCRONIA 100%";qHead();$("q_full").hidden=n>=4;
   if(n===0)setTimeout(()=>$("q_name").focus(),120);if(n===3)qFocus();try{if(navigator.vibrate)navigator.vibrate(8);}catch(e){}}
 function qBtns(id,items,cb){const box=$(id);box.textContent="";for(const [v,l] of items){const b=document.createElement("button");b.type="button";b.textContent=(Q_ICON[v]||Q_FOC_ICON[v]||"")+" "+l;b.dataset.v=v;b.addEventListener("click",()=>cb(v,b));box.append(b);}}
 function qFocus(){const minor=qData.age==="kid"||qData.age==="teen";const pref=(OCC_SET[qData.occ]||{}).focus||[];
   const order=FOCI.map(x=>x[0]).sort((a,b)=>(pref.includes(b)-pref.includes(a)));const list=order.map(v=>FOCI.find(x=>x[0]===v)).filter(x=>!(minor&&(x[0]==="remedio"||x[0]==="carreira"))).slice(0,8);
   qBtns("q_focus",list,(v,b)=>{const on=[...$("q_focus").querySelectorAll(".on")];if(!b.classList.contains("on")&&on.length>=3){on[0].classList.remove("on");}b.classList.toggle("on");});
   for(const b of $("q_focus").children)if(pref.slice(0,2).includes(b.dataset.v))b.classList.add("on");
-  $("q_goal").placeholder=minor?"Escreva a sua (ex.: tirar 8 em matemática)":"Escreva a sua (ex.: arrumar um emprego melhor)";}
+  $("q_goal").placeholder=minor?"Ou escreva a sua (ex.: passar de ano)":"Ou escreva a sua (ex.: emprego novo)";}
 function qPermSeen(){try{return !!localStorage.getItem("asc-u-perm");}catch(e){return true;}}
-function openQuick(){qData={};$("q_name").value="";$("q_goal").value="";$("quick").hidden=false;$("onb").hidden=true;document.body.classList.add("onboarding");
-  if(qPermSeen()){$("qPerm").hidden=true;qGo(0);return;}
-  for(const s of document.querySelectorAll("#quick .qstep"))s.hidden=s.id!=="qPerm";$("qBar").style.width="0%";$("q_full").hidden=true;}
-// Primeira abertura: pede só a permissão que o app usa de verdade (armazenamento persistente), depois a configuração.
+const Q_RM=matchMedia("(prefers-reduced-motion: reduce)").matches;
+function qHead(){const n=qData.name?qData.name.split(" ")[0]:"";$("q_h1").textContent=n?n+", quantos anos você tem?":"Quantos anos você tem?";
+  $("q_h2").textContent="O que você faz no dia a dia?";$("q_h3").textContent=n?"Onde você quer evoluir, "+n+"?":"No que você quer evoluir?";}
+// Despertar: a 1ª tela do app. Um toque aceita a única permissão que o app usa e já começa.
+function qAwake(){const box=$("qType"),L=["Sinal confirmado.","Jogador detectado.","Pronto para despertar?"];box.textContent="";$("qWake").classList.remove("on");
+  if(Q_RM){box.innerHTML=L.map(x=>"<p>"+x+"</p>").join("");$("qWake").classList.add("on");return;}
+  let i=0;(function line(){if(i>=L.length||$("qPerm").hidden){$("qWake").classList.add("on");return;}const p=document.createElement("p");p.className="cur";box.append(p);let n=0;
+    const t=setInterval(()=>{n++;p.textContent=L[i].slice(0,n);if(n>=L[i].length){clearInterval(t);p.className="";i++;setTimeout(line,320);}},38);})();}
+function openQuick(){qData={};$("q_name").value="";$("q_goal").value="";$("quick").hidden=false;$("onb").hidden=true;$("intro").hidden=true;document.body.classList.add("onboarding");
+  if(qPermSeen()){$("qPerm").hidden=true;$("quick").classList.remove("waking");qGo(0);return;}
+  for(const s of document.querySelectorAll("#quick .qstep"))s.hidden=s.id!=="qPerm";$("quick").classList.add("waking");$("q_full").hidden=true;qAwake();}
+// pular a digitação com um toque na tela
+$("qPerm").addEventListener("click",e=>{if(e.target.closest("button"))return;const b=$("qType");b.innerHTML="<p>Sinal confirmado.</p><p>Jogador detectado.</p><p>Pronto para despertar?</p>";$("qWake").classList.add("on");});
 $("q_perm").addEventListener("click",async()=>{let ok=false;try{if(navigator.storage&&navigator.storage.persist)ok=await navigator.storage.persist();}catch(e){}
-  try{localStorage.setItem("asc-u-perm",ok?"granted":"asked");}catch(e){}$("qPerm").hidden=true;
-  if(qAfterPerm){const f=qAfterPerm;qAfterPerm=null;$("quick").hidden=true;f();return;}qGo(0);});
-// Igual app de loja: na 1ª abertura a permissão vem antes de tudo (até da apresentação).
-let qAfterPerm=null;
-{const _showIntro=showIntro;showIntro=function(only){if(!only&&!qPermSeen()&&!(cfg&&!cfg.blank)){qAfterPerm=()=>_showIntro(false);openQuick();return;}return _showIntro(only);};}
-function qNameNext(){const n=$("q_name").value.trim();if(!n){$("q_name").focus();$("q_name").classList.add("shake");setTimeout(()=>$("q_name").classList.remove("shake"),400);return;}qData.name=n;qGo(1);}
+  try{localStorage.setItem("asc-u-perm",ok?"granted":"asked");localStorage.setItem("asc-u-intro","1");}catch(e){}
+  try{if(navigator.vibrate)navigator.vibrate([12,60,24]);}catch(e){}
+  $("qPerm").hidden=true;$("quick").classList.remove("waking");qGo(0);});
+// 1ª abertura: sem slides de apresentação, direto para o jogo (a apresentação continua em Mais).
+{const _showIntro=showIntro;showIntro=function(only){if(!only&&!(cfg&&!cfg.blank)){openQuick();return;}return _showIntro(only);};}
+function qNameNext(){const n=$("q_name").value.trim();if(!n){$("q_name").focus();$("q_name").classList.add("shake");setTimeout(()=>$("q_name").classList.remove("shake"),400);return;}qData.name=n.replace(/[<>]/g,"").slice(0,24);qGo(1);}
 $("q_n0").addEventListener("click",qNameNext);$("q_name").addEventListener("keydown",e=>{if(e.key==="Enter"){e.preventDefault();qNameNext();}});
 qBtns("q_age",AGE,v=>{qData.age=v;qGo(2);});
 qBtns("q_occ",OCC,v=>{qData.occ=v;qGo(3);});
 $("q_done").addEventListener("click",()=>{qData.focus=[...$("q_focus").querySelectorAll(".on")].map(b=>b.dataset.v);qData.goal=$("q_goal").value.trim().replace(/[<>]/g,"").slice(0,60);
   if(!qData.focus.length&&!qData.goal){$("q_goal").focus();return;}
-  qGo(4);const msgs=["Lendo sua rotina…","Calibrando dificuldade…","Gerando missões…"];let i=0;const t=setInterval(()=>{i++;if(msgs[i])$("q_load").textContent=msgs[i];},450);
+  qGo(4);const msgs=["Lendo sua rotina…","Calibrando dificuldade…","Forjando suas missões…"];let i=0;const t=setInterval(()=>{i++;if(msgs[i])$("q_load").textContent=msgs[i];},450);
   setTimeout(()=>{clearInterval(t);
     $("o_name").value=qData.name;pickAge(qData.age,true);pickOcc(qData.occ,true);
     const foc=qData.focus.length?qData.focus:((OCC_SET[qData.occ]||{}).focus||["sono"]).slice(0,2);for(const b of $("o_focus").children)b.classList.toggle("on",foc.includes(b.dataset.v));
