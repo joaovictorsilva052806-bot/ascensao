@@ -506,6 +506,16 @@ body.inmission{overflow:hidden}
 .zapcam{display:inline-flex;align-items:center;min-height:44px;padding:0 12px;border:1px solid var(--line);border-radius:8px;cursor:pointer}
 .zapsr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);clip-path:inset(50%);white-space:nowrap}
 @media (prefers-reduced-motion:reduce){.zaptap:active{transform:none}}
+/* ---- Comece por aqui (tools/guide.*) ---- */
+.gd{border-color:var(--gold)!important}
+.gdl{list-style:none;margin:0;padding:0;display:grid;gap:8px}
+.gdl button{width:100%;display:grid;grid-template-columns:36px 1fr;gap:10px;align-items:center;text-align:left;min-height:56px;padding:8px 12px;border-radius:10px;border:1px solid var(--line);background:#0a1222;color:var(--fg);font:inherit}
+.gdl .n{width:32px;height:32px;border-radius:50%;display:grid;place-items:center;font-family:var(--f-mono);border:1px solid var(--glow);color:var(--glow)}
+.gdl .tx{display:grid;gap:2px}.gdl small{color:var(--muted);font-size:.78rem}
+.gdl li.now button{border-color:var(--gold);box-shadow:0 0 12px rgba(242,193,78,.25)}
+.gdl li.now .n{background:var(--gold);color:#1a1200;border-color:var(--gold)}
+.gdl li.ok button{opacity:.55}.gdl li.ok .n{border-color:var(--good);color:var(--good)}
+.gdoff{justify-self:start;font-size:.8rem;opacity:.75}
 </style></head><body>
 
 <div class="hudtop"><span>ASCENSION<i>//</i>SISTEMA ONLINE</span><span class="mono" id="clock">--:--</span></div>
@@ -1781,14 +1791,32 @@ function openCls(){if(clsOpen||(rpgState().cls&&!openCls.force))return;const ful
   for(const [v,l] of [["real","🧭 Vida real"],["fant","⚔️ Fantasia"]]){const b=document.createElement("button");b.type="button";b.dataset.v=v;b.textContent=l;b.addEventListener("click",()=>{style=v;fill();});seg.append(b);}
   const later=document.createElement("button");later.type="button";later.className="link";later.textContent="Escolher depois";later.addEventListener("click",()=>{m.remove();clsOpen="later";});
   // Escolha enxuta (1 toque): o Sistema sugere uma classe; a lista completa fica atrás de "Ver outras".
-  const sx=CLS_REAL.find(x=>x[3]&&x[3]===occ),sg=sx?{style:"real",id:sx[0],name:sx[1],stat:sx[2]}:{style:"fant",id:CLS_FANT[0][0],name:CLS_FANT[0][1],stat:CLS_FANT[0][2]};
+  const SG=clsSuggest(),sg=SG.cl;
   const sug=document.createElement("div");sug.className="clssug";const sb=document.createElement("button");sb.type="button";sb.className="go big";sb.id="clsSug";
   const sbt=document.createElement("b");sbt.textContent=(sg.style==="fant"?"⚔️ ":"🧭 ")+sg.name;const sbs=document.createElement("small");sbs.textContent=RPG_IC[sg.stat]+" "+STATS[sg.stat]+" sobe 1,5x mais rápido";sb.append(sbt,sbs);
   sb.addEventListener("click",()=>pick(sg));const more=document.createElement("button");more.type="button";more.className="link";more.id="clsMore";more.textContent="Ver outras classes";
   sug.append(sb,more);const box=document.createElement("div");box.className="clsall";box.append(seg,grid,own);
   more.addEventListener("click",()=>{sug.hidden=true;box.hidden=false;p.hidden=false;});
+  const why=document.createElement("p");why.className="sm muted clswhy";why.textContent=SG.why;sug.prepend(why);
   if(!full){h.textContent="O Sistema escolheu sua classe";p.hidden=true;box.hidden=true;style=sg.style;}else sug.hidden=true;
   c.append(tag,h,p,sug,box,later);m.append(c);document.body.append(m);fill();}
+// Sugestão de classe pelo perfil (antes caía sempre em Mago quando a ocupação não tinha classe de vida real).
+function clsSuggest(){const P=(cfg&&cfg.profile)||{};const occ=P.occ||"";const F=P.focus||[];
+  const FL={estudos:"Estudos",sono:"Dormir melhor",corpo:"Saúde e corpo",carreira:"Carreira",dinheiro:"Dinheiro",relac:"Pessoas que amo",casa:"Casa em ordem",remedio:"Remédios",agua:"Beber água",tela:"Menos tela",leitura:"Ler mais"};
+  const W={estudos:{mente:2},leitura:{mente:2},tela:{foco:2},sono:{corpo:1,mente:1},corpo:{corpo:2},agua:{corpo:1},remedio:{corpo:1},carreira:{vendas:2},dinheiro:{vendas:2},casa:{foco:2},relac:{foco:1,corpo:1}};
+  const sc={foco:0,mente:0,corpo:0,vendas:0};const by={foco:[],mente:[],corpo:[],vendas:[]};
+  F.forEach((f,i)=>{const w=W[f]||{};const k=1+(F.length-i)*.1;for(const st in w){sc[st]+=w[st]*k;by[st].push(FL[f]||f);}});
+  if(/^(estudante|escola)$/.test(occ)){sc.mente+=1;}if(occ==="autonomo"||occ==="clt"){sc.vendas+=.8;}if(occ==="motorista"){sc.foco+=1;}
+  if(P.goal&&/treino|academia|peso|corrida|correr|músculo|saúde/i.test(P.goal)){sc.corpo+=1.5;by.corpo.push("sua meta");}
+  if(P.goal&&/dinheiro|emprego|empresa|cliente|vend|negócio|renda/i.test(P.goal)){sc.vendas+=1.5;by.vendas.push("sua meta");}
+  if(P.goal&&/prova|enem|vestibular|nota|estud|curso|faculdade/i.test(P.goal)){sc.mente+=1.5;by.mente.push("sua meta");}
+  let h=0;for(const c of String((cfg&&cfg.name)||"")+(cfg&&cfg.startDate||""))h=(h*31+c.charCodeAt(0))>>>0;
+  const st=Object.keys(sc).sort((a,b)=>sc[b]-sc[a]||((h>>("fmcv".indexOf(a[0])*2))&3)-((h>>("fmcv".indexOf(b[0])*2))&3))[0];
+  const real=CLS_REAL.find(x=>x[3]&&x[3]===occ);
+  const why0=by[st].length?"Por causa de "+[...new Set(by[st])].slice(0,2).join(" e ")+", seu ponto forte é "+STATS[st]+".":"Pelo seu perfil, seu ponto forte é "+STATS[st]+".";
+  if(real&&real[2]===st)return {cl:{style:"real",id:real[0],name:real[1],stat:real[2]},why:why0+" Classe da sua rotina."};
+  const opts=CLS_FANT.filter(x=>x[2]===st);const f=opts[h%opts.length]||CLS_FANT[0];
+  return {cl:{style:"fant",id:f[0],name:f[1],stat:f[2]},why:why0};}
 function chgCls(){openCls.force=true;clsOpen=false;openCls();}
 $("clsChange").addEventListener("click",chgCls);
 if($("clsPill")){const cp=$("clsPill");cp.setAttribute("role","button");cp.tabIndex=0;cp.addEventListener("click",chgCls);}
@@ -2014,7 +2042,7 @@ setTimeout(secMount,0);
 // ---------- Telas enxutas: cada aba mostra uma coisa principal; o resto vira linha que abre com um toque ----------
 // Não apaga nada: só recolhe. O que fica aberto é lembrado nesta sessão (preferência de tela, não é progresso).
 (function(){
-  const KEEP=new Set(["focusPanel","dunPanel","invPanel","onb","quick","syncCard","zapPanel"]);
+  const KEEP=new Set(["focusPanel","dunPanel","invPanel","onb","quick","syncCard","zapPanel","gdPanel"]);
   const openKey="asc-ui-open";let opened={};try{opened=JSON.parse(sessionStorage.getItem(openKey)||"{}")||{};}catch(e){}
   const saveOpen=()=>{try{sessionStorage.setItem(openKey,JSON.stringify(opened));}catch(e){}};
   function foldAll(){for(const sec of document.querySelectorAll(".wrap>section.panel[data-tab]:not([data-sf])")){
@@ -2418,6 +2446,31 @@ function zapUI(){let p=$("zapPanel");const qp=$("quests")&&$("quests").closest("
 {const _rr=renderRankUI;renderRankUI=function(){_rr();try{zapUI();}catch(e){}};}
 {const _r=render;render=function(){_r.apply(this,arguments);try{zapUI();}catch(e){}};}
 setTimeout(()=>{try{zapUI();}catch(e){}},0);
+
+// ---------- Comece por aqui: 3 passos claros no primeiro uso (some quando termina) ----------
+function gdSteps(){const L=prog.log||{};let quest=false;for(const d in L)if((L[d]||[]).some(e=>!/^(ach|checkin|tip|dun|sq|zap|boss|foco):/.test(String(e.q)))){quest=true;break;}
+  const zap=Object.keys(prog.zap||{}).length>0;const rank=!!(prog.gd&&prog.gd.rank);
+  return [{k:"q",ok:quest||!!prog.msUsed,t:"Toque em ▶ na sua PRÓXIMA missão",s:"O app abre a missão com timer e ferramenta."},
+    {k:"z",ok:zap,t:"Faça 1 desafio relâmpago ⚡",s:"30 segundos. Vale XP e te sobe no ranking."},
+    {k:"r",ok:rank,t:"Veja seu lugar no ranking",s:ageNow()==="kid"?"Em Progresso: seus atributos e a masmorra.":"Em Progresso: quem está na sua frente."}];}
+function gdUI(){let p=$("gdPanel");const anchor=$("zapPanel")||($("quests")&&$("quests").closest("section"));if(!anchor)return;
+  prog.gd=prog.gd||{};const st=gdSteps();const all=st.every(x=>x.ok);
+  if(all&&!prog.gd.paid){prog.gd.paid=1;save();addXP({q:"tip:guia",kind:"tip",xp:20,stat:"foco",bonus:0,t:new Date().toISOString()},"");sysPop("TUTORIAL","Sistema calibrado","Você já sabe jogar: missão, desafio e ranking. +20 XP.",null,"Bora");}
+  if(!cfg||cfg.blank||all||prog.gd.off){if(p)p.remove();return;}
+  if(!p){p=document.createElement("section");p.className="panel gd";p.id="gdPanel";p.dataset.tab="hoje";anchor.before(p);}
+  p.textContent="";const hd=document.createElement("div");hd.className="qhead";const h=document.createElement("h2");h.textContent="🧭 Comece por aqui";const n=document.createElement("span");n.className="xp";n.textContent=st.filter(x=>x.ok).length+"/3 · +20 XP";hd.append(h,n);p.append(hd);
+  const ol=document.createElement("ol");ol.className="gdl";let first=true;
+  for(const [i,x] of st.entries()){const li=document.createElement("li");li.className=x.ok?"ok":first?"now":"";if(!x.ok)first=false;
+    const b=document.createElement("button");b.type="button";b.disabled=x.ok;const nb=document.createElement("span");nb.className="n";nb.textContent=x.ok?"✓":String(i+1);
+    const tx=document.createElement("span");tx.className="tx";const tb=document.createElement("b");tb.textContent=x.t;const sm=document.createElement("small");sm.textContent=x.s;tx.append(tb,sm);b.append(nb,tx);
+    b.addEventListener("click",()=>gdGo(x.k));li.append(b);ol.append(li);}
+  p.append(ol);const off=document.createElement("button");off.type="button";off.className="link gdoff";off.textContent="Já sei usar, esconder";off.addEventListener("click",()=>{prog.gd.off=1;save();gdUI();});p.append(off);}
+function gdGo(k){if(k==="q"){const b=document.querySelector("#quests .quest.next .msgo")||document.querySelector("#quests .msgo");if(b){b.scrollIntoView({block:"center",behavior:"smooth"});setTimeout(()=>b.click(),350);}}
+  else if(k==="z"){const c=document.querySelector(".zapc:not(.done)");if(c)c.click();}
+  else if(k==="r"){prog.gd=prog.gd||{};prog.gd.rank=1;save();const b=document.querySelector('nav button[data-go="prog"]');if(b)b.click();setTimeout(()=>{const r=$("rankPanel");if(r&&!r.hidden)r.scrollIntoView({block:"start",behavior:"smooth"});},250);}}
+document.addEventListener("click",e=>{const b=e.target.closest&&e.target.closest('nav button[data-go="prog"]');if(b&&prog){prog.gd=prog.gd||{};if(!prog.gd.rank){prog.gd.rank=1;save();}}},true);
+{const _r=render;render=function(){_r.apply(this,arguments);try{gdUI();}catch(e){}};}
+setTimeout(()=>{try{gdUI();}catch(e){}},50);
 
 let saveTimer=null, SYNC="";
 try{SYNC=localStorage.getItem("asc-u-sync")||"";}catch(e){}

@@ -120,14 +120,32 @@ function openCls(){if(clsOpen||(rpgState().cls&&!openCls.force))return;const ful
   for(const [v,l] of [["real","🧭 Vida real"],["fant","⚔️ Fantasia"]]){const b=document.createElement("button");b.type="button";b.dataset.v=v;b.textContent=l;b.addEventListener("click",()=>{style=v;fill();});seg.append(b);}
   const later=document.createElement("button");later.type="button";later.className="link";later.textContent="Escolher depois";later.addEventListener("click",()=>{m.remove();clsOpen="later";});
   // Escolha enxuta (1 toque): o Sistema sugere uma classe; a lista completa fica atrás de "Ver outras".
-  const sx=CLS_REAL.find(x=>x[3]&&x[3]===occ),sg=sx?{style:"real",id:sx[0],name:sx[1],stat:sx[2]}:{style:"fant",id:CLS_FANT[0][0],name:CLS_FANT[0][1],stat:CLS_FANT[0][2]};
+  const SG=clsSuggest(),sg=SG.cl;
   const sug=document.createElement("div");sug.className="clssug";const sb=document.createElement("button");sb.type="button";sb.className="go big";sb.id="clsSug";
   const sbt=document.createElement("b");sbt.textContent=(sg.style==="fant"?"⚔️ ":"🧭 ")+sg.name;const sbs=document.createElement("small");sbs.textContent=RPG_IC[sg.stat]+" "+STATS[sg.stat]+" sobe 1,5x mais rápido";sb.append(sbt,sbs);
   sb.addEventListener("click",()=>pick(sg));const more=document.createElement("button");more.type="button";more.className="link";more.id="clsMore";more.textContent="Ver outras classes";
   sug.append(sb,more);const box=document.createElement("div");box.className="clsall";box.append(seg,grid,own);
   more.addEventListener("click",()=>{sug.hidden=true;box.hidden=false;p.hidden=false;});
+  const why=document.createElement("p");why.className="sm muted clswhy";why.textContent=SG.why;sug.prepend(why);
   if(!full){h.textContent="O Sistema escolheu sua classe";p.hidden=true;box.hidden=true;style=sg.style;}else sug.hidden=true;
   c.append(tag,h,p,sug,box,later);m.append(c);document.body.append(m);fill();}
+// Sugestão de classe pelo perfil (antes caía sempre em Mago quando a ocupação não tinha classe de vida real).
+function clsSuggest(){const P=(cfg&&cfg.profile)||{};const occ=P.occ||"";const F=P.focus||[];
+  const FL={estudos:"Estudos",sono:"Dormir melhor",corpo:"Saúde e corpo",carreira:"Carreira",dinheiro:"Dinheiro",relac:"Pessoas que amo",casa:"Casa em ordem",remedio:"Remédios",agua:"Beber água",tela:"Menos tela",leitura:"Ler mais"};
+  const W={estudos:{mente:2},leitura:{mente:2},tela:{foco:2},sono:{corpo:1,mente:1},corpo:{corpo:2},agua:{corpo:1},remedio:{corpo:1},carreira:{vendas:2},dinheiro:{vendas:2},casa:{foco:2},relac:{foco:1,corpo:1}};
+  const sc={foco:0,mente:0,corpo:0,vendas:0};const by={foco:[],mente:[],corpo:[],vendas:[]};
+  F.forEach((f,i)=>{const w=W[f]||{};const k=1+(F.length-i)*.1;for(const st in w){sc[st]+=w[st]*k;by[st].push(FL[f]||f);}});
+  if(/^(estudante|escola)$/.test(occ)){sc.mente+=1;}if(occ==="autonomo"||occ==="clt"){sc.vendas+=.8;}if(occ==="motorista"){sc.foco+=1;}
+  if(P.goal&&/treino|academia|peso|corrida|correr|músculo|saúde/i.test(P.goal)){sc.corpo+=1.5;by.corpo.push("sua meta");}
+  if(P.goal&&/dinheiro|emprego|empresa|cliente|vend|negócio|renda/i.test(P.goal)){sc.vendas+=1.5;by.vendas.push("sua meta");}
+  if(P.goal&&/prova|enem|vestibular|nota|estud|curso|faculdade/i.test(P.goal)){sc.mente+=1.5;by.mente.push("sua meta");}
+  let h=0;for(const c of String((cfg&&cfg.name)||"")+(cfg&&cfg.startDate||""))h=(h*31+c.charCodeAt(0))>>>0;
+  const st=Object.keys(sc).sort((a,b)=>sc[b]-sc[a]||((h>>("fmcv".indexOf(a[0])*2))&3)-((h>>("fmcv".indexOf(b[0])*2))&3))[0];
+  const real=CLS_REAL.find(x=>x[3]&&x[3]===occ);
+  const why0=by[st].length?"Por causa de "+[...new Set(by[st])].slice(0,2).join(" e ")+", seu ponto forte é "+STATS[st]+".":"Pelo seu perfil, seu ponto forte é "+STATS[st]+".";
+  if(real&&real[2]===st)return {cl:{style:"real",id:real[0],name:real[1],stat:real[2]},why:why0+" Classe da sua rotina."};
+  const opts=CLS_FANT.filter(x=>x[2]===st);const f=opts[h%opts.length]||CLS_FANT[0];
+  return {cl:{style:"fant",id:f[0],name:f[1],stat:f[2]},why:why0};}
 function chgCls(){openCls.force=true;clsOpen=false;openCls();}
 $("clsChange").addEventListener("click",chgCls);
 if($("clsPill")){const cp=$("clsPill");cp.setAttribute("role","button");cp.tabIndex=0;cp.addEventListener("click",chgCls);}

@@ -129,5 +129,8 @@ rep('\nlet saveTimer=null, SYNC="";','\n'+open(SP+'tele.js').read()+'\nlet saveT
 # desafios relâmpago: 3 por dia, contador por toque, timer, foto de prova local; sobem no ranking (tools/zap.*)
 rep('</style></head>',open(SP+'zap.css').read()+'</style></head>')
 rep('\nlet saveTimer=null, SYNC="";','\n'+open(SP+'zap.js').read()+'\nlet saveTimer=null, SYNC="";')
+# comece por aqui: guia de 3 passos no primeiro uso (tools/guide.*)
+rep('</style></head>',open(SP+'guide.css').read()+'</style></head>')
+rep('\nlet saveTimer=null, SYNC="";','\n'+open(SP+'guide.js').read()+'\nlet saveTimer=null, SYNC="";')
 open('comecar/index.html','w').write(s)
 pass

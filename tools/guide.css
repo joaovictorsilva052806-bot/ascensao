@@ -1,0 +1,10 @@
+/* ---- Comece por aqui (tools/guide.*) ---- */
+.gd{border-color:var(--gold)!important}
+.gdl{list-style:none;margin:0;padding:0;display:grid;gap:8px}
+.gdl button{width:100%;display:grid;grid-template-columns:36px 1fr;gap:10px;align-items:center;text-align:left;min-height:56px;padding:8px 12px;border-radius:10px;border:1px solid var(--line);background:#0a1222;color:var(--fg);font:inherit}
+.gdl .n{width:32px;height:32px;border-radius:50%;display:grid;place-items:center;font-family:var(--f-mono);border:1px solid var(--glow);color:var(--glow)}
+.gdl .tx{display:grid;gap:2px}.gdl small{color:var(--muted);font-size:.78rem}
+.gdl li.now button{border-color:var(--gold);box-shadow:0 0 12px rgba(242,193,78,.25)}
+.gdl li.now .n{background:var(--gold);color:#1a1200;border-color:var(--gold)}
+.gdl li.ok button{opacity:.55}.gdl li.ok .n{border-color:var(--good);color:var(--good)}
+.gdoff{justify-self:start;font-size:.8rem;opacity:.75}
