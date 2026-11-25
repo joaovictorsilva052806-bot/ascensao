@@ -99,5 +99,8 @@ rep('\nlet saveTimer=null, SYNC="";','\n'+open(SP+'quick.js').read()+'\nlet save
 # jogadores: só o jogo e o Sistema (sem chefe duplicado da masmorra, sem convite de beta na tela Hoje)
 rep('</style></head>','#betaTip,#bossPanel{display:none!important}</style></head>')
 rep('<li><b>Chefe da semana:</b> suas quests principais tiram vida dele. Derrotou, ganha XP extra. Ele volta toda segunda.</li>','<li><b>Masmorra da semana:</b> cada dia com as tarefas principais feitas limpa um andar. 5 andares abrem o baú (+50 XP). Ela volta toda segunda.</li>')
+# segredos: conquistas ocultas, códigos e títulos raros
+rep('</style></head>',open(SP+'secret.css').read()+'</style></head>')
+rep('\nlet saveTimer=null, SYNC="";','\n'+open(SP+'secret.js').read()+'\nlet saveTimer=null, SYNC="";')
 open('comecar/index.html','w').write(s)
 pass
