@@ -42,7 +42,7 @@ function tlLeave(){const t=tlGet();if(!t.on)return;if(!confirm("Sair do painel d
   tlSend("sair","pedido de exclusão");t.on=false;t.left=tlDk();tlSet(t);tlUI();toast("Pronto. Você saiu e seus dados somem do painel do criador.");}
 // Mais > Painel do criador
 function tlUI(){let p=$("tlPanel");if(!p){const anchor=$("betaPanel");if(!anchor)return;p=document.createElement("section");p.className="panel";p.id="tlPanel";p.dataset.tab="mais";
-    const hd=document.createElement("div");hd.className="qhead";const h=document.createElement("h2");h.textContent="🛰️ Painel do criador";hd.append(h);const bd=document.createElement("div");bd.id="tlBody";bd.className="tlbody";p.append(hd,bd);anchor.after(p);}
+    const hd=document.createElement("div");hd.className="qhead";const h=document.createElement("h2");h.textContent="🛰️ Seus dados e o criador";hd.append(h);const bd=document.createElement("div");bd.id="tlBody";bd.className="tlbody";p.append(hd,bd);anchor.after(p);}
   const bd=$("tlBody");const t=tlGet(),kid=tlKid();bd.textContent="";
   const s=document.createElement("div");s.className="sm";s.textContent=kid?"Para quem tem até 13 anos fica desligado. Nada com seu nome sai do celular.":t.on?("Ligado como \""+(t.nick||"")+"\". O criador vê seu apelido e como você usa o app. Nunca localização, contatos, telefone ou fotos."):"Desligado. Só uma contagem anônima (abriu, instalou) sai do celular.";bd.append(s);
   if(kid)return;const r=document.createElement("div");r.className="row";const b=document.createElement("button");b.type="button";

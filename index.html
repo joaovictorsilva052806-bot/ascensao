@@ -72,7 +72,7 @@ tr.cur td{color:var(--glow);font-weight:600}
 .faith textarea,.faith input{font:inherit;width:100%;background:#0a1222;border:1px solid var(--line);color:var(--fg);border-radius:7px;padding:9px 10px;resize:vertical}
 .faith label{font-size:.82rem;color:var(--muted);display:flex;flex-direction:column;gap:6px}
 .motto{font-family:var(--f-display);font-size:1.1rem;color:var(--gold);letter-spacing:.04em}
-.seg{display:grid;grid-template-columns:repeat(3,1fr);gap:6px}
+.seg{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:6px}
 .seg button{padding:10px 6px}
 .seg button.on{background:var(--accent);border-color:var(--accent);color:#fff}
 .low{font-size:.85rem;padding:10px 12px;border-radius:8px;border:1px solid rgba(242,193,78,.5);background:rgba(242,193,78,.07)}
@@ -99,7 +99,7 @@ details p,details li{color:var(--muted);font-size:.86rem}
 .badge{border:1px solid var(--line);border-radius:8px;padding:8px;font-size:.78rem;color:var(--muted);background:#0a1222}
 .badge.on{border-color:var(--gold);color:var(--fg);box-shadow:0 0 10px rgba(242,193,78,.2)}
 .badge b{display:block;font-family:var(--f-display);font-size:.86rem}
-.kpis{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
+.kpis{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px}
 .empty{padding:14px;border:1px dashed var(--line);border-radius:8px;color:var(--muted);font-size:.88rem}
 @media (max-width:440px){.stats{grid-template-columns:repeat(2,1fr)}.rank{width:64px;height:64px;font-size:2rem}}
 @media (prefers-reduced-motion:reduce){.bar>i{transition:none}}
@@ -290,8 +290,8 @@ body.enter .quest{animation:qIn .35s ease-out backwards}
 .clsbtn.sug{border-color:var(--gold);box-shadow:0 0 0 1px var(--gold)}
 #betaPanel label.chk{display:flex;align-items:center;gap:8px;margin:10px 0;font-size:.86rem}
 #betaRate button{font-size:1.3rem;padding:6px 10px}
-.dun{display:grid;grid-template-columns:repeat(7,1fr);gap:6px;margin:10px 0 8px}
-.dun>div{aspect-ratio:1;border:1px solid var(--line);border-radius:6px;display:flex;flex-direction:column;align-items:center;justify-content:center;font-size:.66rem;color:var(--muted);gap:2px}
+.dun{display:grid;grid-template-columns:repeat(7,minmax(0,1fr));gap:4px;margin:10px 0 8px}
+.dun>div{min-width:0;overflow:hidden;aspect-ratio:1;border:1px solid var(--line);border-radius:6px;display:flex;flex-direction:column;align-items:center;justify-content:center;font-size:.66rem;color:var(--muted);gap:2px}
 .dun>div b{font-size:1rem}
 .dun>.ok{border-color:var(--good,#35d49a);color:var(--good,#35d49a);background:rgba(53,212,154,.08)}
 .dun>.miss{opacity:.45}
@@ -1641,8 +1641,8 @@ function chAdd(item,custom){const L=chSt();if(L.length>=CH_MAX){toast("Até "+CH
   L.push({id:Math.random().toString(36).slice(2,8),h:item.h,n,ic:item.ic,since:chDk(),run:0,best:0,bank:0,restarts:0,last:null});save();chOpen=false;chUI();
   toast("Corrente criada. Marque todo dia que conseguir.");}
 let chOpen=false;
-function chUI(){let p=$("chPanel");const anchor=$("zapPanel")||($("quests")&&$("quests").closest("section"));if(!anchor)return;
-  if(!p){p=chEl("section","panel chn");p.id="chPanel";p.dataset.tab="hoje";if(anchor.id==="zapPanel")anchor.after(p);else anchor.before(p);}
+function chUI(){let p=$("chPanel");const anchor=$("quests")&&$("quests").closest("section");if(!anchor)return;
+  if(!p){p=chEl("section","panel chn");p.id="chPanel";p.dataset.tab="hoje";anchor.after(p);}
   if(!cfg||cfg.blank){p.hidden=true;return;}p.hidden=false;p.textContent="";const L=chSt();
   const hd=chEl("div","qhead");hd.append(chEl("h2",null,"⛓️ Quebrar correntes"),chEl("span","xp",L.length?L.filter(c=>c.last===chDk()).length+"/"+L.length+" hoje":"um dia de cada vez"));p.append(hd);
   if(!L.length&&!chOpen){p.append(chEl("div","sm muted","Escolha um hábito que você quer largar. Cada dia limpo dá XP, e a sequência enche um cofre que abre nos marcos."));}

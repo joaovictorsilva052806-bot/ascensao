@@ -51,8 +51,8 @@ body.enter .quest{animation:qIn .35s ease-out backwards}
 .clsbtn.sug{border-color:var(--gold);box-shadow:0 0 0 1px var(--gold)}
 #betaPanel label.chk{display:flex;align-items:center;gap:8px;margin:10px 0;font-size:.86rem}
 #betaRate button{font-size:1.3rem;padding:6px 10px}
-.dun{display:grid;grid-template-columns:repeat(7,1fr);gap:6px;margin:10px 0 8px}
-.dun>div{aspect-ratio:1;border:1px solid var(--line);border-radius:6px;display:flex;flex-direction:column;align-items:center;justify-content:center;font-size:.66rem;color:var(--muted);gap:2px}
+.dun{display:grid;grid-template-columns:repeat(7,minmax(0,1fr));gap:4px;margin:10px 0 8px}
+.dun>div{min-width:0;overflow:hidden;aspect-ratio:1;border:1px solid var(--line);border-radius:6px;display:flex;flex-direction:column;align-items:center;justify-content:center;font-size:.66rem;color:var(--muted);gap:2px}
 .dun>div b{font-size:1rem}
 .dun>.ok{border-color:var(--good,#35d49a);color:var(--good,#35d49a);background:rgba(53,212,154,.08)}
 .dun>.miss{opacity:.45}
