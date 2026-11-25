@@ -10,7 +10,17 @@ function qFocus(){const minor=qData.age==="kid"||qData.age==="teen";const pref=(
   qBtns("q_focus",list,(v,b)=>{const on=[...$("q_focus").querySelectorAll(".on")];if(!b.classList.contains("on")&&on.length>=3){on[0].classList.remove("on");}b.classList.toggle("on");});
   for(const b of $("q_focus").children)if(pref.slice(0,2).includes(b.dataset.v))b.classList.add("on");
   $("q_goal").placeholder=minor?"Escreva a sua (ex.: tirar 8 em matemática)":"Escreva a sua (ex.: arrumar um emprego melhor)";}
-function openQuick(){qData={};$("q_name").value="";$("q_goal").value="";$("quick").hidden=false;$("onb").hidden=true;document.body.classList.add("onboarding");qGo(0);}
+function qPermSeen(){try{return !!localStorage.getItem("asc-u-perm");}catch(e){return true;}}
+function openQuick(){qData={};$("q_name").value="";$("q_goal").value="";$("quick").hidden=false;$("onb").hidden=true;document.body.classList.add("onboarding");
+  if(qPermSeen()){$("qPerm").hidden=true;qGo(0);return;}
+  for(const s of document.querySelectorAll("#quick .qstep"))s.hidden=s.id!=="qPerm";$("qBar").style.width="0%";$("q_full").hidden=true;}
+// Primeira abertura: pede só a permissão que o app usa de verdade (armazenamento persistente), depois a configuração.
+$("q_perm").addEventListener("click",async()=>{let ok=false;try{if(navigator.storage&&navigator.storage.persist)ok=await navigator.storage.persist();}catch(e){}
+  try{localStorage.setItem("asc-u-perm",ok?"granted":"asked");}catch(e){}$("qPerm").hidden=true;
+  if(qAfterPerm){const f=qAfterPerm;qAfterPerm=null;$("quick").hidden=true;f();return;}qGo(0);});
+// Igual app de loja: na 1ª abertura a permissão vem antes de tudo (até da apresentação).
+let qAfterPerm=null;
+{const _showIntro=showIntro;showIntro=function(only){if(!only&&!qPermSeen()&&!(cfg&&!cfg.blank)){qAfterPerm=()=>_showIntro(false);openQuick();return;}return _showIntro(only);};}
 function qNameNext(){const n=$("q_name").value.trim();if(!n){$("q_name").focus();$("q_name").classList.add("shake");setTimeout(()=>$("q_name").classList.remove("shake"),400);return;}qData.name=n;qGo(1);}
 $("q_n0").addEventListener("click",qNameNext);$("q_name").addEventListener("keydown",e=>{if(e.key==="Enter"){e.preventDefault();qNameNext();}});
 qBtns("q_age",AGE,v=>{qData.age=v;qGo(2);});

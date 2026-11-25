@@ -14,3 +14,5 @@ button.big{padding:16px;font-size:1.05rem}
 @media (prefers-reduced-motion:reduce){.qstep,.qspin{animation:none}}
 .shake{animation:shake .4s}@keyframes shake{25%{transform:translateX(-6px)}75%{transform:translateX(6px)}}
 .onboarding .wrap>section#quick:not([hidden]){display:flex!important}
+
+.qplist{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:10px}.qplist li{display:flex;gap:12px;align-items:flex-start;border:1px solid var(--line);background:rgba(0,212,255,.05);padding:14px;border-radius:4px}.qplist li>span{font-size:1.4rem;line-height:1}.qplist b{display:block}.qplist small{display:block;color:var(--muted);margin-top:4px;font-size:.85rem;line-height:1.4}
