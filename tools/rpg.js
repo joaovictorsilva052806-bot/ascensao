@@ -94,7 +94,7 @@ function renderRPG(){renderDun();sysTipUI();const r=rpgState();const st=statXP()
       rpgState().spent+=w.c;save();render();sysPop("RECOMPENSA","Aproveite: "+w.t,"Você ganhou isso. Curta sem culpa e volte com energia.");});
     const del=document.createElement("button");del.type="button";del.className="link";del.textContent="✕";del.setAttribute("aria-label","Remover recompensa");del.addEventListener("click",()=>{rpgState().rew.splice(i,1);save();render();});
     row.append(sp,c,bt,del);cl.append(row);});
-  const tk=todayKey();const tc=$("tipCard");tc.hidden=!!r.tips[tk];$("tipText").textContent=rpgTip();}
+  const tk=todayKey();const tc=$("tipCard");tc.hidden=!!r.tips[tk];$("sysTipText").textContent=rpgTip();}
 $("tipOk").addEventListener("click",()=>{const r=rpgState(),tk=todayKey();if(r.tips[tk])return;r.tips[tk]=1;addXP({q:"tip:"+tk,kind:"tip",xp:5,stat:"mente",bonus:0,t:new Date().toISOString()},"Treino concluído: +5 XP");});
 $("chestForm").addEventListener("submit",e=>{e.preventDefault();const t=$("chestT").value.trim().slice(0,40);const c=Math.max(1,Math.min(500,parseInt($("chestC").value,10)||10));if(!t)return;
   const r=rpgState();if(r.rew.length>=12){toast("Máximo de 12 recompensas.");return;}r.rew.push({t,c});$("chestT").value="";$("chestC").value="";save();render();});

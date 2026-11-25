@@ -1,5 +1,28 @@
 # Relatório de QA (ATENA)
 
+## 25/11/2026 · telas enxutas e centralizadas (feedback da Mô: "muita informação")
+
+Playwright, 390x844 e 1280x800, servidor local, em cima da main com onboarding v2, segredos e foco do celular.
+
+| Teste | Resultado |
+|---|---|
+| /comecar/ onboarding completo (Despertar › nome › idade › rotina › jogo) | passou |
+| Check-in diário | passou |
+| Marcar e desmarcar quest | passou |
+| Hoje: só perfil e tarefas abertos; Treino e Como você está viram linha | passou |
+| Treino do Sistema mostra o texto (antes vinha vazio no /comecar/: id duplicado "tipText") | corrigido |
+| Progresso: masmorra aberta, resto recolhido; abrir um fecha o outro (acordeão) | passou |
+| Painéis injetados depois (Segredos, Terminal) também recolhem | passou |
+| Mais vira menu; Chamar um amigo fica aberto; backup acessível | passou |
+| Teclado: Enter abre o painel (role=button, aria-expanded) | passou |
+| Foco centralizado, texto de ajuda em 1 linha, timer inicia | passou |
+| Desktop: conteúdo e barra de abas centralizados em 560 px | passou |
+| App pessoal (raiz) com progresso antigo: dados preservados (temporada guarda em prog-t1) | passou |
+| reduce-motion: chevron sem transição | passou |
+| /convite/ 200, console sem erros de JS | passou |
+
+Não testado aqui: offline real (o SW só registra em https) e GitHub Pages no ar (rede do sandbox bloqueada). Caches: ascensao-v21 e ascensao-u-v30.
+
 ## 25/11/2026 · recursos do celular no Modo foco (sala de foco, Não Perturbe do iPhone, ruído marrom, atalhos do ícone)
 
 Playwright, 390x844 (Android e iPhone simulados) e 1280x800, servidor local. Placar: 31/31.

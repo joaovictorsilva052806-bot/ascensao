@@ -108,5 +108,8 @@ rep('<li><b>Chefe da semana:</b> suas quests principais tiram vida dele. Derroto
 # segredos: conquistas ocultas, códigos e títulos raros
 rep('</style></head>',open(SP+'secret.css').read()+'</style></head>')
 rep('\nlet saveTimer=null, SYNC="";','\n'+open(SP+'secret.js').read()+'\nlet saveTimer=null, SYNC="";')
+# telas enxutas: painéis secundários recolhidos, foco centralizado (tools/simple.*)
+rep('</style></head>',open(SP+'simple.css').read()+'</style></head>')
+rep('\nlet saveTimer=null, SYNC="";','\n'+open(SP+'simple.js').read()+'\nlet saveTimer=null, SYNC="";')
 open('comecar/index.html','w').write(s)
 pass
