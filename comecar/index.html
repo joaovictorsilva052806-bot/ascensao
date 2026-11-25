@@ -222,6 +222,21 @@ input:focus,select:focus,textarea:focus{outline:none;border-color:var(--accent)!
 .calrow i{font-style:normal;font-size:.72rem;color:var(--muted)}
 .calrow:active{background:rgba(0,212,255,.12)}
 input,select,textarea{font-size:16px!important}
+#timer{cursor:pointer}
+.fdev{display:flex;flex-direction:column;gap:8px;margin-top:10px}
+.fdev .fsc{border:1px solid var(--line);border-radius:4px;padding:10px;display:flex;flex-direction:column;gap:8px;background:rgba(0,212,255,.04)}
+.fdev ol{margin:0;padding-left:20px;display:flex;flex-direction:column;gap:4px}
+.froom{position:fixed;inset:0;z-index:80;background:#000;color:#e9feff;display:flex;align-items:center;justify-content:center;padding:24px 16px calc(24px + env(safe-area-inset-bottom,0px));animation:froomIn .4s ease-out}
+.froom-in{width:100%;max-width:420px;text-align:center;display:flex;flex-direction:column;gap:14px}
+.froom-tag{font-family:var(--f-hud);font-size:.72rem;letter-spacing:.3em;color:var(--accent)}
+.froom-t{font-family:var(--f-hud);font-size:clamp(3.4rem,22vw,6rem);line-height:1;text-shadow:0 0 26px rgba(0,212,255,.55);font-variant-numeric:tabular-nums}
+.froom-q{font-size:.95rem;color:var(--fg);min-height:1.2em}
+.froom-msg{font-size:.85rem;color:var(--muted)}
+.froom-row{display:flex;flex-wrap:wrap;gap:8px;justify-content:center}
+.froom-row button{flex:1 1 30%;min-height:44px}
+.froom-black{position:absolute;inset:0;background:#000;color:#222;display:flex;align-items:flex-end;justify-content:center;padding-bottom:40px;font-size:.75rem}
+@keyframes froomIn{from{opacity:0}to{opacity:1}}
+@media (prefers-reduced-motion:reduce){.froom{animation:none}}
 .onboarding .wrap>section:not(#onb){display:none!important}
 .onb label{display:flex;flex-direction:column;gap:4px;font-size:.86rem;color:var(--muted);margin-top:10px}
 .onb label.chk{flex-direction:row;align-items:center;gap:8px;color:var(--fg)}
@@ -586,6 +601,25 @@ button.big{padding:16px;font-size:1.05rem}
       <button class="ghost" type="button" id="focusStop" hidden>Desistir</button>
     </div>
     <div class="note" id="focusNote">Escolha a quest, aperte começar e deixe o celular virado para baixo. Ao terminar, o XP entra e a quest é marcada.</div>
+    <div class="fdev" id="fDev">
+      <button class="ghost" type="button" id="fNoise" aria-pressed="false">🎧 Ruído marrom: desligado</button>
+      <button class="link" type="button" id="fSilence" hidden>🌙 Silenciar o iPhone no foco</button>
+      <div class="fsc" id="fSc" hidden>
+        <div class="sm"><b>Não Perturbe automático.</b> Ao começar o foco, o app chama um Atalho do iPhone que liga o Não Perturbe pelo tempo do bloco e desliga sozinho no fim. Configura uma vez só.</div>
+        <button class="go" type="button" id="fScGet" hidden>1. Adicionar o atalho (1 toque)</button>
+        <ol class="sm" id="fScSteps">
+          <li>Abra o app <b>Atalhos</b> e toque em <b>+</b>.</li>
+          <li>Toque no nome lá em cima e escreva <b>Ascension Foco</b>.</li>
+          <li>Adicione <b>Ajustar Data</b>: Adicionar, toque no número, escolha <b>Entrada do Atalho</b>, unidade <b>minutos</b>, data <b>Data Atual</b>.</li>
+          <li>Adicione <b>Definir Foco</b>: <b>Ativar Não Perturbe</b>, toque em <b>Até Desativar</b>, escolha <b>Hora</b> e depois <b>Data Ajustada</b>.</li>
+          <li>Opcional: adicione <b>Iniciar Timer</b> com <b>Entrada do Atalho</b> minutos. O alarme toca no fim do bloco.</li>
+        </ol>
+        <div class="row"><button class="go" type="button" id="fScOk">Pronto, criei</button><button class="ghost" type="button" id="fScTest">Testar 1 min</button></div>
+        <button class="link" type="button" id="fScClose">Agora não</button>
+      </div>
+      <div class="sm muted" id="fSilenceOn" hidden>🌙 Não Perturbe automático ligado. <button class="link" type="button" id="fScOff">desligar</button></div>
+      <div class="sm muted" id="fDroid" hidden>🌙 Dica: antes de começar, puxe a barra de cima e ligue <b>Não perturbe</b>.</div>
+    </div>
   </section>
 
   <section data-tab="foco" class="panel faith" id="faithPanel">
@@ -661,6 +695,12 @@ button.big{padding:16px;font-size:1.05rem}
   <section data-tab="prog" class="panel">
     <h2>Recordes: suas semanas</h2>
     <table><tbody id="weeks"></tbody></table>
+  </section>
+
+  <section data-tab="mais" class="panel" id="invPanel">
+    <h2>Chamar um amigo</h2>
+    <div class="sm muted">Upar junto é mais fácil. Manda o convite em um toque.</div>
+    <button class="go" type="button" id="inviteBtn">📤 Convidar amigo</button>
   </section>
 
   <section data-tab="mais" class="panel" id="aiPanel">
@@ -773,6 +813,20 @@ button.big{padding:16px;font-size:1.05rem}
   <button type="button" data-go="prog"><svg viewBox="0 0 24 24"><path d="M4 20V10M10 20V4M16 20v-7M22 20H2"/></svg>Progresso</button>
   <button type="button" data-go="mais"><svg viewBox="0 0 24 24"><circle cx="5" cy="12" r="1.5"/><circle cx="12" cy="12" r="1.5"/><circle cx="19" cy="12" r="1.5"/></svg>Mais</button>
 </nav>
+<div class="froom" id="froom" hidden role="dialog" aria-modal="true" aria-label="Sala de foco">
+  <div class="froom-in">
+    <div class="froom-tag">SALA DE FOCO</div>
+    <div class="froom-t" id="froomT" aria-live="off">25:00</div>
+    <div class="froom-q" id="froomQ"></div>
+    <div class="froom-msg" id="froomMsg">Vire o celular para baixo. A tela apaga e o tempo segue.</div>
+    <div class="froom-row">
+      <button class="ghost" type="button" id="froomDark">🌑 Apagar tela</button>
+      <button class="ghost" type="button" id="froomNoise" aria-pressed="false">🎧 Ruído</button>
+      <button class="ghost" type="button" id="froomOut">Sair da sala</button>
+    </div>
+  </div>
+  <div class="froom-black" id="froomBlack" hidden>Toque para ver o tempo</div>
+</div>
 <div class="toast" id="toast" hidden></div>
 <div class="levelup" id="levelup" hidden><div class="card"><div class="sm muted">SUBIU DE NÍVEL</div><div class="big" id="luLevel">2</div><div id="luRank"></div><div class="sm muted" id="luMsg">Constância vence intensidade.</div><button class="go" type="button" id="luClose">Continuar</button></div></div>
 
@@ -816,7 +870,7 @@ function totalXP(){return Math.max(0,earnedXP()-debtXP());}
 function questById(id){return (cfg&&cfg.quests||[]).find(q=>q.id===id)||((prog.extra[todayKey()]||[]).find(q=>q.id===id));}
 
 function render(){
-  if(typeof ACH!=="undefined"&&checkAch())return;renderAch();fillRest();renderMoney();fillFaith();fillMorning();fillFocusSelect();renderReview();
+  if(typeof ACH!=="undefined"&&checkAch())return;renderAch();fillRest();renderMoney();fillFaith();fillMorning();if(typeof appBadge==="function")appBadge();fillFocusSelect();renderReview();
   const xp=totalXP(), l=levelOf(xp), r=rankOf(l);
   $("rank").textContent=r[1]; $("lvl").textContent="Nível "+l; $("ptitle").textContent="Rank "+r[1]+" · "+r[2];
   const a=xpFor(l), b=xpFor(l+1);
@@ -984,10 +1038,10 @@ function fillFocusSelect(){const sel=$("focusQuest");if(document.activeElement==
 function fmt(ms){const t=Math.max(0,Math.ceil(ms/1000));return pad(Math.floor(t/60))+":"+pad(t%60);}
 function focusUI(){const f=prog.focus;const on=!!(f&&f.end);$("focusStart").hidden=on;$("focusShort").hidden=on;$("focusStop").hidden=!on;$("focusQuest").disabled=on;
   if(!on){$("timer").textContent="25:00";clearInterval(focusTick);focusTick=null;return;}
-  const left=f.end-Date.now();$("timer").textContent=fmt(left);
+  const left=f.end-Date.now();$("timer").textContent=fmt(left);if(typeof fxTick==="function")fxTick();
   if(left<=0)finishFocus();else if(!focusTick)focusTick=setInterval(focusUI,1000);}
-function startFocus(min){prog.focus={end:Date.now()+min*60000,min,q:$("focusQuest").value};save();focusUI();$("focusNote").textContent="Foco ligado. Pode bloquear a tela: o tempo continua contando.";}
-function finishFocus(){const f=prog.focus;prog.focus=null;clearInterval(focusTick);focusTick=null;
+function startFocus(min){prog.focus={end:Date.now()+min*60000,min,q:$("focusQuest").value};save();focusUI();$("focusNote").textContent="Foco ligado. Pode bloquear a tela: o tempo continua contando. Toque no tempo para abrir a sala de foco.";if(typeof fxStart==="function")fxStart(min);}
+function finishFocus(){const f=prog.focus;prog.focus=null;clearInterval(focusTick);focusTick=null;if(typeof fxEnd==="function")fxEnd(true);
   const xp=f.min>=25?15:6;
   addXP({q:"foco:"+Date.now(),kind:"full",xp,stat:"mente",bonus:0,t:new Date().toISOString()},"Bloco de foco concluído. +"+xp+" XP");
   const q=f.q&&todaysQuests().find(x=>x.id===f.q);
@@ -995,8 +1049,84 @@ function finishFocus(){const f=prog.focus;prog.focus=null;clearInterval(focusTic
   $("focusNote").textContent="Mandou bem. Respira 5 min antes do próximo bloco.";focusUI();}
 $("focusStart").addEventListener("click",()=>startFocus(25));
 $("focusShort").addEventListener("click",()=>startFocus(10));
-$("focusStop").addEventListener("click",()=>{prog.focus=null;save();focusUI();$("focusNote").textContent="Sessão encerrada sem XP. Tudo bem: comece um bloco de 10 min quando der.";});
+$("focusStop").addEventListener("click",()=>{prog.focus=null;save();focusUI();if(typeof fxEnd==="function")fxEnd(false);$("focusNote").textContent="Sessão encerrada sem XP. Tudo bem: comece um bloco de 10 min quando der.";});
 document.addEventListener("visibilitychange",()=>{if(!document.hidden)focusUI();});
+
+// ---------- Recursos do celular no foco: sala de foco, tela acesa, háptica, ruído marrom, Não Perturbe (iOS), badge, atalhos ----------
+// Preferências do aparelho ficam numa chave própria (não mexe no progresso).
+const DEV_KEY="asc-dev";let dev={};try{dev=JSON.parse(localStorage.getItem(DEV_KEY)||"{}")||{};}catch(e){dev={};}
+function devSave(){try{localStorage.setItem(DEV_KEY,JSON.stringify(dev));}catch(e){}}
+const F_IOS=/iP(hone|ad|od)/.test(navigator.userAgent)||(navigator.platform==="MacIntel"&&navigator.maxTouchPoints>1);
+const F_AND=/Android/i.test(navigator.userAgent);
+const SC_NAME="Ascension Foco";
+const SC_LINK=""; // link do iCloud do atalho pronto (quando existir, vira 1 toque)
+// Háptica: Android usa vibrate; iPhone (iOS 18+) usa o clique de um switch invisível.
+function haptic(p){try{if(navigator.vibrate&&navigator.vibrate(p))return;}catch(e){}
+  if(!F_IOS)return;try{const l=document.createElement("label");l.setAttribute("aria-hidden","true");l.style.display="none";const i=document.createElement("input");i.type="checkbox";i.setAttribute("switch","");l.append(i);document.head.append(l);l.click();l.remove();}catch(e){}}
+// Tela acesa enquanto a sala de foco está aberta.
+let wl=null;
+async function wakeOn(){try{if("wakeLock" in navigator&&!document.hidden&&!wl){wl=await navigator.wakeLock.request("screen");wl.addEventListener("release",()=>{wl=null;});}}catch(e){wl=null;}}
+function wakeOff(){try{if(wl)wl.release();}catch(e){}wl=null;}
+// Ruído marrom gerado no aparelho (sem arquivo, sem internet).
+let actx=null,noise=null;
+function ac(){const AC=window.AudioContext||window.webkitAudioContext;if(!AC)return null;if(!actx)actx=new AC();try{actx.resume();}catch(e){}return actx;}
+function noiseOn(){if(noise)return true;try{const c=ac();if(!c)return false;try{if(navigator.audioSession)navigator.audioSession.type="playback";}catch(e){}
+  const n=c.sampleRate*6,b=c.createBuffer(1,n,c.sampleRate),d=b.getChannelData(0),f=Math.floor(c.sampleRate*.05);let last=0;
+  for(let i=0;i<n;i++){last=(last+.02*(Math.random()*2-1))/1.02;d[i]=last*3.5;}
+  for(let i=0;i<f;i++){const k=i/f;d[i]*=k;d[n-1-i]*=k;}
+  const s=c.createBufferSource();s.buffer=b;s.loop=true;const g=c.createGain();g.gain.setValueAtTime(0,c.currentTime);g.gain.linearRampToValueAtTime(.55,c.currentTime+1.2);s.connect(g);g.connect(c.destination);s.start();noise={s,g};return true;}catch(e){noise=null;return false;}}
+function noiseOff(){if(!noise)return;const {s,g}=noise;noise=null;try{g.gain.cancelScheduledValues(actx.currentTime);g.gain.setValueAtTime(g.gain.value,actx.currentTime);g.gain.linearRampToValueAtTime(0,actx.currentTime+.5);setTimeout(()=>{try{s.stop();}catch(e){}},600);}catch(e){}}
+function chime(){try{const c=ac();if(!c)return;try{if(navigator.audioSession&&!noise)navigator.audioSession.type="ambient";}catch(e){}
+  [[880,0],[1320,.18]].forEach(([hz,t])=>{const o=c.createOscillator(),g=c.createGain();o.type="sine";o.frequency.value=hz;g.gain.setValueAtTime(0,c.currentTime+t);g.gain.linearRampToValueAtTime(.25,c.currentTime+t+.02);g.gain.exponentialRampToValueAtTime(.001,c.currentTime+t+.6);o.connect(g);g.connect(c.destination);o.start(c.currentTime+t);o.stop(c.currentTime+t+.65);});}catch(e){}}
+function noiseUI(){const on=!!noise;for(const id of ["fNoise","froomNoise"]){const b=$(id);b.setAttribute("aria-pressed",on?"true":"false");}
+  $("fNoise").textContent="🎧 Ruído marrom: "+(on?"ligado":"desligado");$("froomNoise").textContent=on?"🔇 Ruído":"🎧 Ruído";}
+function noiseToggle(){if(noise){noiseOff();dev.noise=false;}else{dev.noise=noiseOn();if(!dev.noise)toast("Este navegador não toca o ruído.");}devSave();noiseUI();haptic(10);}
+$("fNoise").addEventListener("click",noiseToggle);$("froomNoise").addEventListener("click",noiseToggle);
+// Sala de foco: tela preta com o tempo, apaga quando o celular fica virado para baixo.
+const standalone=()=>matchMedia("(display-mode: standalone)").matches||navigator.standalone===true;
+let downSince=0,wasDown=false;
+function roomOpen(){const f=prog.focus;if(!(f&&f.end))return;$("froom").hidden=false;document.body.classList.add("inroom");
+  const q=f.q&&todaysQuests().find(x=>x.id===f.q);$("froomQ").textContent=q?q.title:"Foco livre";
+  $("froomMsg").textContent=F_IOS?"Bloqueie a tela ou deixe aberto: o tempo segue igual.":"Vire o celular para baixo. A tela apaga e o tempo segue.";
+  wakeOn();fxTick();
+  if(!standalone()&&!F_IOS&&document.documentElement.requestFullscreen&&!document.fullscreenElement)document.documentElement.requestFullscreen().catch(()=>{});}
+function roomClose(){$("froom").hidden=true;$("froomBlack").hidden=true;document.body.classList.remove("inroom");wakeOff();
+  try{if(document.fullscreenElement)document.exitFullscreen().catch(()=>{});}catch(e){}}
+function darkOn(){$("froomBlack").hidden=false;}
+function darkOff(){$("froomBlack").hidden=true;}
+$("froomOut").addEventListener("click",()=>{roomClose();toast("O foco continua contando. Toque no tempo para voltar à sala.");});
+$("froomDark").addEventListener("click",darkOn);
+$("froomBlack").addEventListener("click",darkOff);
+$("timer").addEventListener("click",()=>{if(prog.focus&&prog.focus.end)roomOpen();});
+window.addEventListener("deviceorientation",e=>{if($("froom").hidden||e.beta==null)return;const down=Math.abs(e.beta)>150;
+  if(down){if(!downSince)downSince=Date.now();if(Date.now()-downSince>800&&$("froomBlack").hidden){darkOn();wasDown=true;haptic(8);}}
+  else if(Math.abs(e.beta)<120){downSince=0;if(wasDown){wasDown=false;darkOff();const f=prog.focus;if(f&&f.end){const m=Math.max(1,Math.ceil((f.end-Date.now())/60000));$("froomMsg").textContent="Faltam "+m+" min. Pode virar de novo, o tempo segue.";}}}});
+function fxTick(){const f=prog.focus;if(!(f&&f.end)||$("froom").hidden)return;$("froomT").textContent=fmt(f.end-Date.now());}
+// iPhone: Não Perturbe pelo Atalho "Ascension Foco" (o app passa os minutos do bloco).
+function runShortcut(min){location.href="shortcuts://run-shortcut?name="+encodeURIComponent(SC_NAME)+"&input=text&text="+min;}
+function silenceUI(){$("fSilence").hidden=!F_IOS||!!dev.sc;$("fSilenceOn").hidden=!F_IOS||!dev.sc;$("fDroid").hidden=!F_AND;
+  $("fScGet").hidden=!SC_LINK;$("fScSteps").hidden=!!SC_LINK;}
+$("fSilence").addEventListener("click",()=>{$("fSc").hidden=false;$("fSilence").hidden=true;});
+$("fScClose").addEventListener("click",()=>{$("fSc").hidden=true;silenceUI();});
+$("fScGet").addEventListener("click",()=>{if(SC_LINK)location.href=SC_LINK;});
+$("fScTest").addEventListener("click",()=>runShortcut(1));
+$("fScOk").addEventListener("click",()=>{dev.sc=true;devSave();$("fSc").hidden=true;silenceUI();haptic([10,30,10]);toast("Pronto. No próximo foco o iPhone fica em silêncio.");});
+$("fScOff").addEventListener("click",()=>{dev.sc=false;devSave();silenceUI();});
+// Ganchos chamados pelo Modo foco
+function fxStart(min){haptic([15,40,15]);if(dev.noise)noiseOn();noiseUI();roomOpen();if(F_IOS&&dev.sc)setTimeout(()=>runShortcut(min),250);}
+function fxEnd(done){noiseOff();noiseUI();roomClose();if(done&&!document.hidden){chime();haptic([20,60,20,60,40]);}}
+document.addEventListener("visibilitychange",()=>{if(!document.hidden&&!$("froom").hidden)wakeOn();});
+// Número no ícone: quests principais que faltam hoje (onde o sistema deixa, sem pedir permissão).
+function appBadge(){try{if(!navigator.setAppBadge)return;const tk=todayKey(),log=prog.log[tk]||[];
+  const n=todaysQuests().filter(q=>q.main&&!log.some(e=>e.q===q.id)).length;(n?navigator.setAppBadge(n):navigator.clearAppBadge()).catch(()=>{});}catch(e){}}
+// Convidar amigo pela folha de compartilhar do celular.
+function invite(){const url=location.origin+location.pathname.replace(/(comecar\/)?(index\.html)?$/,"")+"convite/";
+  const text="Tô upando a vida real no Ascension. Missões curtas, XP e rank. Bora?";
+  if(navigator.share){navigator.share({title:"Ascension",text,url}).catch(()=>{});return;}
+  const t=text+" "+url;(navigator.clipboard?navigator.clipboard.writeText(t):Promise.reject()).then(()=>toast("Convite copiado. Cole no WhatsApp."),()=>toast(t));}
+$("inviteBtn").addEventListener("click",invite);
+noiseUI();silenceUI();
+
 
 // ---------- Revisão semanal ----------
 function weekXP(ws){let s2=0;for(const e of entries())if(weekStart(e.date)===ws)s2+=(e.xp||0)+(e.bonus||0);return s2;}
@@ -1841,6 +1971,8 @@ focusUI();
 function goTab(t){document.body.dataset.tab=t;for(const b of document.querySelectorAll("#tabbar button"))b.classList.toggle("on",b.dataset.go===t);window.scrollTo(0,0);try{sessionStorage.setItem("asc-tab",t);}catch(e){}}
 for(const b of document.querySelectorAll("#tabbar button"))b.addEventListener("click",()=>goTab(b.dataset.go));
 let t0="hoje";try{t0=sessionStorage.getItem("asc-tab")||"hoje";}catch(e){}goTab(t0);
+try{const u=new URLSearchParams(location.search),fm=+u.get("foco"),tb=u.get("tab");if(fm||tb){history.replaceState(null,"",location.pathname);if(tb==="hoje"||tb==="foco"||tb==="prog")goTab(tb);
+  if((fm===25||fm===10)&&cfg&&!cfg.blank){goTab("foco");if(!(prog.focus&&prog.focus.end))setTimeout(()=>startFocus(fm),400);}}}catch(e){}
 const tickClock=()=>{const d=new Date();$("clock").textContent=d.toLocaleTimeString("pt-BR",{hour:"2-digit",minute:"2-digit"})+" · "+d.toLocaleDateString("pt-BR",{weekday:"short"}).replace(".","").toUpperCase();};tickClock();setInterval(tickClock,15000);
 pull();
 document.addEventListener("visibilitychange",()=>{if(!document.hidden)pull();});

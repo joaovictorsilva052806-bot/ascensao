@@ -4,6 +4,12 @@ s=open(SP+'base.html').read()
 def rep(a,b,n=1):
     global s
     assert s.count(a)==n,(a[:60],s.count(a));s=s.replace(a,b)
+R=lambda f:open(SP+f).read()
+# recursos do celular no foco (tools/foco.*)
+rep('</style></head>',R('foco.css')+'</style></head>')
+rep('Ao terminar, o XP entra e a quest é marcada.</div>\n','Ao terminar, o XP entra e a quest é marcada.</div>\n'+R('foco.html'))
+rep('<div class="toast" id="toast" hidden></div>',R('foco-room.html')+'<div class="toast" id="toast" hidden></div>')
+rep('document.addEventListener("visibilitychange",()=>{if(!document.hidden)focusUI();});','document.addEventListener("visibilitychange",()=>{if(!document.hidden)focusUI();});\n'+R('foco.js'))
 rep('<title>Ascension</title>','<title>Ascension</title>')
 rep('<h2>Quests de hoje</h2>','<h2>Tarefas de hoje</h2>')
 rep('href="icon-180.png"','href="../icon-180.png"');rep('<link rel="icon" href="icon-192.png">','<link rel="icon" href="../icon-192.png">')

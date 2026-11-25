@@ -1,0 +1,19 @@
+    <div class="fdev" id="fDev">
+      <button class="ghost" type="button" id="fNoise" aria-pressed="false">🎧 Ruído marrom: desligado</button>
+      <button class="link" type="button" id="fSilence" hidden>🌙 Silenciar o iPhone no foco</button>
+      <div class="fsc" id="fSc" hidden>
+        <div class="sm"><b>Não Perturbe automático.</b> Ao começar o foco, o app chama um Atalho do iPhone que liga o Não Perturbe pelo tempo do bloco e desliga sozinho no fim. Configura uma vez só.</div>
+        <button class="go" type="button" id="fScGet" hidden>1. Adicionar o atalho (1 toque)</button>
+        <ol class="sm" id="fScSteps">
+          <li>Abra o app <b>Atalhos</b> e toque em <b>+</b>.</li>
+          <li>Toque no nome lá em cima e escreva <b>Ascension Foco</b>.</li>
+          <li>Adicione <b>Ajustar Data</b>: Adicionar, toque no número, escolha <b>Entrada do Atalho</b>, unidade <b>minutos</b>, data <b>Data Atual</b>.</li>
+          <li>Adicione <b>Definir Foco</b>: <b>Ativar Não Perturbe</b>, toque em <b>Até Desativar</b>, escolha <b>Hora</b> e depois <b>Data Ajustada</b>.</li>
+          <li>Opcional: adicione <b>Iniciar Timer</b> com <b>Entrada do Atalho</b> minutos. O alarme toca no fim do bloco.</li>
+        </ol>
+        <div class="row"><button class="go" type="button" id="fScOk">Pronto, criei</button><button class="ghost" type="button" id="fScTest">Testar 1 min</button></div>
+        <button class="link" type="button" id="fScClose">Agora não</button>
+      </div>
+      <div class="sm muted" id="fSilenceOn" hidden>🌙 Não Perturbe automático ligado. <button class="link" type="button" id="fScOff">desligar</button></div>
+      <div class="sm muted" id="fDroid" hidden>🌙 Dica: antes de começar, puxe a barra de cima e ligue <b>Não perturbe</b>.</div>
+    </div>
