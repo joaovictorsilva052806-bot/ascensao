@@ -19,6 +19,14 @@ Dados: tudo fica no `localStorage` do aparelho (`asc-u-*` na versão multiusuár
 
 Pontos de entrada no JS: `render()` desenha tudo; `toggle(quest, "full"|"min")` marca uma quest; `penalties()` calcula a dívida de quests principais; `buildCfg(perfil)` (em `tools/onb.js`) transforma o perfil em quests com gatilhos "se-então".
 
+## Segurança
+
+- A planilha pública (`ranking`, gid 1002) só tem apelido, XP, nível e linhas de amizade/esquadrão. Idade, uid e dados do painel ficam em abas privadas.
+- Qualquer um pode postar no formulário, então o app **não confia** nas linhas: aceite de amizade (`G`) só vale se você pediu; entrada no esquadrão (`J`) só de amigo ou de quem você convidou; cutucar/parabéns (`K`) só de amigos e no máximo 5 por dia; no máximo 3 janelas de pedido por dia.
+- Convite pessoal: o código fica só no link; na planilha vai `cv`+SHA-256(código|apelido), que não dá para copiar para outro apelido.
+- Links `#s=` e `#c=` pedem confirmação quando já há planilha/tarefas no aparelho. A chave do painel do criador fica só no aparelho (`#k=`), nunca no repositório.
+- CSP por `<meta>` (o GitHub Pages não deixa mudar cabeçalhos). Teste: `node qa/seguranca.test.js`.
+
 ## Segredos
 
 `tools/secret.js` e `tools/secret.css` (entram nos dois geradores): 17 conquistas ocultas com títulos raros, Terminal do Sistema (em Mais) para códigos e Modo Zen. Grava só `prog.sec` e `prog.secTitle`; o XP entra como `ach:<id>`. Teste: `node qa/segredos.test.js` com o servidor local ligado.

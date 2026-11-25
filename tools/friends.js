@@ -14,11 +14,13 @@ function frRequest(n){const me=rankName();n=cleanNick(n);if(!me||!n||frN(n)===fr
   sqiPost(["F",me,n,"",sqiDk()]);if(back){f.l.push(n);delete f.pend[n];sqiPost(["G",me,n,"",sqiDk()]);toast(n+" agora é seu amigo.");}
   else{f.pend[n]=todayKey();toast("Pedido enviado para "+n+". Aparece no app dele.");}save();frUI();}
 function frCheck(){const me=rankName();if(!me)return;const f=frSt();let ch=false;
-  for(const r of sqInvRows){if(r.k==="G"&&frN(r.b)===frN(me)&&r.a&&!frHas(r.a)){f.l.push(r.a);for(const k in f.pend)if(frN(k)===frN(r.a))delete f.pend[k];ch=true;const key="g:"+frN(r.a);if(!f.seen[key]){f.seen[key]=1;toast(r.a+" aceitou seu pedido de amizade.");}}}
+  const frPend=n=>Object.keys(f.pend).some(k=>frN(k)===frN(n));
+  for(const r of sqInvRows){if(r.k==="G"&&frN(r.b)===frN(me)&&r.a&&!frHas(r.a)&&frPend(r.a)){f.l.push(r.a);for(const k in f.pend)if(frN(k)===frN(r.a))delete f.pend[k];ch=true;const key="g:"+frN(r.a);if(!f.seen[key]){f.seen[key]=1;toast(r.a+" aceitou seu pedido de amizade.");}}}
   if(ch){save();}frUI();try{frRankAv();}catch(e){}
   if($("frModal")||$("sqiModal")||[...document.querySelectorAll(".sysmodal")].some(x=>x.getClientRects().length)||document.body.classList.contains("inmission"))return;
   const inc=sqInvRows.filter(r=>r.k==="F"&&frN(r.b)===frN(me)&&r.a&&!frHas(r.a)&&!f.seen["f:"+frN(r.a)]&&sqiFresh(r.d));
-  if(inc.length)frAsk(inc[inc.length-1].a);}
+  const td=todayKey();if(!f.ask||f.ask.d!==td)f.ask={d:td,n:0};
+  if(inc.length&&f.ask.n<3){f.ask.n++;save();frAsk(inc[inc.length-1].a);}}
 function frAsk(n){const f=frSt();const m=frEl("div","sysmodal");m.id="frModal";m.setAttribute("role","dialog");m.setAttribute("aria-modal","true");const c=frEl("div","card");
   const av=frEl("div","fravbig");av.innerHTML=frAv((sqPub[frN(n)]||{}).av,84);
   c.append(frEl("div","tag","[ SISTEMA ] PEDIDO DE AMIZADE"),av,frEl("h3",null,n+" quer ser seu amigo"),frEl("p","sm","Amigos se comparam lado a lado: XP da semana, nível, sequência e desafios."));
