@@ -86,5 +86,12 @@ rep('setInterval(()=>{if($("today").dataset.k!==todayKey())','setTimeout(betaDai
 sea=open(SP+'season.js').read()
 rep('try{if(navigator.storage&&navigator.storage.persist)',sea+'\ntry{if(navigator.storage&&navigator.storage.persist)')
 rep('<button type="button" class="ghost" id="wipe">Apagar tudo e começar do zero</button></div>','<button type="button" class="ghost" id="wipe">Apagar tudo e começar do zero</button></div>\n      <div class="row"><button type="button" class="link" id="seasonUndo" hidden>Recuperar meu progresso da temporada anterior</button></div>')
+ci=open(SP+'checkin.js').read()
+rep('\nlet saveTimer=null, SYNC="";','\n'+ci+'\nlet saveTimer=null, SYNC="";')
+rep('applyCopy();renderEd();renderAdj();renderRPG();betaUI();','applyCopy();renderEd();renderAdj();renderRPG();betaUI();setTimeout(dailyCheckin,600);')
+s=s.replace('<h2>Check-in</h2>','<h2>Como você está</h2>')
+s=s.replace('String(e.q).startsWith("ach:")','/^(ach|checkin|tip):/.test(String(e.q))')
+rep('e qualquer pessoa com o app vê a lista.";','e qualquer pessoa com o app vê a lista. O criador do app também vê em que dias você fez check-in.";')
+rep('No ranking aparece só o seu apelido e o XP da semana. Nenhum','No ranking aparece só o seu apelido e o XP da semana (o criador do app também vê os dias de check-in). Nenhum')
 open('comecar/index.html','w').write(s)
 pass

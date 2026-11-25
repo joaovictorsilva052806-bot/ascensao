@@ -448,7 +448,7 @@ body.enter .quest{animation:qIn .35s ease-out backwards}
   </section>
 
   <section data-tab="hoje" class="panel">
-    <div class="qhead"><h2>Check-in</h2><span class="xp" id="ciXp">+5 XP</span></div>
+    <div class="qhead"><h2>Como você está</h2><span class="xp" id="ciXp">+5 XP</span></div>
     <div class="sm muted">Bateria de hoje</div>
     <div class="seg" id="energy">
       <button type="button" data-e="alta">Cheia</button>
@@ -787,10 +787,10 @@ function fx(xp,gold){try{if(navigator.vibrate)navigator.vibrate(gold?[12,40,18]:
   if(!xp)return;const f=document.createElement("div");f.className="xpfloat"+(gold?" gold":"");f.textContent="+"+xp+" XP";
   const pt=lastPt||{x:innerWidth/2,y:innerHeight/2};f.style.left=pt.x+"px";f.style.top=(pt.y-20)+"px";document.body.append(f);setTimeout(()=>f.remove(),1200);}
 // ---------- Sequência (estilo Duolingo: descanso congela, não quebra) ----------
-function streakDays(){const act=k=>(prog.log[k]||[]).some(e=>!String(e.q).startsWith("ach:"));const rest=k=>!!(prog.rest||{})[k];
+function streakDays(){const act=k=>(prog.log[k]||[]).some(e=>!/^(ach|checkin|tip):/.test(String(e.q)));const rest=k=>!!(prog.rest||{})[k];
   const d=new Date();let n=0;if(!act(dkey(d))&&!rest(dkey(d)))d.setDate(d.getDate()-1);
   for(let i=0;i<400;i++){const k=dkey(d);if(act(k))n++;else if(!rest(k))break;d.setDate(d.getDate()-1);}return n;}
-function renderPills(){const n=streakDays();const today=(prog.log[todayKey()]||[]).some(e=>!String(e.q).startsWith("ach:"));
+function renderPills(){const n=streakDays();const today=(prog.log[todayKey()]||[]).some(e=>!/^(ach|checkin|tip):/.test(String(e.q)));
   const st=$("streak");st.textContent="🔥 "+n+(n===1?" dia":" dias");st.classList.toggle("cold",!today);st.title=today?"Sequência garantida hoje":"Faça 1 quest hoje para manter a sequência";
   const dt=new Date();const ms=mainsFor(dt);const done=prog.log[todayKey()]||[];const ok=ms.filter(q=>done.some(e=>e.q===q.id)).length;
   $("dayPill").textContent=ok+"/"+ms.length+" principais";$("dayPill").classList.toggle("full",ms.length>0&&ok===ms.length);}
@@ -932,7 +932,7 @@ $("restBtn").addEventListener("click",()=>{const tk=todayKey();prog.rest=prog.re
 
 // ---------- Conquistas (novidade que não acaba) ----------
 let ACH=[];function achList(){return [
- ["a_first","Primeiro passo","1ª quest concluída",10,()=>entries().some(e=>!String(e.q).startsWith("ach:"))],
+ ["a_first","Primeiro passo","1ª quest concluída",10,()=>entries().some(e=>!/^(ach|checkin|tip):/.test(String(e.q)))],
  ["a_3d","Esquentando","3 dias ativos",20,()=>activeDays()>=3],
  ["a_7d","Uma semana inteira","7 dias ativos",50,()=>activeDays()>=7],
  ["a_21d","Hábito formando","21 dias ativos",100,()=>activeDays()>=21],
@@ -942,10 +942,10 @@ let ACH=[];function achList(){return [
  ["a_review","Olhar de dono","1ª revisão da semana",20,()=>Object.keys(prog.reviews||{}).length>0],
  ["a_faith","Coração grato","7 dias com o painel de gratidão",40,()=>Object.keys(prog.faith||{}).length>=7,()=>!!(cfg&&cfg.faith)],
  ["a_once","Missão cumprida","Concluir todas as missões únicas",60,()=>{const o=((cfg&&cfg.quests)||[]).filter(q=>q.once);return o.length>0&&o.every(q=>entries().some(e=>e.q===q.id));}]].filter(a=>!a[5]||a[5]());}
-function activeDays(){return new Set(entries().filter(e=>!String(e.q).startsWith("ach:")).map(e=>e.date)).size;}
+function activeDays(){return new Set(entries().filter(e=>!/^(ach|checkin|tip):/.test(String(e.q))).map(e=>e.date)).size;}
 function renderAch(){const box=$("achList");box.textContent="";prog.ach=prog.ach||{};let got=0;
   for(const [id,name,desc,xp] of (ACH=achList())){const on=!!prog.ach[id];if(on)got++;const d=document.createElement("div");d.className="badge"+(on?" on":"");const b=document.createElement("b");b.textContent=(on?"🏅 ":"🔒 ")+name;d.append(b,document.createTextNode(desc+" · +"+xp+" XP"));box.append(d);}
-  $("achCount").textContent=got+" / "+ACH.length;$("faithPanel").hidden=!(cfg&&cfg.faith);applyCopy();renderEd();renderAdj();renderRPG();betaUI();}
+  $("achCount").textContent=got+" / "+ACH.length;$("faithPanel").hidden=!(cfg&&cfg.faith);applyCopy();renderEd();renderAdj();renderRPG();betaUI();setTimeout(dailyCheckin,600);}
 function checkAch(){prog.ach=prog.ach||{};for(const [id,name,,xp,test] of (ACH=achList())){if(!prog.ach[id]&&test()){prog.ach[id]=todayKey();pushEntry({q:"ach:"+id,kind:"full",xp,stat:"foco",bonus:0,t:new Date().toISOString()},"Conquista: "+name+"! +"+xp+" XP");return true;}}return false;}
 // ---------- Lembretes na agenda (sem servidor: arquivo .ics ou Google Agenda) ----------
 const BYD=["MO","TU","WE","TH","FR","SA","SU"];
@@ -1176,7 +1176,7 @@ function renderRankUI(){const on=!!(prog.rank&&prog.rank.on);const asked=!!(prog
   $("pingCard").hidden=!(cfg&&!cfg.blank&&!prog.rank)||isMinor();
   const kid=ageNow()==="kid";$("rkJoin").hidden=on||kid;$("rkLeave").hidden=!on;$("rkNickRow").hidden=kid;
   const nk=$("rkNick");if(document.activeElement!==nk)nk.value=(prog.rank&&prog.rank.nick)||"";nk.placeholder=isMinor()?"Apelido (não use seu nome real)":"Apelido no ranking (opcional)";
-  $("rkNote").textContent=kid?"O ranking é a partir de 14 anos. Seu progresso continua só no seu celular.":isMinor()?"Entrar é opcional. No ranking aparece só o seu apelido e o XP da semana. Nenhum nome, tarefa ou horário sai do seu celular.":"Entrar é opcional. Aparece seu primeiro nome (ou o apelido) e o XP da semana, e qualquer pessoa com o app vê a lista.";
+  $("rkNote").textContent=kid?"O ranking é a partir de 14 anos. Seu progresso continua só no seu celular.":isMinor()?"Entrar é opcional. No ranking aparece só o seu apelido e o XP da semana (o criador do app também vê os dias de check-in). Nenhum nome, tarefa ou horário sai do seu celular.":"Entrar é opcional. Aparece seu primeiro nome (ou o apelido) e o XP da semana, e qualquer pessoa com o app vê a lista. O criador do app também vê em que dias você fez check-in.";
   const ol=$("rkList");ol.textContent="";
   if(!rankRows){const li=document.createElement("li");li.className="muted";li.textContent="Carregando…";ol.append(li);return;}
   if(!rankRows.length){const li=document.createElement("li");li.className="muted";li.textContent="Ninguém pontuou ainda nesta semana. Seja o primeiro.";ol.append(li);return;}
@@ -1349,10 +1349,10 @@ function statXP(){const st={foco:0,vendas:0,mente:0,corpo:0};for(const e of entr
   const c=rpgState().cls;if(c&&c.stat&&st[c.stat]!=null)st[c.stat]=Math.round(st[c.stat]*AFF);return st;}
 function coinsEarned(){let s=0;for(const e of entries())s+=Math.max(0,(e.xp||0)+(e.bonus||0));return Math.floor(s/10);}
 function rpgTip(){const d=new Date();const n=Math.floor((d-new Date(d.getFullYear(),0,0))/864e5);return TIPS[n%TIPS.length];}
-let sysQ=[];function sysPop(tag,title,text){sysQ.push([tag,title,text]);if(sysQ.length===1)sysNext();}
-function sysNext(){if(!sysQ.length)return;const [tag,title,text]=sysQ[0];const m=document.createElement("div");m.className="sysmodal";m.setAttribute("role","dialog");
+let sysQ=[];function sysPop(tag,title,text,cb,lbl){sysQ.push([tag,title,text,cb,lbl]);if(sysQ.length===1)sysNext();}
+function sysNext(){if(!sysQ.length)return;const [tag,title,text,cb,lbl]=sysQ[0];const m=document.createElement("div");m.className="sysmodal";m.setAttribute("role","dialog");
   const c=document.createElement("div");c.className="card";const a=document.createElement("div");a.className="tag";a.textContent="[ SISTEMA ] "+tag;const h=document.createElement("h3");h.textContent=title;const p=document.createElement("p");p.className="sm";p.textContent=text;
-  const b=document.createElement("button");b.className="go";b.type="button";b.textContent="Aceitar";b.addEventListener("click",()=>{m.remove();sysQ.shift();if(sysQ.length)sysNext();else setTimeout(render,50);});c.append(a,h,p,b);m.append(c);document.body.append(m);try{if(navigator.vibrate)navigator.vibrate([10,30,10]);}catch(e){}}
+  const b=document.createElement("button");b.className="go";b.type="button";b.textContent=lbl||"Aceitar";b.addEventListener("click",()=>{m.remove();sysQ.shift();if(cb)try{cb();}catch(e){}if(sysQ.length)sysNext();else setTimeout(render,50);});c.append(a,h,p,b);m.append(c);document.body.append(m);try{if(navigator.vibrate)navigator.vibrate([10,30,10]);}catch(e){}}
 function sparks(gold){if(matchMedia("(prefers-reduced-motion: reduce)").matches)return;const pt=lastPt||{x:innerWidth/2,y:innerHeight/2};
   for(let i=0;i<14;i++){const s=document.createElement("i");s.className="spark"+(gold&&i%2?" g":"");const a=Math.PI*2*i/14+Math.random()*.4,r=40+Math.random()*50;
     s.style.left=pt.x+"px";s.style.top=pt.y+"px";s.style.setProperty("--dx",Math.cos(a)*r+"px");s.style.setProperty("--dy",Math.sin(a)*r+"px");document.body.append(s);setTimeout(()=>s.remove(),800);}}
@@ -1436,7 +1436,7 @@ function betaPost(parts){const v=["B"].concat(parts).map(x=>String(x==null?"":x)
 function betaTab(t){const b=betaGet();if(!b.on)return;const k=todayKey();b.tabs=b.tabs||{};b.tabs[k]=b.tabs[k]||{};b.tabs[k][t]=(b.tabs[k][t]||0)+1;
   for(const d in b.tabs)if(d<k&&Object.keys(b.tabs).length>3)delete b.tabs[d];betaSet(b);}
 function betaDaily(){const b=betaGet();if(!b.on||betaKid())return;const tk=todayKey();if(b.last===tk)return;
-  const y=new Date();y.setDate(y.getDate()-1);const yk=dkey(y);const L=(prog.log[yk]||[]).filter(e=>!String(e.q).startsWith("ach:"));
+  const y=new Date();y.setDate(y.getDate()-1);const yk=dkey(y);const L=(prog.log[yk]||[]).filter(e=>!/^(ach|checkin|tip):/.test(String(e.q)));
   const ms=mainsFor(y);const mDone=ms.filter(q=>L.some(e=>e.q===q.id)).length;
   let act=0;const d=new Date();for(let i=1;i<=14;i++){d.setDate(d.getDate()-1);if((prog.log[dkey(d)]||[]).length)act++;}
   const P=(cfg&&cfg.profile)||{};const c=(prog.rpg&&prog.rpg.cls)||{};const tabs=(b.tabs&&b.tabs[yk])||{};
@@ -1459,6 +1459,15 @@ $("betaSend").addEventListener("click",()=>{if(betaKid()){toast("Para até 13 an
   const b=betaGet();const lr=b.rated||"";if(lr===todayKey()+":"+betaRate+":"+t){toast("Essa nota já foi enviada.");return;}
   betaPost([betaId(),"nota",todayKey().replace(/-/g,""),betaRate,betaAge(),t]);b.rated=todayKey()+":"+betaRate+":"+t;betaSet(b);$("betaText").value="";toast("Valeu! Nota enviada sem seu nome.");});
 for(const bt of document.querySelectorAll("#tabbar button"))bt.addEventListener("click",()=>betaTab(bt.dataset.go));
+
+// ---------- Check-in diário: abriu o app, ganha XP. Sequência de check-ins dá bônus (até +10). ----------
+function ciStreak(){let n=0;const d=new Date();d.setDate(d.getDate()-1);for(let i=0;i<365;i++){if((prog.log[dkey(d)]||[]).some(e=>String(e.q).startsWith("checkin:")))n++;else break;d.setDate(d.getDate()-1);}return n;}
+function dailyCheckin(){if(!cfg||cfg.blank||!$("onb").hidden||document.getElementById("clsModal"))return;const tk=todayKey();if((prog.log[tk]||[]).some(e=>String(e.q).startsWith("checkin:")))return;
+  if(dailyCheckin.shown===tk)return;dailyCheckin.shown=tk;const s=ciStreak()+1;const bonus=Math.min(10,(s-1)*2);
+  sysPop("CHECK-IN DIÁRIO","Dia "+s+(s>1?" seguido":""),"Você apareceu, e isso já conta. +10 XP"+(bonus?" e +"+bonus+" de bônus pela sequência de check-ins.":". Volte amanhã para ganhar bônus."),()=>{
+    if((prog.log[todayKey()]||[]).some(e=>String(e.q).startsWith("checkin:")))return;
+    addXP({q:"checkin:"+todayKey(),kind:"checkin",xp:10,stat:"foco",bonus,t:new Date().toISOString()},"Check-in feito: +"+(10+bonus)+" XP");
+    if(typeof sendRank==="function")sendRank("checkin",true);},"Fazer check-in");}
 
 let saveTimer=null, SYNC="";
 try{SYNC=localStorage.getItem("asc-u-sync")||"";}catch(e){}
