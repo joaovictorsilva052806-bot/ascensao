@@ -1,0 +1,19 @@
+# Gera o app pessoal (raiz) a partir de tools/base.html + módulos RPG, check-in e temporada.
+import os; SP=os.path.dirname(os.path.abspath(__file__))+'/'
+s=open(SP+'base.html').read()
+def rep(a,b,n=1):
+    global s
+    assert s.count(a)==n,(a[:60],s.count(a));s=s.replace(a,b)
+R=lambda f:open(SP+f).read()
+rep('</style></head>',R('rpg.css')+'</style></head>')
+rep('<span class="pill" id="dayPill">0/0 hoje</span></div>','<span class="pill" id="dayPill">0/0 hoje</span><span class="pill clspill" id="clsPill" hidden></span></div>\n        <div class="sysline" id="sysLine"></div>')
+rep('  <section data-tab="prog" class="panel">\n    <h2>Atributos</h2>\n    <div class="stats" id="stats"></div>\n  </section>\n','  <section data-tab="prog" class="panel" hidden>\n    <h2>Atributos</h2>\n    <div class="stats" id="stats"></div>\n  </section>\n'+R('rpg.html'))
+rep('  <section data-tab="hoje" class="panel">\n    <div class="qhead"><h2>Check-in</h2>',R('rpg2.html')+'\n  <section data-tab="hoje" class="panel">\n    <div class="qhead"><h2>Como você está</h2>')
+rep('      <summary>Backup do progresso</summary>','      <summary>Backup do progresso</summary>\n      <div class="row"><button type="button" class="link" id="seasonUndo" hidden>Recuperar meu progresso da temporada anterior</button></div>')
+rep('\nlet saveTimer=null, SYNC="";','\n'+R('rpg.js')+R('checkin.js')+'\nlet saveTimer=null, SYNC="";')
+rep('fillFocusSelect();renderReview();','fillFocusSelect();renderReview();renderRPG();setTimeout(dailyCheckin,600);')
+s=s.replace('String(e.q).startsWith("ach:")','/^(ach|checkin|tip):/.test(String(e.q))')
+sea=R('season.js').replace('"asc-u-season"','"ascensao-season"').replace('"asc-u-prog-t1"','"ascensao-prog-t1"').replace('"asc-u-cfg"','"ascensao-cfg"')
+rep('try{if(navigator.storage&&navigator.storage.persist)',sea+'\ntry{if(navigator.storage&&navigator.storage.persist)')
+assert 'asc-u-' not in s.replace('asc-u-intro',''),'chave errada'
+open(SP+'../index.html','w').write(s)
