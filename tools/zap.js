@@ -25,16 +25,23 @@ function zapSavePhoto(id,url){const o=zapPhotos();o.p[id]=url;try{localStorage.s
 function zapThumb(file){return new Promise((res,rej)=>{const r=new FileReader();r.onload=()=>{const im=new Image();im.onload=()=>{const k=Math.min(1,160/Math.max(im.width,im.height));const c=document.createElement("canvas");c.width=Math.round(im.width*k);c.height=Math.round(im.height*k);c.getContext("2d").drawImage(im,0,0,c.width,c.height);res(c.toDataURL("image/jpeg",.6));};im.onerror=rej;im.src=r.result;};r.onerror=rej;r.readAsDataURL(file);});}
 // tela do desafio
 let zapCur=null,zapCnt=0,zapEnd=0,zapIv=null;
-function zapOpen(z){zapCur=z;zapCnt=0;zapEnd=0;clearInterval(zapIv);let m=$("zapSheet");if(!m){m=zapEl("div","mssheet");m.id="zapSheet";m.setAttribute("role","dialog");m.setAttribute("aria-modal","true");document.body.append(m);}m.hidden=false;document.body.classList.add("inmission");zapDraw();}
-function zapClose(){clearInterval(zapIv);const m=$("zapSheet");if(m)m.hidden=true;document.body.classList.remove("inmission");}
-function zapDraw(){const z=zapCur,m=$("zapSheet");if(!z||!m)return;m.textContent="";const c=zapEl("div","mscard zapcard");
+// acessibilidade: nome da tela, foco entra e volta para o cartão, Esc fecha, contagem falada numa região aria-live fixa
+function zapSay(t){const l=$("zapLive");if(l)l.textContent=t;}
+function zapOpen(z){zapCur=z;zapCnt=0;zapEnd=0;clearInterval(zapIv);let m=$("zapSheet");if(!m){m=zapEl("div","mssheet");m.id="zapSheet";m.setAttribute("role","dialog");m.setAttribute("aria-modal","true");document.body.append(m);}
+  m.setAttribute("aria-label","Desafio relâmpago: "+z.t);m.textContent="";const lv=zapEl("div","zapsr");lv.id="zapLive";lv.setAttribute("aria-live","polite");lv.setAttribute("role","status");m.append(lv);
+  m.hidden=false;document.body.classList.add("inmission");zapDraw();const f=m.querySelector(".zaptap,.mscard .go:not(:disabled),.mscard button");if(f)f.focus();}
+function zapClose(){clearInterval(zapIv);const m=$("zapSheet");if(m)m.hidden=true;document.body.classList.remove("inmission");
+  const id=zapCur&&zapCur.id;const c=id&&document.querySelector('#zapPanel .zapc[data-id="'+id+'"]');if(c)c.focus();}
+document.addEventListener("keydown",e=>{if(e.key==="Escape"&&$("zapSheet")&&!$("zapSheet").hidden)zapClose();});
+function zapDraw(){const z=zapCur,m=$("zapSheet");if(!z||!m)return;const ae=document.activeElement;const had=ae&&m.contains(ae)?(ae.classList.contains("zaptap")?".zaptap":".mscard .go"):null;
+  const old=m.querySelector(".zapcard");if(old)old.remove();const c=zapEl("div","mscard zapcard");
   const top=zapEl("div","mstop");top.append(zapEl("span","mstag","[ SISTEMA ] DESAFIO RELÂMPAGO"));const x=zapEl("button","link","Fechar");x.type="button";x.addEventListener("click",zapClose);top.append(x);
   c.append(top,zapEl("h3",null,z.ic+" "+z.t));
   const ok=()=>{if(z.n)return zapCnt>=z.n;return zapEnd&&Date.now()>=zapEnd;};
   if(z.n&&z.n>1){const big=zapEl("button","zaptap");big.type="button";big.setAttribute("aria-label","Contar mais um");big.append(zapEl("b",null,String(zapCnt)),zapEl("span",null,"de "+z.n+" "+z.u));
-      big.addEventListener("click",()=>{if(zapCnt>=z.n)return;zapCnt++;try{haptic(zapCnt>=z.n?[20,60,40]:12);}catch(e){}if(zapCnt>=z.n){try{chime();}catch(e){}}zapDraw();});c.append(big,zapEl("div","sm muted","Toque no círculo a cada repetição."));}
+      big.addEventListener("click",()=>{if(zapCnt>=z.n)return;zapCnt++;try{haptic(zapCnt>=z.n?[20,60,40]:12);}catch(e){}if(zapCnt>=z.n){try{chime();}catch(e){}}zapSay(zapCnt>=z.n?"Pronto: "+z.n+" de "+z.n+". Toque em Concluir.":zapCnt+" de "+z.n);zapDraw();});c.append(big,zapEl("div","sm muted","Toque no círculo a cada repetição."));}
   else if(z.s){const left=zapEnd?Math.max(0,zapEnd-Date.now()):z.s*1000;const t=zapEl("div","msclock",fmt(left));t.id="zapClock";c.append(t);
-      if(!zapEnd){const b=zapEl("button","go","▶ Começar "+(z.s>=60?Math.round(z.s/60)+" min":z.s+" s"));b.type="button";b.addEventListener("click",()=>{zapEnd=Date.now()+z.s*1000;try{haptic([15,40,15]);}catch(e){}zapIv=setInterval(()=>{const k=$("zapClock");if(!k){clearInterval(zapIv);return;}const l=zapEnd-Date.now();k.textContent=fmt(l);if(l<=0){clearInterval(zapIv);try{chime();haptic([20,60,20,60,40]);}catch(e){}zapDraw();}},250);zapDraw();});c.append(b);}}
+      if(!zapEnd){const b=zapEl("button","go","▶ Começar "+(z.s>=60?Math.round(z.s/60)+" min":z.s+" s"));b.type="button";b.addEventListener("click",()=>{zapEnd=Date.now()+z.s*1000;try{haptic([15,40,15]);}catch(e){}zapIv=setInterval(()=>{const k=$("zapClock");if(!k){clearInterval(zapIv);return;}const l=zapEnd-Date.now();k.textContent=fmt(l);if(l<=0){clearInterval(zapIv);try{chime();haptic([20,60,20,60,40]);}catch(e){}zapSay("Tempo concluído. Toque em Concluir.");zapDraw();const g=$("zapSheet")&&$("zapSheet").querySelector(".msend .go");if(g)g.focus();}},250);zapSay("Cronômetro iniciado.");zapDraw();});c.append(b);}}
   // prova por foto (opcional)
   const ph=zapPhotos().p[z.id];const pr=zapEl("div","zapproof");
   if(ph){const im=zapEl("img");im.src=ph;im.alt="Sua prova";pr.append(im,zapEl("span","sm","Prova registrada · +"+ZAP_PHOTO+" XP. A foto fica só no seu celular."));}
@@ -44,7 +51,8 @@ function zapDraw(){const z=zapCur,m=$("zapSheet");if(!z||!m)return;m.textContent
   c.append(pr);
   const row=zapEl("div","row msend");const fin=zapEl("button","go",zapDone(z.id)?"Concluído ✓":"✓ Concluir +"+ZAP_XP+" XP");fin.type="button";
   const ready=(z.n&&z.n>1)||z.s?ok():true;fin.disabled=zapDone(z.id)||!ready;if(!ready&&!zapDone(z.id))fin.title="Complete primeiro";
-  fin.addEventListener("click",()=>zapFinish(z));row.append(fin);c.append(row);m.append(c);}
+  fin.addEventListener("click",()=>zapFinish(z));row.append(fin);c.append(row);m.append(c);
+  if(had){const t=m.querySelector(had+":not(:disabled)")||m.querySelector(".mscard .go:not(:disabled)")||x;t.focus();}}
 function zapFinish(z){if(zapDone(z.id))return;const tk=todayKey();prog.zap=prog.zap||{};for(const d in prog.zap)if(d<tk&&Object.keys(prog.zap).length>14)delete prog.zap[d];
   (prog.zap[tk]=prog.zap[tk]||{})[z.id]=1;const photo=!!zapPhotos().p[z.id];const xp=ZAP_XP+(photo?ZAP_PHOTO:0);
   const before=zapRankLine();
@@ -61,7 +69,7 @@ function zapUI(){let p=$("zapPanel");const qp=$("quests")&&$("quests").closest("
   const list=zapToday();const n=list.filter(z=>zapDone(z.id)).length;
   const hd=zapEl("div","qhead");hd.append(zapEl("h2",null,"⚡ Desafios relâmpago"),zapEl("span","xp",n+"/3 · +"+ZAP_XP+" XP cada"));p.append(hd);
   const rl=zapRankLine();p.append(zapEl("div","zaprank",rl?rl.txt:(prog.rank&&prog.rank.on?"Cada desafio soma no ranking da semana.":ageNow()==="kid"?"Desafios rápidos para ganhar XP.":"Entre no ranking (em Progresso) e cada desafio te faz subir.")));
-  const g=zapEl("div","zapgrid");for(const z of list){const d=zapDone(z.id);const b=zapEl("button","zapc"+(d?" done":""));b.type="button";
+  const g=zapEl("div","zapgrid");for(const z of list){const d=zapDone(z.id);const b=zapEl("button","zapc"+(d?" done":""));b.type="button";b.dataset.id=z.id;if(d)b.setAttribute("aria-label",z.t+": concluído");
     b.append(zapEl("span","ic",d?"✓":z.ic),zapEl("span","tt",z.t));if(zapPhotos().p[z.id])b.append(zapEl("span","ph","📸"));
     b.addEventListener("click",()=>{if(!d)zapOpen(z);});g.append(b);}p.append(g);}
 {const _rr=renderRankUI;renderRankUI=function(){_rr();try{zapUI();}catch(e){}};}
