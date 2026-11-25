@@ -244,9 +244,7 @@ async function reveal(){if(stage===2)return;stage=2;B.classList.remove("tap");bu
   await decode(h,"Aceite a missão",600);B.classList.remove("wait");
   const w=$("why");w.classList.add("on");decode(w,"Seu dia vira um jogo: missões, XP e um sistema que te guia.",900);}
 intro();
-try{const k="asc-anon",d=new Date(),dk=d.getFullYear()+String(d.getMonth()+1).padStart(2,"0")+String(d.getDate()).padStart(2,"0");let id=localStorage.getItem(k);if(!id){id="a"+Math.random().toString(36).slice(2,10);localStorage.setItem(k,id);}
-  if(localStorage.getItem("asc-anon-cv")!==dk){localStorage.setItem("asc-anon-cv",dk);const pl=/iP(hone|ad|od)/.test(navigator.userAgent)?"iPhone":/Android/i.test(navigator.userAgent)?"Android":"Computador";
-    fetch("https://docs.google.com/forms/d/e/1FAIpQLSeupI0e9q5NvzLgusfgD1CNKN7hGBx91xGD1jkEl1z2uxPUuw/formResponse",{method:"POST",mode:"no-cors",keepalive:true,body:new URLSearchParams({"entry.807978446":["A",id,"1-convite",dk,pl,"web"].join("|")})}).catch(()=>{});}}catch(e){}
+// sem envio aqui: o convite não tem como pedir consentimento antes (beta anônimo só com opt-in)
 
 function onEye(){if(stage===0)return ready();if(stage===1)return reveal();
   buzz(12);B.classList.add("blink","go");burst=.8;setTimeout(()=>B.classList.remove("blink"),140);setTimeout(()=>B.classList.remove("go"),1000);
