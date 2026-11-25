@@ -67,14 +67,14 @@ function buildCfg(a){const Q=[];let n=0;const add=q=>{q.id=q.id||("g"+(++n));Q.p
     add({id:"s_sono",title:"Deitar até "+fm(hm(a.sleep))+", sem tela na cama",xp:25,stat:"corpo",main:true,minTitle:"celular longe da cama",ifThen:pre});
   }
   if(!a.studies&&f("carreira"))add({id:"s_carr",title:tech?"20 min de programação no seu projeto":"20 min de carreira (curso, portfólio ou currículo)",xp:30,stat:"vendas",main:true,minTitle:"5 min",ifThen:"Logo depois do café, antes de abrir redes sociais."});
-  add({id:"s_fech",title:"Fechamento de 3 min: marcar as quests e escolher a nº 1 de amanhã",xp:15,stat:"foco",main:true,ifThen:"Quando colocar o celular para carregar à noite, abro este app primeiro."});
+  add({id:"s_fech",title:"Antes de dormir: marcar o que fiz hoje e escolher a tarefa mais importante de amanhã",xp:15,stat:"foco",main:true,minTitle:"só marcar o que fiz",ifThen:"Quando colocar o celular para carregar à noite, abro este app primeiro."});
   if(a.studies&&f("carreira"))add({id:"s_carr",title:tech?"15 min de código no projeto pessoal ou portfólio":"15 min de carreira (estágio, LinkedIn ou portfólio)",xp:25,stat:"vendas",days:[1,3],minTitle:"5 min",ifThen:(a.works&&a.lunch)?"Ter e qui, no almoço, depois de comer.":"Ter e qui, logo depois do café."});
   if(f("corpo")){
     if(busy){add({id:"s_along",title:"Alongar 5 min ao acordar",xp:10,stat:"corpo",ifThen:"Quando o alarme das "+fm(hm(a.wake))+" tocar, levanto e alongo antes do banho."});
       add({id:"s_treino",title:"Caminhada ou treino de 30 min",xp:30,stat:"corpo",days:[5,6],minTitle:"10 min",ifThen:"Fim de semana, antes do almoço, calço o tênis."});}
     else add({id:"s_treino",title:"Mexer o corpo 20 min",xp:25,stat:"corpo",minTitle:"5 min",ifThen:"Quando terminar a principal tarefa do dia, calço o tênis."});
   }
-  if(a.works&&a.lunch&&(f("corpo")||busy))add({id:"s_almoco",title:"Almoço de verdade: 10 min sem celular e 5 min andando",xp:10,stat:"corpo",days:a.workDays,ifThen:"Quando sentar para almoçar ("+fm(hm(a.lunch))+"), celular no bolso."});
+  if(a.works&&a.lunch&&(f("corpo")||busy))add({id:"s_almoco",title:"Almoçar sem celular e andar 5 min depois",xp:10,stat:"corpo",days:a.workDays,ifThen:"Quando sentar para almoçar ("+fm(hm(a.lunch))+"), celular no bolso."});
   if(f("dinheiro"))add({id:"s_gasto",title:"Anotar os gastos do dia (2 min)",xp:10,stat:"foco",ifThen:bus?"No ônibus da volta, anoto o que gastei.":"Antes do jantar, anoto o que gastei."});
   if(f("tela"))add({id:"s_tela",title:"Primeira hora do dia sem redes sociais",xp:15,stat:"mente",minTitle:"30 min",ifThen:"Quando acordar, deixo o celular longe e só abro redes depois do café"+(school?" e de arrumar as coisas da escola.":".")});
   if(f("leitura"))add({id:"s_ler",title:"Ler 10 páginas de um livro",xp:15,stat:"mente",minTitle:"2 páginas",ifThen:"Antes de dormir, no lugar do celular."});
@@ -99,7 +99,7 @@ function buildCfg(a){const Q=[];let n=0;const add=q=>{q.id=q.id||("g"+(++n));Q.p
     add({id:"s_casa",title:"15 min de arrumação em um cômodo",xp:15,stat:"foco",main:true,minTitle:"5 min",ifThen:"Logo depois do café da manhã."});
     if(!Q.some(q=>q.id==="s_treino"))add({id:"s_treino",title:"Caminhada de 20 min",xp:20,stat:"corpo",minTitle:"10 min",ifThen:"No fim da tarde, quando o sol baixar."});}
   if(o==="estudante"||o==="escola"||a.studies)add({id:"s_provas",title:school?"Olhar as provas e trabalhos da semana (5 min)":"Olhar as provas e entregas da semana (5 min)",xp:15,stat:"mente",days:[6],ifThen:"Domingo à noite, antes de dormir, abro "+(school?"a agenda da escola.":a.level==="enem"?"o cronograma de estudo.":"o calendário do curso.")});
-  if(o==="autonomo")add({id:"s_foco",title:"Bloco de 90 min no trabalho que dá dinheiro, antes de abrir mensagens",xp:40,stat:"vendas",main:true,minTitle:"25 min",days:[0,1,2,3,4],ifThen:"Logo depois do café, celular no modo não perturbe."});
+  if(o==="autonomo")add({id:"s_foco",title:"Trabalhar 90 min sem parar no que dá dinheiro, antes de olhar mensagens",xp:40,stat:"vendas",main:true,minTitle:"25 min",days:[0,1,2,3,4],ifThen:"Logo depois do café, celular no modo não perturbe."});
   if(o==="aposentado"){if(!Q.some(q=>q.id==="s_treino"))add({id:"s_treino",title:"Caminhada leve de 20 min",xp:20,stat:"corpo",main:true,minTitle:"10 min",ifThen:"De manhã, depois do café."});
     if(!Q.some(q=>q.id==="s_amor"))add({id:"s_amor",title:"Conversar com alguém (ligação ou visita)",xp:10,stat:"foco",ifThen:"Depois do almoço, ligo para alguém."});}
   // no máximo 3 principais contando o fechamento (remédio e tarefas da ocupação têm prioridade)
@@ -155,3 +155,7 @@ setTimeout(showNews,0);
 $("o_bkGo").addEventListener("click",()=>{let withCfg=false;try{withCfg=restoreBackup($("o_bk").value);}catch(e){$("o_msg").textContent="Esse texto não é um backup válido.";return;}
   $("o_bk").value="";if(withCfg){try{localStorage.setItem("asc-u-news",NEWS_V);}catch(e){}closeOnb();render();goTab("hoje");toast("Tudo de volta: tarefas, pontos e histórico.");}
   else{$("o_bkBox").open=false;$("o_msg").textContent="Pontos e histórico de volta. Esse backup é antigo e não tem as tarefas: confira o perfil e toque em Criar meu jogo.";}});
+
+// Textos mais claros para quem já tinha o jogo (só troca o título; progresso e XP ficam iguais)
+{const FIX={"Fechamento de 3 min: marcar as quests e escolher a nº 1 de amanhã":"Antes de dormir: marcar o que fiz hoje e escolher a tarefa mais importante de amanhã","Almoço de verdade: 10 min sem celular e 5 min andando":"Almoçar sem celular e andar 5 min depois","Bloco de 90 min no trabalho que dá dinheiro, antes de abrir mensagens":"Trabalhar 90 min sem parar no que dá dinheiro, antes de olhar mensagens"};
+  setTimeout(()=>{try{let ch=false;for(const q of (cfg&&cfg.quests)||[]){if(FIX[q.title]){q.title=FIX[q.title];if(q.id==="s_fech"&&!q.minTitle)q.minTitle="só marcar o que fiz";ch=true;}}if(ch){localStorage.setItem("asc-u-cfg",JSON.stringify(cfg));try{render();}catch(e){}}}catch(e){}},0);}
