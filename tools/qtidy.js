@@ -14,19 +14,23 @@ function qtLocked(q){const f=qtFrom(q);if(f==null)return null;const h=new Date()
   if(f>=12)return (h<f&&h>=5)?f:null; // noite: libera de f até 4h59
   return h<f?f:null;}
 const QT_SHORT={s_fech:"🌙 Fechar o dia",q_fech:"🌙 Fechar o dia"};
-const QT_SHORT_RE=[[/^antes de dormir/i,"🌙 Fechar o dia"],[/trabalhar 90 min/i,"Bloco de foco: 90 min"],[/oferecer desenho/i,"Oferecer desenho técnico"],[/abordar 3 corretores/i,"Abordar 3 corretores"]];
+const QT_SHORT_RE=[[/^antes de dormir/i,"🌙 Fechar o dia"],[/^fechamento/i,"🌙 Fechar o dia"],[/trabalhar 90 min/i,"Bloco de foco: 90 min"],[/oferecer desenho/i,"Oferecer desenho técnico"],[/abordar 3 corretores/i,"Abordar 3 corretores"]];
+// título longo: corta o parêntese ou o que vem depois de ":" (o texto inteiro fica nos detalhes)
+function qtAuto(t){t=String(t||"");if(t.length<=34)return null;let s=t.replace(/\s*\([^)]*\)/g,"").trim();if(s.length>40&&t.indexOf(": ")>8)s=t.slice(0,t.indexOf(": "));return s&&s!==t&&s.length<t.length?s:null;}
 function qtTidy(){const box=$("quests");if(!box)return;let nextMoved=false;
   for(const c of box.querySelectorAll(".quest[data-q]")){const q=((cfg&&cfg.quests)||[]).find(x=>x.id===c.dataset.q);if(!q)continue;
     const nm=c.querySelector(".t > div:not(.xp)");const x=c.querySelector(".t .xp");
-    const sh=q.short||QT_SHORT[q.id]||(String(q.title).length>46&&QT_SHORT_RE.find(r=>r[0].test(q.title))||[])[1];
+    const sh=q.short||QT_SHORT[q.id]||(String(q.title).length>46&&QT_SHORT_RE.find(r=>r[0].test(q.title))||[])[1]||qtAuto(q.title);
     if(nm&&!nm.dataset.qt&&sh&&sh!==q.title){nm.textContent=sh;const d=document.createElement("div");d.className="qtdesc";d.textContent=q.title;nm.after(d);}
     if(nm&&!nm.dataset.qt){nm.dataset.qt="1";nm.classList.add("tt");nm.setAttribute("role","button");nm.tabIndex=0;nm.setAttribute("aria-expanded","false");
       const tg=()=>{c.classList.toggle("open");nm.setAttribute("aria-expanded",c.classList.contains("open")?"true":"false");};
       nm.onclick=tg;nm.onkeydown=e=>{if(e.key==="Enter"||e.key===" "){e.preventDefault();tg();}};}
     if(x&&!x.dataset.qt){x.dataset.qt="1";const parts=x.textContent.split("  ·  mínimo: ");x.textContent=parts[0];if(parts[1]){const mn=document.createElement("span");mn.className="qtmin";mn.textContent=" · mínimo: "+parts[1];x.append(mn);}}
+    // rodapé: XP à esquerda, botões à direita (uma linha só)
+    const bt=c.querySelector(".btns");if(x&&bt&&!c.querySelector(".qtfoot")){const f=document.createElement("div");f.className="qtfoot";(c.querySelector(".t")||c).after(f);f.append(x,bt);}
     const done=c.classList.contains("done")||c.classList.contains("min");
     const lk=done?null:qtLocked(q);c.classList.toggle("qtlock",!!lk);
-    let lb=c.querySelector(".qtlb");if(lk!=null){if(!lb){lb=document.createElement("div");lb.className="qtlb";(c.querySelector(".t")||c).append(lb);}lb.textContent="🔒 libera às "+lk+"h";}else if(lb)lb.remove();
+    let lb=c.querySelector(".qtlb");if(lk!=null){if(!lb){lb=document.createElement("div");lb.className="qtlb";(c.querySelector(".qtfoot")||c).append(lb);}lb.textContent="🔒 libera às "+lk+"h";}else if(lb)lb.remove();
     for(const b of c.querySelectorAll(".btns button")){b.disabled=lk!=null;if(lk!=null)b.title="Libera às "+lk+"h";}
     if(c.classList.contains("next")&&lk!=null){c.classList.remove("next");const l=c.querySelector(".nextlbl");if(l)l.remove();nextMoved=true;}}
   if(nextMoved||!box.querySelector(".quest.next")){const cand=[...box.querySelectorAll(".qgroup .quest[data-q]")].find(c=>!c.classList.contains("qtlock")&&!c.classList.contains("done")&&!c.classList.contains("min"));
