@@ -12,7 +12,7 @@ rep('  <section data-tab="hoje" class="panel">\n    <div class="qhead"><h2>Check
 rep('      <summary>Backup do progresso</summary>','      <summary>Backup do progresso</summary>\n      <div class="row"><button type="button" class="link" id="seasonUndo" hidden>Recuperar meu progresso da temporada anterior</button></div>')
 rep('\nlet saveTimer=null, SYNC="";','\n'+R('rpg.js')+R('checkin.js')+'\nlet saveTimer=null, SYNC="";')
 rep('fillFocusSelect();renderReview();','fillFocusSelect();renderReview();renderRPG();setTimeout(dailyCheckin,600);')
-s=s.replace('String(e.q).startsWith("ach:")','/^(ach|checkin|tip):/.test(String(e.q))')
+s=s.replace('String(e.q).startsWith("ach:")','/^(ach|checkin|tip|dun):/.test(String(e.q))')
 sea=R('season.js').replace('"asc-u-season"','"ascensao-season"').replace('"asc-u-prog-t1"','"ascensao-prog-t1"').replace('"asc-u-cfg"','"ascensao-cfg"')
 rep('try{if(navigator.storage&&navigator.storage.persist)',sea+'\ntry{if(navigator.storage&&navigator.storage.persist)')
 assert 'asc-u-' not in s.replace('asc-u-intro',''),'chave errada'
