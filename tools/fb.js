@@ -26,10 +26,13 @@ const cleanNick=v=>String(v||"").trim().replace(/[|,;"<>]/g,"").replace(/\s+/g,"
 // Nome que vai para o ranking: o apelido, se houver; senão o 1º nome (só para maiores de 18)
 const rankName=()=>cleanNick(prog.rank&&prog.rank.nick)||(isMinor()?"":firstName());
 function weekXP(ws){ws=ws||weekStart(todayKey());let s=0;for(const e of entries())if(weekStart(e.date)===ws)s+=(e.xp||0)+(e.bonus||0);return s;}
+// Token secreto do jogador: nasce no aparelho, vai como último campo (tk…) e o servidor confere e apaga antes de gravar.
+// Ninguém de fora consegue mandar XP, avatar ou convite no seu nome. Fica em prog.rank.tk (sai junto no backup).
+function rkTok(){const r=prog.rank;if(!r||!r.uid)return "";if(!/^tk[\w-]{22}$/.test(r.tk||"")){const a=new Uint8Array(16);crypto.getRandomValues(a);r.tk="tk"+btoa(String.fromCharCode.apply(null,a)).replace(/\+/g,"-").replace(/\//g,"_").replace(/=+$/,"");save();}return r.tk;}
 function sendRank(ev,force){const r=prog.rank;if(!r||!r.on)return;const xp=weekXP(),ws=weekStart(todayKey()).replace(/-/g,"");
   if(!force&&r.lastXp===xp&&r.lastWk===ws)return;
   const dev=isMinor()?"-":IOS?"iPhone":AND?"Android":"Computador";if(!rankName())return;
-  const v=["R",r.uid,rankName(),dev,ws,xp,levelOf(totalXP()),ev].join("|");
+  const v=["R",r.uid,rankName(),dev,ws,xp,levelOf(totalXP()),ev,rkTok()].join("|");
   try{fetch(RK_POST,{method:"POST",mode:"no-cors",keepalive:true,body:new URLSearchParams({"entry.807978446":v})}).catch(()=>{});}catch(e){}
   r.lastXp=xp;r.lastWk=ws;r.last=new Date().toISOString();save();}
 function joinRank(ev){if(ageNow()==="kid"){toast("O ranking é a partir de 14 anos.");return;}

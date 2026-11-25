@@ -117,6 +117,6 @@ function avZapWeek(){let n=0;try{const ws=weekStart(todayKey());for(const e of e
 function avAttrs(){try{const st=statXP();return ["foco","vendas","mente","corpo"].map(k=>slvl(st[k]||0)).join("-");}catch(e){return "";}}
 function avPost(force){if(typeof RK_POST==="undefined"||ageNow()==="kid"||!(prog.rank&&prog.rank.on))return;const me=rankName();if(!me)return;
   let sq=0;try{sq=streakDays()||0;}catch(e){}const at=avAttrs();const key=[me,sq,avZapWeek(),avCode(),todayKey(),at].join("|");if(!force&&prog.avPub===key)return;if(prog.avPub===key)return;prog.avPub=key;save();
-  const v=["P",me,sq,avZapWeek(),avCode(),todayKey().replace(/-/g,""),at].join("|");
+  const v=["P",me,sq,avZapWeek(),avCode(),todayKey().replace(/-/g,""),at,(typeof rkTok==="function"?rkTok():"")].join("|");
   try{fetch(RK_POST,{method:"POST",mode:"no-cors",keepalive:true,body:new URLSearchParams({"entry.807978446":v})}).catch(()=>{});}catch(e){}}
 if(typeof sendRank==="function"){const _sr=sendRank;sendRank=function(){_sr.apply(this,arguments);try{avPost();}catch(e){}};}
