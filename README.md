@@ -3,7 +3,7 @@
 App de rotina em formato de jogo: quests diárias com XP, níveis (ranks E → S), sequência de dias, chefe da semana e conquistas. É um PWA estático (HTML, CSS e JS puros, sem build e sem dependências), hospedado no GitHub Pages.
 
 - **App para qualquer pessoa:** https://joaovictorsilva052806-bot.github.io/ascensao/comecar/ (a tela "Monte seu jogo" gera as quests a partir da rotina)
-- **Instalar no iPhone:** abrir no Safari > Compartilhar > Adicionar à Tela de Início
+- **Convite (só ensina a instalar):** https://joaovictorsilva052806-bot.github.io/ascensao/convite/ detecta iPhone/Android, mostra os passos e usa o botão nativo de instalar quando o navegador oferece. Aberto pelo ícone, vai direto para `/comecar/`.
 
 ## Estrutura
 
@@ -44,3 +44,10 @@ python3 tools/gen.py   # regenera comecar/index.html
 4. Abra um Pull Request explicando o que muda e por quê.
 
 Ideias boas para começar: notificações push, exportar o progresso em CSV, testes automatizados do `buildCfg` e da sequência de dias, e acessibilidade (leitor de tela).
+
+## Lojas (futuro)
+
+Hoje o app é PWA (instala pelo navegador, grátis). Para entrar nas lojas depois, sem reescrever:
+
+- **Play Store:** empacotar como TWA (Trusted Web Activity) com o Bubblewrap ou o PWABuilder. Conta Google Play: taxa única de US$ 25.
+- **App Store:** Capacitor (ou PWABuilder) gera o app iOS. Exige Mac/Xcode e conta Apple Developer: US$ 99/ano, e a Apple costuma recusar app que é só um site embrulhado.
