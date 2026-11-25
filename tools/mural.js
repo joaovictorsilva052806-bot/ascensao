@@ -32,7 +32,8 @@ async function muShrink(file){if(!file||!/^image\//.test(file.type||"image/"))th
     if(url.length*.75<=MU_MAXB)return url;if(q>.45)q-=.12;else side=Math.round(side*.8);}
   if(url.length*.75<=MU_MAXB)return url;throw new Error("grande");}
 // --- depois de concluir uma tarefa: atalho por 8 s ---
-function muChip(q){if(!q||!cfg||cfg.blank)return;const old=$("muChip");if(old)old.remove();const photo=muPhotoOn();
+function muBlocked(){return [...document.querySelectorAll(".sysmodal,#levelup:not([hidden]),#bxModal")].some(x=>x.getClientRects().length);}
+function muChip(q,tries){if(!q||!cfg||cfg.blank)return;tries=tries||0;if(muBlocked()){if(tries<40)setTimeout(()=>muChip(q,tries+1),500);return;}const old=$("muChip");if(old)old.remove();const photo=muPhotoOn();
   const b=muEl("button","much",photo?"📸 Provar no mural":"⭐ Colar figurinha");b.type="button";b.id="muChip";
   b.addEventListener("click",()=>{b.remove();photo?muCompose(q):muSticker(q);});document.body.append(b);setTimeout(()=>{if(b.isConnected)b.remove();},8000);}
 {const _tg=toggle;toggle=function(q,kind){const tk=todayKey();const had=(prog.log[tk]||[]).some(e=>e.q===q.id);_tg.apply(this,arguments);
@@ -92,7 +93,7 @@ async function muAct(a,o,okMsg){try{await muApi(a,o);if(okMsg)toast(okMsg);}catc
 function muUI(){let p=$("muPanel");const wrap=document.querySelector(".wrap");if(!wrap)return;
   if(!p){p=muEl("section","panel mu");p.id="muPanel";p.dataset.tab="amigos";const at=$("tmPanel");at&&at.parentNode===wrap?at.after(p):wrap.append(p);}
   if(!MURAL_URL||!muBand()||!(prog.rank&&prog.rank.on)){p.hidden=true;return;}p.hidden=false;p.textContent="";const s=muSt();
-  const hd=muEl("div","qhead");hd.append(muEl("h2",null,"📸 Mural da turma"),muEl("span","sm muted","só amigos · 7 dias"));p.append(hd);
+  const hd=muEl("div","muhd");hd.append(muEl("h2",null,"📸 Mural da turma"),muEl("span","sm muted","só amigos · 7 dias"));p.append(hd);
   if(!muPhotoOn()){p.append(muEl("div","sm muted","O mural liga quando você está no ranking com apelido."));return;}
   if(!s.ok){p.append(muEl("p","sm","Prove uma tarefa com foto. Só seus amigos veem e ela some em 7 dias."));const b=muEl("button","go","Ligar o mural");b.type="button";b.addEventListener("click",()=>muConsent(()=>{muAt=0;muLoad();}));p.append(b);return;}
   const add=muEl("button","ghost","＋ Postar prova de uma tarefa de hoje");add.type="button";add.addEventListener("click",()=>{const tk=todayKey();const done=(prog.log[tk]||[]).map(e=>e.q);
@@ -107,7 +108,7 @@ function muUI(){let p=$("muPanel");const wrap=document.querySelector(".wrap");if
     const av=muEl("span","muav");try{av.innerHTML=frAv(((typeof sqPub!=="undefined"&&sqPub[String(x.a||"").toLowerCase()])||{}).av,32);}catch(e){}
     top.append(av,muEl("b",null,String(x.a||"").slice(0,16)),muEl("span","sm muted",muAgo(x.d)));card.append(top);
     const im=muEl("img","muimg");im.alt="Foto de prova de "+String(x.a||"");im.loading="lazy";im.src=x.img;card.append(im);
-    card.append(muEl("div","muq","✅ "+String(x.q||"").slice(0,40)+(x.cap&&MU_CAPS.includes(x.cap)?" · "+x.cap:"")));
+    {const qt=String(x.q||"").slice(0,40),cp=x.cap&&MU_CAPS.includes(x.cap)?x.cap:"";const tx=[qt,cp].filter(Boolean).join(" · ")||"Tarefa feita";card.append(muEl("div","muq",(/✅/.test(tx)?"":"✅ ")+tx));}
     const bar=muEl("div","murx");for(const e of MU_REACT){const n=+((x.r||{})[e])||0;const mine=!!((x.my||{})[e]);const b=muEl("button","murb"+(mine?" on":""),e+(n?" "+n:""));b.type="button";b.setAttribute("aria-pressed",mine?"true":"false");b.setAttribute("aria-label","Reagir "+e);
       b.addEventListener("click",()=>{x.my=x.my||{};x.r=x.r||{};x.my[e]=!mine;x.r[e]=Math.max(0,n+(mine?-1:1));muUI();muAct("react",{id:x.id,e});});bar.append(b);}
     const own=String(x.a||"").toLowerCase()===me;const act=muEl("button","link muop",own?"Apagar":"Denunciar");act.type="button";
