@@ -141,5 +141,8 @@ rep('\nlet saveTimer=null, SYNC="";','\n'+open(SP+'avatar.js').read()+open(SP+'f
 # tarefas limpas + horário certo (tools/qtidy.*)
 rep('</style></head>',open(SP+'qtidy.css').read()+'</style></head>')
 rep('\nlet saveTimer=null, SYNC="";','\n'+open(SP+'qtidy.js').read()+'\nlet saveTimer=null, SYNC="";')
+# aba Amigos: liga, turma, novidades, parabéns e cutucar (tools/turma.*)
+rep('</style></head>',open(SP+'turma.css').read()+'</style></head>')
+rep('\nlet saveTimer=null, SYNC="";','\n'+open(SP+'turma.js').read()+'\nlet saveTimer=null, SYNC="";')
 open('comecar/index.html','w').write(s)
 pass
