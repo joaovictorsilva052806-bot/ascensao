@@ -1,6 +1,6 @@
 import os; SP=os.path.dirname(os.path.abspath(__file__))+'/'
 import re
-s=open('index.html').read()
+s=open(SP+'base.html').read()
 def rep(a,b,n=1):
     global s
     assert s.count(a)==n,(a[:60],s.count(a));s=s.replace(a,b)
