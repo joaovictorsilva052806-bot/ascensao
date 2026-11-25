@@ -3,7 +3,7 @@
 <meta name="description" content="Poucos foram escolhidos.">
 <meta property="og:title" content="[ SINAL DETECTADO ]">
 <meta property="og:description" content="Poucos foram escolhidos.">
-<meta property="og:image" content="https://joaovictorsilva052806-bot.github.io/ascensao/convite/olho.jpg">
+<meta property="og:image" content="https://joaovictorsilva052806-bot.github.io/ascensao/convite/olho2.jpg">
 <meta property="og:image:width" content="1200"><meta property="og:image:height" content="630"><meta property="og:image:alt" content="Um olho dourado se abrindo no escuro">
 <meta name="twitter:card" content="summary_large_image">
 <meta property="og:type" content="website"><meta name="theme-color" content="#000000">
@@ -19,63 +19,115 @@ if(matchMedia("(display-mode: standalone)").matches||navigator.standalone)locati
 :root{--g:#f3c969;--g2:#ffe7a8;--m:#6d6250;--l:rgba(243,201,105,.18)}
 *{box-sizing:border-box;margin:0}
 html,body{background:#000;color:var(--g2);min-height:100%}
-body{font:400 15px/1.5 ui-monospace,SFMono-Regular,Menlo,Consolas,"Roboto Mono",monospace;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:34px;padding:max(40px,env(safe-area-inset-top)) 16px max(32px,env(safe-area-inset-bottom));min-height:100vh;min-height:100dvh;overflow-x:hidden;text-align:center;
-  background:radial-gradient(circle at 50% 38%,rgba(243,201,105,.07),transparent 55%),#000}
-.sig{font-size:11px;letter-spacing:.42em;color:var(--g);opacity:.75;padding-left:.42em;min-height:1.5em}
-.sig::after{content:"_";animation:bl 1s steps(1) infinite}
+body{font:400 15px/1.5 ui-monospace,SFMono-Regular,Menlo,Consolas,"Roboto Mono",monospace;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:26px;padding:max(36px,env(safe-area-inset-top)) 16px max(28px,env(safe-area-inset-bottom));min-height:100vh;min-height:100dvh;overflow-x:hidden;text-align:center;position:relative;-webkit-user-select:none;user-select:none}
+#fx{position:fixed;inset:0;width:100%;height:100%;z-index:0;pointer-events:none}
+body>*:not(#fx){position:relative;z-index:1}
+body::before{content:"";position:fixed;inset:0;z-index:2;pointer-events:none;background:repeating-linear-gradient(0deg,rgba(255,231,168,.025) 0 1px,transparent 1px 3px),radial-gradient(ellipse at 50% 42%,transparent 40%,rgba(0,0,0,.85))}
+.sig{font-size:11px;letter-spacing:.42em;color:var(--g);opacity:.8;padding-left:.42em;min-height:1.5em}
+.sig.cur::after{content:"_";animation:bl 1s steps(1) infinite}
 @keyframes bl{50%{opacity:0}}
-svg.eye{width:min(220px,62vw);height:auto;overflow:visible;cursor:pointer;-webkit-tap-highlight-color:transparent;touch-action:manipulation;transition:transform .25s}
-svg.eye:active{transform:scale(.96)}
-.tap svg.eye{animation:call 1.8s ease-in-out infinite}
-@keyframes call{50%{filter:drop-shadow(0 0 18px rgba(243,201,105,.55))}}
-.blink .lid{transform:scaleY(.04);transition:transform .12s}
-.pupil{transition:transform .25s ease-out}
-.flash .glow{animation:fl .9s}
-@keyframes fl{30%{opacity:1;transform:scale(1.6)}}
-.glow{transform-origin:100px 60px}
-.lid{transform-origin:50% 50%;transform:scaleY(.04);transition:transform 1.4s cubic-bezier(.7,0,.2,1)}
+.stage{width:min(300px,80vw);aspect-ratio:1;display:grid;place-items:center;cursor:pointer;-webkit-tap-highlight-color:transparent;touch-action:manipulation;position:relative;outline:none}
+.stage>*{grid-area:1/1}
+svg.hud{width:100%;height:100%;overflow:visible;opacity:0;transform:scale(.7) rotate(-30deg);transition:opacity 1.2s .2s,transform 1.6s cubic-bezier(.2,.8,.2,1) .2s}
+.open svg.hud{opacity:1;transform:none}
+.r1{transform-origin:150px 150px;animation:spin 38s linear infinite}
+.r2{transform-origin:150px 150px;animation:spin 22s linear infinite reverse}
+.r3{transform-origin:150px 150px;animation:spin 9s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+.tap .r3{animation-duration:2.4s}
+.ring-call{transform-origin:150px 150px;opacity:0}
+.tap .ring-call{animation:call 1.6s ease-out infinite}
+@keyframes call{0%{opacity:.7;transform:scale(.62)}100%{opacity:0;transform:scale(1.05)}}
+svg.eye{width:64%;height:auto;overflow:visible;transition:transform .25s}
+.stage:active svg.eye{transform:scale(.95)}
+.lid{transform-origin:100px 60px;transform:scaleY(.03);transition:transform 1.3s cubic-bezier(.7,0,.2,1)}
 .open .lid{transform:scaleY(1)}
-.iris{transform-origin:100px 60px;animation:look 9s ease-in-out 3s infinite}
-@keyframes look{0%,40%,100%{transform:translateX(0)}48%,60%{transform:translateX(-9px)}68%,80%{transform:translateX(8px)}}
-.glow{opacity:0;transition:opacity 2s 1s}.open .glow{opacity:1}
-h1{font-weight:500;font-size:13px;letter-spacing:.3em;padding-left:.3em;color:var(--g2);min-height:1.5em;text-transform:uppercase;transition:opacity .5s}
-h1.f{opacity:0}
+.blink .lid{transform:scaleY(.03);transition:transform .11s ease-in}
+.iris{transform-origin:100px 60px;transition:transform .6s cubic-bezier(.2,.8,.2,1),translate .22s ease-out}
+.dil .iris{transform:scale(1.14)}
+.pup{transform-origin:100px 60px;transition:transform .5s}
+.dil .pup{transform:scaleX(2.4)}
+.irisring{transform-origin:100px 60px;animation:spin 14s linear infinite}
+.scan{opacity:0}
+.open .scan{animation:scan 2.6s ease-in-out .9s 1 both}
+@keyframes scan{0%{opacity:0;transform:translateY(-40px)}15%{opacity:.9}85%{opacity:.9}100%{opacity:0;transform:translateY(40px)}}
+.glow{opacity:0;transform-origin:100px 60px;transition:opacity 2s 1s}.open .glow{opacity:1}
+.flash .glow{animation:fl .9s}
+@keyframes fl{25%{opacity:1;transform:scale(2)}}
+.wave{position:absolute;inset:0;border-radius:50%;border:1px solid var(--g);opacity:0;pointer-events:none}
+.go .wave{animation:wave 1s cubic-bezier(.2,.8,.2,1)}
+.go .wave.b{animation-delay:.15s}
+@keyframes wave{0%{opacity:.9;transform:scale(.35)}100%{opacity:0;transform:scale(1.9)}}
+h1{font-weight:500;font-size:13px;letter-spacing:.3em;padding-left:.3em;color:var(--g2);min-height:1.5em;text-transform:uppercase;text-shadow:0 0 12px rgba(243,201,105,.35)}
 .how{width:100%;max-width:330px;display:flex;flex-direction:column;gap:14px;transition:opacity .8s,transform .8s}
-.wait .how,.wait .foot{opacity:0;transform:translateY(8px);pointer-events:none}
-ol{list-style:none;padding:0;display:flex;flex-direction:column;gap:0;text-align:left;border-top:1px solid var(--l)}
-li{display:flex;gap:14px;align-items:baseline;padding:13px 2px;border-bottom:1px solid var(--l);font-size:14px;color:#d9cfb8}
+.wait .how,.wait .foot{opacity:0;transform:translateY(10px);pointer-events:none}
+ol{list-style:none;padding:0;display:flex;flex-direction:column;text-align:left;border-top:1px solid var(--l)}
+li{display:flex;gap:14px;align-items:baseline;padding:13px 2px;border-bottom:1px solid var(--l);font-size:14px;color:#d9cfb8;opacity:0;transform:translateX(-8px);transition:opacity .5s,transform .5s}
+body:not(.wait) li{opacity:1;transform:none}
+body:not(.wait) li:nth-child(2){transition-delay:.12s}body:not(.wait) li:nth-child(3){transition-delay:.24s}
 li .n{color:var(--g);font-size:11px;min-width:1.4em}
 li b{color:var(--g2);font-weight:600}
 small{display:block;font-size:11px;color:var(--m)}
 .ico{display:inline-block;vertical-align:-3px;width:16px;height:16px}
-button{font:600 13px/1 inherit;font-family:inherit;letter-spacing:.3em;text-transform:uppercase;padding:17px 12px 17px calc(12px + .3em);cursor:pointer;width:100%;border:1px solid var(--g);background:transparent;color:var(--g2);border-radius:0;transition:background .3s,color .3s}
+button{font:600 13px/1 inherit;font-family:inherit;letter-spacing:.3em;text-transform:uppercase;padding:17px 12px 17px calc(12px + .3em);cursor:pointer;width:100%;border:1px solid var(--g);background:transparent;color:var(--g2);border-radius:0;transition:background .3s,color .3s;box-shadow:0 0 18px rgba(243,201,105,.15) inset}
 button:active,button:hover{background:var(--g);color:#000}
-button.ghost{border-color:var(--l);color:var(--m);font-size:11px;padding:13px;margin-top:12px}
+button.ghost{border-color:var(--l);color:var(--m);font-size:11px;padding:13px;margin-top:12px;box-shadow:none}
 .foot{font-size:10px;letter-spacing:.35em;color:var(--m);padding-left:.35em;transition:opacity .8s}
 [hidden]{display:none!important}
-@media (prefers-reduced-motion:reduce){*,*::after{animation:none!important;transition:none!important}.lid{transform:none}.glow{opacity:1}}
+@media (prefers-reduced-motion:reduce){*,*::after,*::before{animation:none!important;transition:none!important}.lid{transform:none}.glow,svg.hud{opacity:1;transform:none}li{opacity:1;transform:none}}
 </style></head><body class="wait">
-<div class="sig" id="sig" aria-hidden="true"></div>
+<canvas id="fx" aria-hidden="true"></canvas>
+<div class="sig cur" id="sig" aria-hidden="true"></div>
 
-<svg class="eye" id="eye" role="button" aria-label="Tocar no olho" viewBox="0 0 200 120" aria-hidden="true">
-  <defs>
-    <radialGradient id="ir" cx="50%" cy="50%" r="50%"><stop offset="0" stop-color="#fff3c9"/><stop offset=".35" stop-color="#f3c969"/><stop offset="1" stop-color="#7a5414"/></radialGradient>
-    <radialGradient id="gl" cx="50%" cy="50%" r="50%"><stop offset="0" stop-color="#f3c969" stop-opacity=".35"/><stop offset="1" stop-color="#f3c969" stop-opacity="0"/></radialGradient>
-    <clipPath id="cl"><path d="M8 60Q100-6 192 60Q100 126 8 60Z"/></clipPath>
-  </defs>
-  <circle class="glow" cx="100" cy="60" r="95" fill="url(#gl)"/>
-  <g class="lid">
-    <path d="M8 60Q100-6 192 60Q100 126 8 60Z" fill="#050402" stroke="#f3c969" stroke-width="1.4"/>
-    <g clip-path="url(#cl)"><g class="iris">
-      <circle cx="100" cy="60" r="31" fill="url(#ir)"/>
-      <circle cx="100" cy="60" r="31" fill="none" stroke="#ffe7a8" stroke-opacity=".5" stroke-width=".8" stroke-dasharray="2 3"/>
-      <ellipse class="pupil" id="pu" cx="100" cy="60" rx="5" ry="18" fill="#000"/>
-      <circle cx="91" cy="50" r="3.2" fill="#fff" opacity=".85"/>
-    </g></g>
-  </g>
-</svg>
+<div class="stage" id="stage" role="button" aria-label="Tocar no olho" tabindex="0">
+  <svg class="hud" viewBox="0 0 300 300" aria-hidden="true">
+    <g class="r1" fill="none" stroke="#f3c969">
+      <circle cx="150" cy="150" r="146" stroke-opacity=".22" stroke-width=".8"/>
+      <circle cx="150" cy="150" r="146" stroke-opacity=".7" stroke-width="2" stroke-dasharray="40 878"/>
+      <circle cx="150" cy="150" r="146" stroke-opacity=".7" stroke-width="2" stroke-dasharray="12 446" stroke-dashoffset="-300"/>
+    </g>
+    <g class="r2" fill="none" stroke="#f3c969">
+      <circle cx="150" cy="150" r="132" stroke-width="6" stroke-opacity=".3" stroke-dasharray="1 6.9"/>
+      <circle cx="150" cy="150" r="122" stroke-opacity=".3" stroke-width=".8" stroke-dasharray="90 30 6 30"/>
+    </g>
+    <g class="r3" fill="none" stroke="#ffe7a8">
+      <path d="M150 38a112 112 0 0 1 97 56" stroke-width="1.4" stroke-opacity=".8"/>
+      <path d="M150 262a112 112 0 0 1-97-56" stroke-width="1.4" stroke-opacity=".8"/>
+    </g>
+    <circle class="ring-call" cx="150" cy="150" r="140" fill="none" stroke="#f3c969" stroke-width="1"/>
+    <g fill="#f3c969" fill-opacity=".7" font-size="7" font-family="ui-monospace,monospace" letter-spacing="1.5">
+      <text x="150" y="18" text-anchor="middle">SYS·ASCENSION</text>
+      <text x="150" y="290" text-anchor="middle" id="hudCode">ID ????-????</text>
+    </g>
+  </svg>
+  <svg class="eye" viewBox="0 0 200 120" aria-hidden="true">
+    <defs>
+      <radialGradient id="ir" cx="50%" cy="50%" r="50%"><stop offset="0" stop-color="#fff3c9"/><stop offset=".35" stop-color="#f3c969"/><stop offset="1" stop-color="#6a4610"/></radialGradient>
+      <radialGradient id="gl" cx="50%" cy="50%" r="50%"><stop offset="0" stop-color="#f3c969" stop-opacity=".4"/><stop offset="1" stop-color="#f3c969" stop-opacity="0"/></radialGradient>
+      <linearGradient id="sc" x1="0" x2="0" y1="0" y2="1"><stop offset="0" stop-color="#ffe7a8" stop-opacity="0"/><stop offset=".5" stop-color="#ffe7a8" stop-opacity=".9"/><stop offset="1" stop-color="#ffe7a8" stop-opacity="0"/></linearGradient>
+      <clipPath id="cl"><path d="M6 60Q100-8 194 60Q100 128 6 60Z"/></clipPath>
+    </defs>
+    <circle class="glow" cx="100" cy="60" r="98" fill="url(#gl)"/>
+    <g class="lid">
+      <path d="M6 60Q100-8 194 60Q100 128 6 60Z" fill="#050402" stroke="#f3c969" stroke-width="1.5"/>
+      <g clip-path="url(#cl)">
+        <g class="iris" id="iris">
+          <circle cx="100" cy="60" r="32" fill="url(#ir)"/>
+          <g class="irisring" fill="none" stroke="#fff3c9" stroke-opacity=".45">
+            <circle cx="100" cy="60" r="27" stroke-width=".6" stroke-dasharray="1.5 2.5"/>
+            <circle cx="100" cy="60" r="20" stroke-width=".5" stroke-dasharray="8 4 2 4"/>
+          </g>
+          <ellipse class="pup" cx="100" cy="60" rx="5" ry="19" fill="#000"/>
+          <circle cx="90" cy="49" r="3.4" fill="#fff" opacity=".85"/>
+        </g>
+        <rect class="scan" x="0" y="54" width="200" height="12" fill="url(#sc)"/>
+      </g>
+    </g>
+  </svg>
+  <i class="wave"></i><i class="wave b"></i>
+</div>
 
-<h1 id="t" class="f">&nbsp;</h1>
+<h1 id="t">&nbsp;</h1>
 
 <main class="how" id="how" aria-labelledby="t">
   <div id="v-prompt" hidden><button type="button" id="inst">Aceitar</button></div>
@@ -127,26 +179,62 @@ function pick(){
   if(AND)return show(INAPP?"v-and-other":"v-and");
   show("v-pc");}
 pick();
-// Sequência: sinal digitado, o olho abre, "você foi escolhido(a)", toque no olho, depois o caminho.
-const B=document.body,h=$("t"),s=$("sig"),eye=$("eye"),RM=matchMedia("(prefers-reduced-motion: reduce)").matches,T="[ SINAL DETECTADO ]";
-let stage=0; // 0 intro, 1 aguardando toque, 2 revelado
-const say=txt=>{h.classList.add("f");setTimeout(()=>{h.textContent=txt;h.classList.remove("f");},RM?0:450);};
+
+const B=document.body,h=$("t"),s=$("sig"),st=$("stage"),RM=matchMedia("(prefers-reduced-motion: reduce)").matches,T="[ SINAL DETECTADO ]";
 const buzz=p=>{try{navigator.vibrate&&navigator.vibrate(p)}catch(e){}};
-function ready(){if(stage>0)return;stage=1;s.textContent=T;B.classList.add("open");say("Você foi escolhido(a)");
-  setTimeout(()=>{if(stage===1){B.classList.add("tap");say("Toque no olho");}},RM?0:1800);}
-function reveal(){if(stage===2)return;stage=2;B.classList.remove("tap");buzz([18,60,30]);
-  B.classList.add("blink","flash");setTimeout(()=>B.classList.remove("blink"),160);setTimeout(()=>B.classList.remove("flash"),900);
-  say("Aceite a missão");setTimeout(()=>B.classList.remove("wait"),RM?0:500);}
-if(RM)ready();else{let i=0;const ty=setInterval(()=>{s.textContent=T.slice(0,++i);if(i>=T.length){clearInterval(ty);setTimeout(()=>B.classList.add("open"),150);setTimeout(ready,1400);}},55);
-  window.__skip=()=>{clearInterval(ty);ready();};}
-eye.addEventListener("click",()=>{if(stage===0){window.__skip&&window.__skip();return;}
-  if(stage===1)return reveal();
-  // já revelado: no Android com instalação nativa, o olho também instala
-  buzz(12);B.classList.add("blink");setTimeout(()=>B.classList.remove("blink"),160);if(evt)$("inst").click();});
-addEventListener("pointerdown",e=>{if(stage===0&&e.target.closest&&!e.target.closest("#eye")&&window.__skip)window.__skip();});
-// a pupila segue o dedo / o mouse
-addEventListener("pointermove",e=>{const r=eye.getBoundingClientRect(),dx=e.clientX-(r.left+r.width/2),dy=e.clientY-(r.top+r.height/2),d=Math.hypot(dx,dy)||1,k=Math.min(1,d/200);
-  $("pu").style.transform="translate("+(dx/d*7*k).toFixed(1)+"px,"+(dy/d*4*k).toFixed(1)+"px)";},{passive:true});
+const wait=ms=>new Promise(r=>setTimeout(r,RM?0:ms));
+
+// Poeira dourada que converge para o olho e explode no toque
+const cv=$("fx"),cx=cv.getContext("2d");let W=0,H=0,DPR=Math.min(2,devicePixelRatio||1),P=[],pull=0,burst=0,run=true;
+function size(){W=innerWidth;H=innerHeight;cv.width=W*DPR;cv.height=H*DPR;cx.setTransform(DPR,0,0,DPR,0,0);}
+function center(){const r=st.getBoundingClientRect();return [r.left+r.width/2,r.top+r.height/2];}
+function seed(){P=[];const n=Math.round(Math.min(90,W*H/7000));for(let i=0;i<n;i++)P.push({x:Math.random()*W,y:Math.random()*H,vx:(Math.random()-.5)*.25,vy:(Math.random()-.5)*.25,r:Math.random()*1.4+.3,a:Math.random()*.6+.2,t:Math.random()*6});}
+function frame(){if(!run)return;cx.clearRect(0,0,W,H);const c=center(),ox=c[0],oy=c[1];
+  for(const p of P){const dx=ox-p.x,dy=oy-p.y,d=Math.hypot(dx,dy)||1;
+    if(pull){p.vx+=dx/d*.035*pull;p.vy+=dy/d*.035*pull;}
+    if(burst){const f=burst*2.2/(1+d/120);p.vx-=dx/d*f;p.vy-=dy/d*f;}
+    p.vx*=.985;p.vy*=.985;p.x+=p.vx;p.y+=p.vy;p.t+=.03;
+    if(d<34&&pull){p.x=Math.random()<.5?-5:W+5;p.y=Math.random()*H;p.vx=p.vy=0;}
+    if(p.x<-10)p.x=W+10;if(p.x>W+10)p.x=-10;if(p.y<-10)p.y=H+10;if(p.y>H+10)p.y=-10;
+    cx.fillStyle="rgba(243,201,105,"+(p.a*(.6+.4*Math.sin(p.t))).toFixed(3)+")";cx.beginPath();cx.arc(p.x,p.y,p.r,0,6.283);cx.fill();}
+  burst*=.86;if(burst<.01)burst=0;requestAnimationFrame(frame);}
+if(!RM){size();seed();requestAnimationFrame(frame);addEventListener("resize",()=>{size();seed();});
+  document.addEventListener("visibilitychange",()=>{run=!document.hidden;if(run)requestAnimationFrame(frame);});}
+
+// Texto que se decodifica
+const GL="!<>-_\\/[]{}=+*^?#ΛΣΞΨΩ01";
+function decode(el,txt,ms){if(RM){el.textContent=txt;return Promise.resolve();}
+  return new Promise(res=>{const n=txt.length,t0=performance.now();(function f(now){const k=Math.min(1,(now-t0)/ms);let o="";
+    for(let i=0;i<n;i++){const ch=txt[i];o+=(ch===" "||i/n<k)?ch:GL[(Math.random()*GL.length)|0];}
+    el.textContent=o;k<1?requestAnimationFrame(f):res();})(t0);});}
+const hx=()=>Math.random().toString(16).slice(2,6).toUpperCase().padEnd(4,"0");
+
+// Sequência: 0 intro, 1 esperando o toque, 2 revelado
+let stage=0;
+async function intro(){
+  if(!RM){for(let i=1;i<=T.length;i++){if(stage)return;s.textContent=T.slice(0,i);await wait(48);}pull=1;await wait(500);}
+  if(stage)return;B.classList.add("open");pull=.4;decode($("hudCode"),"ID "+hx()+"-"+hx(),1400);
+  await wait(1300);ready();}
+function ready(){if(stage)return;stage=1;s.textContent=T;s.classList.remove("cur");B.classList.add("open");pull=.15;
+  decode(h,"Você foi escolhido(a)",800).then(()=>wait(1500)).then(()=>{if(stage===1){B.classList.add("tap");decode(h,"Toque no olho",500);}});}
+async function reveal(){if(stage===2)return;stage=2;B.classList.remove("tap");buzz([20,50,40]);
+  B.classList.add("blink");await wait(140);B.classList.remove("blink");
+  B.classList.add("dil","flash","go");burst=1.4;pull=0;
+  setTimeout(()=>B.classList.remove("flash","go"),1100);setTimeout(()=>B.classList.remove("dil"),1400);
+  await decode(h,"Aceite a missão",600);B.classList.remove("wait");}
+intro();
+
+function onEye(){if(stage===0)return ready();if(stage===1)return reveal();
+  buzz(12);B.classList.add("blink","go");burst=.8;setTimeout(()=>B.classList.remove("blink"),140);setTimeout(()=>B.classList.remove("go"),1000);
+  if(evt)$("inst").click();}
+st.addEventListener("click",onEye);
+st.addEventListener("keydown",e=>{if(e.key==="Enter"||e.key===" "){e.preventDefault();onEye();}});
+addEventListener("pointerdown",e=>{if(stage===0&&!st.contains(e.target))ready();});
+// A pupila segue o dedo; piscadas ocasionais
+addEventListener("pointermove",e=>{const r=st.getBoundingClientRect(),dx=e.clientX-(r.left+r.width/2),dy=e.clientY-(r.top+r.height/2),d=Math.hypot(dx,dy)||1,k=Math.min(1,d/220);
+  $("iris").style.translate=(dx/d*7*k).toFixed(1)+"px "+(dy/d*4*k).toFixed(1)+"px";},{passive:true});
+if(!RM)setInterval(()=>{if(stage&&!document.hidden&&Math.random()<.5){B.classList.add("blink");setTimeout(()=>B.classList.remove("blink"),130);}},4200);
+
 addEventListener("beforeinstallprompt",e=>{e.preventDefault();evt=e;if(!INAPP)show("v-prompt");});
 $("inst").addEventListener("click",async()=>{if(!evt)return;evt.prompt();let r=null;try{r=await evt.userChoice;}catch(e){}evt=null;
   if(r&&r.outcome==="accepted")show("v-done");else pick();});
