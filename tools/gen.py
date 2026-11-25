@@ -111,5 +111,8 @@ rep('\nlet saveTimer=null, SYNC="";','\n'+open(SP+'secret.js').read()+'\nlet sav
 # telas enxutas: painéis secundários recolhidos, foco centralizado (tools/simple.*)
 rep('</style></head>',open(SP+'simple.css').read()+'</style></head>')
 rep('\nlet saveTimer=null, SYNC="";','\n'+open(SP+'simple.js').read()+'\nlet saveTimer=null, SYNC="";')
+# sequência estilo Duolingo: escudo automático, marcos e aviso de risco (tools/streak.*)
+rep('</style></head>',open(SP+'streak.css').read()+'</style></head>')
+rep('\nlet saveTimer=null, SYNC="";','\n'+open(SP+'streak.js').read()+'\nlet saveTimer=null, SYNC="";')
 open('comecar/index.html','w').write(s)
 pass

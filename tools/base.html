@@ -419,7 +419,7 @@ function penalties(){
   const [y,m,d]=cfg.startDate.split("-").map(Number);const dt=new Date(y,m-1,d);const tk=todayKey();
   // Punição leve: só os últimos DEBT_DAYS dias contam. Quem some uma semana volta sem o XP zerado.
   const lim=new Date();lim.setHours(0,0,0,0);lim.setDate(lim.getDate()-DEBT_DAYS);if(dt<lim)dt.setTime(lim.getTime());
-  while(dkey(dt)<tk){const k=dkey(dt);const done=prog.log[k]||[];if((prog.rest||{})[k]){dt.setDate(dt.getDate()+1);continue;}
+  while(dkey(dt)<tk){const k=dkey(dt);const done=prog.log[k]||[];if(isRest(k)){dt.setDate(dt.getDate()+1);continue;}
     const missed=mainsFor(dt).filter(q=>!done.some(e=>e.q===q.id));
     if(missed.length){const nx=new Date(dt);nx.setDate(nx.getDate()+1);
       out.push({date:k,amount:missed.length*PEN,missed:missed.map(q=>q.title),forgiven:allMainsDone(nx),redeemable:dkey(nx)===tk});}
@@ -520,7 +520,8 @@ function fx(xp,gold){try{if(navigator.vibrate)navigator.vibrate(gold?[12,40,18]:
   if(!xp)return;const f=document.createElement("div");f.className="xpfloat"+(gold?" gold":"");f.textContent="+"+xp+" XP";
   const pt=lastPt||{x:innerWidth/2,y:innerHeight/2};f.style.left=pt.x+"px";f.style.top=(pt.y-20)+"px";document.body.append(f);setTimeout(()=>f.remove(),1200);}
 // ---------- Sequência (estilo Duolingo: descanso congela, não quebra) ----------
-function streakDays(){const act=k=>(prog.log[k]||[]).some(e=>!String(e.q).startsWith("ach:"));const rest=k=>!!(prog.rest||{})[k];
+function isRest(k){return !!(prog.rest||{})[k]||!!(prog.shield&&prog.shield.used&&prog.shield.used[k]);}
+function streakDays(){const act=k=>(prog.log[k]||[]).some(e=>!String(e.q).startsWith("ach:"));const rest=isRest;
   const d=new Date();let n=0;if(!act(dkey(d))&&!rest(dkey(d)))d.setDate(d.getDate()-1);
   for(let i=0;i<400;i++){const k=dkey(d);if(act(k))n++;else if(!rest(k))break;d.setDate(d.getDate()-1);}return n;}
 function renderPills(){const n=streakDays();const today=(prog.log[todayKey()]||[]).some(e=>!String(e.q).startsWith("ach:"));

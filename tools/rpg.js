@@ -126,7 +126,7 @@ if($("clsPill")){const cp=$("clsPill");cp.setAttribute("role","button");cp.tabIn
 // ---------- Masmorra da semana: 7 andares (seg a dom). Andar limpo = todas as principais do dia (ou 1 tarefa, se não houver principal). 5 andares abrem o baú. ----------
 const DUN_NEED=5,DUN_XP=50;
 function dunWeek(){const d=new Date();d.setHours(0,0,0,0);d.setDate(d.getDate()-((d.getDay()+6)%7));return d;}
-function dunFloor(dt){const k=dkey(dt);if(cfg&&cfg.startDate&&k<cfg.startDate)return "pre";if((prog.rest||{})[k])return "rest";const L=(prog.log[k]||[]).filter(e=>!/^(ach|checkin|tip|dun):/.test(String(e.q)));const ms=mainsFor(dt);
+function dunFloor(dt){const k=dkey(dt);if(cfg&&cfg.startDate&&k<cfg.startDate)return "pre";if(isRest(k))return "rest";const L=(prog.log[k]||[]).filter(e=>!/^(ach|checkin|tip|dun):/.test(String(e.q)));const ms=mainsFor(dt);
   if(ms.length?ms.every(q=>L.some(e=>e.q===q.id)):L.length>0)return "ok";return k<todayKey()?"miss":k===todayKey()?"now":"lock";}
 function renderDun(){const box=$("dunFloors");if(!box)return;const w=dunWeek(),wk=dkey(w);let n=0,pre=0;box.textContent="";const DN=["seg","ter","qua","qui","sex","sáb","dom"];
   for(let i=0;i<7;i++){const d=new Date(w);d.setDate(w.getDate()+i);const st=dunFloor(d);if(st==="ok"||st==="rest")n++;if(st==="pre")pre++;const c=document.createElement("div");c.className=st;
