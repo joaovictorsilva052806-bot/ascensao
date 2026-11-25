@@ -37,3 +37,4 @@
 #aiPanel .row{flex-wrap:wrap}.btnlink{display:inline-flex;align-items:center;justify-content:center;text-decoration:none;padding:9px 12px;border:1px solid var(--line);color:var(--fg);border-radius:3px;font-size:.85rem}
 .aisteps{margin:8px 0;padding-left:20px}.aisteps li{margin:2px 0}
 .aiprev{list-style:none;padding:0;margin:10px 0 0;display:flex;flex-direction:column;gap:6px}.aiprev li{padding:8px 10px;border:1px solid var(--line);border-left:2px solid var(--accent);border-radius:3px;font-size:.86rem}.aiprev li small{display:block;color:var(--muted)}
+#o_bkBox{margin-top:12px}#o_bkBox textarea{font:inherit;width:100%;margin-top:6px;background:rgba(0,212,255,.04);border:1px solid var(--line);color:var(--fg);border-radius:3px;padding:9px 10px}
