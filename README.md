@@ -42,6 +42,15 @@ Pontos de entrada no JS: `render()` desenha tudo; `toggle(quest, "full"|"min")` 
 
 Escolha de classe (`openCls` em `tools/rpg.js`): na 1ª vez o Sistema sugere uma classe pela rotina (1 toque); a lista completa fica em "Ver outras" e ao trocar pelo topo. Teste: `node qa/classe.test.js`.
 
+## Feedback dos testadores (missão, onboarding v2, modo simples)
+
+- **Missão ativa v2** (`tools/mission.js`, nos dois apps): o ▶ traz a ferramenta certa pela tarefa: flashcards, gastos, água, **leitura** (contador de páginas), **treino** (séries + descanso de 45/60/90 s), **dúvidas** (anotar e marcar como tirada) e, nas outras, um **passo a passo** gerado do gatilho "se-então". Grava só campos novos: `prog.leitura`, `prog.livro`, `prog.series`, `prog.duvidas`, `prog.msSteps` (só o dia).
+- **Onboarding v2** (`tools/quick.*`, `tools/onb.*`): 4 perguntas de toque depois da ocupação (deslocamento, treino, flashcards, horário livre). Ficam em `cfg.profile` (`transport`, `train`, `cards`, `free`), só no aparelho, e mudam o texto e o horário das tarefas. Nada de ônibus para quem não anda de ônibus.
+- **Trocar esta tarefa** (`tools/swap.js`, só /comecar/): na 1ª semana, a missão mostra 🔄 com outra tarefa do mesmo foco. Muda só título, mínimo e gatilho; XP, dias e "principal" ficam iguais. A original fica em `q.orig` e dá para desfazer.
+- **Modo simples** (`tools/simple3.*`, só /comecar/): quem cria o perfil a partir desta versão vê no dia 1 só a próxima missão + XP; dia 2 (ou nível 2) libera todas as tarefas e o check-in; dia 3 (ou nível 3) os desafios relâmpago; depois, o app completo. "Já sei usar" sai na hora. Grava só `prog.simple`.
+
+Teste: `node qa/feedback.test.js` (60 checagens, celular e desktop).
+
 ## Reinstalação do app pessoal
 
 Na 1ª ligação da planilha num aparelho (link `#s=` ou colar o endereço), a planilha vence e o progresso local vira backup em `ascensao-prog-prelink`. Teste: `node qa/religar.test.js`.

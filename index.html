@@ -394,6 +394,21 @@ body[data-tab=foco] #focusNote{font-size:.8rem;color:var(--muted)}
 body.inmission{overflow:hidden}
 /* pílulas do topo com área de toque melhor */
 .status .pill{min-height:30px;display:inline-flex;align-items:center}
+/* Missão ativa v2: contadores, descanso, dúvidas e passos */
+.msbar{height:8px;border-radius:99px;background:#0f1a30;border:1px solid var(--line);overflow:hidden}
+.msbar i{display:block;height:100%;background:linear-gradient(90deg,var(--accent),var(--glow));transition:width .25s}
+.mstool .row button{min-height:44px;min-width:56px}
+.msrest{align-items:center}.msrestc{flex:1;font-family:var(--f-mono);font-size:.85rem;color:var(--glow)}
+.msdl{list-style:none;margin:0;padding:0;display:grid;gap:6px}
+.msdl li{display:flex;gap:8px;align-items:center;justify-content:space-between;padding:6px 8px;border:1px solid var(--line);border-radius:8px}
+.msdl li span{flex:1;min-width:0;overflow-wrap:anywhere}.msdl li button{min-height:40px;flex:none}
+.mssteps{list-style:none;margin:0;padding:0;display:grid;gap:6px}
+.msstep{display:flex;gap:10px;align-items:center;width:100%;min-height:44px;padding:8px 10px;text-align:left;border-radius:8px;border:1px solid var(--line);background:transparent;color:var(--fg);font:inherit}
+.msstep .msck{flex:none;display:grid;place-items:center;width:26px;height:26px;border-radius:50%;border:1px solid var(--glow);color:var(--glow);font-family:var(--f-mono);font-size:.8rem}
+.msstep.on{border-color:var(--glow)}.msstep.on>span:last-child{opacity:.6;text-decoration:line-through}
+.msstep.on .msck{background:var(--glow);color:#06101f}
+@media (prefers-reduced-motion:reduce){.msbar i{transition:none}}
+.msswap{justify-self:stretch;min-height:44px}
 .pill.shield{border-color:rgba(120,180,255,.55);color:#cfe3ff;cursor:pointer}.pill.shield.none{opacity:.45}
 .pill.fire{cursor:pointer}
 .pill.fire.risk{filter:none;opacity:1;border-color:#ff6b4a;color:#ffd0c2;animation:strisk 1.6s ease-in-out infinite}
@@ -1592,9 +1607,13 @@ let msQ=null;
 function msEl(tag,cls,txt){const e=document.createElement(tag);if(cls)e.className=cls;if(txt!=null)e.textContent=txt;return e;}
 function msMin(s){const m=/(\d+)\s*min/i.exec(String(s||""));return m?Math.min(90,Math.max(1,+m[1])):0;}
 function msTool(q){const t=(q.title||"")+" "+(q.minTitle||"");
+  if(/d[úu]vida/i.test(t))return "duvida";
   if(/flashcard|\bcards?\b|revis|pergunta/i.test(t))return "cards";
   if(/gasto/i.test(t))return "gastos";
   if(/copo|água|agua|garrafa/i.test(t))return "agua";
+  if(/p[áa]ginas?|\bler\b|livro|cap[íi]tulo/i.test(t))return "leitura";
+  if(/s[ée]ries?|academia|treino|agacha|flex[õo]|abdomina|muscula/i.test(t))return "treino";
+  if(q.ifThen)return "passos";
   return "";}
 function msDays(n){const d=new Date();d.setDate(d.getDate()+n);return dkey(d);}
 function msFind(id){return todaysQuests().find(x=>x.id===id);}
@@ -1621,7 +1640,7 @@ function msRender(){const m=$("msSheet");const q=msQ&&msFind(msQ.id);if(!m||!q){
   c.append(tb);
   // ferramenta
   const tool=msTool(q);const box=msEl("div","mstool");
-  if(tool==="cards")msCards(box);else if(tool==="gastos")msGastos(box);else if(tool==="agua")msAgua(box);
+  const TOOLS={cards:msCards,gastos:msGastos,agua:msAgua,leitura:msLeitura,treino:msTreino,duvida:msDuvida,passos:msPassos};if(TOOLS[tool])TOOLS[tool](box,q);
   if(box.childNodes.length)c.append(box);
   // concluir
   const e=msDone(q);const row=msEl("div","row msend");
@@ -1708,6 +1727,58 @@ function msDecorate(){for(const c of document.querySelectorAll("#quests .quest[d
 document.addEventListener("click",e=>{if(e.target.closest&&e.target.closest(".msgo")){prog.msUsed=(+prog.msUsed||0)+1;}},true);
 document.addEventListener("keydown",e=>{if(e.key==="Escape"&&$("msSheet")&&!$("msSheet").hidden)msClose();});
 setTimeout(()=>{try{msDecorate();msChip();}catch(e){}},0);
+// ---------- Missão ativa v2: leitura, treino, dúvidas e passos (pedido dos testadores, 25/11) ----------
+// Só ADICIONA dados: prog.leitura {dia: páginas}, prog.livro (texto), prog.series {dia: séries}, prog.duvidas [{d,t,ok}], prog.msSteps {dia: {quest: [0/1]}}.
+const msNum=(re,t,def)=>{const m=re.exec(String(t||""));return m?+m[1]:def;};
+function msCounter(box,label,n,goal,unit,onAdd,onSub,steps){
+  box.append(msEl("div","mstl",label+" "+n+" de "+goal+" "+unit+" hoje"));
+  const bar=msEl("div","msbar");const fill=msEl("i");fill.style.width=Math.min(100,Math.round(n/Math.max(1,goal)*100))+"%";bar.append(fill);bar.setAttribute("role","progressbar");bar.setAttribute("aria-valuemin","0");bar.setAttribute("aria-valuemax",String(goal));bar.setAttribute("aria-valuenow",String(n));bar.setAttribute("aria-label",label+" "+unit);box.append(bar);
+  const r=msEl("div","row");for(const st of steps){const b=msEl("button",st===steps[0]?"go":"ghost","+"+st);b.type="button";b.setAttribute("aria-label","Somar "+st+" "+unit);b.addEventListener("click",()=>onAdd(st));r.append(b);}
+  const u=msEl("button","ghost","−1");u.type="button";u.disabled=!n;u.setAttribute("aria-label","Tirar 1 "+unit);u.addEventListener("click",onSub);r.append(u);box.append(r);}
+// ---- Leitura: contador de páginas ----
+function msLeitura(box,q){prog.leitura=prog.leitura||{};const tk=todayKey();const n=prog.leitura[tk]||0;const goal=msNum(/(\d+)\s*p[áa]ginas?/i,q.title,10);
+  const set=v=>{const was=prog.leitura[tk]||0;prog.leitura[tk]=Math.max(0,Math.min(999,v));save();try{haptic(10);}catch(e){}msRender();if(was<goal&&prog.leitura[tk]>=goal)toast("Meta de leitura batida. Pode concluir a missão.");};
+  msCounter(box,"📖",n,goal,"páginas",st=>set(n+st),()=>set(n-1),[1,5]);
+  const lv=msEl("input");lv.maxLength=60;lv.placeholder="Qual livro? (opcional)";lv.value=prog.livro||"";lv.setAttribute("aria-label","Livro que você está lendo");
+  lv.addEventListener("change",()=>{prog.livro=String(lv.value||"").replace(/[<>]/g,"").trim().slice(0,60);save();});box.append(lv);
+  const wk=weekStart(tk);let sem=0;for(const d in prog.leitura)if(weekStart(d)===wk)sem+=prog.leitura[d];box.append(msEl("div","sm muted","Na semana: "+sem+" páginas"));}
+// ---- Treino: séries + descanso ----
+let msRest=null;
+function msTreino(box,q){prog.series=prog.series||{};const tk=todayKey();const n=prog.series[tk]||0;const goal=msNum(/(\d+)\s*s[ée]ries/i,q.title,4);
+  const set=v=>{const was=prog.series[tk]||0;prog.series[tk]=Math.max(0,Math.min(99,v));save();try{haptic(12);}catch(e){}if(v>was&&prog.series[tk]<goal)msRestGo(60);msRender();if(was<goal&&prog.series[tk]>=goal)toast("Séries completas. Pode concluir a missão.");};
+  msCounter(box,"🏋️",n,goal,"séries",()=>set(n+1),()=>set(n-1),[1]);
+  const rr=msEl("div","row msrest");const left=msRest?Math.max(0,Math.ceil((msRest-Date.now())/1000)):0;
+  const rl=msEl("span","msrestc",left?"Descanso: "+left+" s":"Descanso entre séries");rl.id="msRestC";rl.setAttribute("aria-live","polite");rr.append(rl);
+  for(const sec of [45,90]){const b=msEl("button","ghost",sec+" s");b.type="button";b.setAttribute("aria-label","Descansar "+sec+" segundos");b.addEventListener("click",()=>{msRestGo(sec);msRender();});rr.append(b);}
+  box.append(rr);box.append(msEl("div","sm muted","Marque +1 a cada série. O descanso começa sozinho."));}
+let msRestIv=null;
+function msRestGo(sec){msRest=Date.now()+sec*1000;clearInterval(msRestIv);msRestIv=setInterval(()=>{const el=$("msRestC");const left=Math.max(0,Math.ceil((msRest-Date.now())/1000));
+  if(!left){clearInterval(msRestIv);msRest=null;if(el)el.textContent="Descanso acabou. Próxima série!";try{haptic([20,60,20]);if(!document.hidden)chime();}catch(e){}return;}
+  if(el)el.textContent="Descanso: "+left+" s";},1000);}
+// ---- Dúvidas: anotar e marcar como tirada ----
+function msDuvida(box){prog.duvidas=prog.duvidas||[];const open=prog.duvidas.filter(d=>!d.ok);
+  box.append(msEl("div","mstl","❓ Dúvidas · "+open.length+" para tirar"));
+  const r=msEl("div","add");const t=msEl("input");t.maxLength=140;t.placeholder="Escreva a dúvida (ex.: o que é derivada?)";t.setAttribute("aria-label","Nova dúvida");
+  const b=msEl("button","go","Anotar");b.type="button";const add=()=>{const v=String(t.value||"").replace(/[<>]/g,"").trim().slice(0,140);if(!v){t.focus();return;}
+    prog.duvidas.push({d:todayKey(),t:v,ok:0});prog.duvidas=prog.duvidas.slice(-60);save();msRender();toast("Dúvida anotada. Leve para o professor ou o grupo.");};
+  b.addEventListener("click",add);t.addEventListener("keydown",e=>{if(e.key==="Enter"){e.preventDefault();add();}});r.append(t,b);box.append(r);
+  if(open.length){const ul=msEl("ul","msdl");for(const d of open.slice(-6)){const li=msEl("li");const ok=msEl("button","ghost","✓ Tirei");ok.type="button";ok.setAttribute("aria-label","Marcar como tirada: "+d.t);
+      ok.addEventListener("click",()=>{d.ok=todayKey();save();try{haptic(10);}catch(e){}msRender();toast("Dúvida resolvida. Uma a menos.");});li.append(msEl("span",null,d.t),ok);ul.append(li);}box.append(ul);}
+  const solved=prog.duvidas.filter(d=>d.ok).length;if(solved)box.append(msEl("div","sm muted",solved+" dúvidas já resolvidas"));}
+// ---- Passos: checklist gerado do gatilho "se-então" ----
+function msStepsOf(q){const out=[];const it=String(q.ifThen||"").replace(/\s+/g," ").trim().replace(/[.]$/,"");
+  const m=/^((?:quando|logo depois|depois|antes|às|no |na |de manhã|à tarde|à noite|fim de semana|sábado|domingo|ter e qui|a cada)[^,]*),\s*(.+)$/i.exec(it);
+  if(m){out.push("Gatilho: "+m[1]);for(const p of m[2].split(/,\s*|\s+e depois\s+|;\s*/))if(p.trim())out.push(p.trim().replace(/^./,c=>c.toUpperCase()));}
+  else if(it)out.push(it);
+  out.push(q.minTitle?("Fazer: "+q.title.replace(/\s*\(.*?\)\s*$/,"")+" (mínimo: "+q.minTitle+")"):("Fazer: "+q.title));
+  return out.slice(0,5);}
+function msPassos(box,q){const tk=todayKey();prog.msSteps=prog.msSteps||{};for(const d in prog.msSteps)if(d<tk)delete prog.msSteps[d];
+  const day=prog.msSteps[tk]=prog.msSteps[tk]||{};const st=msStepsOf(q);const done=day[q.id]||[];
+  box.append(msEl("div","mstl","🧩 Passo a passo · "+done.filter(Boolean).length+"/"+st.length));
+  const ul=msEl("ul","mssteps");st.forEach((t,i)=>{const li=msEl("li");const b=msEl("button","msstep"+(done[i]?" on":""));b.type="button";b.setAttribute("aria-pressed",done[i]?"true":"false");
+    b.append(msEl("span","msck",done[i]?"✓":String(i+1)),msEl("span",null,t));
+    b.addEventListener("click",()=>{const a=(day[q.id]=day[q.id]||[]);a[i]=a[i]?0:1;save();try{haptic(8);}catch(e){}msRender();if(st.every((_,k)=>a[k]))toast("Todos os passos feitos. Conclua a missão!");});li.append(b);ul.append(li);});
+  box.append(ul);}
 
 // ---------- Sequência estilo Duolingo: escudo automático, marcos comemorados e aviso de risco ----------
 // Só ADICIONA prog.shield = {n, used:{data:1}, ms:{marco:data}, chk}. Dia com escudo conta como descanso (sem dívida, sem quebrar).
