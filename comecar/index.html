@@ -357,6 +357,8 @@ button.big{padding:16px;font-size:1.05rem}
 @media (prefers-reduced-motion:reduce){.qstep,.qspin{animation:none}}
 .shake{animation:shake .4s}@keyframes shake{25%{transform:translateX(-6px)}75%{transform:translateX(6px)}}
 .onboarding .wrap>section#quick:not([hidden]){display:flex!important}
+
+.qplist{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:10px}.qplist li{display:flex;gap:12px;align-items:flex-start;border:1px solid var(--line);background:rgba(0,212,255,.05);padding:14px;border-radius:4px}.qplist li>span{font-size:1.4rem;line-height:1}.qplist b{display:block}.qplist small{display:block;color:var(--muted);margin-top:4px;font-size:.85rem;line-height:1.4}
 #betaTip,#bossPanel{display:none!important}</style></head><body>
 
 <div class="hudtop"><span>ASCENSION<i>//</i>SISTEMA ONLINE</span><span class="mono" id="clock">--:--</span></div>
@@ -373,6 +375,15 @@ button.big{padding:16px;font-size:1.05rem}
 
   <section class="quick" id="quick" hidden>
     <div class="qbar"><i id="qBar"></i></div>
+    <div class="qstep qperm" id="qPerm" hidden>
+      <div class="tag">[ SISTEMA ] ACESSO</div>
+      <h2>Permita para começar</h2>
+      <ul class="qplist">
+        <li><span>💾</span><div><b>Salvar seu progresso neste aparelho</b><small>Seu XP não some quando o celular libera espaço.</small></div></li>
+      </ul>
+      <p class="sm muted">Sem conta. Sem localização, câmera ou contatos.</p>
+      <button class="go big" type="button" id="q_perm">Permitir e continuar</button>
+    </div>
     <div class="qstep" data-s="0">
       <div class="tag">[ SISTEMA ] NOVO JOGADOR DETECTADO</div>
       <h2>Qual é o seu nome de jogador?</h2>
@@ -1589,7 +1600,13 @@ function qFocus(){const minor=qData.age==="kid"||qData.age==="teen";const pref=(
   qBtns("q_focus",list,(v,b)=>{const on=[...$("q_focus").querySelectorAll(".on")];if(!b.classList.contains("on")&&on.length>=3){on[0].classList.remove("on");}b.classList.toggle("on");});
   for(const b of $("q_focus").children)if(pref.slice(0,2).includes(b.dataset.v))b.classList.add("on");
   $("q_goal").placeholder=minor?"Escreva a sua (ex.: tirar 8 em matemática)":"Escreva a sua (ex.: arrumar um emprego melhor)";}
-function openQuick(){qData={};$("q_name").value="";$("q_goal").value="";$("quick").hidden=false;$("onb").hidden=true;document.body.classList.add("onboarding");qGo(0);}
+function qPermSeen(){try{return !!localStorage.getItem("asc-u-perm");}catch(e){return true;}}
+function openQuick(){qData={};$("q_name").value="";$("q_goal").value="";$("quick").hidden=false;$("onb").hidden=true;document.body.classList.add("onboarding");
+  if(qPermSeen()){$("qPerm").hidden=true;qGo(0);return;}
+  for(const s of document.querySelectorAll("#quick .qstep"))s.hidden=s.id!=="qPerm";$("qBar").style.width="0%";$("q_full").hidden=true;}
+// Primeira abertura: pede só a permissão que o app usa de verdade (armazenamento persistente), depois a configuração.
+$("q_perm").addEventListener("click",async()=>{let ok=false;try{if(navigator.storage&&navigator.storage.persist)ok=await navigator.storage.persist();}catch(e){}
+  try{localStorage.setItem("asc-u-perm",ok?"granted":"asked");}catch(e){}$("qPerm").hidden=true;qGo(0);});
 function qNameNext(){const n=$("q_name").value.trim();if(!n){$("q_name").focus();$("q_name").classList.add("shake");setTimeout(()=>$("q_name").classList.remove("shake"),400);return;}qData.name=n;qGo(1);}
 $("q_n0").addEventListener("click",qNameNext);$("q_name").addEventListener("keydown",e=>{if(e.key==="Enter"){e.preventDefault();qNameNext();}});
 qBtns("q_age",AGE,v=>{qData.age=v;qGo(2);});
