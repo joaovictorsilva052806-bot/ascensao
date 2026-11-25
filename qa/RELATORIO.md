@@ -1,6 +1,6 @@
 # Relatório de QA (ATENA)
 
-## 25/11/2026 · convite de instalação + permissão na 1ª abertura (PR rascunho)
+## 25/11/2026 · convite de instalação + permissão na 1ª abertura (PR #15, revisado e publicado com o ok do JV)
 
 Playwright, 390x844 e 1280x800, servidor local.
 
@@ -12,7 +12,8 @@ Playwright, 390x844 e 1280x800, servidor local.
 | /convite/ Android dentro do WhatsApp pede para abrir no Chrome | passou |
 | /convite/ no computador pede para abrir no celular | passou |
 | /convite/ aberto pelo ícone (standalone) vai direto para /comecar/ | passou |
-| /comecar/ 1ª abertura: apresentação › permissão › nome › onboarding completo (6 quests) | passou |
+| /comecar/ 1ª abertura: permissão (1ª tela, antes de tudo) › apresentação › nome › onboarding completo (6 quests) | passou |
+| iPhone: passo 1 avisa que no iOS 26 o Compartilhar fica no menu ⋯ | passou |
 | Recarregar depois do onboarding não mostra permissão de novo | passou |
 | Usuário antigo (localStorage com cfg) não vê a tela de permissão e não perde quests | passou |
 | reduce-motion no convite | passou |

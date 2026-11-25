@@ -32,6 +32,7 @@ ol li span.n{font-family:"JetBrains Mono",monospace;color:var(--acc);font-size:.
 .ico{display:inline-block;vertical-align:-3px;width:18px;height:18px}
 button{font:600 1.05rem Inter,sans-serif;padding:16px;border-radius:4px;cursor:pointer;border:1px solid var(--acc);background:var(--acc);color:#02121a;box-shadow:0 0 22px rgba(0,212,255,.45);width:100%}
 button.ghost{background:transparent;color:var(--fg);box-shadow:none;border-color:var(--line);font-size:.9rem;padding:12px}
+.hint{display:block;font-size:.78rem;color:var(--muted);margin-top:2px}.hint b{color:var(--muted)}
 .foot{font-size:.72rem;color:var(--muted);letter-spacing:.04em}
 [hidden]{display:none!important}
 @media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
@@ -46,7 +47,7 @@ button.ghost{background:transparent;color:var(--fg);box-shadow:none;border-color
 
   <!-- iPhone/iPad no Safari -->
   <ol id="v-ios" hidden>
-    <li><span class="n">1</span><span>Toque em <b>Compartilhar</b> <svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-label="ícone de compartilhar"><path d="M12 3v12M7 8l5-5 5 5M5 12v8h14v-8"/></svg></span></li>
+    <li><span class="n">1</span><span>Toque em <b>Compartilhar</b> <svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-label="ícone de compartilhar"><path d="M12 3v12M7 8l5-5 5 5M5 12v8h14v-8"/></svg><small class="hint">no iOS 26, fica no menu <b>⋯</b></small></span></li>
     <li><span class="n">2</span><span><b>Adicionar à Tela de Início</b></span></li>
     <li><span class="n">3</span><span>Abra o ícone <b>Ascension</b></span></li>
   </ol>
