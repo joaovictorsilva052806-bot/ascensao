@@ -32,7 +32,7 @@ body::before{content:"";position:fixed;inset:0;z-index:2;pointer-events:none;bac
 body:not(.wait) .stage{width:min(260px,66vw);margin:0}
 .wait .how,.wait .foot{display:none}
 .wait{justify-content:center}
-svg.eye{filter:drop-shadow(0 0 22px rgba(243,201,105,.35))}
+
 svg.hud{width:100%;height:100%;overflow:visible;opacity:0;transform:scale(.7) rotate(-30deg);transition:opacity 1.2s .2s,transform 1.6s cubic-bezier(.2,.8,.2,1) .2s}
 .open svg.hud{opacity:1;transform:none}
 .stage::before{content:"";position:absolute;inset:8%;border-radius:50%;background:radial-gradient(circle,rgba(243,201,105,.16),transparent 62%);animation:breath 4s ease-in-out infinite;pointer-events:none}
@@ -81,6 +81,12 @@ small{display:block;font-size:11px;color:var(--m)}
 button{font:600 13px/1 inherit;font-family:inherit;letter-spacing:.3em;text-transform:uppercase;padding:17px 12px 17px calc(12px + .3em);cursor:pointer;width:100%;border:1px solid var(--g);background:transparent;color:var(--g2);border-radius:0;transition:background .3s,color .3s;box-shadow:0 0 18px rgba(243,201,105,.15) inset}
 button:active,button:hover{background:var(--g);color:#000}
 button.ghost{border-color:var(--l);color:var(--m);font-size:11px;padding:13px;margin-top:12px;box-shadow:none}
+.skip{font-size:11px;letter-spacing:.2em;color:var(--g);opacity:.75;text-decoration:none;padding:10px 14px;border-bottom:1px solid var(--l)}
+.wait .skip{display:none}
+body:not(.wait) .skip{animation:lin .55s 1.1s both}
+.arrow{position:fixed;left:22%;bottom:max(6px,env(safe-area-inset-bottom));z-index:3;color:var(--g);font-size:28px;line-height:1;text-shadow:0 0 12px rgba(243,201,105,.8);display:none;animation:bob 1.1s ease-in-out infinite}
+.ios .arrow{display:block}.wait .arrow{display:none}
+@keyframes bob{50%{transform:translateY(8px)}}
 .foot{font-size:10px;letter-spacing:.35em;color:var(--m);padding-left:.35em;transition:opacity .8s}
 [hidden]{display:none!important}
 @media (prefers-reduced-motion:reduce){*,*::after,*::before{animation:none!important;transition:none!important}.lid{transform:none}.glow,svg.hud{opacity:1;transform:none}}
@@ -109,7 +115,7 @@ button.ghost{border-color:var(--l);color:var(--m);font-size:11px;padding:13px;ma
       <text x="150" y="290" text-anchor="middle" id="hudCode">ID ????-????</text>
     </g>
   </svg>
-  <svg class="eye" viewBox="0 0 200 120" aria-hidden="true">
+  <svg class="eye" viewBox="0 -40 200 200" aria-hidden="true">
     <defs>
       <radialGradient id="ir" cx="50%" cy="50%" r="50%"><stop offset="0" stop-color="#fff3c9"/><stop offset=".35" stop-color="#f3c969"/><stop offset="1" stop-color="#6a4610"/></radialGradient>
       <radialGradient id="gl" cx="50%" cy="50%" r="50%"><stop offset="0" stop-color="#f3c969" stop-opacity=".4"/><stop offset="1" stop-color="#f3c969" stop-opacity="0"/></radialGradient>
@@ -142,9 +148,9 @@ button.ghost{border-color:var(--l);color:var(--m);font-size:11px;padding:13px;ma
   <div id="v-prompt" hidden><button type="button" id="inst">Aceitar</button></div>
 
   <ol id="v-ios" hidden>
-    <li><span class="n">01</span><span>Toque em <b>Compartilhar</b> <svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-label="ícone de compartilhar"><path d="M12 3v12M7 8l5-5 5 5M5 12v8h14v-8"/></svg><small>no iOS 26, fica no menu ⋯</small></span></li>
-    <li><span class="n">02</span><span><b>Adicionar à Tela de Início</b></span></li>
-    <li><span class="n">03</span><span>Abra <b>Ascension</b></span></li>
+    <li><span class="n">01</span><span>Toque em <b>≡</b> ou <b>···</b> na barra de endereço, embaixo<small>em iPhones mais antigos: o botão <b>Compartilhar</b> <svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-label="ícone de compartilhar"><path d="M12 3v12M7 8l5-5 5 5M5 12v8h14v-8"/></svg></small></span></li>
+    <li><span class="n">02</span><span><b>Compartilhar</b> → <b>Adicionar à Tela de Início</b></span></li>
+    <li><span class="n">03</span><span>Abra <b>Ascension</b> na tela do celular</span></li>
   </ol>
 
   <div id="v-ios-other" hidden>
@@ -173,7 +179,9 @@ button.ghost{border-color:var(--l);color:var(--m);font-size:11px;padding:13px;ma
   </ol>
 </main>
 
+<a class="skip" id="skip" href="../comecar/">entrar sem instalar ›</a>
 <div class="foot">só por convite</div>
+<div class="arrow" id="arrow" aria-hidden="true">↓</div>
 
 <script>
 const $=id=>document.getElementById(id),ua=navigator.userAgent;
@@ -184,6 +192,7 @@ const IOS_SAFARI=IOS&&/Safari/.test(ua)&&!/CriOS|FxiOS|EdgiOS|OPiOS/.test(ua)&&!
 let evt=null;
 function show(v){for(const id of ["v-prompt","v-ios","v-ios-other","v-and","v-and-other","v-pc","v-done"])$(id).hidden=id!==v;}
 function pick(){
+  document.body.classList.toggle("ios",IOS_SAFARI);
   if(IOS)return show(IOS_SAFARI?"v-ios":"v-ios-other");
   if(AND)return show(INAPP?"v-and-other":"v-and");
   show("v-pc");}
