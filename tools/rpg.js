@@ -49,7 +49,7 @@ function rpgTip(){const d=new Date();const n=Math.floor((d-new Date(d.getFullYea
 let sysQ=[];function sysPop(tag,title,text){sysQ.push([tag,title,text]);if(sysQ.length===1)sysNext();}
 function sysNext(){if(!sysQ.length)return;const [tag,title,text]=sysQ[0];const m=document.createElement("div");m.className="sysmodal";m.setAttribute("role","dialog");
   const c=document.createElement("div");c.className="card";const a=document.createElement("div");a.className="tag";a.textContent="[ SISTEMA ] "+tag;const h=document.createElement("h3");h.textContent=title;const p=document.createElement("p");p.className="sm";p.textContent=text;
-  const b=document.createElement("button");b.className="go";b.type="button";b.textContent="Aceitar";b.addEventListener("click",()=>{m.remove();sysQ.shift();sysNext();});c.append(a,h,p,b);m.append(c);document.body.append(m);try{if(navigator.vibrate)navigator.vibrate([10,30,10]);}catch(e){}}
+  const b=document.createElement("button");b.className="go";b.type="button";b.textContent="Aceitar";b.addEventListener("click",()=>{m.remove();sysQ.shift();if(sysQ.length)sysNext();else setTimeout(render,50);});c.append(a,h,p,b);m.append(c);document.body.append(m);try{if(navigator.vibrate)navigator.vibrate([10,30,10]);}catch(e){}}
 function sparks(gold){if(matchMedia("(prefers-reduced-motion: reduce)").matches)return;const pt=lastPt||{x:innerWidth/2,y:innerHeight/2};
   for(let i=0;i<14;i++){const s=document.createElement("i");s.className="spark"+(gold&&i%2?" g":"");const a=Math.PI*2*i/14+Math.random()*.4,r=40+Math.random()*50;
     s.style.left=pt.x+"px";s.style.top=pt.y+"px";s.style.setProperty("--dx",Math.cos(a)*r+"px");s.style.setProperty("--dy",Math.sin(a)*r+"px");document.body.append(s);setTimeout(()=>s.remove(),800);}}
@@ -72,7 +72,7 @@ function renderRPG(){const r=rpgState();const st=statXP();const lv=levelOf(total
   else{for(const k in STATS){const was=r.seen[k]||1;if(cur[k]>was){for(const [lvN,nm,tx] of SKILLS[k])if(lvN>was&&lvN<=cur[k])sysPop("HABILIDADE DESBLOQUEADA",nm,STATS[k]+" nível "+lvN+". "+tx);r.seen[k]=cur[k];}}}
   if(typeof r.cls==="string")r.cls=null;
   if(r.cls){const t=lv>=20?2:lv>=10?1:0;if(t>(r.evo||0)){r.evo=t;sysPop("EVOLUÇÃO DE CLASSE",clsName(r.cls,lv),"Nível "+lv+". Sua classe evoluiu. Continue no seu ritmo.");}}
-  else if(cfg&&!cfg.blank&&$("onb").hidden&&!clsOpen)setTimeout(openCls,400);
+  else if(cfg&&!cfg.blank&&$("onb").hidden&&!clsOpen&&!sysQ.length)setTimeout(()=>{if(!sysQ.length)openCls();},400);
   if(!r.rew)r.rew=[{t:"Um episódio da série",c:8},{t:"Lanche favorito",c:12},{t:"1 hora de jogo sem culpa",c:15}];
   const sl=$("sysLine");if(sl)typeSys(sl,sysLine());
   $("rpgCls").textContent=r.cls?clsName(r.cls,lv):"";

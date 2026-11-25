@@ -83,5 +83,8 @@ rep('  <section data-tab="hoje" class="panel tip" id="installTip" hidden>',b1+' 
 rep('  <section data-tab="mais" class="panel" id="fbPanel">',b2+'  <section data-tab="mais" class="panel" id="fbPanel">')
 rep('\nlet saveTimer=null, SYNC="";','\n'+bjs+'\nlet saveTimer=null, SYNC="";')
 rep('setInterval(()=>{if($("today").dataset.k!==todayKey())','setTimeout(betaDaily,3000);setInterval(()=>{betaDaily();if($("today").dataset.k!==todayKey())')
+sea=open(SP+'season.js').read()
+rep('try{if(navigator.storage&&navigator.storage.persist)',sea+'\ntry{if(navigator.storage&&navigator.storage.persist)')
+rep('<button type="button" class="ghost" id="wipe">Apagar tudo e começar do zero</button></div>','<button type="button" class="ghost" id="wipe">Apagar tudo e começar do zero</button></div>\n      <div class="row"><button type="button" class="link" id="seasonUndo" hidden>Recuperar meu progresso da temporada anterior</button></div>')
 open('comecar/index.html','w').write(s)
 pass

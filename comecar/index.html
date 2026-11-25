@@ -625,6 +625,7 @@ body.enter .quest{animation:qIn .35s ease-out backwards}
       <summary>Começar do zero</summary>
       <p>Apaga perfil, tarefas, XP e histórico deste aparelho e mostra a apresentação de novo. Não dá para desfazer: copie o backup antes, se quiser guardar.</p>
       <div class="row"><button type="button" class="ghost" id="wipe">Apagar tudo e começar do zero</button></div>
+      <div class="row"><button type="button" class="link" id="seasonUndo" hidden>Recuperar meu progresso da temporada anterior</button></div>
     </details>
     <details>
       <summary>Backup do progresso</summary>
@@ -1351,7 +1352,7 @@ function rpgTip(){const d=new Date();const n=Math.floor((d-new Date(d.getFullYea
 let sysQ=[];function sysPop(tag,title,text){sysQ.push([tag,title,text]);if(sysQ.length===1)sysNext();}
 function sysNext(){if(!sysQ.length)return;const [tag,title,text]=sysQ[0];const m=document.createElement("div");m.className="sysmodal";m.setAttribute("role","dialog");
   const c=document.createElement("div");c.className="card";const a=document.createElement("div");a.className="tag";a.textContent="[ SISTEMA ] "+tag;const h=document.createElement("h3");h.textContent=title;const p=document.createElement("p");p.className="sm";p.textContent=text;
-  const b=document.createElement("button");b.className="go";b.type="button";b.textContent="Aceitar";b.addEventListener("click",()=>{m.remove();sysQ.shift();sysNext();});c.append(a,h,p,b);m.append(c);document.body.append(m);try{if(navigator.vibrate)navigator.vibrate([10,30,10]);}catch(e){}}
+  const b=document.createElement("button");b.className="go";b.type="button";b.textContent="Aceitar";b.addEventListener("click",()=>{m.remove();sysQ.shift();if(sysQ.length)sysNext();else setTimeout(render,50);});c.append(a,h,p,b);m.append(c);document.body.append(m);try{if(navigator.vibrate)navigator.vibrate([10,30,10]);}catch(e){}}
 function sparks(gold){if(matchMedia("(prefers-reduced-motion: reduce)").matches)return;const pt=lastPt||{x:innerWidth/2,y:innerHeight/2};
   for(let i=0;i<14;i++){const s=document.createElement("i");s.className="spark"+(gold&&i%2?" g":"");const a=Math.PI*2*i/14+Math.random()*.4,r=40+Math.random()*50;
     s.style.left=pt.x+"px";s.style.top=pt.y+"px";s.style.setProperty("--dx",Math.cos(a)*r+"px");s.style.setProperty("--dy",Math.sin(a)*r+"px");document.body.append(s);setTimeout(()=>s.remove(),800);}}
@@ -1374,7 +1375,7 @@ function renderRPG(){const r=rpgState();const st=statXP();const lv=levelOf(total
   else{for(const k in STATS){const was=r.seen[k]||1;if(cur[k]>was){for(const [lvN,nm,tx] of SKILLS[k])if(lvN>was&&lvN<=cur[k])sysPop("HABILIDADE DESBLOQUEADA",nm,STATS[k]+" nível "+lvN+". "+tx);r.seen[k]=cur[k];}}}
   if(typeof r.cls==="string")r.cls=null;
   if(r.cls){const t=lv>=20?2:lv>=10?1:0;if(t>(r.evo||0)){r.evo=t;sysPop("EVOLUÇÃO DE CLASSE",clsName(r.cls,lv),"Nível "+lv+". Sua classe evoluiu. Continue no seu ritmo.");}}
-  else if(cfg&&!cfg.blank&&$("onb").hidden&&!clsOpen)setTimeout(openCls,400);
+  else if(cfg&&!cfg.blank&&$("onb").hidden&&!clsOpen&&!sysQ.length)setTimeout(()=>{if(!sysQ.length)openCls();},400);
   if(!r.rew)r.rew=[{t:"Um episódio da série",c:8},{t:"Lanche favorito",c:12},{t:"1 hora de jogo sem culpa",c:15}];
   const sl=$("sysLine");if(sl)typeSys(sl,sysLine());
   $("rpgCls").textContent=r.cls?clsName(r.cls,lv):"";
@@ -1508,6 +1509,24 @@ addEventListener("hashchange",()=>{if(/[#&][cs]=/.test(location.hash))location.r
 try{const c=JSON.parse(localStorage.getItem("asc-u-cfg")||"null");cfg=(c&&(c.version||1)>=DEFAULT_CFG.version)?c:DEFAULT_CFG;}catch(e){cfg=DEFAULT_CFG;}
 if(cfg.name)$("titleName").textContent=cfg.name;
 try{const s=JSON.parse(localStorage.getItem("asc-u-prog")||"null");if(s&&s.log)prog=Object.assign({log:{},extra:{},faith:{},energy:{},mit:{},reviews:{}},s);}catch(e){}
+// ---------- Nova temporada: zera XP uma vez por aparelho, com cópia de segurança local ----------
+const SEASON="2";
+(function(){let cur="";try{cur=localStorage.getItem("asc-u-season")||"";}catch(e){}
+  if(cur===SEASON)return;
+  const had=prog&&prog.log&&Object.keys(prog.log).length>0;
+  try{if(had){localStorage.setItem("asc-u-prog-t1",JSON.stringify(prog));}localStorage.setItem("asc-u-season",SEASON);}catch(e){return;}
+  if(!had)return;
+  const keep={rank:prog.rank,money:prog.money};
+  prog={log:{},extra:{},faith:{},energy:{},mit:{},reviews:{},money:keep.money||[],rest:{},ach:{}};if(keep.rank)prog.rank=keep.rank;
+  if(cfg&&!cfg.blank){cfg.startDate=todayKey();try{localStorage.setItem("asc-u-cfg",JSON.stringify(cfg));}catch(e){}}
+  save();
+  setTimeout(()=>sysPop("NOVA TEMPORADA","Novo despertar","O Ascensão foi atualizado e todo mundo recomeça do nível 1, junto. Suas tarefas continuam. Agora tem classe, habilidades, baú de recompensas e o Sistema te guiando. Seu progresso antigo ficou guardado neste aparelho."),300);})();
+function seasonUI(){let has=false;try{has=!!localStorage.getItem("asc-u-prog-t1");}catch(e){}const b=$("seasonUndo");if(b)b.hidden=!has;}
+$("seasonUndo").addEventListener("click",()=>{const b=$("seasonUndo");if(!b.dataset.arm){b.dataset.arm=1;b.textContent="Toque de novo para trazer o progresso antigo (o desta temporada é substituído)";setTimeout(()=>{delete b.dataset.arm;b.textContent="Recuperar meu progresso da temporada anterior";},5000);return;}
+  try{const o=JSON.parse(localStorage.getItem("asc-u-prog-t1")||"null");if(o&&o.log){o.rpg=prog.rpg;prog=Object.assign({log:{},extra:{},faith:{},energy:{},mit:{},reviews:{}},o);prog.updatedAt=null;save();render();toast("Progresso antigo de volta.");}}catch(e){toast("Não consegui recuperar.");}
+  delete b.dataset.arm;b.textContent="Recuperar meu progresso da temporada anterior";});
+seasonUI();
+
 try{if(navigator.storage&&navigator.storage.persist)navigator.storage.persist().catch(()=>{});}catch(e){}
 if(!cfg||cfg.blank||!cfg.quests||!cfg.quests.length)openOnb();
 render();
