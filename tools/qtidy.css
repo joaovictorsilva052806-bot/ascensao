@@ -21,3 +21,8 @@
 .qtfoot .qtlb{margin:0;font-family:var(--f-mono);font-size:.76rem;padding:6px 10px;border:1px dashed rgba(242,193,78,.5);border-radius:8px}
 .quest .if,.quest .qlink,.quest .mshint{margin:0}
 .quest.open .if{padding-top:8px;border-top:1px dashed var(--line)}
+/* Alvo de toque ≥ 44px (WCAG 2.5.5 / Apple HIG) sem mudar o visual: área invisível em volta do título da tarefa e dos selos do topo */
+.quest .t .tt{position:relative}
+.quest .t .tt::before{content:"";position:absolute;left:0;right:0;top:-12px;bottom:-12px}
+#streak,#shieldPill,#clsPill{position:relative}
+#streak::before,#shieldPill::before,#clsPill::before{content:"";position:absolute;left:-2px;right:-2px;top:-8px;bottom:-8px}
