@@ -1,0 +1,32 @@
+/* ---- Mural da turma e Álbum de figurinhas (tools/mural.js) ---- */
+.much{position:fixed;left:50%;bottom:calc(86px + env(safe-area-inset-bottom));transform:translateX(-50%);z-index:60;min-height:46px;padding:0 18px;border-radius:999px;border:1px solid var(--gold,#f2c14e);background:#0b1220;color:var(--gold,#f2c14e);font:inherit;font-weight:700;box-shadow:0 6px 24px rgba(0,0,0,.5),0 0 14px rgba(242,193,78,.35);animation:muin .35s cubic-bezier(.3,1.5,.5,1);white-space:nowrap}
+.mumodal .card{max-height:88vh;overflow:auto}
+.mustk{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:8px;margin:8px 0}
+.mus{min-height:56px;font-size:1.8rem;border-radius:12px;border:1px solid var(--line,#1f2e4d);background:#0a1222;line-height:1}
+.mus:active{transform:scale(.92)}
+.mualb .muday{display:flex;align-items:center;gap:10px;padding:6px 0;border-top:1px solid var(--line,#1f2e4d)}
+.mudd{font-family:var(--f-mono,monospace);font-size:.74rem;color:var(--muted,#9fb0c8);width:40px;flex:0 0 40px}
+.mudg{display:flex;flex-wrap:wrap;gap:4px}
+.mut{font-size:1.5rem;line-height:1;filter:drop-shadow(0 2px 2px rgba(0,0,0,.5))}
+.mulist{margin:6px 0 10px;padding-left:18px;display:flex;flex-direction:column;gap:6px}
+.mumodal .chk{display:flex;gap:8px;align-items:flex-start;min-height:36px;text-align:left}
+.mumsg{color:var(--gold,#f2c14e);min-height:1.2em}
+.muprev{width:100%;max-height:46vh;object-fit:contain;border-radius:10px;background:#000;margin:6px 0}
+.mucaps{display:flex;flex-wrap:wrap;gap:6px;margin:8px 0}
+.mucaps .chip.on{border-color:var(--accent,#00d4ff);color:var(--glow,#7af3ff)}
+.muwarn{color:var(--gold,#f2c14e)}
+.mupick{width:100%;margin:4px 0;text-align:left}
+.mu>.ghost{width:100%;margin-bottom:10px}
+.mulst{display:flex;flex-direction:column;gap:12px}
+.mupost{border:1px solid var(--line,#1f2e4d);border-radius:12px;overflow:hidden;background:#0a1222}
+.mutop{display:flex;align-items:center;gap:8px;padding:8px 10px}
+.mutop b{flex:1;min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.muav svg{display:block;width:32px;height:32px}
+.muimg{display:block;width:100%;max-height:70vh;object-fit:cover;background:#000}
+.muq{padding:8px 10px 0;font-size:.88rem}
+.murx{display:flex;align-items:center;gap:6px;padding:8px 10px 10px}
+.murb{min-width:52px;min-height:40px;border-radius:999px;border:1px solid var(--line,#1f2e4d);background:transparent;color:inherit;font:inherit;font-size:.95rem}
+.murb.on{border-color:var(--gold,#f2c14e);background:rgba(242,193,78,.12)}
+.muop{margin-left:auto;font-size:.8rem;min-height:40px}
+@keyframes muin{from{opacity:0;transform:translate(-50%,16px)}to{opacity:1;transform:translate(-50%,0)}}
+@media (prefers-reduced-motion:reduce){.much{animation:none}}

@@ -1,0 +1,152 @@
+// mural.gs — Mural da turma (fotos de prova, 14+, só amigos confirmados).
+// Encaixe: arquivo novo no projeto "Ascensão - avisos por e-mail" (gatilho do formulário). Publicar como web app:
+// executar como "Eu", acesso "Qualquer pessoa". Este é o único doPost do projeto.
+// Ajuste as 3 constantes de PLANILHA/ABA e, se preferir, troque mh_/mVinc_ pelas g_h/g_n/g_tok que já existem.
+//
+// Regras (o servidor confere tudo; o app só mostra):
+//  - token do jogador obrigatório (n:<nick> -> uid, t:<uid> = 16 bytes do SHA-256 do tk em hex). Sem vínculo, nada.
+//  - faixa de idade + consentimento em c:<uid> = {"b":"teen|adult","p":1,"t":ms}. ≤13 nunca registra. 14-17 só com p=1.
+//  - amizade confirmada = linhas F/G com coluna C="tk" (pedido F de um e aceite G do outro).
+//  - post: JPEG por bytes FFD8FF, ≤ 80 KB, legenda só da lista, 3 por dia, corpo ≤ 100 KB, limite de chamadas por nick.
+//  - list: só posts do próprio e de amigos confirmados, últimos 7 dias, no máximo 20, imagem em base64 (nunca URL).
+//  - del: só o autor (apaga arquivo e linha). react: 🔥 💪 👏, só amigo ou o próprio, liga/desliga.
+//  - report: esconde para quem denunciou; 1 denúncia esconde post de 14-17 para todos, 2 escondem post de adulto. E-mail ao JV a cada uma.
+//  - gatilho diário muralLimpa: apaga arquivo e linha com mais de 7 dias.
+
+var MU_SHEET_ID = "";          // id da planilha de usuários (a mesma das abas privadas). Vazio = SpreadsheetApp.getActive().
+var MU_RANK_TAB = "respostas"; // aba onde chegam as linhas do formulário (F/G...) — CONFERIR
+var MU_TAB = "mural";          // aba privada do índice (criada sozinha)
+var MU_DAYS = 7, MU_MAX_LIST = 20, MU_MAX_DAY = 3, MU_MAX_IMG = 80000, MU_MAX_BODY = 100000;
+var MU_REACT = ["🔥", "💪", "👏"];
+var MU_CAPS = ["", "Feito ✅", "Mínimo cumprido", "Dia difícil, fiz mesmo assim", "Novo recorde", "Primeira vez!"];
+var MU_MIN_BAND = "teen";      // "teen" = 14+ (decisão do JV em 25/11). Troque para "adult" para só 18+.
+
+function doPost(e) {
+  try {
+    if (!e || !e.postData || !e.postData.contents) return mOut_({ ok: false, err: "vazio" });
+    if (e.postData.contents.length > MU_MAX_BODY) return mOut_({ ok: false, err: "grande" });
+    var b = JSON.parse(e.postData.contents);
+    var nick = String(b.n || "").trim().toLowerCase().slice(0, 16);
+    if (!nick || !mRate_(nick)) return mOut_({ ok: false, err: "limite" });
+    var uid = mVinc_(nick, String(b.tk || ""));
+    if (!uid) return mOut_({ ok: false, err: "token" });
+    var a = String(b.a || "");
+    if (a === "reg") return mOut_(mReg_(uid, b));
+    var age = mAge_(uid);
+    if (!age) return mOut_({ ok: false, err: "idade" });
+    if (a === "list") return mOut_(mList_(nick, uid));
+    if (a === "post") return mOut_(mPost_(nick, uid, age, b));
+    if (a === "del") return mOut_(mDel_(nick, String(b.id || "")));
+    if (a === "react") return mOut_(mReact_(nick, uid, String(b.id || ""), String(b.e || "")));
+    if (a === "report") return mOut_(mReport_(nick, uid, String(b.id || "")));
+    return mOut_({ ok: false, err: "acao" });
+  } catch (err) {
+    return mOut_({ ok: false, err: "erro" });
+  }
+}
+function mOut_(o) { return ContentService.createTextOutput(JSON.stringify(o)).setMimeType(ContentService.MimeType.JSON); }
+function mProps_() { return PropertiesService.getScriptProperties(); }
+// --- token: mesmo formato do vínculo do formulário ---
+function mh_(tk) { var d = Utilities.computeDigest(Utilities.DigestAlgorithm.SHA_256, tk, Utilities.Charset.UTF_8); var s = "";
+  for (var i = 0; i < 16; i++) { var v = (d[i] + 256) % 256; s += (v < 16 ? "0" : "") + v.toString(16); } return s; }
+function mVinc_(nick, tk) {
+  if (!/^tk[\w-]{22}$/.test(tk)) return "";
+  var p = mProps_(); var n = p.getProperty("n:" + nick); if (!n) return "";
+  var uid = ""; try { uid = JSON.parse(n).u; } catch (e) { return ""; }
+  var t = uid && p.getProperty("t:" + uid); if (!t || t !== mh_(tk)) return "";
+  return uid;
+}
+// --- limite de chamadas por apelido (30 a cada 10 min) ---
+function mRate_(nick) { var c = CacheService.getScriptCache(); var k = "mr:" + nick; var n = +(c.get(k) || 0); if (n >= 30) return false; c.put(k, String(n + 1), 600); return true; }
+// --- faixa de idade e consentimento ---
+function mReg_(uid, b) {
+  var band = b.band === "teen" ? "teen" : b.band === "adult" ? "adult" : "";
+  if (!band) return { ok: false, err: "idade" };
+  if (MU_MIN_BAND === "adult" && band !== "adult") return { ok: false, err: "idade" };
+  if (band === "teen" && +b.par !== 1) return { ok: false, err: "responsavel" };
+  var p = mProps_(); var old = null; try { old = JSON.parse(p.getProperty("c:" + uid) || "null"); } catch (e) {}
+  if (old && old.b === "teen" && band === "adult" && Date.now() - old.t < 30 * 864e5) band = "teen"; // não "envelhece" na hora
+  p.setProperty("c:" + uid, JSON.stringify({ b: band, p: band === "teen" ? 1 : 0, t: old ? old.t : Date.now() }));
+  return { ok: true };
+}
+function mAge_(uid) { try { var c = JSON.parse(mProps_().getProperty("c:" + uid) || "null"); if (!c) return "";
+  if (c.b === "teen" && c.p === 1 && MU_MIN_BAND === "teen") return "teen"; if (c.b === "adult") return "adult"; } catch (e) {} return ""; }
+// --- amizade confirmada (F de um + G do outro, ambos com C="tk") ---
+function mFriends_(nick) {
+  var ss = MU_SHEET_ID ? SpreadsheetApp.openById(MU_SHEET_ID) : SpreadsheetApp.getActive();
+  var sh = ss.getSheetByName(MU_RANK_TAB); if (!sh) return {};
+  var v = sh.getDataRange().getValues(); var F = {}, G = {}, out = {};
+  for (var i = 1; i < v.length; i++) {
+    if (String(v[i][2]) !== "tk") continue;                 // coluna C: linha com token conferido
+    var raw = String(v[i][1] || "");                       // coluna B: a linha "K|a|b|s|d" — CONFERIR
+    var p = raw.split("|"); var k = p[0], a = String(p[1] || "").trim().toLowerCase(), bb = String(p[2] || "").trim().toLowerCase();
+    if (!a || !bb) continue;
+    if (k === "F") F[a + ">" + bb] = 1; else if (k === "G") G[a + ">" + bb] = 1;   // G|quem aceitou|de quem
+  }
+  for (var key in G) { var x = key.split(">"); var acc = x[0], req = x[1];
+    if (!F[req + ">" + acc]) continue;
+    if (acc === nick) out[req] = 1; else if (req === nick) out[acc] = 1; }
+  return out;
+}
+// --- índice privado ---
+var MU_COLS = ["id", "autor", "nome", "uid", "data", "tarefa", "legenda", "fileId", "reacoes", "removido", "denuncias", "faixa"];
+function mTab_() { var ss = MU_SHEET_ID ? SpreadsheetApp.openById(MU_SHEET_ID) : SpreadsheetApp.getActive();
+  var sh = ss.getSheetByName(MU_TAB); if (!sh) { sh = ss.insertSheet(MU_TAB); sh.appendRow(MU_COLS); sh.hideSheet(); } return sh; }
+function mRows_() { var sh = mTab_(); var v = sh.getDataRange().getValues(); var out = [];
+  for (var i = 1; i < v.length; i++) { var r = {}; for (var j = 0; j < MU_COLS.length; j++) r[MU_COLS[j]] = v[i][j]; r._row = i + 1; out.push(r); } return out; }
+function mJ_(s, d) { try { return JSON.parse(s || "") || d; } catch (e) { return d; } }
+function mFolder_() { var p = mProps_(); var id = p.getProperty("mu:folder");
+  if (id) { try { return DriveApp.getFolderById(id); } catch (e) {} }
+  var f = DriveApp.createFolder("Ascension - mural (privado)"); f.setSharing(DriveApp.Access.PRIVATE, DriveApp.Permission.NONE);
+  p.setProperty("mu:folder", f.getId()); return f; }
+function mFresh_(d) { return Date.now() - new Date(d).getTime() < MU_DAYS * 864e5; }
+function mClean_(s, n) { return String(s || "").replace(/[<>|\n\r]/g, " ").trim().slice(0, n); }
+// --- ações ---
+function mPost_(nick, uid, age, b) {
+  var img = String(b.img || ""); var m = /^data:image\/jpeg;base64,([A-Za-z0-9+\/=]+)$/.exec(img); if (!m) return { ok: false, err: "tipo" };
+  var bytes = Utilities.base64Decode(m[1]); if (bytes.length > MU_MAX_IMG) return { ok: false, err: "grande" };
+  if ((bytes[0] & 255) !== 0xFF || (bytes[1] & 255) !== 0xD8 || (bytes[2] & 255) !== 0xFF) return { ok: false, err: "tipo" };
+  var cap = String(b.cap || ""); if (MU_CAPS.indexOf(cap) < 0) cap = "";
+  if (!Object.keys(mFriends_(nick)).length) return { ok: false, err: "amigo" };
+  var lock = LockService.getScriptLock(); lock.waitLock(10000);
+  try {
+    var today = Utilities.formatDate(new Date(), "America/Sao_Paulo", "yyyy-MM-dd"); var n = 0;
+    mRows_().forEach(function (r) { if (r.autor === nick && Utilities.formatDate(new Date(r.data), "America/Sao_Paulo", "yyyy-MM-dd") === today) n++; });
+    if (n >= MU_MAX_DAY) return { ok: false, err: "limite" };
+    var id = Utilities.getUuid().replace(/-/g, "").slice(0, 16);
+    var file = mFolder_().createFile(Utilities.newBlob(bytes, "image/jpeg", id + ".jpg"));
+    mTab_().appendRow([id, nick, mClean_(b.n, 16), uid, new Date().toISOString(), mClean_(b.q, 40), cap, file.getId(), "{}", "", "[]", age]);
+  } finally { lock.releaseLock(); }
+  return { ok: true };
+}
+function mList_(nick, uid) {
+  var fr = mFriends_(nick); var out = [];
+  var rows = mRows_().filter(function (r) { return !r.removido && mFresh_(r.data) && (r.autor === nick || fr[r.autor]) && mJ_(r.denuncias, []).indexOf(uid) < 0; })
+    .sort(function (a, b) { return String(b.data).localeCompare(String(a.data)); }).slice(0, MU_MAX_LIST);
+  rows.forEach(function (r) { var img = "";
+    try { img = "data:image/jpeg;base64," + Utilities.base64Encode(DriveApp.getFileById(r.fileId).getBlob().getBytes()); } catch (e) { return; }
+    var rx = mJ_(r.reacoes, {}); var cnt = {}, my = {};
+    MU_REACT.forEach(function (e) { var l = rx[e] || []; cnt[e] = l.length; my[e] = l.indexOf(uid) >= 0; });
+    out.push({ id: r.id, a: r.nome, d: r.data, q: r.tarefa, cap: r.legenda, img: img, r: cnt, my: my }); });
+  return { ok: true, posts: out };
+}
+function mFind_(id) { var all = mRows_(); for (var i = 0; i < all.length; i++) if (all[i].id === id) return all[i]; return null; }
+function mDel_(nick, id) { var r = mFind_(id); if (!r || r.autor !== nick) return { ok: false, err: "dono" };
+  try { DriveApp.getFileById(r.fileId).setTrashed(true); } catch (e) {} mTab_().deleteRow(r._row); return { ok: true }; }
+function mReact_(nick, uid, id, e) { if (MU_REACT.indexOf(e) < 0) return { ok: false, err: "reacao" };
+  var r = mFind_(id); if (!r || r.removido || (r.autor !== nick && !mFriends_(nick)[r.autor])) return { ok: false, err: "amigo" };
+  var rx = mJ_(r.reacoes, {}); var l = rx[e] || []; var k = l.indexOf(uid); if (k >= 0) l.splice(k, 1); else l.push(uid); rx[e] = l;
+  mTab_().getRange(r._row, 9).setValue(JSON.stringify(rx)); return { ok: true }; }
+function mReport_(nick, uid, id) { var r = mFind_(id); if (!r || (r.autor !== nick && !mFriends_(nick)[r.autor])) return { ok: false, err: "amigo" };
+  var d = mJ_(r.denuncias, []); if (d.indexOf(uid) < 0) d.push(uid);
+  var hide = (r.faixa === "teen" && d.length >= 1) || d.length >= 2;
+  var sh = mTab_(); sh.getRange(r._row, 11).setValue(JSON.stringify(d)); if (hide) sh.getRange(r._row, 10).setValue("denuncia");
+  try { var ok = typeof g_emailOk === "function" ? g_emailOk() : true;
+    if (ok) MailApp.sendEmail(Session.getEffectiveUser().getEmail(), "Ascension: denúncia no mural (" + d.length + ")",
+      "Post " + r.id + " de " + r.nome + " (" + r.faixa + ") denunciado por " + nick + ". " + (hide ? "Escondido para todos." : "Escondido para quem denunciou.") +
+      "\nArquivo no Drive (privado): " + r.fileId); } catch (e) {}
+  return { ok: true }; }
+// --- gatilho diário: apaga de verdade o que passou de 7 dias ---
+function muralLimpa() { var sh = mTab_(); var all = mRows_(); for (var i = all.length - 1; i >= 0; i--) { var r = all[i];
+  if (!mFresh_(r.data)) { try { DriveApp.getFileById(r.fileId).setTrashed(true); } catch (e) {} sh.deleteRow(r._row); } } }
+function muralInstalaGatilho() { ScriptApp.newTrigger("muralLimpa").timeBased().everyDays(1).atHour(4).create(); }
