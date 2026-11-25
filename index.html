@@ -312,6 +312,8 @@ body[data-tab=criador] .wrap>section[data-tab]:not([data-tab=criador]){display:n
 body:not([data-tab=criador]) .wrap>section[data-tab=criador]{display:none}
 
 .clssug{display:flex;flex-direction:column;align-items:center;gap:10px;margin:14px 0 6px}.clssug .go.big{display:flex;flex-direction:column;gap:4px;width:100%;padding:16px}.clssug .go.big small{font-weight:500;opacity:.85}
+/* sem movimento: barra de XP e anel do rank mudam na hora (a regra antiga em base.html era anulada pela de .bar>i mais abaixo) */
+@media (prefers-reduced-motion:reduce){.bar>i,.rank{transition:none}}
 
 /* ---------- Segredos ---------- */
 .sectitle{font-family:var(--f-hud,monospace);font-size:.68rem;letter-spacing:.12em;color:var(--gold);margin:-2px 0 2px;text-shadow:0 0 8px rgba(242,193,78,.35)}
