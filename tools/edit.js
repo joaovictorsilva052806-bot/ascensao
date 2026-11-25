@@ -30,7 +30,7 @@ $("edDel").addEventListener("click",()=>{const b=$("edDel");if(!edCur)return;if(
 function adjFind(){if(!cfg||cfg.blank)return null;const sn=(prog.adj||{});const now=todayKey();
   for(const q of (cfg.quests||[]).filter(q=>q.main&&q.id!=="s_fech")){if(sn[q.id]&&sn[q.id]>now)continue;let elig=0,miss=0;
     for(let i=1;i<=7&&elig<5;i++){const d=new Date();d.setDate(d.getDate()-i);const k=dkey(d);if(cfg.startDate&&k<cfg.startDate)break;const dow=(d.getDay()+6)%7;
-      if(q.days&&!q.days.includes(dow))continue;if((prog.rest||{})[k])continue;elig++;if(!(prog.log[k]||[]).some(e=>e.q===q.id))miss++;}
+      if(q.days&&!q.days.includes(dow))continue;if(isRest(k))continue;elig++;if(!(prog.log[k]||[]).some(e=>e.q===q.id))miss++;}
     if(elig>=3&&miss>=3)return {q,miss,elig};}return null;}
 let adjQ=null;
 function renderAdj(){const f=adjFind();adjQ=f&&f.q;$("adjCard").hidden=!f;if(!f)return;

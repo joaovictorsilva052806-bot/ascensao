@@ -23,6 +23,14 @@ Pontos de entrada no JS: `render()` desenha tudo; `toggle(quest, "full"|"min")` 
 
 `tools/secret.js` e `tools/secret.css` (entram nos dois geradores): 17 conquistas ocultas com títulos raros, Terminal do Sistema (em Mais) para códigos e Modo Zen. Grava só `prog.sec` e `prog.secTitle`; o XP entra como `ach:<id>`. Teste: `node qa/segredos.test.js` com o servidor local ligado.
 
+## Sequência (estilo Duolingo)
+
+`tools/streak.js` e `tools/streak.css` (entram nos dois geradores): escudo de sequência automático (começa com 1, +1 nos marcos de 7, 14, 30…, máx. 2), marcos comemorados (1, 3, 7…), "Dia perfeito" quando todas as principais saem, e aviso de risco depois das 18h. Grava só `prog.shield`; dia com escudo conta como descanso em `isRest()`. Teste: `node qa/sequencia.test.js`.
+
+## Reinstalação do app pessoal
+
+Na 1ª ligação da planilha num aparelho (link `#s=` ou colar o endereço), a planilha vence e o progresso local vira backup em `ascensao-prog-prelink`. Teste: `node qa/religar.test.js`.
+
 ## Rodar local
 
 ```bash

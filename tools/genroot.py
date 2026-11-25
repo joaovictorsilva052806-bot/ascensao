@@ -27,4 +27,7 @@ assert 'asc-u-' not in s.replace('asc-u-intro',''),'chave errada'
 # telas enxutas: painéis secundários recolhidos, foco centralizado (tools/simple.*)
 rep('</style></head>',R('simple.css')+'</style></head>')
 rep('\nlet saveTimer=null, SYNC="";','\n'+R('simple.js')+'\nlet saveTimer=null, SYNC="";')
+# sequência estilo Duolingo: escudo automático, marcos e aviso de risco (tools/streak.*)
+rep('</style></head>',R('streak.css')+'</style></head>')
+rep('\nlet saveTimer=null, SYNC="";','\n'+R('streak.js')+'\nlet saveTimer=null, SYNC="";')
 open(SP+'../index.html','w').write(s)
