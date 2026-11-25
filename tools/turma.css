@@ -1,0 +1,39 @@
+/* ---- Aba Amigos (tools/turma.js) ---- */
+.tabbar{grid-template-columns:repeat(5,1fr)!important}
+.tabbar button[hidden]{display:none}
+body[data-tab=amigos] .wrap>section[data-tab]:not([data-tab=amigos]){display:none}
+.tmhd{display:flex;justify-content:space-between;align-items:center;gap:8px;margin-bottom:10px}
+.tmhd h2{margin:0}
+.tmclock{font-family:var(--f-mono);font-size:.74rem;color:var(--gold);white-space:nowrap}
+.tmjoin{display:flex;flex-direction:column;gap:10px;padding:14px;border:1px dashed var(--line);border-radius:10px}
+.tmlg{display:flex;flex-direction:column;gap:2px;padding:12px 14px;border-radius:10px;background:linear-gradient(135deg,rgba(242,193,78,.14),rgba(0,212,255,.06));border:1px solid rgba(242,193,78,.35);margin-bottom:10px}
+.tmlg b{font-family:var(--f-hud);letter-spacing:.08em;font-size:.95rem;color:var(--gold)}
+.tmseg{display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-bottom:10px}
+.tmseg button{min-height:38px;border-radius:999px;border:1px solid var(--line);background:transparent;color:var(--muted);font-size:.86rem}
+.tmseg button.on{border-color:var(--accent);color:var(--glow);background:rgba(0,212,255,.08)}
+.tmempty{display:flex;flex-direction:column;gap:8px;padding:12px;border:1px dashed var(--line);border-radius:10px;margin-bottom:10px}
+.tmempty p{margin:0}
+.tmlist{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:6px}
+.tmlist li{display:grid;grid-template-columns:26px 44px minmax(0,1fr) auto;align-items:center;gap:10px;padding:8px 10px;border:1px solid var(--line);border-radius:10px;background:#0a1222}
+.tmlist li.tap{cursor:pointer}
+.tmlist li.me{border-color:var(--accent);background:rgba(0,212,255,.07)}
+.tmlist li.up{box-shadow:inset 3px 0 0 var(--good)}
+.tmlist li.tmzone{display:block;padding:2px 0;border:0;background:none;text-align:center;font-family:var(--f-mono);font-size:.68rem;letter-spacing:.12em;color:var(--good)}
+.tmpos{text-align:center;font-family:var(--f-mono);font-size:.9rem;color:var(--muted)}
+.tmav svg{display:block;width:44px;height:44px}
+.tmtx{min-width:0;display:flex;flex-direction:column;gap:2px}
+.tmtx b{white-space:nowrap;overflow:hidden;text-overflow:ellipsis;font-size:.95rem}
+.tmmeta{font-size:.74rem;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.tmxp{font-family:var(--f-mono);font-size:.82rem;color:var(--gold);white-space:nowrap;grid-column:4;grid-row:1}
+.tmact{grid-column:3/5;grid-row:2;display:flex;justify-content:flex-end;gap:6px}
+.tmlist li:has(.tmact){grid-template-rows:auto auto;row-gap:6px}
+.tmbtn{min-width:40px;min-height:34px;padding:0 10px;border-radius:999px;border:1px solid var(--line);background:transparent;font-size:1rem;line-height:1}
+.tmbtn.add{color:var(--glow);border-color:var(--accent);font-weight:700}
+.tmbtn.done{opacity:.35}
+.tmhint{margin-top:8px}
+.tmfeed{margin-top:14px;display:flex;flex-direction:column;gap:6px}
+.tmfeed h3{margin:0 0 2px;font-family:var(--f-hud);font-size:.7rem;letter-spacing:.16em;text-transform:uppercase;color:var(--glow)}
+.tmfi{display:flex;align-items:center;justify-content:space-between;gap:8px;padding:8px 10px;border-radius:8px;background:rgba(255,255,255,.03);font-size:.88rem}
+.tmhd h2{white-space:nowrap}
+body[data-tab=amigos] #frPanel .frlist{display:none}
+.wrap>section.tmoff{display:none!important}
