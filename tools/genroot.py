@@ -5,6 +5,11 @@ def rep(a,b,n=1):
     global s
     assert s.count(a)==n,(a[:60],s.count(a));s=s.replace(a,b)
 R=lambda f:open(SP+f).read()
+# recursos do celular no foco (tools/foco.*)
+rep('</style></head>',R('foco.css')+'</style></head>')
+rep('Ao terminar, o XP entra e a quest é marcada.</div>\n','Ao terminar, o XP entra e a quest é marcada.</div>\n'+R('foco.html'))
+rep('<div class="toast" id="toast" hidden></div>',R('foco-room.html')+'<div class="toast" id="toast" hidden></div>')
+rep('document.addEventListener("visibilitychange",()=>{if(!document.hidden)focusUI();});','document.addEventListener("visibilitychange",()=>{if(!document.hidden)focusUI();});\n'+R('foco.js'))
 rep('</style></head>',R('rpg.css')+R('secret.css')+'</style></head>')
 rep('<span class="pill" id="dayPill">0/0 hoje</span></div>','<span class="pill" id="dayPill">0/0 hoje</span><span class="pill clspill" id="clsPill" hidden></span></div>\n        <div class="sysline" id="sysLine"></div>')
 rep('  <section data-tab="prog" class="panel">\n    <h2>Atributos</h2>\n    <div class="stats" id="stats"></div>\n  </section>\n','  <section data-tab="prog" class="panel" hidden>\n    <h2>Atributos</h2>\n    <div class="stats" id="stats"></div>\n  </section>\n'+R('rpg.html'))

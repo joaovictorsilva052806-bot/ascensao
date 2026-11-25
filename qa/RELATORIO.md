@@ -1,5 +1,28 @@
 # Relatório de QA (ATENA)
 
+## 25/11/2026 · recursos do celular no Modo foco (sala de foco, Não Perturbe do iPhone, ruído marrom, atalhos do ícone)
+
+Playwright, 390x844 (Android e iPhone simulados) e 1280x800, servidor local. Placar: 31/31.
+
+| Teste | Resultado |
+|---|---|
+| Sala de foco abre ao começar; tela acesa (Wake Lock) e solta ao sair | passou |
+| Celular virado para baixo apaga a tela; ao levantar mostra quanto falta | passou |
+| Háptica no início e no fim (vibrate no Android, switch no iOS 18) | passou |
+| Ruído marrom liga e desliga (gerado no aparelho, sem arquivo) | passou |
+| Fim do bloco: fecha a sala, toca aviso, XP entra | passou |
+| iPhone: passos do Atalho, "Pronto, criei", começar chama shortcuts://run-shortcut com os minutos | passou |
+| Android: dica de Não perturbe; botão do iPhone escondido | passou |
+| Atalho do ícone ?foco=25 inicia o foco e limpa a URL; sem perfil é ignorado | passou |
+| Convidar amigo abre a folha de compartilhar com o link do /convite/ | passou |
+| /, /comecar/, /convite/ e desktop sem erro de JS | passou |
+| reduce-motion: sala sem animação | passou |
+| Dados antigos intactos; preferências do aparelho em chave separada (asc-dev) | passou |
+| Offline pelo service worker (cache ascensao-v20 / ascensao-u-v29) | passou |
+
+Corrigido no caminho: nome IOS duplicado no /comecar/ (renomeado para F_IOS).
+Não testado aqui: Atalho real no iPhone e Wake Lock real (precisa do aparelho do JV).
+
 ## 25/11/2026 · convite de instalação + permissão na 1ª abertura (PR #15, revisado e publicado com o ok do JV)
 
 Playwright, 390x844 e 1280x800, servidor local.

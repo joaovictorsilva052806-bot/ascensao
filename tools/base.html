@@ -339,6 +339,12 @@ input,select,textarea{font-size:16px!important}
     <table><tbody id="weeks"></tbody></table>
   </section>
 
+  <section data-tab="mais" class="panel" id="invPanel">
+    <h2>Chamar um amigo</h2>
+    <div class="sm muted">Upar junto é mais fácil. Manda o convite em um toque.</div>
+    <button class="go" type="button" id="inviteBtn">📤 Convidar amigo</button>
+  </section>
+
   <section data-tab="mais" class="panel" id="calPanel">
     <h2>Lembretes na agenda</h2>
     <div class="sm muted">O celular avisa na hora de cada gatilho, mesmo com o app fechado.</div>
@@ -424,7 +430,7 @@ function totalXP(){return Math.max(0,earnedXP()-debtXP());}
 function questById(id){return (cfg&&cfg.quests||[]).find(q=>q.id===id)||((prog.extra[todayKey()]||[]).find(q=>q.id===id));}
 
 function render(){
-  if(typeof ACH!=="undefined"&&checkAch())return;renderAch();fillRest();renderMoney();fillFaith();fillMorning();fillFocusSelect();renderReview();
+  if(typeof ACH!=="undefined"&&checkAch())return;renderAch();fillRest();renderMoney();fillFaith();fillMorning();if(typeof appBadge==="function")appBadge();fillFocusSelect();renderReview();
   const xp=totalXP(), l=levelOf(xp), r=rankOf(l);
   $("rank").textContent=r[1]; $("lvl").textContent="Nível "+l; $("ptitle").textContent="Rank "+r[1]+" · "+r[2];
   const a=xpFor(l), b=xpFor(l+1);
@@ -592,10 +598,10 @@ function fillFocusSelect(){const sel=$("focusQuest");if(document.activeElement==
 function fmt(ms){const t=Math.max(0,Math.ceil(ms/1000));return pad(Math.floor(t/60))+":"+pad(t%60);}
 function focusUI(){const f=prog.focus;const on=!!(f&&f.end);$("focusStart").hidden=on;$("focusShort").hidden=on;$("focusStop").hidden=!on;$("focusQuest").disabled=on;
   if(!on){$("timer").textContent="25:00";clearInterval(focusTick);focusTick=null;return;}
-  const left=f.end-Date.now();$("timer").textContent=fmt(left);
+  const left=f.end-Date.now();$("timer").textContent=fmt(left);if(typeof fxTick==="function")fxTick();
   if(left<=0)finishFocus();else if(!focusTick)focusTick=setInterval(focusUI,1000);}
-function startFocus(min){prog.focus={end:Date.now()+min*60000,min,q:$("focusQuest").value};save();focusUI();$("focusNote").textContent="Foco ligado. Pode bloquear a tela: o tempo continua contando.";}
-function finishFocus(){const f=prog.focus;prog.focus=null;clearInterval(focusTick);focusTick=null;
+function startFocus(min){prog.focus={end:Date.now()+min*60000,min,q:$("focusQuest").value};save();focusUI();$("focusNote").textContent="Foco ligado. Pode bloquear a tela: o tempo continua contando. Toque no tempo para abrir a sala de foco.";if(typeof fxStart==="function")fxStart(min);}
+function finishFocus(){const f=prog.focus;prog.focus=null;clearInterval(focusTick);focusTick=null;if(typeof fxEnd==="function")fxEnd(true);
   const xp=f.min>=25?15:6;
   addXP({q:"foco:"+Date.now(),kind:"full",xp,stat:"mente",bonus:0,t:new Date().toISOString()},"Bloco de foco concluído. +"+xp+" XP");
   const q=f.q&&todaysQuests().find(x=>x.id===f.q);
@@ -603,7 +609,7 @@ function finishFocus(){const f=prog.focus;prog.focus=null;clearInterval(focusTic
   $("focusNote").textContent="Mandou bem. Respira 5 min antes do próximo bloco.";focusUI();}
 $("focusStart").addEventListener("click",()=>startFocus(25));
 $("focusShort").addEventListener("click",()=>startFocus(10));
-$("focusStop").addEventListener("click",()=>{prog.focus=null;save();focusUI();$("focusNote").textContent="Sessão encerrada sem XP. Tudo bem: comece um bloco de 10 min quando der.";});
+$("focusStop").addEventListener("click",()=>{prog.focus=null;save();focusUI();if(typeof fxEnd==="function")fxEnd(false);$("focusNote").textContent="Sessão encerrada sem XP. Tudo bem: comece um bloco de 10 min quando der.";});
 document.addEventListener("visibilitychange",()=>{if(!document.hidden)focusUI();});
 
 // ---------- Revisão semanal ----------
@@ -761,6 +767,8 @@ focusUI();
 function goTab(t){document.body.dataset.tab=t;for(const b of document.querySelectorAll("#tabbar button"))b.classList.toggle("on",b.dataset.go===t);window.scrollTo(0,0);try{sessionStorage.setItem("asc-tab",t);}catch(e){}}
 for(const b of document.querySelectorAll("#tabbar button"))b.addEventListener("click",()=>goTab(b.dataset.go));
 let t0="hoje";try{t0=sessionStorage.getItem("asc-tab")||"hoje";}catch(e){}goTab(t0);
+try{const u=new URLSearchParams(location.search),fm=+u.get("foco"),tb=u.get("tab");if(fm||tb){history.replaceState(null,"",location.pathname);if(tb==="hoje"||tb==="foco"||tb==="prog")goTab(tb);
+  if((fm===25||fm===10)&&cfg&&!cfg.blank){goTab("foco");if(!(prog.focus&&prog.focus.end))setTimeout(()=>startFocus(fm),400);}}}catch(e){}
 const tickClock=()=>{const d=new Date();$("clock").textContent=d.toLocaleTimeString("pt-BR",{hour:"2-digit",minute:"2-digit"})+" · "+d.toLocaleDateString("pt-BR",{weekday:"short"}).replace(".","").toUpperCase();};tickClock();setInterval(tickClock,15000);
 pull();
 document.addEventListener("visibilitychange",()=>{if(!document.hidden)pull();});

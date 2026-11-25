@@ -1,0 +1,15 @@
+#timer{cursor:pointer}
+.fdev{display:flex;flex-direction:column;gap:8px;margin-top:10px}
+.fdev .fsc{border:1px solid var(--line);border-radius:4px;padding:10px;display:flex;flex-direction:column;gap:8px;background:rgba(0,212,255,.04)}
+.fdev ol{margin:0;padding-left:20px;display:flex;flex-direction:column;gap:4px}
+.froom{position:fixed;inset:0;z-index:80;background:#000;color:#e9feff;display:flex;align-items:center;justify-content:center;padding:24px 16px calc(24px + env(safe-area-inset-bottom,0px));animation:froomIn .4s ease-out}
+.froom-in{width:100%;max-width:420px;text-align:center;display:flex;flex-direction:column;gap:14px}
+.froom-tag{font-family:var(--f-hud);font-size:.72rem;letter-spacing:.3em;color:var(--accent)}
+.froom-t{font-family:var(--f-hud);font-size:clamp(3.4rem,22vw,6rem);line-height:1;text-shadow:0 0 26px rgba(0,212,255,.55);font-variant-numeric:tabular-nums}
+.froom-q{font-size:.95rem;color:var(--fg);min-height:1.2em}
+.froom-msg{font-size:.85rem;color:var(--muted)}
+.froom-row{display:flex;flex-wrap:wrap;gap:8px;justify-content:center}
+.froom-row button{flex:1 1 30%;min-height:44px}
+.froom-black{position:absolute;inset:0;background:#000;color:#222;display:flex;align-items:flex-end;justify-content:center;padding-bottom:40px;font-size:.75rem}
+@keyframes froomIn{from{opacity:0}to{opacity:1}}
+@media (prefers-reduced-motion:reduce){.froom{animation:none}}
