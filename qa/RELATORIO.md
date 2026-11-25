@@ -150,3 +150,5 @@ Passou:
 Falhou e foi corrigido no caminho: título duplicava "+10 XP" na mensagem; speedrun contava a mesma quest marcada 3x.
 
 - 25/11/2026 16h30 · Revisão horária · Achado: 13 campos de texto só com placeholder, sem nome para leitor de tela (5 na raiz, 13 em /comecar/: quest rápida, nome, meta, backup, recompensa…). Mudou: `aria-label` em todos, cache `ascensao-v31` / `ascensao-u-v40`, teste novo `qa/rotulos.test.js` (9/17 no código antigo, 17/17 no novo). Placar: 12/12 arquivos verdes.
+
+- 25/11/2026 18h · Revisão horária · Achado: na tela do Desafio relâmpago (#45) Esc não fechava, a tela não tinha nome para leitor de tela, o foco ficava atrás dela, cada toque no contador perdia o foco e a contagem não era anunciada; o contador encolhia ao tocar mesmo com reduce-motion. Mudou: nome na tela, foco entra e volta ao cartão, Esc fecha, região aria-live com "3 de 10" e "Pronto", reduce-motion no contador, cache `ascensao-v34` / `ascensao-u-v44`, teste novo `qa/relampago.test.js` (12/27 no código antigo, 27/27 no novo). Placar: 13/13 arquivos verdes.

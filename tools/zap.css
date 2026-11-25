@@ -11,3 +11,5 @@
 .zapproof{display:grid;grid-template-columns:auto 1fr;gap:10px;align-items:center}
 .zapproof img{width:64px;height:64px;object-fit:cover;border-radius:8px;border:1px solid var(--gold)}
 .zapcam{display:inline-flex;align-items:center;min-height:44px;padding:0 12px;border:1px solid var(--line);border-radius:8px;cursor:pointer}
+.zapsr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);clip-path:inset(50%);white-space:nowrap}
+@media (prefers-reduced-motion:reduce){.zaptap:active{transform:none}}
