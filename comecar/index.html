@@ -485,7 +485,7 @@ body[data-tab=foco] #focusNote{font-size:.8rem;color:var(--muted)}
     <div class="qstep" data-s="0">
       <div class="tag">[ SISTEMA ] NOVO JOGADOR DETECTADO</div>
       <h2>Como o Sistema deve te chamar?</h2>
-      <input id="q_name" maxlength="24" autocomplete="off" placeholder="Seu nome ou apelido" enterkeyhint="next">
+      <input id="q_name" aria-label="Seu nome ou apelido" maxlength="24" autocomplete="off" placeholder="Seu nome ou apelido" enterkeyhint="next">
       <button class="go big" type="button" id="q_n0">Continuar ▸</button>
       <button class="link" type="button" id="q_bk">Já usava o app? Restaurar backup</button>
     </div>
@@ -504,7 +504,7 @@ body[data-tab=foco] #focusNote{font-size:.8rem;color:var(--muted)}
       <h2 id="q_h3">No que você quer evoluir?</h2>
       <p class="sm muted">Já marquei o que combina com você. Troque se quiser.</p>
       <div class="qgrid sm3" id="q_focus"></div>
-      <input id="q_goal" maxlength="60" autocomplete="off" placeholder="Ou escreva a sua (opcional)">
+      <input id="q_goal" aria-label="Sua meta" maxlength="60" autocomplete="off" placeholder="Ou escreva a sua (opcional)">
       <button class="go big" type="button" id="q_done">Gerar meu jogo ⚡</button>
     </div>
     <div class="qstep" data-s="4" hidden>
@@ -542,7 +542,7 @@ body[data-tab=foco] #focusNote{font-size:.8rem;color:var(--muted)}
     <label class="chk"><input type="checkbox" id="o_faith"> Quero o painel de coragem e gratidão (tem espaço para fé, se quiser)</label>
     <label class="chk" id="o_pingRow"><input type="checkbox" id="o_ping"> 🏆 Entrar no ranking da semana (aparece só seu primeiro nome e seu XP)</label>
     <details class="sm" id="o_bkBox"><summary>Já usava o app? Restaurar backup</summary>
-      <textarea id="o_bk" rows="2" placeholder="Cole aqui o backup que você copiou"></textarea>
+      <textarea id="o_bk" aria-label="Texto do backup" rows="2" placeholder="Cole aqui o backup que você copiou"></textarea>
       <div class="row"><button class="ghost" type="button" id="o_bkGo">Restaurar</button></div></details>
     <div class="row sticky"><button class="go" type="button" id="o_go">Criar meu jogo</button><button class="ghost" type="button" id="o_cancel" hidden>Cancelar</button></div>
     <div class="sm muted" id="o_msg"></div>
@@ -604,7 +604,7 @@ body[data-tab=foco] #focusNote{font-size:.8rem;color:var(--muted)}
     <div class="qhead"><h2 id="moneyTitle">Meta de dinheiro</h2><span class="sm muted mono" id="moneyDays"></span></div>
     <div class="bar money"><i id="moneyBar" style="width:0%"></i></div>
     <div class="sm mono" id="moneyText"></div>
-    <div class="add"><input id="moneyIn" inputmode="decimal" placeholder="Entrou dinheiro? Ex.: 350" autocomplete="off"><button class="go" type="button" id="moneyAdd">Registrar</button></div>
+    <div class="add"><input id="moneyIn" aria-label="Valor que entrou (R$)" inputmode="decimal" placeholder="Entrou dinheiro? Ex.: 350" autocomplete="off"><button class="go" type="button" id="moneyAdd">Registrar</button></div>
   </section>
 
   <section data-tab="hoje" class="panel">
@@ -614,7 +614,7 @@ body[data-tab=foco] #focusNote{font-size:.8rem;color:var(--muted)}
     <div id="quests"><div class="empty">Carregando suas quests…</div></div>
     <div class="swipehint">Dica: deslize a quest para a direita para concluir →</div>
     <form class="add" id="addForm">
-      <input id="addInput" placeholder="Quest rápida (vale 10 XP)" maxlength="80" autocomplete="off">
+      <input id="addInput" aria-label="Nova quest rápida" placeholder="Quest rápida (vale 10 XP)" maxlength="80" autocomplete="off">
       <button class="go" type="submit">Adicionar</button>
     </form>
     <button class="link" type="button" id="fbQuick">💡 Sugerir uma melhoria no app</button>
@@ -705,13 +705,13 @@ body[data-tab=foco] #focusNote{font-size:.8rem;color:var(--muted)}
     <div class="qhead"><h2>🎁 Baú de recompensas</h2><span class="mono" id="coins">0 moedas</span></div>
     <p class="sm muted">Cada 10 XP vira 1 moeda. Troque por recompensas que você mesmo escolhe. Recompensa planejada não é culpa, é combustível.</p>
     <div id="chestList" class="chestlist"></div>
-    <form class="add" id="chestForm"><input id="chestT" maxlength="40" autocomplete="off" placeholder="Ex.: um episódio da série"><input id="chestC" inputmode="numeric" maxlength="3" autocomplete="off" placeholder="moedas" class="coinin"><button class="go" type="submit">Criar</button></form>
+    <form class="add" id="chestForm"><input id="chestT" aria-label="Recompensa" maxlength="40" autocomplete="off" placeholder="Ex.: um episódio da série"><input id="chestC" aria-label="Preço em moedas" inputmode="numeric" maxlength="3" autocomplete="off" placeholder="moedas" class="coinin"><button class="go" type="submit">Criar</button></form>
   </section>
   <section data-tab="prog" class="panel" id="rankPanel">
     <div class="qhead"><h2>🏆 Ranking da semana</h2><span class="sm muted">zera toda segunda</span></div>
     <ol class="rk" id="rkList"></ol>
     <div class="sm muted" id="rkNote"></div>
-    <div class="add" id="rkNickRow"><input id="rkNick" maxlength="16" autocomplete="off" placeholder="Apelido no ranking (opcional)"><button class="ghost" type="button" id="rkNickSave">Salvar</button></div>
+    <div class="add" id="rkNickRow"><input id="rkNick" aria-label="Apelido no ranking" maxlength="16" autocomplete="off" placeholder="Apelido no ranking (opcional)"><button class="ghost" type="button" id="rkNickSave">Salvar</button></div>
     <div class="row"><button class="go" type="button" id="rkJoin">Entrar no ranking</button><button class="link" type="button" id="rkLeave" hidden>Sair do ranking</button></div>
   </section>
 
@@ -766,8 +766,8 @@ body[data-tab=foco] #focusNote{font-size:.8rem;color:var(--muted)}
     <label class="sm muted" for="aiWish">O que você quer mudar? (opcional)</label>
     <input id="aiWish" maxlength="160" autocomplete="off" placeholder="Ex.: estou sem tempo de manhã; quero treinar mais">
     <div class="row"><button class="go" type="button" id="aiCopy">Copiar pedido</button><a class="ghost btnlink" href="https://claude.ai/new" target="_blank" rel="noopener">Abrir Claude</a><a class="ghost btnlink" href="https://chatgpt.com/" target="_blank" rel="noopener">Abrir ChatGPT</a></div>
-    <textarea id="aiPrompt" rows="3" readonly hidden></textarea>
-    <textarea id="aiIn" rows="4" placeholder="Cole aqui a resposta da IA"></textarea>
+    <textarea id="aiPrompt" aria-label="Pedido para a IA" rows="3" readonly hidden></textarea>
+    <textarea id="aiIn" aria-label="Resposta da IA" rows="4" placeholder="Cole aqui a resposta da IA"></textarea>
     <div class="row"><button class="go" type="button" id="aiRead">Ler resposta</button></div>
     <div class="sm" id="aiMsg"></div>
     <ul class="aiprev" id="aiPrev" hidden></ul>
@@ -814,13 +814,13 @@ body[data-tab=foco] #focusNote{font-size:.8rem;color:var(--muted)}
     <div class="sm muted" id="betaMsg"></div>
     <h3 class="sm" style="margin:14px 0 6px">Nota rápida para o app</h3>
     <div class="chips" id="betaRate"><button type="button" data-v="1">😞</button><button type="button" data-v="2">😕</button><button type="button" data-v="3">😐</button><button type="button" data-v="4">🙂</button><button type="button" data-v="5">🤩</button></div>
-    <textarea id="betaText" rows="2" maxlength="280" placeholder="Opcional: o que mudaria? (não escreva nome ou contato)" style="font:inherit;width:100%;background:rgba(0,212,255,.04);border:1px solid var(--line);color:var(--fg);border-radius:3px;padding:9px 10px;margin-top:8px"></textarea>
+    <textarea id="betaText" aria-label="O que você mudaria" rows="2" maxlength="280" placeholder="Opcional: o que mudaria? (não escreva nome ou contato)" style="font:inherit;width:100%;background:rgba(0,212,255,.04);border:1px solid var(--line);color:var(--fg);border-radius:3px;padding:9px 10px;margin-top:8px"></textarea>
     <div class="row"><button class="ghost" type="button" id="betaSend">Enviar nota anônima</button></div>
   </section>
   <section data-tab="mais" class="panel" id="fbPanel">
     <h2>Sugerir melhoria</h2>
     <div class="sm muted">O que está chato, confuso ou faltando? Pode ser curto. A mensagem sai pelo WhatsApp: é só escolher para quem mandar.</div>
-    <textarea id="fbText" rows="4" maxlength="800" placeholder="Ex.: queria uma quest para beber água" style="font:inherit;width:100%;background:rgba(0,212,255,.04);border:1px solid var(--line);color:var(--fg);border-radius:3px;padding:9px 10px"></textarea>
+    <textarea id="fbText" aria-label="Sua sugestão" rows="4" maxlength="800" placeholder="Ex.: queria uma quest para beber água" style="font:inherit;width:100%;background:rgba(0,212,255,.04);border:1px solid var(--line);color:var(--fg);border-radius:3px;padding:9px 10px"></textarea>
     <div class="row"><button class="go" type="button" id="fbSend">Enviar pelo WhatsApp</button></div>
     <div class="sm muted" id="fbMsg"></div>
   </section>
@@ -846,7 +846,7 @@ body[data-tab=foco] #focusNote{font-size:.8rem;color:var(--muted)}
       <summary>Backup do progresso</summary>
       <p>O iPhone pode apagar dados de sites. Copie o backup de vez em quando e cole numa nota.</p>
       <div class="row"><button type="button" id="bkCopy">Copiar backup</button></div>
-      <textarea id="bkText" rows="2" placeholder="Para restaurar, cole o backup aqui" style="font:inherit;width:100%;background:#0a1222;border:1px solid var(--line);color:var(--fg);border-radius:7px;padding:9px 10px"></textarea>
+      <textarea id="bkText" aria-label="Texto do backup" rows="2" placeholder="Para restaurar, cole o backup aqui" style="font:inherit;width:100%;background:#0a1222;border:1px solid var(--line);color:var(--fg);border-radius:7px;padding:9px 10px"></textarea>
       <div class="row"><button type="button" id="bkRestore">Restaurar backup</button></div>
     </details>
     <details>
