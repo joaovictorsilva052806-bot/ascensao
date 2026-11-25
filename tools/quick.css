@@ -15,4 +15,15 @@ button.big{padding:16px;font-size:1.05rem}
 .shake{animation:shake .4s}@keyframes shake{25%{transform:translateX(-6px)}75%{transform:translateX(6px)}}
 .onboarding .wrap>section#quick:not([hidden]){display:flex!important}
 
-.qplist{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:10px}.qplist li{display:flex;gap:12px;align-items:flex-start;border:1px solid var(--line);background:rgba(0,212,255,.05);padding:14px;border-radius:4px}.qplist li>span{font-size:1.4rem;line-height:1}.qplist b{display:block}.qplist small{display:block;color:var(--muted);margin-top:4px;font-size:.85rem;line-height:1.4}
+.qperm{flex:1;align-items:center;justify-content:center;text-align:center;gap:22px;padding-bottom:10vh}
+.qorb{width:104px;height:104px;border-radius:50%;border:1px solid var(--accent);box-shadow:0 0 40px rgba(0,212,255,.35),inset 0 0 24px rgba(0,212,255,.25);display:grid;place-items:center;animation:qpulse 3.2s ease-in-out infinite}
+.qorb i{width:11px;height:11px;border-radius:50%;background:var(--glow);box-shadow:0 0 14px var(--glow)}
+@keyframes qpulse{50%{box-shadow:0 0 70px rgba(0,212,255,.55),inset 0 0 30px rgba(0,212,255,.35);transform:scale(1.05)}}
+.qtype{font-family:var(--f-mono);font-size:.95rem;line-height:1.7;min-height:5.2em;color:var(--fg)}
+.qtype p{margin:0}.qtype p:last-child{color:var(--glow)}
+.qtype .cur::after{content:"▌";color:var(--accent);animation:qblink .8s infinite}@keyframes qblink{50%{opacity:0}}
+.qwake{width:100%;max-width:360px;display:flex;flex-direction:column;gap:10px;opacity:0;transform:translateY(8px);transition:opacity .5s,transform .5s;pointer-events:none}
+.qwake.on{opacity:1;transform:none;pointer-events:auto}
+.qsync{font-family:var(--f-mono);font-size:.68rem;letter-spacing:.2em;color:var(--accent);text-align:right;margin-top:-8px;min-height:1em}
+.quick.waking .qbar,.quick.waking .qsync{visibility:hidden}
+@media (prefers-reduced-motion:reduce){.qorb,.qtype .cur::after{animation:none}.qwake{transition:none}}

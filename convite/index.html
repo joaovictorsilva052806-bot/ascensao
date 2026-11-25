@@ -33,15 +33,17 @@ ol li span.n{font-family:"JetBrains Mono",monospace;color:var(--acc);font-size:.
 button{font:600 1.05rem Inter,sans-serif;padding:16px;border-radius:4px;cursor:pointer;border:1px solid var(--acc);background:var(--acc);color:#02121a;box-shadow:0 0 22px rgba(0,212,255,.45);width:100%}
 button.ghost{background:transparent;color:var(--fg);box-shadow:none;border-color:var(--line);font-size:.9rem;padding:12px}
 .hint{display:block;font-size:.78rem;color:var(--muted);margin-top:2px}.hint b{color:var(--muted)}
+.how,.foot{transition:opacity .6s,transform .6s}body.wait .how,body.wait .foot{opacity:0;transform:translateY(10px);pointer-events:none}
+h1{transition:opacity .35s}h1.fade{opacity:0}
 .foot{font-size:.72rem;color:var(--muted);letter-spacing:.04em}
 [hidden]{display:none!important}
 @media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
-</style></head><body>
+</style></head><body class="wait">
 <div class="sig">[ SINAL DETECTADO ]</div>
 <div class="orb" aria-hidden="true"><i></i></div>
-<h1 id="t">Instale para continuar.</h1>
+<h1 id="t">Você foi encontrado(a).</h1>
 
-<main class="how" aria-labelledby="t">
+<main class="how" id="how" aria-labelledby="t">
   <!-- Android/PC com instalação nativa -->
   <div id="v-prompt" hidden><button type="button" id="inst">Instalar</button></div>
 
@@ -72,9 +74,10 @@ button.ghost{background:transparent;color:var(--fg);box-shadow:none;border-color
   </div>
 
   <!-- Computador -->
-  <ol id="v-pc" hidden>
-    <li><span class="n">1</span><span>Abra este link <b>no seu celular</b></span></li>
-  </ol>
+  <div id="v-pc" hidden>
+    <ol><li><span class="n">1</span><span>Abra este link <b>no seu celular</b></span></li></ol>
+    <button type="button" class="ghost copy" style="margin-top:12px">Copiar link</button>
+  </div>
 
   <!-- Depois de instalar -->
   <ol id="v-done" hidden>
@@ -97,6 +100,10 @@ function pick(){
   if(AND)return show(INAPP?"v-and-other":"v-and");
   show("v-pc");}
 pick();
+// Revelação: primeiro o mistério, depois o caminho.
+(function(){const h=$("t"),RM=matchMedia("(prefers-reduced-motion: reduce)").matches;
+  const done=()=>{h.textContent="Instale para continuar.";h.classList.remove("fade");document.body.classList.remove("wait");};
+  if(RM)return done();setTimeout(()=>{h.classList.add("fade");setTimeout(done,380);},1500);})();
 addEventListener("beforeinstallprompt",e=>{e.preventDefault();evt=e;if(!INAPP)show("v-prompt");});
 $("inst").addEventListener("click",async()=>{if(!evt)return;evt.prompt();let r=null;try{r=await evt.userChoice;}catch(e){}evt=null;
   if(r&&r.outcome==="accepted")show("v-done");else pick();});
