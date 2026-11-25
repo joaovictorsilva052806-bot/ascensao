@@ -35,4 +35,7 @@ rep('\nlet saveTimer=null, SYNC="";','\n'+R('streak.js')+'\nlet saveTimer=null, 
 # quebrar correntes (tools/chain.*)
 rep('</style></head>',R('chain.css')+'</style></head>')
 rep('\nlet saveTimer=null, SYNC="";','\n'+R('chain.js')+'\nlet saveTimer=null, SYNC="";')
+# avatar por classe (tools/avatar.*)
+rep('</style></head>',R('avatar.css')+'</style></head>')
+rep('\nlet saveTimer=null, SYNC="";','\n'+R('avatar.js')+'\nlet saveTimer=null, SYNC="";')
 open(SP+'../index.html','w').write(s)

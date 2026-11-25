@@ -135,5 +135,8 @@ rep('\nlet saveTimer=null, SYNC="";','\n'+open(SP+'guide.js').read()+'\nlet save
 # esquadrão por convite + quebrar correntes (tools/sqinv.js, tools/chain.*)
 rep('</style></head>',open(SP+'chain.css').read()+'</style></head>')
 rep('\nlet saveTimer=null, SYNC="";','\n'+open(SP+'sqinv.js').read()+open(SP+'chain.js').read()+'\nlet saveTimer=null, SYNC="";')
+# avatar por classe + amigos com comparação (tools/avatar.*, tools/friends.js)
+rep('</style></head>',open(SP+'avatar.css').read()+'</style></head>')
+rep('\nlet saveTimer=null, SYNC="";','\n'+open(SP+'avatar.js').read()+open(SP+'friends.js').read()+'\nlet saveTimer=null, SYNC="";')
 open('comecar/index.html','w').write(s)
 pass
