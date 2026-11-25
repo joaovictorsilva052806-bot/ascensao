@@ -1,5 +1,9 @@
 # Relatório de QA (ATENA)
 
+## Revisões horárias
+
+- 25/11 15h36 · Achado: cabeçalho dos painéis recolhíveis ("Como você está", "Treino do Sistema", "Ligar à planilha") tinha só 28px de altura para o dedo. Mudou: alvo de toque de 44px sem mudar o visual (margem negativa); caches ascensao-v29 / ascensao-u-v38. Placar: 198/198 (novo qa/toque.test.js 19/19, falhava 12/19 no código antigo).
+
 ## 25/11/2026 · 1ª rodada da ATENA: placar inicial e 3 correções (#27, #28, #30)
 
 Playwright, 390x844 e 1366x820, servidor local, main do #25 ao #29. Placar inicial (só leitura): 129/132.
