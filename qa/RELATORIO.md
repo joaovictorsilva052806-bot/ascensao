@@ -1,5 +1,12 @@
 # Relatório de QA (ATENA)
 
+## 25/11/2026 23h · Retenção D1/D3/D7 e funil no Modo Criador (PR rascunho, espera o "pode publicar")
+
+- Novo: painel "📈 Retenção (anônima)" na aba Criador (só no app do JV). Calcula D1/D3/D7 e o funil perfil → 1ª missão → fechou o dia a partir das linhas `A` que o painel já recebe. Não guarda nada.
+- Coleta: 2 etapas novas no mesmo formato anônimo e no mesmo opt-in (`7-quest`, `8-fechou-dia`), 1 vez por dia. Até 13 anos e sem aceite: nada sai.
+- Corrigido junto: o app do criador pedia "Liberar seu painel para o criador?" para o próprio JV (o intervalo do aceite não era desligado na raiz). Agora não pede e não envia nada.
+- Testes: qa/retencao.test.js 28/28 (390x844 e 1280x800); o teste do aceite falhava no código antigo. Suíte: alvo 24, apps 47, convite 69, foco 32, funil 16, ranking-dia 47, relampago 27, rotulos 17, segredos 38, toque 19 e os demais sem FAIL. qa/mural-servidor.test.js quebra no Node também na main (não é deste PR). Caches ascensao-v55 / ascensao-u-v67.
+
 ## Revisões horárias
 
 - 25/11 15h36 · Achado: cabeçalho dos painéis recolhíveis ("Como você está", "Treino do Sistema", "Ligar à planilha") tinha só 28px de altura para o dedo. Mudou: alvo de toque de 44px sem mudar o visual (margem negativa); caches ascensao-v29 / ascensao-u-v38. Placar: 198/198 (novo qa/toque.test.js 19/19, falhava 12/19 no código antigo).
@@ -193,3 +200,11 @@ Falhou e foi corrigido: `qa/mural-servidor.test.js` quebrava com `TypeError` qua
 - 26/11/2026 9h23 · Revisão horária · Main `6eec89c` (#101); checklist da EVA (convite, idade, amigos/avatar) coberto. Achado em 390x844: as janelas do Sistema (check-in do dia, avisos, subir de nível) abriam sem nome e sem `aria-modal`, e o foco ficava atrás delas: no teclado o Enter não confirmava e o Tab andava pela tela coberta; o leitor de tela dizia só "janela". Mudou: módulo `tools/dialogo.js` dá nome ("[ SISTEMA ] CHECK-IN DIÁRIO Dia 1"), `aria-modal`, foco no botão principal ao abrir, Tab preso na janela e foco de volta ao fechar. Sem mudança de visual, texto, XP ou dados. Teste novo `qa/dialogo.test.js` 56/56 (falha no código antigo), raiz e /comecar/, com e sem reduce-motion. Cache `ascensao-v65` / `ascensao-u-v77`. Placar: suíte inteira 35/35 arquivos verdes (`liga` oscilou 1 vez na rodada longa, caso conhecido, e passou nas 3 repetições).
 
 - 26/11/2026 10h23 · Revisão horária · Main `4c31172` (#102); checklist da EVA (convite, idade, amigos/avatar) coberto. Achado em 390x844 com varredura de teclado (todo elemento com `role=button` que não é `<button>`, nas 5 abas): a pílula da classe no topo de Hoje ("⚔️ Mago ⇄") recebia foco, mas Enter e Espaço não faziam nada; só o toque abria a galeria. Sequência, escudo e títulos dos painéis já respondiam. Mudou: 1 linha em `tools/rpg.js` (Enter/Espaço chamam o mesmo `chgCls` do toque). Sem mudança de visual, texto, XP ou dados. Teste novo `qa/pilulas-teclado.test.js` 32/32 (8 falham no código antigo), raiz e /comecar/, com e sem reduce-motion. Cache `ascensao-v66` / `ascensao-u-v78`. Placar: suíte inteira 36/36 arquivos verdes.
+
+## 25/11/2026 · Resumo do beta no Modo Criador (PR rascunho, espera o ok do JV)
+
+**Placar: 34/34** em `qa/painel.test.js` (Playwright, 390x844 e 1280x800 com reduce-motion, relógio simulado, planilha simulada).
+
+Passou: contagens agregadas (repetido não conta duas vezes, datas em 4 formatos), retenção dia 2 e dia 8, % das principais, funil sem prefixo de etapa, aba `diario` opcional, nenhum apelido no resumo, nada enviado, progresso antigo intacto, sem rolagem lateral, console limpo, mensagem clara sem chave.
+Suíte completa (26/11, já com a main unificada até o #98): 33/33 arquivos verdes. O teste do painel passou a gravar a semente antes da 1ª abertura (em carga, o salvamento atrasado do aparelho vazio sobrescrevia a semente; 6/6 rodadas paralelas verdes).
+Cache: `ascensao-v63` (raiz). /comecar/ não mudou.
