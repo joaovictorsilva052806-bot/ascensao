@@ -12,7 +12,10 @@ const tlClean=v=>String(v==null?"":v).replace(/[|\n\r]/g," ").slice(0,280);
 function tlPost(parts){const v=parts.map(tlClean).join("|");try{fetch(RK_POST,{method:"POST",mode:"no-cors",keepalive:true,body:new URLSearchParams({"entry.807978446":v})}).catch(()=>{});}catch(e){}}
 // contador anônimo: 1 vez por etapa por dia, id aleatório sem ligação com o nome.
 // Só com opt-in (aceite do painel ou "sim" do beta anônimo): sem consentimento, nada sai do celular.
-function anonOk(){if(tlKid())return false;if(tlGet().on)return true;try{return !!(JSON.parse(localStorage.getItem("asc-u-beta")||"{}")||{}).on;}catch(e){return false;}}
+// Folga na LGPD: idade desconhecida conta como "não pode"; 14-17 só com a autorização do responsável gravada no próprio aceite.
+function tlTeenOk(o){return ageNow()!=="teen"||!!(o&&o.parent);}
+function tlAgeOk(){const a=ageNow();return !!a&&a!=="kid";}
+function anonOk(){if(!tlAgeOk())return false;const t=tlGet();if(t.on&&tlTeenOk(t))return true;try{const b=JSON.parse(localStorage.getItem("asc-u-beta")||"{}")||{};return !!b.on&&tlTeenOk(b);}catch(e){return false;}}
 function anonId(){let id="";try{id=localStorage.getItem("asc-anon")||"";if(!id){id="a"+Math.random().toString(36).slice(2,10);localStorage.setItem("asc-anon",id);}}catch(e){id="a0";}return id;}
 function anon(step){if(!anonOk())return;const t=tlGet();t.an=t.an||{};const k=step+":"+tlDk();if(t.an[k])return;
   for(const x in t.an)if(!x.endsWith(tlDk()))delete t.an[x];t.an[k]=1;tlSet(t);
@@ -22,11 +25,11 @@ function tlStats(){const y=new Date();y.setDate(y.getDate()-1);const yk=dkey(y);
   const ms=mainsFor(y);const skip=ms.filter(q=>!L.some(e=>e.q===q.id)).length;
   let act=0;const d=new Date();for(let i=0;i<14;i++){if((prog.log[dkey(d)]||[]).length)act++;d.setDate(d.getDate()-1);}
   return {xp:totalXP(),lv:levelOf(totalXP()),act,done:L.filter(e=>e.kind!=="min").length,min:L.filter(e=>e.kind==="min").length,skip,streak:(typeof streakDays==="function"?streakDays():""),nq:((cfg&&cfg.quests)||[]).length,ms:+prog.msUsed||0,cards:(prog.cards||[]).length};}
-function tlSend(ev,extra){const t=tlGet();if(!t.on||tlKid()||!t.uid)return;const P=(cfg&&cfg.profile)||{};const s=tlStats();
+function tlSend(ev,extra){const t=tlGet();if(!t.on||!t.uid||(ev!=="sair"&&(!tlAgeOk()||!tlTeenOk(t))))return;const P=(cfg&&cfg.profile)||{};const s=tlStats();
   tlPost(["U",t.uid,t.nick||rankName()||"?",tlPlat(),ev,tlDk(),P.age||"",P.occ||"",s.xp,s.lv,s.act,ev==="dia"?s.done:"",ev==="dia"?s.min:"",ev==="dia"?s.skip:"",s.streak,s.nq,s.ms,s.cards,extra||("v"+(standalone()?"app":"web"))]);}
 function tlDaily(){const t=tlGet();if(!t.on||t.last===tlDk())return;tlSend("dia");t.last=tlDk();tlSet(t);}
 // aceite interativo no tema do Sistema
-function tlAsk(){if(document.body.classList.contains("insm")){setTimeout(tlAsk,5000);return;}if(!cfg||cfg.blank||!cfg.quests||!cfg.quests.length||tlKid())return;const t=tlGet();if(t.asked||(t.disp&&t.disp!==tlDk())||$("tlModal")||[...document.querySelectorAll(".sysmodal")].some(x=>x.getClientRects().length)||document.body.classList.contains("onboarding")||document.body.classList.contains("inmission")||!$("onb").hidden)return;
+function tlAsk(){if(document.body.classList.contains("insm")){setTimeout(tlAsk,5000);return;}if(!cfg||cfg.blank||!cfg.quests||!cfg.quests.length||!tlAgeOk())return;const t=tlGet();if(t.asked||(t.disp&&t.disp!==tlDk())||$("tlModal")||[...document.querySelectorAll(".sysmodal")].some(x=>x.getClientRects().length)||document.body.classList.contains("onboarding")||document.body.classList.contains("inmission")||!$("onb").hidden)return;
   const teen=ageNow()==="teen";const m=document.createElement("div");m.className="sysmodal";m.id="tlModal";m.setAttribute("role","dialog");m.setAttribute("aria-modal","true");
   const c=document.createElement("div");c.className="card tlc";const el=(tag,cls,txt)=>{const e=document.createElement(tag);if(cls)e.className=cls;if(txt!=null)e.textContent=txt;return e;};
   c.append(el("div","tag","[ SISTEMA ] PROTOCOLO DE ACESSO"),el("h3",null,"Liberar seu painel para o criador?"),
@@ -51,7 +54,7 @@ function tlUI(){let p=$("tlPanel");if(!p){const anchor=$("betaPanel");if(!anchor
   if(t.on){b.className="link";b.textContent="Sair e apagar meus dados";b.addEventListener("click",tlLeave);}else{b.className="go";b.textContent="Liberar meu painel";b.addEventListener("click",()=>{const t2=tlGet();t2.asked=false;tlSet(t2);tlAsk();});}
   r.append(b);bd.append(r);}
 // nota do "Teste do app" também vai identificada para quem aceitou
-{const bs=$("betaSend");if(bs)bs.addEventListener("click",()=>{try{const t=tlGet();if(!t.on||tlKid()||!betaRate)return;const tx=$("betaText").value.trim().replace(/\S+@\S+/g,"[email]").replace(/\+?\d[\d\s().-]{7,}\d/g,"[número]").slice(0,240);tlSend("nota",betaRate+": "+tx);}catch(e){}},true);}
+{const bs=$("betaSend");if(bs)bs.addEventListener("click",()=>{try{const t=tlGet();if(!t.on||!tlAgeOk()||!tlTeenOk(t)||!betaRate)return;const tx=$("betaText").value.trim().replace(/\S+@\S+/g,"[email]").replace(/\+?\d[\d\s().-]{7,}\d/g,"[número]").slice(0,240);tlSend("nota",betaRate+": "+tx);}catch(e){}},true);}
 // funil anônimo do dia (mesmo opt-in e mesmo formato A|id|etapa|data): fez 1 missão de verdade hoje; fechou o dia (baú liberado)
 function tlFunnel(){try{if(!anonOk()||!cfg||cfg.blank||!cfg.quests||!cfg.quests.length)return;const L=prog.log[todayKey()]||[];const ids=new Set(cfg.quests.map(q=>q.id));
   if(L.some(e=>ids.has(e.q)))anon("7-quest");if(typeof bxReady==="function"&&bxReady())anon("8-fechou-dia");}catch(e){}}
