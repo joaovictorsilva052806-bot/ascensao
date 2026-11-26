@@ -1156,6 +1156,13 @@ body.insm .sysmodal:not([hidden]),body.insm .levelup:not([hidden]){z-index:90}
 body[data-tab=foco] #focusPanel.panel{margin-top:0}
 /* aviso que chegar com o relatório aberto fica por cima dele */
 body.infz .sysmodal:not([hidden]),body.infz .levelup:not([hidden]){z-index:90}
+.mtbox .mtgoal{border:1px solid rgba(120,220,255,.18);border-radius:12px;padding:10px 12px;margin:8px 0;background:rgba(10,30,45,.35)}
+.mtbox .mtgoal.hot{border-color:rgba(255,190,80,.55)}.mtbox .mtgoal.late{border-color:rgba(255,90,90,.6)}.mtbox .mtgoal.ok{border-color:rgba(80,220,150,.6)}
+.mtbox .mttop{display:flex;justify-content:space-between;gap:8px;align-items:baseline}.mtbox .mtdue{white-space:nowrap;opacity:.85}
+.mtbox .mtgoal.hot .mtdue{color:#ffc66b}.mtbox .mtgoal.late .mtdue{color:#ff8a8a}.mtbox .mtgoal.ok .mtdue{color:var(--good)}
+.mtbox .bar{margin:6px 0}.mtbox .mtft{display:flex;justify-content:space-between;align-items:center;gap:8px}
+.mtbox .mtbtns{display:flex;gap:6px}.mtbox .mtbtns button{min-width:44px;min-height:44px;padding:0 10px}
+.mtbox .mtlist{margin:4px 0 8px;padding-left:20px}.mtbox .mtlist li{margin:4px 0;line-height:1.35}.mtbox .mtall{color:var(--good)}
 </style></head><body>
 
 <div class="hudtop"><span>ASCENSION<i>//</i>SISTEMA ONLINE</span><span class="mono" id="clock">--:--</span></div>
@@ -1995,7 +2002,7 @@ let ACH=[];function achList(){return [
 function activeDays(){return new Set(entries().filter(e=>!/^(ach|checkin|tip|dun|sq|zap|ch|adm):/.test(String(e.q))).map(e=>e.date)).size;}
 function renderAch(){const box=$("achList");box.textContent="";prog.ach=prog.ach||{};let got=0;
   for(const [id,name,desc,xp] of (ACH=achList())){const on=!!prog.ach[id];if(on)got++;const d=document.createElement("div");d.className="badge"+(on?" on":"");const b=document.createElement("b");b.textContent=(on?"🏅 ":"🔒 ")+name;d.append(b,document.createTextNode(desc+" · +"+xp+" XP"));box.append(d);}
-  $("achCount").textContent=got+" / "+ACH.length;$("faithPanel").hidden=!(cfg&&cfg.faith);applyCopy();renderEd();renderAdj();renderRPG();betaUI();setTimeout(dailyCheckin,600);crApply();crRender();}
+  $("achCount").textContent=got+" / "+ACH.length;$("faithPanel").hidden=!(cfg&&cfg.faith);applyCopy();renderEd();renderAdj();renderRPG();betaUI();setTimeout(dailyCheckin,600);crApply();crRender();mtRender();}
 function checkAch(){prog.ach=prog.ach||{};for(const [id,name,,xp,test] of (ACH=achList())){if(!prog.ach[id]&&test()){prog.ach[id]=todayKey();pushEntry({q:"ach:"+id,kind:"full",xp,stat:"foco",bonus:0,t:new Date().toISOString()},"Conquista: "+name+"! +"+xp+" XP");return true;}}return false;}
 // ---------- Lembretes na agenda (sem servidor: arquivo .ics ou Google Agenda) ----------
 const BYD=["MO","TU","WE","TH","FR","SA","SU"];
@@ -5251,6 +5258,50 @@ document.querySelector('#tabbar [data-go="criador"]')&&document.querySelector('#
 
 // planilha ligada e tarefas chegaram: fecha o cadastro de pessoa nova se estiver aberto
 {const _rr=render;render=function(){_rr.apply(this,arguments);try{if(cfg&&!cfg.blank&&cfg.quests&&cfg.quests.length&&document.body.classList.contains("onboarding")&&localStorage.getItem("ascensao-sync")){for(const id of ["onb","quick","intro"]){const e=$(id);if(e)e.hidden=true;}document.body.classList.remove("onboarding");}}catch(e){}};}
+// ---------- Modo Criador: Metas, plano de hoje e prioridades da semana ----------
+// Tudo vem da planilha do criador (cfg.goals, cfg.focus). Nada pessoal fica no código.
+// cfg.goals = [{id,t,due:"AAAA-MM-DD",of,n,unit,quest}]  · n = progresso que a EVA já registrou
+// prog.gp[id] = ajuste feito no app com +1/−1 (sobe para a planilha no A2 junto com o resto)
+// quest = id de uma tarefa: conta quantas vezes ela foi feita nesta semana (seg a dom)
+function mtWeekCount(qid){const d=new Date();const dow=(d.getDay()+6)%7;let n=0;for(let i=0;i<=dow;i++){const x=new Date(d);x.setDate(d.getDate()-i);n+=((prog.log||{})[dkey(x)]||[]).filter(e=>e.q===qid).length?1:0;}return n;}
+function mtDays(due){if(!due)return null;const [y,m,d]=String(due).split("-").map(Number);if(!y)return null;const t=new Date();t.setHours(0,0,0,0);return Math.round((new Date(y,m-1,d)-t)/864e5);}
+function mtVal(g){if(g.quest)return mtWeekCount(g.quest);const gp=(prog.gp||{})[g.id]||0;return Math.max(0,(Number(g.n)||0)+gp);}
+function mtEl(tag,cls,txt){const e=document.createElement(tag);if(cls)e.className=cls;if(txt!=null)e.textContent=txt;return e;}
+function mtBox(){let box=$("mtBox");if(box)return box;const pn=$("crPanel");if(!pn)return null;
+  box=mtEl("div","mtbox");box.id="mtBox";const ref=pn.querySelector(".qhead+.sm.muted")||pn.querySelector(".qhead");ref.after(box);return box;}
+function mtRender(){if(typeof crOn==="function"&&!crOn())return;const box=mtBox();if(!box)return;box.textContent="";
+  const goals=(cfg&&Array.isArray(cfg.goals))?cfg.goals.filter(g=>g&&g.t):[];
+  // 1) metas
+  box.append(mtEl("h3","crh","🎯 Metas"));
+  if(!goals.length){box.append(mtEl("div","sm muted","Nenhuma meta na planilha ainda. A EVA coloca em goals."));}
+  const sorted=goals.slice().sort((a,b)=>{const da=mtDays(a.due),db=mtDays(b.due);return (da==null?9e9:da)-(db==null?9e9:db);});
+  for(const g of sorted){const v=mtVal(g),of=Math.max(1,Number(g.of)||1),done=v>=of,dd=mtDays(g.due);
+    const row=mtEl("div","mtgoal"+(done?" ok":dd!=null&&dd<0?" late":dd!=null&&dd<=3?" hot":""));row.dataset.id=g.id||"";
+    const top=mtEl("div","mttop");top.append(mtEl("b",null,g.t));
+    top.append(mtEl("span","mono sm mtdue",done?"✓ batida":dd==null?(g.quest?"esta semana":""):dd<0?"prazo passou":dd===0?"é hoje":dd===1?"amanhã":"faltam "+dd+" dias"));
+    row.append(top);
+    const bar=mtEl("div","bar");const i=mtEl("i");i.style.width=Math.min(100,v/of*100)+"%";bar.append(i);row.append(bar);
+    const ft=mtEl("div","mtft");ft.append(mtEl("span","sm mono",v+" de "+of+(g.unit?" "+g.unit:"")));
+    if(!g.quest&&g.id){const bx=mtEl("span","mtbtns");for(const [lab,d] of [["−1",-1],["+1",1]]){const b=mtEl("button",null,lab);b.type="button";b.setAttribute("aria-label",(d>0?"Somar 1 em ":"Tirar 1 de ")+g.t);
+        b.addEventListener("click",()=>{prog.gp=prog.gp||{};const nv=(prog.gp[g.id]||0)+d;if((Number(g.n)||0)+nv<0)return;prog.gp[g.id]=nv;save();mtRender();if(d>0&&mtVal(g)>=of)toast("Meta batida: "+g.t);});bx.append(b);}ft.append(bx);}
+    row.append(ft);box.append(row);}
+  // 2) plano de hoje
+  const qs=(typeof todaysQuests==="function"?todaysQuests():[]).filter(q=>q&&q.id&&!/^q_checkin$/.test(q.id));
+  const tk=todayKey(),log=(prog.log||{})[tk]||[],isD=q=>log.some(e=>e.q===q.id);
+  const fd=qs.filter(isD).length;
+  const h=mtEl("h3","crh","📋 Plano de hoje · "+fd+" de "+qs.length);box.append(h);
+  const pend=qs.filter(q=>!isD(q)).sort((a,b)=>(b.main?1:0)-(a.main?1:0)||(b.xp||0)-(a.xp||0));
+  if(!qs.length)box.append(mtEl("div","sm muted","Sem tarefas para hoje na planilha."));
+  else if(!pend.length)box.append(mtEl("div","sm mtall","Tudo feito hoje. Fecha o dia e descansa."));
+  else{const ul=mtEl("ul","mtlist");for(const q of pend.slice(0,8)){const li=mtEl("li");li.append(mtEl("span",null,(q.main?"★ ":"")+q.title));li.append(mtEl("span","sm mono muted"," +"+(q.xp||0)));ul.append(li);}box.append(ul);
+    if(pend.length>8)box.append(mtEl("div","sm muted","e mais "+(pend.length-8)+"."));
+    const go=mtEl("button","go","Ir para a próxima");go.type="button";go.addEventListener("click",()=>{const t=document.querySelector('#tabbar [data-go="hoje"]');if(t)t.click();});const r=mtEl("div","row");r.append(go);box.append(r);}
+  // 3) prioridades da semana
+  const fo=(cfg&&Array.isArray(cfg.focus))?cfg.focus.filter(x=>typeof x==="string"&&x.trim()):[];
+  if(fo.length){box.append(mtEl("h3","crh","🧭 Prioridade da semana"));const ol=mtEl("ol","mtlist");for(const x of fo.slice(0,5))ol.append(mtEl("li",null,x));box.append(ol);}}
+{const tb=document.querySelector('#tabbar [data-go="criador"]');if(tb)tb.addEventListener("click",mtRender);}
+{const _mr=render;render=function(){_mr.apply(this,arguments);try{if(typeof crOn==="function"&&crOn())mtRender();}catch(e){}};}
+
 let saveTimer=null, SYNC="";
 try{SYNC=localStorage.getItem("ascensao-sync")||"";}catch(e){}
 function save(){
