@@ -36,7 +36,7 @@ function smPick(){const L=smCands();if(!L.length)return null;smIdx=smIdx%L.lengt
 // ---- tela ----
 function smSheet(){let m=$("smSheet");if(!m){m=smEl("div","smsheet");m.id="smSheet";m.setAttribute("role","dialog");m.setAttribute("aria-modal","true");m.setAttribute("aria-label","Missão do Sistema");document.body.append(m);}return m;}
 function smClose(){clearInterval(smIv);const m=$("smSheet");if(m)m.hidden=true;document.body.classList.remove("insm");smBar();}
-function smShell(tag){const m=smSheet();m.hidden=false;document.body.classList.add("insm");m.textContent="";const c=smEl("div","smcard");c.append(smEl("div","smtag","[ SISTEMA ] "+tag));m.append(c);
+function smShell(tag){const m=smSheet();m.hidden=false;document.body.classList.add("insm");setTimeout(smGuardOn,0);m.textContent="";const c=smEl("div","smcard");c.append(smEl("div","smtag","[ SISTEMA ] "+tag));m.append(c);
   const x=smEl("button","smx","✕");x.type="button";x.setAttribute("aria-label","Fechar e ver a lista");x.onclick=smClose;m.append(x);return c;}
 function smOpen(){smShow();}
 function smShow(){clearInterval(smIv);const s=smSt();
@@ -73,6 +73,12 @@ function smTimer(q,rec){const c=smShell("2 MINUTOS");smEnd=Date.now()+SM_SECS*10
 // recompensa primeiro: se a marcação gerou aviso (nível, atributo, conquista), o Sistema sai da frente e volta quando ele fechar
 function smBusyRw(){return (typeof sysQ!=="undefined"&&sysQ.length)||[...document.querySelectorAll(".sysmodal:not([hidden]),.levelup:not([hidden])")].some(e=>e.getClientRects().length);}
 function smAfter(fn,n){n=n||0;if(n===0){clearInterval(smIv);}if(smBusyRw()&&n<400){if(n===0){const m=$("smSheet");if(m)m.hidden=true;document.body.classList.remove("insm");}setTimeout(()=>smAfter(fn,n+1),300);return;}fn();}
+// só um diálogo ativo: com outro aria-modal visível por cima (prêmio, check-in, aviso), o Sistema fica inerte até ele fechar
+let smGuardIv=0;
+function smGuard(){const m=$("smSheet");if(!m||m.hidden||!document.body.classList.contains("insm")){if(m){m.inert=false;m.removeAttribute("aria-hidden");}clearInterval(smGuardIv);smGuardIv=0;return;}
+  const other=[...document.querySelectorAll('[aria-modal="true"]:not([hidden]),.sysmodal:not([hidden]),.levelup:not([hidden])')].some(e=>e!==m&&!m.contains(e)&&e.getClientRects().length);
+  if(other!==!!m.inert){m.inert=other;if(other)m.setAttribute("aria-hidden","true");else{m.removeAttribute("aria-hidden");const g=m.querySelector(".smgo");if(g)try{g.focus();}catch(e){}}}}
+function smGuardOn(){if(!smGuardIv)smGuardIv=setInterval(smGuard,250);smGuard();}
 function smMinDone(q,rec){clearInterval(smIv);const s=smSt(),tk=smTk();
   if(q.minTitle){if(!smDone(q))toggle(q,"min");}
   else if(!(prog.log[tk]||[]).some(e=>e.q==="sm:"+q.id)&&smCount("sm:")<SM_CAP)addXP({q:"sm:"+q.id,kind:"full",xp:SM_START,stat:q.stat||"foco"},"Começou. +"+SM_START+" XP");
