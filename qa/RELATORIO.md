@@ -9,6 +9,7 @@
 
 ## Revisões horárias
 
+- 26/11 13h23 · Achado: com "reduzir movimento" ligado, os atalhos que levam a um painel (abrir a Ficha do personagem, guia "Comece por aqui", chefão, turma, avatar, beta; 13 chamadas com `behavior:"smooth"`) faziam a tela deslizar, porque o navegador não desliga essa rolagem sozinho (Ficha: 27 eventos de scroll). Mudou: `tools/rolagem.js` troca `smooth` por salto direto só quando reduce-motion está ligado; sem reduce-motion nada muda. Sem mudança de visual, texto, XP ou dados. Teste novo `qa/rolagem.test.js` 32/32 (6 falham na main `0418169`), raiz e /comecar/, 390x844, com e sem reduce-motion. Cache `ascensao-v75` / `ascensao-u-v87`. Placar: suíte inteira 50/50 arquivos verdes sobre a main `349d94d` (#88).
 - 26/11 12h23 · Achado: o ▶ da PRÓXIMA missão (o botão principal de Hoje) era branco sobre ciano, contraste 1.77:1 (WCAG pede 4.5:1). Mudou: símbolo escuro (#02121a), 10.4:1, só em `tools/mission.css`; caches ascensao-v71 / ascensao-u-v83. Placar: novo qa/proxima-contraste.test.js 20/20 (16/20 no código antigo); suíte inteira 45/45 arquivos verdes.
 - 25/11 15h36 · Achado: cabeçalho dos painéis recolhíveis ("Como você está", "Treino do Sistema", "Ligar à planilha") tinha só 28px de altura para o dedo. Mudou: alvo de toque de 44px sem mudar o visual (margem negativa); caches ascensao-v29 / ascensao-u-v38. Placar: 198/198 (novo qa/toque.test.js 19/19, falhava 12/19 no código antigo).
 

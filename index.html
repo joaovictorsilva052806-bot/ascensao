@@ -5621,6 +5621,15 @@ if(typeof sqiCheck==="function"){const _ck=sqiCheck;sqiCheck=function(){_ck.appl
   const b=fdEl("button","ghost fdgo",o?"🤝 Dupla com "+o.w+(o.paid?" ✓":" · "+fdShow(o.hm)):"🤝 Focar em dupla com um amigo");b.type="button";b.onclick=fdStart;t.append(b);}}catch(e){}};}
 setInterval(fdTick,5000);setTimeout(()=>{fdTick();fdBadge();},1500);
 
+// ---------- reduce-motion também na rolagem (tools/rolagem.js) ----------
+// Vários atalhos rolam a tela até um painel com behavior:"smooth" (ficha do personagem, guia, chefão, turma, avatar...).
+// O navegador NÃO desliga essa rolagem animada sozinho com "reduzir movimento". Aqui, com reduce-motion ligado,
+// toda rolagem "smooth" vira salto direto ("auto"). Sem reduce-motion, nada muda. Não toca em dados.
+{const rm=()=>{try{return matchMedia("(prefers-reduced-motion: reduce)").matches;}catch(e){return false;}};
+ const fix=o=>(o&&typeof o==="object"&&o.behavior==="smooth"&&rm())?Object.assign({},o,{behavior:"auto"}):o;
+ const wrap=(obj,k)=>{const f=obj&&obj[k];if(typeof f!=="function"||f.__rmFix)return;const g=function(a,...r){return f.call(this,fix(a),...r);};g.__rmFix=1;obj[k]=g;};
+ try{for(const k of ["scrollIntoView","scrollTo","scrollBy"])wrap(Element.prototype,k);for(const k of ["scrollTo","scrollBy","scroll"])wrap(window,k);wrap(Element.prototype,"scroll");}catch(e){}}
+
 // Janelas do Sistema acessíveis (.sysmodal e .levelup): o leitor de tela anuncia "janela, <título>",
 // o foco vai para o botão principal quando a janela abre (Enter/Espaço já confirmam), o Tab não escapa
 // para a tela de trás e, ao fechar, o foco volta para onde estava. Não muda visual, texto, XP nem dados.
