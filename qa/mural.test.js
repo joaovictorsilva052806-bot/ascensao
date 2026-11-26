@@ -7,7 +7,9 @@ const mk=age=>({version:3,name:'Teste Silva',startDate:'2026-11-20',profile:{age
 const base=(x={})=>Object.assign({log:{},extra:{},faith:{},energy:{'2026-11-25':'media'},mit:{},reviews:{},money:[],rest:{},ach:{},rpg:{cls:{id:'mago',style:'fant',name:'Mago'}},rank:{on:true,asked:true,uid:'abc12345',nick:'Teste',par:'2026-11-20'},friends:{l:['Ana'],pend:{},seen:{}}},x);
 async function drain(p){for(let i=0;i<10;i++){const m=p.locator('.sysmodal:not(.mumodal):visible');if(!(await m.count()))return;const t=await m.first().textContent();const bt=m.first().locator('button.go, button.ghost, button').first();await bt.dispatchEvent('click');await p.waitForTimeout(250);}}
 (async()=>{const b=await chromium.launch();
-async function open(prog,age){const ctx=await b.newContext({viewport:{width:390,height:844},deviceScaleFactor:2});const p=await ctx.newPage();const errs=[];const calls=[];const posts=[];
+async function open(prog,age){const ctx=await b.newContext({viewport:{width:390,height:844},deviceScaleFactor:2});
+  // a oferta do aviso diário (dia 1/2, tools/lemb.js) já respondida: este teste é do mural (a oferta tem qa/lembrete-momento.test.js)
+  await ctx.addInitScript(()=>{try{for(const k of ['asc-u-lemb','ascensao-lemb'])if(!localStorage.getItem(k))localStorage.setItem(k,'{"r":"nao","a":{"1":"x","2":"x"}}');}catch(e){}});const p=await ctx.newPage();const errs=[];const calls=[];const posts=[];
   p.on('pageerror',e=>errs.push(e.message));p.on('console',m=>{if(m.type()==='error'&&!/Failed to load resource|ERR_|navigator.vibrate/.test(m.text()))errs.push(m.text())});
   await ctx.route('https://docs.google.com/**',r=>r.request().method()==='POST'?r.fulfill({status:200,body:''}):r.fulfill({status:200,contentType:'text/csv',body:CSV}));
   await ctx.route('https://script.google.com/**',r=>{const j=JSON.parse(r.request().postData()||'{}');calls.push(j);let out={ok:true};
