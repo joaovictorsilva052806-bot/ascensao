@@ -8,7 +8,9 @@ const init=()=>{window.__wl=0;window.__vib=[];window.__nav=[];
   navigator.vibrate=(p)=>{window.__vib.push(p);return true;};};
 (async()=>{const br=await chromium.launch();
 async function page(opts={}){const ctx=await br.newContext({viewport:{width:390,height:844},userAgent:opts.ua,reducedMotion:opts.rm?'reduce':'no-preference',serviceWorkers:opts.sw?'allow':'block'});
-  await ctx.route(/fonts\.(googleapis|gstatic)/,r=>r.abort());await ctx.addInitScript(init);if(opts.ls)await ctx.addInitScript(opts.ls);
+  await ctx.route(/fonts\.(googleapis|gstatic)/,r=>r.abort());await ctx.addInitScript(init);
+  // raiz unificada (#76): aparelho sem perfil abre o cadastro de pessoa nova; o do JV já tem tarefas
+  await ctx.addInitScript(()=>{if(!localStorage.getItem('ascensao-cfg'))localStorage.setItem('ascensao-cfg',JSON.stringify({version:3,quests:[{id:'q_estudo',title:'Estudar 25 min',xp:10,main:true,stat:'mente'}]}));});if(opts.ls)await ctx.addInitScript(opts.ls);
   const p=await ctx.newPage();p.errs=[];p.on('pageerror',e=>p.errs.push(e.message));p.on('console',m=>{if(m.type()==='error'&&!/Failed to load resource/.test(m.text()))p.errs.push(m.text());});p.ctx=ctx;return p;}
 // 1. Root app, Android
 let p=await page({ua:ANDUA});await p.goto(B);await p.waitForTimeout(800);
@@ -38,7 +40,9 @@ await p.evaluate(()=>{/* adianta o relógio */const n=Date.now;Date.now=()=>n()+
 ok('fim do foco fecha sala',!(await p.isVisible('#froom')));
 ok('fim do foco dá XP',await p.evaluate(()=>Object.values(JSON.parse(localStorage.getItem('ascensao-prog')).log).flat().some(e=>String(e.q).startsWith('foco:'))));
 ok('sem erro de console (android)',p.errs.length===0);if(p.errs.length)console.log(p.errs);
-await p.click('[data-go=mais]').catch(()=>{});await p.evaluate(()=>{document.body.dataset.tab='mais';});
+// raiz unificada: o pedido do beta anônimo (tlModal) pode abrir depois do foco; fecha antes de convidar
+await p.evaluate(()=>document.querySelectorAll('.sysmodal,.levelup').forEach(e=>e.remove()));await p.click('[data-go=mais]').catch(()=>{});await p.evaluate(()=>{document.body.dataset.tab='mais';});
+await p.waitForTimeout(300);await p.evaluate(()=>{const m=document.getElementById('tlModal');if(m)[...m.querySelectorAll('button')].find(b=>b.textContent==='Agora não').click();});
 await p.evaluate(()=>{navigator.share=async(d)=>{window.__share=d;};});await p.click('#inviteBtn');
 ok('convidar usa folha de compartilhar',await p.evaluate(()=>window.__share&&window.__share.url.endsWith('/convite/')));
 await p.ctx.close();
@@ -75,7 +79,9 @@ ok('migração: log antigo intacto',await p.evaluate(()=>{const s=JSON.parse(loc
 ok('preferências em chave separada (asc-dev)',await p.evaluate(()=>!('dev' in JSON.parse(localStorage.getItem('ascensao-prog')))));
 await p.ctx.close();
 // 6. offline
-p=await page({sw:true});await p.goto(B);await p.waitForTimeout(1500);await p.reload();await p.waitForTimeout(800);await p.ctx.setOffline(true);await p.reload();await p.waitForTimeout(800);
+p=await page({sw:true});await p.goto(B);await p.waitForTimeout(500);
+// o app só registra o SW em https; no localhost registra à mão o mesmo sw.js
+await p.evaluate(async()=>{await navigator.serviceWorker.register('sw.js');await navigator.serviceWorker.ready;});await p.waitForTimeout(800);await p.reload();await p.waitForTimeout(800);await p.ctx.setOffline(true);await p.reload();await p.waitForTimeout(800);
 ok('offline abre o app (service worker)',(await p.title()).includes('Ascension'));await p.ctx.close();
 // desktop
 p=await page({});await p.setViewportSize({width:1280,height:800});await p.goto(B);await p.waitForTimeout(700);ok('desktop sem erro',p.errs.length===0);await p.ctx.close();

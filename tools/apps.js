@@ -77,6 +77,8 @@ const AP_ADD=[{app:"duo",title:"Duolingo: 1 lição",minTitle:"1 lição curta",
 function apAdd(t){if(!cfg||typeof edSave!=="function")return;const Q=(cfg.quests||[]).slice();if(Q.some(x=>x.app===t.app)){toast("Você já tem essa tarefa.");return;}
   Q.push(Object.assign({id:"ap_"+t.app+Date.now().toString(36)},t));cfg=Object.assign({},cfg,{quests:Q,blank:false});edSave();save();render();toast(t.title+": adicionada às tarefas de hoje (extra).");apAddUI();}
 function apAddUI(){const ed=$("edNew");if(!ed||typeof edSave!=="function")return;let w=$("apAdd");
+  // planilha ligada: as tarefas vêm dela (o que for criado aqui seria sobrescrito na próxima sincronização)
+  let sy="";try{sy=SYNC;}catch(e){}if(sy){if(w)w.remove();return;}
   if(!w){w=apEl("div","apadd");w.id="apAdd";w.append(apEl("div","sm muted","Tarefas com app e prova por print:"));const r=apEl("div","row");r.id="apAddRow";w.append(r);ed.parentNode.insertBefore(w,ed.nextSibling);}
   const r=$("apAddRow");r.textContent="";const Q=(cfg&&cfg.quests)||[];
   for(const t of AP_ADD){const a=AP_APPS.find(x=>x.k===t.app);const has=Q.some(x=>x.app===t.app);const b=apEl("button","ghost",a.ic+" "+(has?"✓ ":"")+t.title);b.type="button";b.disabled=has;b.onclick=()=>apAdd(t);r.append(b);}}
