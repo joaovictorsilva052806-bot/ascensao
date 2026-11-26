@@ -1113,6 +1113,20 @@ h1#titleName{text-shadow:-1px 0 rgba(255,70,140,.32),1px 0 rgba(0,240,255,.55),0
 @keyframes hxSweep{0%{transform:translateY(-10vh)}18%{transform:translateY(110vh)}100%{transform:translateY(110vh)}}
 .hxsweep{position:fixed;left:0;right:0;top:0;height:60px;pointer-events:none;z-index:45;background:linear-gradient(180deg,transparent,rgba(124,244,255,.045) 45%,rgba(124,244,255,.09) 50%,transparent);animation:hxSweep 9s linear 2s infinite;transform:translateY(-10vh);will-change:transform}
 @media (prefers-reduced-motion:reduce){.hxsweep{display:none}}
+/* Alvo de toque ≥44px sem mudar o desenho: área invisível em volta dos botões pequenos */
+.pills{gap:8px 6px}
+.pills>.pill{position:relative}
+.pills>.pill[role=button]::before,.pills>.pill.shield::before,#streak::before,#clsPill::before{content:"";position:absolute;left:-3px;right:-3px;top:-8px;bottom:-8px}
+#fjDaysBtn{position:relative}#fjDaysBtn::before{content:"";position:absolute;left:0;right:0;top:-4px;bottom:-4px}
+.gd .qhead[role=button]{position:relative}.gd .qhead[role=button]::before{content:"";position:absolute;left:-4px;right:-4px;top:-14px;bottom:-14px}
+/* Feito e ▶ das missões: 40px visíveis, 48px de toque */
+.quest .btns button{position:relative}.quest .btns button::after{content:"";position:absolute;left:0;right:0;top:-4px;bottom:-4px}
+#focusQuest{min-height:44px}
+.arhow>summary{list-style:none;min-height:44px;display:flex;align-items:center;gap:6px;cursor:pointer}
+.arhow>summary::before{content:"▸";color:var(--accent);transition:transform .2s}.arhow[open]>summary::before{transform:rotate(90deg)}
+.arhow>summary::-webkit-details-marker{display:none}
+/* nomes em Orbitron sempre em caixa alta (padrão das etiquetas) */
+.tbname{text-transform:uppercase}
 /* ---------- Runa: RPG de mesa dentro do HUD (tools/rune.js) ---------- */
 @keyframes rnSpin{to{transform:rotate(360deg)}}
 @keyframes rnCirc{0%{opacity:0;transform:translate(-50%,-50%) scale(.25) rotate(-40deg)}25%{opacity:1}100%{opacity:0;transform:translate(-50%,-50%) scale(1.25) rotate(30deg)}}
@@ -5787,7 +5801,8 @@ let fjEdit=false;
 function fjReady(){const hid=id=>{const e=$(id);return !e||e.hidden;};return !!(cfg&&!cfg.blank&&cfg.quests&&cfg.quests.length)&&hid("quick")&&hid("onb")&&!document.body.classList.contains("onboarding");}
 function fjCard(){let p=$("fjCard");const q=$("quests");const anchor=q&&q.closest(".wrap>section");if(!anchor)return;
   if(!p){p=fjEl("section","panel fjhome");p.id="fjCard";p.dataset.tab="hoje";p.dataset.sf="1";}
-  if(p.nextElementSibling!==anchor)anchor.before(p);
+  // no começo (body[data-hrstart], guia "Comece por aqui" visto nesta abertura) quem posiciona a Forja é o hrOrder (tools/heroi.js), abaixo das tarefas
+  if(!p.parentNode||(!document.body.dataset.hrstart&&p.nextElementSibling!==anchor))anchor.before(p);
   if(!fjReady()){p.hidden=true;return;}p.hidden=false;p.textContent="";
   const f=fjS(),cu=f.cur,dia=f.dias.includes(fjDow()),feito=fjTodayE(),t=fjNext(f);
   const hd=fjEl("div","qhead");hd.append(fjEl("h2",null,"🔥 Forja"));
@@ -5966,10 +5981,20 @@ function hrDayCount(){const el=$("dayxp");if(!el)return;const tk=todayKey();cons
   const n=done.filter(e=>ids.has(e.q)).length;let xp=0;for(const e of done)xp+=(e.xp||0)+(e.bonus||0);
   el.textContent=n?"Hoje: "+n+(n===1?" tarefa feita":" tarefas feitas")+" · +"+xp+" XP no dia":"Nenhuma tarefa ainda · +"+xp+" XP de bônus. Comece pela primeira.";}
 {const _r2=render;render=function(){_r2.apply(this,arguments);try{hrDayCount();}catch(e){}};}
-// Aba Hoje: as tarefas sobem. Os desafios relâmpago (extra de 30 s) passam para logo depois da lista de tarefas;
-// o "Comece por aqui" continua acima das tarefas enquanto não for escondido.
+// Aba Hoje: as tarefas sobem. Os desafios relâmpago (extra de 30 s) passam para logo depois da lista de tarefas.
+// Começo (enquanto o "Comece por aqui" existe): a 1ª missão fica logo abaixo do cartão, na primeira tela;
+// o relâmpago, o guia, o ranking da semana, a barra do Sistema e a Forja vêm depois. Quando o guia some, a ordem de sempre volta na próxima abertura.
 function hrOrder(){const q=$("quests")&&$("quests").closest("section");const z=$("zapPanel");if(!q||!z)return;
-  if(q.nextElementSibling!==z)q.after(z);const g=$("gdPanel");if(g&&(q.compareDocumentPosition(g)&Node.DOCUMENT_POSITION_FOLLOWING)){const sb=$("smBar");(sb&&sb.nextElementSibling===q?sb:q).before(g);}}
+  const g=$("gdPanel"),sb=$("smBar"),gt=$("gtHero"),fj=$("fjCard"),top=$("tbStrip")||($("dayPill")&&$("dayPill").closest("section"));
+  const before=el=>el&&(q.compareDocumentPosition(el)&Node.DOCUMENT_POSITION_PRECEDING);
+  // guia visto nesta abertura: mantém a ordem do começo até fechar o app (nada pula na tela). A Forja (tools/forja.js) lê a mesma marca.
+  if(g&&!g.hidden)document.body.dataset.hrstart="1";
+  if(document.body.dataset.hrstart){if(top&&top.nextElementSibling!==q&&top!==q)top.after(q);
+    let at=q;for(const el of [z,g,sb,gt,fj]){if(!el)continue;if(at.nextElementSibling!==el)at.after(el);at=el;}return;}
+  if(q.nextElementSibling!==z)q.after(z);
+  if(gt&&top&&!before(gt)&&top.nextElementSibling!==gt)top.after(gt);
+  if(sb&&!before(sb))(fj&&before(fj)?fj:q).before(sb);
+  if(fj&&!before(fj))q.before(fj);}
 {const _r3=render;render=function(){_r3.apply(this,arguments);try{hrOrder();}catch(e){}};}
 setTimeout(()=>{try{hrOrder();}catch(e){}},50);
 // "Comece por aqui": depois do 1º passo feito, vira uma linha só (o passo da vez); toque no título mostra os 3 de novo.

@@ -163,7 +163,8 @@ let fjEdit=false;
 function fjReady(){const hid=id=>{const e=$(id);return !e||e.hidden;};return !!(cfg&&!cfg.blank&&cfg.quests&&cfg.quests.length)&&hid("quick")&&hid("onb")&&!document.body.classList.contains("onboarding");}
 function fjCard(){let p=$("fjCard");const q=$("quests");const anchor=q&&q.closest(".wrap>section");if(!anchor)return;
   if(!p){p=fjEl("section","panel fjhome");p.id="fjCard";p.dataset.tab="hoje";p.dataset.sf="1";}
-  if(p.nextElementSibling!==anchor)anchor.before(p);
+  // no começo (body[data-hrstart], guia "Comece por aqui" visto nesta abertura) quem posiciona a Forja é o hrOrder (tools/heroi.js), abaixo das tarefas
+  if(!p.parentNode||(!document.body.dataset.hrstart&&p.nextElementSibling!==anchor))anchor.before(p);
   if(!fjReady()){p.hidden=true;return;}p.hidden=false;p.textContent="";
   const f=fjS(),cu=f.cur,dia=f.dias.includes(fjDow()),feito=fjTodayE(),t=fjNext(f);
   const hd=fjEl("div","qhead");hd.append(fjEl("h2",null,"🔥 Forja"));

@@ -87,10 +87,20 @@ function hrDayCount(){const el=$("dayxp");if(!el)return;const tk=todayKey();cons
   const n=done.filter(e=>ids.has(e.q)).length;let xp=0;for(const e of done)xp+=(e.xp||0)+(e.bonus||0);
   el.textContent=n?"Hoje: "+n+(n===1?" tarefa feita":" tarefas feitas")+" · +"+xp+" XP no dia":"Nenhuma tarefa ainda · +"+xp+" XP de bônus. Comece pela primeira.";}
 {const _r2=render;render=function(){_r2.apply(this,arguments);try{hrDayCount();}catch(e){}};}
-// Aba Hoje: as tarefas sobem. Os desafios relâmpago (extra de 30 s) passam para logo depois da lista de tarefas;
-// o "Comece por aqui" continua acima das tarefas enquanto não for escondido.
+// Aba Hoje: as tarefas sobem. Os desafios relâmpago (extra de 30 s) passam para logo depois da lista de tarefas.
+// Começo (enquanto o "Comece por aqui" existe): a 1ª missão fica logo abaixo do cartão, na primeira tela;
+// o relâmpago, o guia, o ranking da semana, a barra do Sistema e a Forja vêm depois. Quando o guia some, a ordem de sempre volta na próxima abertura.
 function hrOrder(){const q=$("quests")&&$("quests").closest("section");const z=$("zapPanel");if(!q||!z)return;
-  if(q.nextElementSibling!==z)q.after(z);const g=$("gdPanel");if(g&&(q.compareDocumentPosition(g)&Node.DOCUMENT_POSITION_FOLLOWING)){const sb=$("smBar");(sb&&sb.nextElementSibling===q?sb:q).before(g);}}
+  const g=$("gdPanel"),sb=$("smBar"),gt=$("gtHero"),fj=$("fjCard"),top=$("tbStrip")||($("dayPill")&&$("dayPill").closest("section"));
+  const before=el=>el&&(q.compareDocumentPosition(el)&Node.DOCUMENT_POSITION_PRECEDING);
+  // guia visto nesta abertura: mantém a ordem do começo até fechar o app (nada pula na tela). A Forja (tools/forja.js) lê a mesma marca.
+  if(g&&!g.hidden)document.body.dataset.hrstart="1";
+  if(document.body.dataset.hrstart){if(top&&top.nextElementSibling!==q&&top!==q)top.after(q);
+    let at=q;for(const el of [z,g,sb,gt,fj]){if(!el)continue;if(at.nextElementSibling!==el)at.after(el);at=el;}return;}
+  if(q.nextElementSibling!==z)q.after(z);
+  if(gt&&top&&!before(gt)&&top.nextElementSibling!==gt)top.after(gt);
+  if(sb&&!before(sb))(fj&&before(fj)?fj:q).before(sb);
+  if(fj&&!before(fj))q.before(fj);}
 {const _r3=render;render=function(){_r3.apply(this,arguments);try{hrOrder();}catch(e){}};}
 setTimeout(()=>{try{hrOrder();}catch(e){}},50);
 // "Comece por aqui": depois do 1º passo feito, vira uma linha só (o passo da vez); toque no título mostra os 3 de novo.
