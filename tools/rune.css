@@ -64,8 +64,18 @@ body[data-tab="prog"] .atp .atrow{animation:hxIn .32s cubic-bezier(.2,.9,.25,1) 
 body[data-tab="prog"] .atp .atrow:nth-child(2){animation-delay:.03s}body[data-tab="prog"] .atp .atrow:nth-child(3){animation-delay:.06s}body[data-tab="prog"] .atp .atrow:nth-child(4){animation-delay:.09s}
 body[data-tab="prog"] .atp .atrow:nth-child(5){animation-delay:.12s}body[data-tab="prog"] .atp .atrow:nth-child(6){animation-delay:.15s}body[data-tab="prog"] .atp .atrow:nth-child(n+7){animation-delay:.18s}
 
+/* barra de XP: brilho ao ganhar XP */
+@keyframes rnShine{from{transform:translateX(-100%)}to{transform:translateX(100%)}}
+#xpbar{position:relative;overflow:hidden}
+#xpbar.rn-gain::after{content:"";position:absolute;inset:0;background:linear-gradient(90deg,transparent,rgba(255,255,255,.85),transparent);animation:rnShine .9s ease-out .35s both}
+
+/* missão PRÓXIMA: uma luz corre pela borda de cima (chama o olho para começar) */
+@keyframes rnRun{from{background-position:-40% 0}to{background-position:140% 0}}
+.quest.next:not(.done){position:relative}
+.quest.next:not(.done)::after{content:"";position:absolute;left:0;right:0;top:-1px;height:2px;pointer-events:none;background:linear-gradient(90deg,transparent,var(--glow),transparent) no-repeat;background-size:35% 100%;animation:rnRun 2.8s ease-in-out infinite}
+
 @media (prefers-reduced-motion:reduce){
-  body[data-tab="prog"] .atp .atrow,.levelup:not([hidden]) .rnlv,.rnlv svg,.quest.done.pop::after,.hxorb .rn,.rnroll .rnd20,.rnroll.land .rnd20,.rnroll.nat.land .rnd20{animation:none!important}
+  .quest.next:not(.done)::after,#xpbar.rn-gain::after,body[data-tab="prog"] .atp .atrow,.levelup:not([hidden]) .rnlv,.rnlv svg,.quest.done.pop::after,.hxorb .rn,.rnroll .rnd20,.rnroll.land .rnd20,.rnroll.nat.land .rnd20{animation:none!important}
   .rncirc,.rncrit{display:none!important}
   .rnlbl{transition:none}
 }

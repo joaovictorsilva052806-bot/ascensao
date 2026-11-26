@@ -22,7 +22,7 @@ function rnCircle(x,y,gold){if(RN_RM())return;const ns="http://www.w3.org/2000/s
   s.style.left=x+"px";s.style.top=y+"px";document.body.append(s);setTimeout(()=>s.remove(),900);}
 function rnCrit(x,y){const d=document.createElement("div");d.className="rncrit";d.setAttribute("aria-hidden","true");d.innerHTML=rnD20(20)+"<b>CRÍTICO!</b>";
   d.style.left=x+"px";d.style.top=(y-56)+"px";document.body.append(d);setTimeout(()=>d.remove(),1500);}
-if(typeof fx==="function"){const _fx=fx;fx=function(xp,gold){const r=_fx.apply(this,arguments);try{rnCircle(rnX,rnY,gold);if(gold)rnCrit(rnX,rnY);}catch(e){}return r;};}
+if(typeof fx==="function"){const _fx=fx;fx=function(xp,gold){const r=_fx.apply(this,arguments);try{rnCircle(rnX,rnY,gold);if(gold)rnCrit(rnX,rnY);rnShine();}catch(e){}return r;};}
 
 // 4) Level up: círculo mágico grande girando atrás do card
 function rnLevel(){const l=$("levelup");if(!l||l.querySelector(".rnlv"))return;
@@ -33,6 +33,8 @@ function rnLevel(){const l=$("levelup");if(!l||l.querySelector(".rnlv"))return;
   w.innerHTML=L.map((x,k)=>'<svg class="l'+k+'" viewBox="0 0 200 200">'+x+'</svg>').join("");l.prepend(w);}
 try{const l=$("levelup");if(l){rnLevel();}}catch(e){}
 
+// barra de XP: um brilho corre por ela quando o XP entra
+function rnShine(){if(RN_RM())return;const b=$("xpbar");if(!b)return;b.classList.remove("rn-gain");void b.offsetWidth;b.classList.add("rn-gain");clearTimeout(rnShine._t);rnShine._t=setTimeout(()=>b.classList.remove("rn-gain"),1500);}
 // 3) Baú: rola um d20 antes do prêmio (o prêmio já está sorteado; o dado só mostra a raridade)
 function rnD20(n){return '<svg class="rnd20" viewBox="0 0 100 100" aria-hidden="true"><path class="f" d="M50 4L90 27V73L50 96L10 73V27Z"/><path class="l" d="M50 22L22 66H78Z M50 4L50 22M10 27L50 22M10 27L22 66M90 27L50 22M90 27L78 66M10 73L22 66M90 73L78 66M50 96L22 66M50 96L78 66"/><text x="50" y="52" text-anchor="middle" dominant-baseline="middle">'+n+'</text></svg>';}
 function rnRoll(out){if(!out||out.dataset.rn)return;out.dataset.rn="1";
