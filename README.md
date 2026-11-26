@@ -46,10 +46,19 @@ Escolha de classe (`openCls` em `tools/rpg.js`): na 1ª vez o Sistema sugere uma
 
 - **Missão ativa v2** (`tools/mission.js`, nos dois apps): o ▶ traz a ferramenta certa pela tarefa: flashcards, gastos, água, **leitura** (contador de páginas), **treino** (séries + descanso de 45/60/90 s), **dúvidas** (anotar e marcar como tirada) e, nas outras, um **passo a passo** gerado do gatilho "se-então". Grava só campos novos: `prog.leitura`, `prog.livro`, `prog.series`, `prog.duvidas`, `prog.msSteps` (só o dia).
 - **Onboarding v2** (`tools/quick.*`, `tools/onb.*`): 4 perguntas de toque depois da ocupação (deslocamento, treino, flashcards, horário livre). Ficam em `cfg.profile` (`transport`, `train`, `cards`, `free`), só no aparelho, e mudam o texto e o horário das tarefas. Nada de ônibus para quem não anda de ônibus.
-- **Trocar esta tarefa** (`tools/swap.js`, só /comecar/): na 1ª semana, a missão mostra 🔄 com outra tarefa do mesmo foco. Muda só título, mínimo e gatilho; XP, dias e "principal" ficam iguais. A original fica em `q.orig` e dá para desfazer.
-- **Modo simples** (`tools/simple3.*`, só /comecar/): quem cria o perfil a partir desta versão vê no dia 1 só a próxima missão + XP; dia 2 (ou nível 2) libera todas as tarefas e o check-in; dia 3 (ou nível 3) os desafios relâmpago; depois, o app completo. "Já sei usar" sai na hora. Grava só `prog.simple`.
+- **Trocar esta tarefa** (`tools/swap.js`; só para tarefas geradas pelo perfil): na 1ª semana, a missão mostra 🔄 com outra tarefa do mesmo foco. Muda só título, mínimo e gatilho; XP, dias e "principal" ficam iguais. A original fica em `q.orig` e dá para desfazer.
+- **Modo simples** (`tools/simple3.*`): quem cria o perfil a partir desta versão vê no dia 1 só a próxima missão + XP; dia 2 (ou nível 2) libera todas as tarefas e o check-in; dia 3 (ou nível 3) os desafios relâmpago; depois, o app completo. "Já sei usar" sai na hora. Grava só `prog.simple`.
 
 Teste: `node qa/feedback.test.js` (60 checagens, celular e desktop).
+
+## Ranking do dia, sensor, avisos e dupla (etapa 2 do ranking)
+
+- `tools/daily.js` (nos dois apps): aba **Hoje** na Turma, com o XP de hoje de cada um, **rival do dia** (quem está logo acima, também no card dos Desafios relâmpago) e a sua linha subindo quando você ganha posição (só o selo ▲ com reduce-motion). Não sai dado novo do celular: o XP de hoje dos outros é a diferença entre o XP da semana da lista pública e o que o aparelho viu ontem (sem foto de ontem, conta a partir da 1ª abertura do dia e avisa). Guarda só em `asc-u-dia` / `ascensao-dia`, fora do progresso.
+- Avisos locais (só se a pessoa ligar, permissão pedida no toque): alguém te passou hoje e, às 20h, se faltar desafio. Funcionam com o app aberto ou em segundo plano; sem servidor de push, o celular pode segurar com o app fechado.
+- Sensor de movimento no contador do relâmpago (`tools/zap.js`): "📳 Contar pelo movimento"; no iPhone a permissão é pedida só no toque. Sem sensor, sem sinal em 2,5 s ou sem permissão: volta para o toque.
+- Desafio em dupla (`tools/duo.js`, só no /comecar/): chama um amigo ou aliado do Esquadrão para o mesmo desafio do dia pela linha `K` (`d-`, `da-`, `dk-`). Os dois fizeram: +10 XP para cada (`zap:duo:<dia>`). Grava só `prog.duo`.
+
+Teste: `node qa/ranking-dia.test.js`.
 
 ## Reinstalação do app pessoal
 

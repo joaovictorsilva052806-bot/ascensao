@@ -33,7 +33,7 @@ await p.fill('#secCode','420');await p.press('#secCode','Enter');ok('código 420
 await p.click('#tabbar [data-go="hoje"]');for(let i=0;i<10;i++)await p.click('#rank',{delay:10,force:true});await p.waitForTimeout(300);
 ok('cutucar rank 10x',(await modal(p)).includes('Cutucar'));await clear(p);
 console.log('TOP',await p.evaluate(()=>{const r=document.getElementById('clock').getBoundingClientRect();const e=document.elementFromPoint(r.x+r.width/2,r.y+r.height/2);return e&&(e.id||e.className)+' '+r.x+','+r.y;}));for(let i=0;i<7;i++)await p.click('#clock',{force:true});await p.waitForTimeout(200);ok('tocar relógio 7x',!!(await sec(p)).s_tempo,await modal(p)+JSON.stringify(await sec(p)));await clear(p);
-{const bb=await p.locator('#rank').boundingBox();await p.mouse.move(bb.x+20,bb.y+20);}await p.mouse.down();await p.clock.runFor(1100);await p.mouse.up();
+{const bb=await p.locator('#rank').boundingBox();await p.mouse.move(bb.x+bb.width/2,bb.y+bb.height/2);}await p.mouse.down();await p.clock.runFor(1100);await p.mouse.up();
 ok('segurar rank abre Modo Zen',await p.isVisible('#secZen'));await p.clock.runFor(2000);await p.screenshot({path:SP+'zen.png'});
 await p.clock.runFor(30000);await p.waitForTimeout(200);ok('zen completo libera segredo',(await modal(p)).includes('Modo Zen')&&await p.locator('#secZen').isHidden());await clear(p);
 for(let i=0;i<6;i++){await tap(p,'q1');}await p.waitForTimeout(200);
@@ -79,6 +79,8 @@ ok('comecar: console sem erros',errs.length===0,errs.join(' | '));await ctx.clos
 ({ctx,p,errs}=await page({viewport:{width:1280,height:800}}));await p.goto(U);await seed(p,b2);await p.click('#tabbar [data-go="prog"]');await p.screenshot({path:SP+'desktop.png'});
 await p.goto(U+'convite/');await p.waitForTimeout(500);await p.goto(U+'comecar/');await p.waitForTimeout(500);ok('desktop: /, /comecar/, /convite/ sem erros',errs.length===0,errs.join(' | '));await ctx.close();
 // offline
-({ctx,p,errs}=await page());await p.goto(U);await p.waitForTimeout(1500);await p.reload();await p.waitForTimeout(800);await ctx.setOffline(true);await p.reload();await p.waitForTimeout(800);
+({ctx,p,errs}=await page());await p.goto(U);await p.waitForTimeout(500);
+// o app só registra o SW em https; no localhost registra à mão o mesmo sw.js
+await p.evaluate(async()=>{await navigator.serviceWorker.register('sw.js');await navigator.serviceWorker.ready;});await p.waitForTimeout(800);await p.reload();await p.waitForTimeout(800);await ctx.setOffline(true);await p.reload();await p.waitForTimeout(800);
 ok('offline: abre do cache com Segredos',await p.locator('#secPanel').count()===1);await ctx.close();
 await b.close();console.log(R.join('\n'));console.log(R.filter(r=>r.startsWith('PASS')).length+'/'+R.length);})();

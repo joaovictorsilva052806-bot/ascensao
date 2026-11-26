@@ -85,7 +85,7 @@ for(const [route,pre] of [['comecar/','asc-u'],['','ascensao']]){const tag=route
   ok(tag+' passos: checklist gerado do gatilho',steps.length>=3&&/Gatilho: Quando colocar/.test(steps[0]),steps.join(' / '));
   await p.click('.msstep >> nth=0');ok(tag+' passos: marca e grava',(await LS(p,pre+'-prog')).msSteps['2026-11-25'].s_fech[0]===1);
   await p.screenshot({path:SP+'fb-passos.png'});await p.keyboard.press('Escape');
-  ok(tag+' trocar tarefa só no /comecar/',route?true:!(await p.evaluate(()=>typeof swDo!=='undefined')));
+  ok(tag+' trocar tarefa só para tarefa gerada pelo perfil',await (async()=>{await p.evaluate(()=>{const d=document.querySelector('#quests details');if(d)d.open=true;});await p.locator('#quests .quest[data-q="s_ler"] .msgo').dispatchEvent('click');await p.waitForTimeout(200);const v=await p.isVisible('.msswap');await p.keyboard.press('Escape');return v;})());
   ok(tag+' console limpo (missão)',errs.length===0,errs.join(' | '));ok(tag+' dados antigos intactos (missão)',(await LS(p,pre+'-prog')).velho==='fica');await ctx.close();}
 // ---------- 4. reduce-motion: barra sem transição ----------
 {const {ctx,p}=await ctxp('2026-11-25T10:00:00',{rm:'reduce'});await p.goto(U+'comecar/');
