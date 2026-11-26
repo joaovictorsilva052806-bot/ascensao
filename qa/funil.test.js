@@ -46,4 +46,13 @@ for(const r of ['convite/','x/']){const {ctx,p,posts,errs}=await ctxNew();await 
   await p.evaluate(([c,o])=>{localStorage.setItem('asc-u-cfg',JSON.stringify(c));localStorage.setItem('asc-u-prog',JSON.stringify(o));localStorage.setItem('asc-u-season','2');localStorage.setItem('asc-u-perm','1');localStorage.setItem('asc-u-intro','1');localStorage.setItem('asc-u-beta','{"on":true,"id":"abc"}');},[kid,PROG]);
   await p.reload();await p.waitForTimeout(2500);
   ok('até 13 anos: nada enviado',!A(posts).length,A(posts).join(' / '));await ctx.close();}
+// 6) folga na LGPD: idade desconhecida não envia; 14-17 sem autorização gravada não envia; 14-17 com autorização envia
+async function caso(nome,profile,tele,beta,espera){const {ctx,p,posts}=await ctxNew();await p.goto(U+'comecar/');const c=Object.assign({},CFG,{profile});
+  await p.evaluate(([c,o,t,bt])=>{localStorage.setItem('asc-u-cfg',JSON.stringify(c));localStorage.setItem('asc-u-prog',JSON.stringify(o));localStorage.setItem('asc-u-season','2');localStorage.setItem('asc-u-perm','1');localStorage.setItem('asc-u-intro','1');localStorage.setItem('asc-u-tele',JSON.stringify(t));if(bt)localStorage.setItem('asc-u-beta',JSON.stringify(bt));},[c,PROG,tele,beta]);
+  await p.reload();await p.waitForTimeout(2500);const a=A(posts),u=posts.filter(x=>/entry\.807978446=[UB]\|/.test(x));
+  ok(nome,espera?a.length>0:(a.length===0&&u.length===0),a.concat(u).join(' / '));await ctx.close();}
+await caso('idade desconhecida com aceite gravado: nada sai',{},{on:true,asked:true,uid:'u9',nick:'X'},null,false);
+await caso('14-17 com aceite sem autorização gravada: nada sai',{age:'teen'},{on:true,asked:true,uid:'u8',nick:'Y'},null,false);
+await caso('14-17 com beta ligado sem autorização: nada sai',{age:'teen'},{asked:true},{on:true,id:'abc'},false);
+await caso('14-17 com autorização do responsável: etapas vão',{age:'teen'},{on:true,asked:true,uid:'u7',nick:'Z',parent:1},null,true);
 await b.close();console.log(R.join('\n'));const f=R.filter(x=>x.startsWith('FAIL')).length;console.log((R.length-f)+'/'+R.length+' passando');process.exit(f?1:0);})();
