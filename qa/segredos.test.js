@@ -5,7 +5,7 @@ const CFG={version:3,name:'Teste',startDate:'2026-11-01',quests:[{id:'q1',title:
 const base=()=>({log:{"2026-11-20":[{q:"q1",kind:"full",xp:10,stat:"foco",bonus:0,t:"x"}],"2026-11-25":[{q:"checkin:ok",kind:"full",xp:0,bonus:0,t:"x"}]},extra:{},faith:{},energy:{},mit:{},reviews:{},money:[{v:5}],rest:{},ach:{a_first:"2026-11-20"},rpg:{cls:{id:"mago",style:"fant",name:"Mago"}},foo:"campo-antigo"});
 const LS=(p,k='ascensao-prog')=>p.evaluate(k=>JSON.parse(localStorage.getItem(k)||'{}'),k);
 const sec=async(p,k)=>((await LS(p,k)).sec)||{};
-async function seed(p,o,pre='ascensao'){await p.evaluate(([c,o,pre])=>{localStorage.setItem(pre+'-cfg',JSON.stringify(c));localStorage.setItem(pre+'-prog',JSON.stringify(o));},[CFG,o,pre]);await p.reload();await p.waitForTimeout(1000);await clear(p);}
+async function seed(p,o,pre='ascensao'){const back=p.url();await p.goto(new URL('/privacidade/',back).href); /* semeia fora do app: o save() da página viva não regrava por cima */await p.evaluate(([c,o,pre])=>{localStorage.setItem(pre+'-cfg',JSON.stringify(c));localStorage.setItem(pre+'-prog',JSON.stringify(o));},[CFG,o,pre]);await p.goto(back);await p.waitForTimeout(1000);await clear(p);}
 // grava o save numa página sem o app (lista de qa/) e só então abre o app: o app não salva por cima (temporada já marcada)
 async function seedFirst(p,o,pre='ascensao'){await p.goto(U+'qa/');await p.evaluate(([c,o,pre])=>{localStorage.setItem(pre==='ascensao'?'ascensao-season':'asc-u-season','2');localStorage.setItem(pre+'-cfg',JSON.stringify(c));localStorage.setItem(pre+'-prog',JSON.stringify(o));},[CFG,o,pre]);await p.goto(U);await p.waitForTimeout(1000);await clear(p);}
 async function clear(p){for(let i=0;i<8;i++){const m=p.locator('.sysmodal:not(.seczen) button.go');if(await m.count()){await m.first().dispatchEvent('click');await p.waitForTimeout(80);continue;}if(await p.locator('#levelup').isVisible()){await p.locator('#luClose').dispatchEvent('click');continue;}break;}}
@@ -17,7 +17,7 @@ async function page(opts={},time){const ctx=await b.newContext({viewport:{width:
 let {ctx,p,errs}=await page({},new Date('2026-11-25T14:00:00'));
 await p.goto(U);await seed(p,base());
 ok('root: painel Segredos existe',await p.locator('#secPanel').count()===1);
-ok('root: 0 / 25',(await p.textContent('#secCount')).trim()==='0 / 25',await p.textContent('#secCount'));
+ok('root: 0 / 26',(await p.textContent('#secCount')).trim()==='0 / 26',await p.textContent('#secCount'));
 await p.click('#tabbar [data-go="mais"]');await abre(p,'#secCode');await p.fill('#secCode','  LÁRICA ');await p.press('#secCode','Enter');await p.waitForTimeout(400);
 ok('código "LÁRICA" (maiúscula/acento) revela',(await modal(p)).includes('Larica'),await p.textContent('#secOut'));
 await p.screenshot({path:SP+'reveal.png'});
@@ -89,7 +89,7 @@ ok('teclado: console sem erros',errs.length===0,errs.join(' | '));await ctx.clos
 ({ctx,p,errs}=await page({},new Date('2026-11-25T10:00:00')));
 {const o=base();o.log['2026-11-24']=[{q:'q1',kind:'full',xp:10,bonus:0,t:'x'}];o.sec={s_larica:'2026-11-01',s_zen:'2026-11-02'};o.secTitle='s_zen';await seedFirst(p,o);}
 st=await LS(p);ok('migração: segredos e título antigos intactos',st.sec.s_larica==='2026-11-01'&&st.sec.s_zen==='2026-11-02'&&st.secTitle==='s_zen'&&st.foo==='campo-antigo');
-ok('migração: contador 2 / 25',(await p.textContent('#secCount')).trim()==='2 / 25',await p.textContent('#secCount'));
+ok('migração: contador 2 / 26',(await p.textContent('#secCount')).trim()==='2 / 26',await p.textContent('#secCount'));
 await p.click('#tabbar [data-go="prog"]');await abre(p,'#secList');await p.locator('#secPanel').screenshot({path:SP+'pop-celular.png'});
 ok('migração: console sem erros',errs.length===0,errs.join(' | '));await ctx.close();
 // reduce-motion

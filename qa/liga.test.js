@@ -9,9 +9,11 @@ async function drain(p){const t=[];for(let k=0;k<2;k++){for(let i=0;i<10;i++){co
 async function open(prog,time){const ctx=await b.newContext({viewport:{width:390,height:844}});const p=await ctx.newPage();const errs=[];const posts=[];
   p.on('pageerror',e=>errs.push(e.message));p.on('console',m=>{if(m.type()==='error'&&!/Failed to load resource|ERR_|navigator.vibrate/.test(m.text()))errs.push(m.text())});
   await ctx.route('https://docs.google.com/**',r=>{if(r.request().method()==='POST'){posts.push(r.request().postData());return r.fulfill({status:200,body:''});}return r.fulfill({status:200,contentType:'text/csv',body:CSV});});
-  await p.clock.install({time:new Date(time)});await p.goto(U);
+  await p.clock.install({time:new Date(time)});
+  // semeia numa página do mesmo site que não roda o app; senão o save() da página viva regrava o progresso vazio por cima da semente
+  await p.goto(new URL('/privacidade/',U).href);
   await p.evaluate(([c,o])=>{localStorage.setItem('asc-u-cfg',JSON.stringify(c));localStorage.setItem('asc-u-prog',JSON.stringify(o));localStorage.setItem('asc-u-season','2');localStorage.setItem('asc-u-perm','1');localStorage.setItem('asc-u-intro','1');},[CFG,prog]);
-  await p.reload();await p.waitForTimeout(1500);return {ctx,p,errs,posts};}
+  await p.goto(U);await p.waitForTimeout(1500);return {ctx,p,errs,posts};}
 const base=(x={})=>Object.assign({log:{'2026-11-25':[{q:'q1',kind:'full',xp:40,stat:'mente',bonus:0,t:'x'}]},extra:{},faith:{},energy:{},mit:{},reviews:{},money:[],rest:{},ach:{},rpg:{cls:{id:'mago',style:'fant',name:'Mago'}},rank:{on:true,asked:true,uid:'abc12345'},velho:'fica'},x);
 // 1: no ranking, 3º lugar
 let {ctx,p,errs,posts}=await open(base(),'2026-11-25T14:00:00');let t=await drain(p);
