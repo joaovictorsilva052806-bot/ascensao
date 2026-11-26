@@ -32,7 +32,9 @@ function hkUI(){let p=$("hkPanel");const qs=$("quests");const anchor=qs&&qs.clos
   let mode="";if(done)mode="teaser";else if(HK_GIFT[n]&&!h.got[n])mode="gift";else if(new Date().getHours()>=18&&!isRest(tk)&&(n===1||streakDays()>0))mode="save";
   if(!mode)return hide();
   if(!p){p=document.createElement("section");p.className="panel hk";p.id="hkPanel";p.dataset.tab="hoje";p.dataset.sf="1";/* sf: as telas enxutas não recolhem este cartão */p.setAttribute("aria-live","polite");}
-  if(p.previousElementSibling!==anchor)anchor.after(p);
+  // presente: no topo da aba Hoje (abaixo das tarefas ninguém via); teaser e resgate: logo depois das tarefas
+  if(mode==="gift"){const top=[...document.querySelectorAll('.wrap>section[data-tab="hoje"]')].find(x=>x!==p);if(top&&p.nextElementSibling!==top)top.before(p);}
+  else if(p.previousElementSibling!==anchor)anchor.after(p);
   p.hidden=false;p.dataset.mode=mode;p.textContent="";
   const hd=hkEl("div","qhead");const h2=hkEl("h2");hd.append(h2);p.append(hd);
   if(mode==="teaser"){h2.textContent="🌙 Amanhã no Sistema";hd.append(hkEl("span","sm muted","dia "+(n+1)));

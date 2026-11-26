@@ -31,6 +31,7 @@ for(const [route,pre] of [['comecar/','asc-u'],['','ascensao']]){const tag=route
   // B: dia 2 de manhã: cartão do presente; 1ª tarefa abre +15 XP uma vez só
   ({ctx,p,errs}=await open(route,pre,P(['2026-11-24']),'2026-11-25T09:00:00'));await drain(p);
   x=await txt(p);ok(tag+' B: dia 2 mostra o presente esperando',await vis(p)&&x.includes('Presente do dia 2')&&x.includes('Ler 1 página'),x);
+  ok(tag+' B: presente no topo da aba Hoje (antes das tarefas)',await p.evaluate(()=>{const h=document.getElementById('hkPanel'),q=document.getElementById('quests').closest('section');return !!(h.compareDocumentPosition(q)&Node.DOCUMENT_POSITION_FOLLOWING)&&h===[...document.querySelectorAll('.wrap>section[data-tab="hoje"]')][0];}));
   await p.screenshot({path:SP+'volta-2-presente-'+sh+'.png'});
   await done(p,'q1');t=await drain(p);let st=await LS(p,pre);
   ok(tag+' B: 1ª tarefa abre o presente',t.some(s=>s.includes('Dia 2: +15 XP')),t.join(' / '));
