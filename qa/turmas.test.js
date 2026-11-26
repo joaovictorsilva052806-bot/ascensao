@@ -109,6 +109,16 @@ for(const [route,pre,dev,vp] of [['comecar/','asc-u','iPhone',{width:390,height:
   ok(tag+' 14-17 antigo: console limpo',errs.length===0,errs.join(' | '));await ctx.close();
   // 13. adulto no ranking não é afetado
   ({ctx,p,errs}=await open(route,pre,base(),{vp}));st=await LS(p,pre);ok(tag+' adulto: segue no ranking',st.rank.on===true&&!st.rank.hold);await ctx.close();
+  // 14. 1º uso em tela pequena (320): cartão abaixo das tarefas e cabeçalho sem cortar
+  ({ctx,p,errs}=await open(route,pre,base(),{vp:{width:320,height:568}}));
+  const pos=await p.evaluate(()=>{const h=document.getElementById('gtHero');const q=document.getElementById('quests').closest('section');const hd=h.querySelector('.gthd');
+    return {after:!!(q.compareDocumentPosition(h)&Node.DOCUMENT_POSITION_FOLLOWING),cut:[...hd.children].some(c=>c.getBoundingClientRect().right>hd.getBoundingClientRect().right+1)};});
+  ok(tag+' 320 1º uso: ranking abaixo das tarefas',pos.after);ok(tag+' 320: cabeçalho do ranking sem cortar',!pos.cut);ok(tag+' 320: sem rolagem lateral',!(await hscroll(p)));
+  await p.locator('#gtHero').screenshot({path:SHOT+'hoje-320-'+dev+'.png'});await ctx.close();
+  // 15. quem já joga (3+ dias): cartão volta para o topo, logo abaixo do status
+  const L3={};for(const d of ['2026-11-23','2026-11-24','2026-11-25'])L3[d]=[{q:'q1',kind:'full',xp:15,stat:'mente',bonus:0,t:'x'}];
+  ({ctx,p,errs}=await open(route,pre,base({log:L3}),{vp}));
+  ok(tag+' veterano: ranking logo abaixo do status',await p.evaluate(()=>{const h=document.getElementById('gtHero');return h.previousElementSibling&&!!h.previousElementSibling.querySelector('#dayPill');}));await ctx.close();
   // 11. até 13: nada aparece
   ({ctx,p,errs}=await open(route,pre,base({rank:undefined}),{vp,age:'kid'}));
   ok(tag+' ≤13: sem destaque do ranking',!(await p.locator('#gtHero').isVisible()));ok(tag+' ≤13: console limpo',errs.length===0,errs.join(' | '));await ctx.close();}
