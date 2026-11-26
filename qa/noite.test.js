@@ -7,6 +7,7 @@
 // 5) Barra de abas abaixo de 390px: "PROGRESSO" não passa mais da aba.
 // 6) Voltar do Android com missão/desafio aberto fecha só a folha (antes saía do app).
 // 7) "Desfazer" no aviso por 5 s depois de concluir; o aviso sobe quando o atalho da figurinha aparece.
+// 8) Dia 1: o check-in entra sozinho, sem a janela "Você apareceu" entre "Criar meu jogo" e a 1ª missão.
 // Mais: celular 390x844 e desktop, reduce-motion, dados antigos intactos, raiz abre, console limpo.
 // Rode com: python3 -m http.server 8000 --bind 127.0.0.1 & node qa/noite.test.js
 const {chromium}=require('playwright');const B='http://127.0.0.1:8000';const U=B+'/comecar/';const R=[];
@@ -112,6 +113,14 @@ for(const w of [320,360,375,390]){const ctx=await b.newContext({viewport:{width:
   const p=await ctx.newPage();await p.goto(U);await p.waitForTimeout(1200);
   const bad=await p.evaluate(()=>[...document.querySelectorAll('#tabbar button')].filter(x=>x.getClientRects().length).filter(x=>{const r=document.createRange();r.selectNodeContents(x);return r.getBoundingClientRect().width>x.getBoundingClientRect().width+1;}).map(x=>x.textContent.trim()));
   ok('abas em '+w+'px: rótulos cabem',bad.length===0,bad.join(','));await ctx.close();}
+// 1º dia: o check-in entra sozinho (sem janela entre "Criar meu jogo" e a 1ª missão); do 2º dia em diante a janela volta
+{const errs=[];const ctx=await ctxOf(b);await ctx.addInitScript(()=>{window.__ck=[];new MutationObserver(()=>{for(const m of document.querySelectorAll('.sysmodal')){if(m.getClientRects().length&&/CHECK-IN/.test(m.innerText)&&!window.__ck.length)window.__ck.push(m.innerText.slice(0,60));}}).observe(document,{subtree:true,childList:true,attributes:true});});
+  const p=await page(ctx,'2026-11-26T19:00:00-03:00',errs);await onboard(p);await guide1(p);await p.waitForTimeout(900);
+  await p.evaluate(()=>{const s=[...document.querySelectorAll('.mssheet')].find(x=>!x.hidden);[...s.querySelectorAll('button')].find(x=>/Concluir miss/.test(x.textContent)).click();});for(let i=0;i<6;i++){await p.waitForTimeout(800);await pops(p);}
+
+  const r=await p.evaluate(()=>({ck:window.__ck,log:Object.entries(JSON.parse(localStorage.getItem('asc-u-prog')).log).map(([k,v])=>k+'='+v.map(e=>e.q))}));
+  ok('dia 1: sem janela de check-in antes da 1ª missão',!r.ck.length,r.ck.join(' | '));ok('dia 1: check-in registrado do mesmo jeito (+10 XP) e a 1ª missão também',r.log.some(x=>x.startsWith('2026-11-26=')&&x.includes('checkin:2026-11-26')&&x.split(',').length>=2),r.log.join(','));
+  ok('dia 1: console limpo (check-in automático)',errs.length===0,errs.join(' | '));await ctx.close();}
 // raiz (app do JV): abre com a planilha de exemplo e sem erro
 {const errs=[];const ctx=await ctxOf(b);await ctx.addInitScript(()=>{if(!localStorage.getItem('ascensao-cfg')){localStorage.setItem('ascensao-cfg',JSON.stringify({version:3,startDate:'2026-11-20',name:'JV',quests:[{id:'q1',title:'Estudar 20 min',xp:20,stat:'mente',main:true},{id:'q_fech',title:'Fechamento do dia',xp:10,stat:'foco',main:true}]}));localStorage.setItem('ascensao-prog',JSON.stringify({log:{},rpg:{cls:'mago'}}));}});
   const p=await page(ctx,'2026-11-27T02:00:00-03:00',errs);await p.goto(B+'/');await p.waitForTimeout(2500);
