@@ -1,0 +1,9 @@
+.vsnews .card{max-width:360px;text-align:left}
+.vsnews .tag,.vsnews h3{text-align:center}
+.vsnews .vsl{list-style:none;margin:2px 0;padding:0;display:grid;gap:8px}
+.vsnews .vsl li{display:flex;gap:10px;align-items:flex-start;font-size:.92rem;line-height:1.35}
+.vsnews .vsi{flex:none;width:1.5em;text-align:center}
+.vsnews .go{min-height:44px;margin-top:4px}
+.vsfoot{display:flex;flex-wrap:wrap;gap:6px 14px;align-items:center;justify-content:center;padding:14px 8px 4px;text-align:center}
+.vsfoot a{color:var(--muted)}
+.vsfoot .link{min-height:32px}
