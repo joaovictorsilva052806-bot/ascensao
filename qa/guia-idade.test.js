@@ -12,9 +12,9 @@ for(const [route,pre] of [['comecar/','asc-u'],['','ascensao']])for(const age of
   const ctx=await b.newContext({viewport:{width:390,height:844}});const p=await ctx.newPage();const errs=[];
   p.on('pageerror',e=>errs.push(e.message));p.on('console',m=>{if(m.type()==='error'&&!/Failed to load resource|ERR_|navigator.vibrate/.test(m.text()))errs.push(m.text())});
   await p.route(/^https?:\/\/(?!localhost)/,r=>r.abort());
-  await p.clock.install({time:new Date('2026-11-26T10:00:00')});await p.goto(U+route);
+  await p.clock.install({time:new Date('2026-11-26T10:00:00')});await p.goto(U+route+'__seed__');
   await p.evaluate(([c,o,pre])=>{localStorage.clear();localStorage.setItem(pre+'-cfg',JSON.stringify(c));localStorage.setItem(pre+'-prog',JSON.stringify(o));localStorage.setItem(pre+'-season','2');localStorage.setItem('asc-u-perm','1');localStorage.setItem('asc-u-intro','1');localStorage.setItem(pre+'-tele',JSON.stringify({asked:1}));},[CFG(age),PROG,pre]);
-  await p.reload();await p.waitForSelector('#gdPanel',{state:'attached',timeout:8000});await p.waitForTimeout(400);
+  await p.goto(U+route);await p.waitForSelector('#gdPanel',{state:'attached',timeout:8000});await p.waitForTimeout(400);
   const t=await p.$eval('#gdPanel',e=>e.textContent);const tag=(route||'/')+' '+age+': ';
   if(age==='kid'){ok(tag+'guia não fala de ranking',!/ranking/i.test(t),t);ok(tag+'passo 3 vira "Veja sua evolução"',/Veja sua evolução/.test(t),t);}
   else{ok(tag+'passo 3 continua no ranking',/Veja seu lugar no ranking/.test(t),t);ok(tag+'desafio ainda sobe no ranking',/sobe no ranking/.test(t),t);}
