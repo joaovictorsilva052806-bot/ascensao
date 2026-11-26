@@ -20,6 +20,8 @@ for(const [nome,vp] of [['celular',{width:390,height:844}],['desktop',{width:128
   // relógio fixo ao meio-dia: entre 0h e 5h as principais ficam trancadas e a única tarefa liberada é uma extra de 2 linhas
   await p.clock.install({time:new Date('2026-11-26T12:00:00-03:00')});
   await p.goto(B+'/comecar/');await p.waitForTimeout(800);await onboard(p);await p.waitForTimeout(600);
+  // máquina carregada: espera as animações de entrada (finitas) terminarem antes de medir a área de toque
+  await p.waitForFunction(()=>document.getAnimations().every(a=>a.playState!=='running'||(a.effect&&a.effect.getTiming().iterations===Infinity)),null,{timeout:8000}).catch(()=>{});
   await p.evaluate(()=>scrollTo(0,0));
   for(const s of ['#streak','#shieldPill','#clsPill']){const e=await p.$(s+':visible');if(!e){ok(nome+': '+s+' visível',false,'não achou');continue;}
     const f=await faixa(p,s);ok(nome+': selo '+s+' aceita toque em ≥ 44px',f.hit>=44,JSON.stringify(f));ok(nome+': selo '+s+' não cresceu na tela',f.alt<=32,f.alt+'px');}
