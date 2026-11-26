@@ -1,19 +1,19 @@
 # Relatório da noite · 26/11/2026 (ATENA)
 
-Bom dia, JV. Conclusão primeiro: rodei o app inteiro como **usuário novo** (do convite `/x/` até fechar o 1º dia) e como **usuário no dia 3** (relógio simulado), no celular 390x844 e no desktop. Achei 14 atritos. Corrigi os 8 que eram da minha área num PR testado (#89), deixei 1 mudança de regra de XP pronta esperando você, e registrei o resto para os donos de cada área.
+Bom dia, JV. Conclusão primeiro: rodei o app inteiro como **usuário novo** (do convite `/x/` até fechar o 1º dia) e como **usuário no dia 3** (relógio simulado), no celular 390x844 e no desktop. Achei 15 atritos. Corrigi os 9 que eram da minha área num PR testado (#89), deixei 1 mudança de regra de XP pronta esperando você, e registrei o resto para os donos de cada área.
 
 ## 1. O que foi publicado (entregue ao trem de publicação)
 
 | PR | O que muda | Testes | Situação |
 |---|---|---|---|
-| #89 Revisão noturna | 8 atritos do usuário (abaixo) | `qa/noite.test.js` 31/31 (no código antigo: 12 falhas e o teste do Voltar trava) + suíte inteira verde | entregue ao trem na #22 |
+| #89 Revisão noturna | 9 atritos do usuário (abaixo) + 2 testes instáveis | `qa/noite.test.js` 36/36 (no código antigo: 12 falhas e o teste do Voltar trava) + suíte inteira verde | entregue ao trem na #22 |
 | #82 Textos da 1ª sessão (outra thread) | textos mais curtos | 35/35 | entregue ao trem |
 | #83 Volta do dia 1 ao 3 (outra thread) | presente do dia 2 e 3, teaser e resgate | 44/44 | entregue ao trem |
 | #67 Feedback dos testadores (outra thread) | Missão ativa v2, onboarding de toque, modo simples | 60/60, inclusive junto com o #82 | pronto, no trem |
 
 Montei o trem inteiro localmente (main + #89 + #82 + #83 + #67): o app funciona junto. Dois testes de PRs diferentes brigam entre si (o do #67 espera o título antigo do #82, e o do #82 não conhece as perguntas novas do #67). Mandei o ajuste para cada thread e para a EVA na #22, e as duas threads já corrigiram: `textos1` 35/35 e `feedback` 60/60 com os dois juntos.
 
-**As 8 correções do #89, cada uma com a base:**
+**As 9 correções do #89, cada uma com a base:**
 
 1. **Madrugada sem toque morto.** Entre 0h e 5h as missões principais têm cadeado. O passo 1 do guia ("Toque em ▶") tocava no ▶ trancado e nada acontecia. Agora abre a 1ª missão liberada; se nada estiver liberado, diz a hora e abre um desafio relâmpago (+10 XP na hora). O Sistema também aponta o desafio.
    *Base:* Modelo de Comportamento de Fogg (B = Motivação × Habilidade × Gatilho: gatilho sem ação possível não vira comportamento), behaviormodel.org; heurística 1 de Nielsen (visibilidade do estado do sistema), nngroup.com/articles/ten-usability-heuristics.
@@ -31,6 +31,8 @@ Montei o trem inteiro localmente (main + #89 + #82 + #83 + #67): o app funciona 
    *Base:* 360px é a largura mais comum de Android (StatCounter, resoluções de tela móvel); Material Design: rótulo da barra de navegação não pode truncar nem encostar no vizinho.
 8. **Botão Voltar do Android fechava o app.** Com uma missão ou um desafio aberto, o Voltar (ou o gesto) saía do app inteiro. Agora o 1º Voltar fecha só a folha, como num app nativo.
    *Base:* Android, guia "Navegação para trás" (developer.android.com/guide/navigation/custom-back): Voltar fecha o que está por cima antes de sair; Material Design, folhas inferiores fecham no Voltar.
+9. **Marcou sem querer? "Desfazer" por 5 s.** Antes, para desmarcar, era preciso abrir "Concluídas" e achar o botão. Agora o aviso mostra "✓ nome da tarefa · Desfazer" (é o mesmo que desmarcar pela lista). De quebra, o aviso ficava no mesmo lugar do "⭐ Colar figurinha" e sumia atrás dele; agora sobe quando o atalho aparece.
+   *Base:* Nielsen #3 (controle e liberdade: "saída de emergência" para o erro); Material Design, snackbar com ação "Desfazer"; o "Desfazer envio" do Gmail.
 
 Nada de dado novo: nenhum campo salvo foi criado, renomeado ou apagado. Teste de dados antigos: nenhum campo some. O Voltar só empilha um estado no histórico do navegador, nada no progresso.
 
@@ -46,7 +48,7 @@ Nada de dado novo: nenhum campo salvo foi criado, renomeado ou apagado. Teste de
 2. **De madrugada, o 1º toque leva a uma vitória** (antes: nada acontecia; depois: abre o desafio relâmpago): `qa/noite/2-madrugada-toque-morto.png`
 3. **O Sistema parou de se contradizer no dia 2 e no dia 3**: `qa/noite/3a-checkin-vs-sequencia.png` e `qa/noite/3b-escudo-texto.png`
 
-Menções honrosas: o Voltar do Android que fechava o app (sem print, é comportamento) e a barra de abas em 360px (`qa/noite/4-abas-360px.png`).
+Menções honrosas: o Voltar do Android que fechava o app (sem print, é comportamento), a barra de abas em 360px (`qa/noite/4-abas-360px.png`) e o "Desfazer" (`qa/noite/5-desfazer.png`).
 
 ## 4. Atritos registrados para os donos (não mexi)
 
@@ -67,8 +69,10 @@ Menções honrosas: o Voltar do Android que fechava o app (sem print, é comport
 
 ## 6. Placar
 
-- `qa/noite.test.js`: 31/31 (celular 390x844, desktop 1280x800 com reduce-motion, madrugada, noite, dia 2, dia 3, abas de 320 a 390px, Voltar, dados antigos, raiz, console limpo).
-- Suíte inteira: 23 de 24 arquivos verdes; o `qa/mural-servidor.test.js` falha igual na main (erro do Node, sem relação).
+- `qa/noite.test.js`: 36/36 (celular 390x844, desktop 1280x800 com reduce-motion, madrugada, noite, dia 2, dia 3, abas de 320 a 390px, Voltar, Desfazer, dados antigos, raiz, console limpo).
+- Suíte inteira (main com Trem 3 + #89): 29 de 30 arquivos verdes; o `qa/mural-servidor.test.js` falha igual na main (erro do Node, sem relação).
+- Trem 3 (#91: atributos, Modo Sistema, Foco) entrou na main durante a noite. O #89 já está atualizado com ele, e a suíte continua verde.
+- `qa/sequencia.test.js` falhava 2 de 3 vezes na própria main depois do Trem 3: a galeria de classes atrasa os avisos e o teste parava de ler antes do escudo. Corrigido no #89 (30/30 em 3 rodadas).
 - Achado extra: `qa/alvo.test.js` falhava na main entre 0h e 5h (usava o relógio real; de madrugada a única tarefa liberada é uma extra de 2 linhas). Agora usa relógio fixo ao meio-dia: 24/24.
 - Telas de 320px: sem rolagem horizontal no convite, no onboarding, em Hoje e na missão. Contraste: nenhum texto abaixo de 4,5:1 nas 5 abas, fora os dias passados da masmorra (apagados de propósito).
 - Cache do service worker: não subiu no PR (sobe no trem, como #82 e #83).
