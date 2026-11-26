@@ -2780,12 +2780,25 @@ const SEC=[
  ["s_naodesisto","🛡️","Inquebrável","Inquebrável","Um código que é uma promessa.","Registrado. Você disse em voz alta, agora é contrato com você mesmo. O Sistema vai lembrar.",15],
  ["s_hacker","💻","Acesso Concedido","Hacker do Sistema","Chame o Sistema pelo nome.","Acesso root concedido. Brincadeira: você só tem acesso ao seu próprio esforço. Que, aliás, é o que importa.",10],
  ["s_2004","🗓️","Feriado do Zen","Lenda do 20/04","Uma data que só alguns comemoram.","20 de abril. Feriado não oficial da calma. Celebre fazendo uma quest com calma total.",15],
- ["s_sexta13","🐈‍⬛","Sexta Sem Azar","Imune ao Azar","Dizem que dá azar…","Sexta-feira 13. Azar é para quem não fez check-in. Você está protegido.",15]];
+ ["s_sexta13","🐈‍⬛","Sexta Sem Azar","Imune ao Azar","Dizem que dá azar…","Sexta-feira 13. Azar é para quem não fez check-in. Você está protegido.",15],
+ // piscadelas de cultura pop: só a referência, com texto e nomes nossos (nada de personagens, falas ou marcas)
+ ["s_plat","🧳","Plataforma Escondida","Passageiro da Parede","Entre o 9 e o 10 existe um horário que só quem procura acha. Duas vezes por dia.","9h45: o horário entre o 9 e o 10. Quem atravessa a parede sem medo pega o trem certo. Embarque numa quest mínima agora.",15],
+ ["s_carta","✉️","A Carta Chegou","Sobrevivente do 11º Dia","Dizem que no 11º dia chega uma carta que muda tudo.","11 dias jogados. Nenhuma coruja trouxe nada, mas a carta chegou mesmo assim: você é do tipo que volta. Seu lugar na escola dos que não desistem está garantido.",30],
+ ["s_42","🧣","A Resposta","Portador da Toalha","Um número que responde a tudo. Ele chega fazendo quests.","42 quests concluídas. Dizem que esse número responde a tudo. A pergunta, você escreve amanhã com a quest 43. E nunca saia sem a toalha.",20],
+ ["s_9000","📟","Medidor Estourou","Acima do Limite","Existe um nível de poder que faz qualquer medidor explodir.","Seu XP passou de 9000. O medidor do Sistema não aguentou e soltou fumaça. Ninguém chega aqui por sorte: foi uma quest de cada vez.",50],
+ ["s_maio4","🌌","Galáxia Distante","Cavaleiro da Rotina","Um dia de maio que fãs de espadas de luz comemoram.","4 de maio. Hoje a força que conta é a de começar: uma quest mínima e você já está do lado certo.",15],
+ ["s_classico","🎮","Código Clássico","Jogador das Antigas","Cima, cima, baixo, baixo… você sabe o resto.","Código clássico aceito. Vida extra não existe aqui, mas o dia ainda tem tempo de sobra. Mais uma quest e você zera a fase.",15],
+ ["s_pi","🥧","Hora do Pi","Mente Infinita","Um horário com gosto de torta e casas decimais sem fim.","3:14. Um número que nunca termina, igual à sua capacidade de recomeçar. Uma quest e o círculo fecha.",10],
+ ["s_coelho","🐇","Toca do Coelho","Curioso Profissional","Siga o bicho branco que vive atrasado.","Você seguiu o coelho branco até aqui. A toca é funda, mas o primeiro passo é pequeno: escolha uma quest e desça.",10]];
 const SEC_CODES={larica:"s_larica",deboa:"s_deboa",deboanalagoa:"s_deboa",naodesisto:"s_naodesisto",sistema:"s_hacker",
   modozen:"zen",zen:"zen",
   "420":"Boa tentativa. Esse segredo é de hora marcada, não de código.",
   ajuda:"Os códigos estão por aí. Pergunte a quem já achou um.",
-  xpinfinito:"Negado. XP infinito só existe para quem faz uma quest de cada vez."};
+  xpinfinito:"Negado. XP infinito só existe para quem faz uma quest de cada vez.",
+  coelhobranco:"s_coelho",coelho:"s_coelho",uuddlrlrba:"s_classico",ccbbededba:"s_classico",cimacimabaixobaixo:"s_classico",
+  "42":"q42","9000":"x9000","8000":"x9000",
+  "945":"Quase. Essa plataforma abre no horário, não no código.","934":"Quase. Essa plataforma abre no horário, não no código.",
+  "314":"Pi não se digita, se espera: o relógio sabe a hora."};
 const secById=id=>SEC.find(s=>s[0]===id);
 function secReady(){const hid=id=>{const e=$(id);return !e||e.hidden;};return !!(cfg&&!cfg.blank&&cfg.quests&&cfg.quests.length)&&hid("quick")&&hid("onb")&&!$("clsModal");}
 function secMotion(){return !matchMedia("(prefers-reduced-motion: reduce)").matches;}
@@ -2806,7 +2819,17 @@ function secClock(){if(!secReady()||document.hidden)return;const d=new Date(),h=
   else if(m===11&&(h===11||h===23))unlockSec("s_1111");
   else if(h===0&&m<5)unlockSec("s_meia");
   else if(d.getMonth()===3&&d.getDate()===20)unlockSec("s_2004");
-  else if(d.getDay()===5&&d.getDate()===13)unlockSec("s_sexta13");}
+  else if(d.getDay()===5&&d.getDate()===13)unlockSec("s_sexta13");
+  if(m===45&&(h===9||h===21))unlockSec("s_plat");
+  else if(m===14&&(h===3||h===15))unlockSec("s_pi");
+  else if(d.getMonth()===2&&d.getDate()===14)unlockSec("s_pi");
+  else if(d.getMonth()===4&&d.getDate()===4)unlockSec("s_maio4");
+  secProg();}
+// --- gatilhos de progresso: 11 dias jogados, 42 quests, mais de 9000 XP ---
+function secQuests(){let n=0;for(const k in prog.log)for(const e of (prog.log[k]||[]))if(!/^(ach|checkin|tip|dun|sq|zap|ch|adm|tb):/.test(String(e.q))&&(e.kind==="full"||e.kind==="min"))n++;return n;}
+function secProg(){if(!secReady())return;try{if(activeDays()>=11&&unlockSec("s_carta"))return;}catch(e){}
+  if(secQuests()>=42&&unlockSec("s_42"))return;
+  try{if(totalXP()>9000)unlockSec("s_9000");}catch(e){}}
 // --- gatilhos de quest: madrugada, aurora, fênix, speedrun, indeciso ---
 const secS={done:[],flip:{}};
 const _secToggle=toggle;
@@ -2822,7 +2845,8 @@ toggle=function(q,kind){const tk=todayKey();const was=(prog.log[tk]||[]).find(e=
   if(last&&last<dkey(ago)&&unlockSec("s_fenix"))return;
   if(h<5&&unlockSec("s_coruja"))return;
   if(mm>=300&&mm<390&&unlockSec("s_aurora"))return;
-  if(secS.done.length>=3)unlockSec("s_speed");};
+  if(secS.done.length>=3&&unlockSec("s_speed"))return;
+  secProg();};
 // --- Modo Zen: 3 respirações 4-6 (versão sem movimento quando reduce-motion) ---
 let zenT=null;
 function zenOpen(){const o=$("secZen");o.classList.toggle("anim",secMotion());o.hidden=false;let s=0;const L=$("zenTxt"),C=$("zenCount");
@@ -2846,6 +2870,8 @@ function secMount(){
     const k=raw.normalize("NFD").replace(/[̀-ͯ]/g,"").toLowerCase().replace(/[^a-z0-9]/g,"");if(!k)return;const out=$("secOut");const v=SEC_CODES[k];
     if(!v){out.textContent="> "+k+": comando desconhecido. O Sistema anotou sua curiosidade.";return;}
     if(v==="zen"){out.textContent="> modo zen: iniciando.";zenOpen();return;}
+    if(v==="q42"){if((prog.sec||{}).s_42){out.textContent="> 42. Você já sabe a resposta.";return;}const f=Math.max(1,42-secQuests());out.textContent="> A resposta existe, mas só depois de 42 quests. Faltam "+f+".";return;}
+    if(v==="x9000"){if((prog.sec||{}).s_9000){out.textContent="> Medidor já estourado. Respeito.";return;}let x=0;try{x=totalXP();}catch(e){}out.textContent="> Medidor: "+x+" XP. Ele estoura quando passar de 9000.";return;}
     if(!secById(v)){out.textContent="> "+v;return;}
     if(!secReady()){out.textContent="> Termine de montar seu jogo primeiro.";return;}
     if((prog.sec||{})[v]){out.textContent="> Código já usado. Segredo: "+secById(v)[2]+".";return;}
@@ -2857,7 +2883,10 @@ function secMount(){
     ["pointerup","pointerleave","pointercancel"].forEach(e=>rk.addEventListener(e,()=>clearTimeout(hold)));
     rk.addEventListener("contextmenu",e=>e.preventDefault());}
   const ck=$("clock");let ct=[];if(ck)ck.addEventListener("click",()=>{const t=Date.now();ct=ct.filter(x=>t-x<4000).concat([t]);if(ct.length>=7){ct=[];unlockSec("s_tempo");}});
-  document.addEventListener("keydown",e=>{if(e.key==="Escape"&&!$("secZen").hidden)zenClose();});
+  const KS=["ArrowUp","ArrowUp","ArrowDown","ArrowDown","ArrowLeft","ArrowRight","ArrowLeft","ArrowRight","b","a"];let ki=0;
+  document.addEventListener("keydown",e=>{if(e.key==="Escape"&&!$("secZen").hidden)zenClose();
+    const tg=e.target&&e.target.tagName;if(tg==="INPUT"||tg==="TEXTAREA")return;const k=e.key.length===1?e.key.toLowerCase():e.key;
+    ki=k===KS[ki]?ki+1:(k===KS[0]?1:0);if(ki===KS.length){ki=0;unlockSec("s_classico");}});
   renderSec();secClock();setInterval(secClock,20000);document.addEventListener("visibilitychange",secClock);}
 setTimeout(secMount,0);
 

@@ -1,5 +1,11 @@
 # Relatório de QA (ATENA)
 
+## 26/11/2026 · Segredos: 8 piscadelas de cultura pop (25 no total)
+
+- Novo: Plataforma Escondida (9h45/21h45), A Carta Chegou (11 dias jogados), A Resposta (42 quests; código 42 mostra quanto falta), Medidor Estourou (>9000 XP; código 9000 mostra o medidor), Galáxia Distante (04/05), Código Clássico (setas + B A no teclado, ou código), Hora do Pi (3:14/15:14 e 14/03) e Toca do Coelho (código). Só a referência: nomes, títulos e textos nossos.
+- Dados: só `prog.sec`/`prog.secTitle`, como antes. Save antigo com segredos e título: nada some, contador vira N / 25.
+- Testes: qa/segredos.test.js 56/56 três vezes seguidas (390x844, 1280x800, reduce-motion, offline, /comecar/). O seed dos blocos novos grava a temporada antes de abrir o app (sem isso o "Novo despertar" zerava o save do teste). chefe-bau, rotas e segurança sem FAIL. Caches ascensao-v74 / ascensao-u-v86.
+
 ## 25/11/2026 23h · Retenção D1/D3/D7 e funil no Modo Criador (PR rascunho, espera o "pode publicar")
 
 - Novo: painel "📈 Retenção (anônima)" na aba Criador (só no app do JV). Calcula D1/D3/D7 e o funil perfil → 1ª missão → fechou o dia a partir das linhas `A` que o painel já recebe. Não guarda nada.
