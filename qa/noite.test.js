@@ -20,7 +20,10 @@ async function pops(p){for(let i=0;i<10;i++){const r=await p.evaluate(()=>{const
   for(const m of document.querySelectorAll('.sysmodal')){if(m.id==='secZen'||m.id==='tlModal'||!m.getClientRects().length)continue;const g=m.querySelector('button.go');if(g){g.click();return 1;}}return 0;});
   if(!r)break;await p.waitForTimeout(450);}}
 async function onboard(p){await p.goto(U);await p.waitForTimeout(900);await p.click('#q_perm');await p.fill('#q_name','Teste');await p.click('#q_n0');
-  await p.click('button:has-text("18 a 29")');await p.click('button:has-text("Faculdade")');await p.click('#q_done');await p.waitForTimeout(2200);await pops(p);}
+  await p.click('button:has-text("18 a 29")');await p.click('button:has-text("Faculdade")');
+  // com o onboarding de toque (#67) vêm perguntas extras: "Pular esta" até chegar nos focos
+  for(let i=0;i<8&&!(await p.$('#q_done:visible'));i++){const sk=await p.$('button:visible:has-text("Pular")');if(sk)await sk.click();await p.waitForTimeout(350);}
+  await p.click('#q_done');await p.waitForTimeout(2200);await pops(p);}
 const guide1=p=>p.evaluate(()=>{const b=document.querySelector('#gdPanel li.now button')||document.querySelector('#gdPanel button');b.click();return b.textContent;});
 const sheet=p=>p.evaluate(()=>{for(const s of document.querySelectorAll('.mssheet')){if(!s.hidden&&s.getClientRects().length)return s.id||s.innerText.slice(0,80);}return null;});
 const sysTxt=p=>p.evaluate(()=>(document.body.innerText.match(/(Boa madrugada|Bom dia|Boa tarde|Boa noite)[^\n]*/)||[''])[0]);
