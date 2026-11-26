@@ -5,6 +5,7 @@
 // 3) "Hoje: N concluída(s)" conta só o que a pessoa fez (check-in e conquista não contam como tarefa).
 // 4) Criar card: campos e "+ Criar cards" com 44px de altura.
 // 5) Barra de abas abaixo de 390px: "PROGRESSO" não passa mais da aba.
+// 6) Voltar do Android com missão/desafio aberto fecha só a folha (antes saía do app).
 // Mais: celular 390x844 e desktop, reduce-motion, dados antigos intactos, raiz abre, console limpo.
 // Rode com: python3 -m http.server 8000 --bind 127.0.0.1 & node qa/noite.test.js
 const {chromium}=require('playwright');const B='http://127.0.0.1:8000';const U=B+'/comecar/';const R=[];
@@ -75,6 +76,19 @@ for(const [nome,opt] of [['celular',{}],['desktop + reduce-motion',{viewport:{wi
   ok('escudo: "Sequência salva: 1 dia" e "Ontem ficou sem tarefa"',/Sequência salva: 1 dia\b/.test(sh)&&!/1 dias/.test(sh)&&/Ontem ficou sem tarefa/.test(sh),sh.replace(/\s+/g,' ').slice(0,160));
   await ctx.close();}
 
+// botão Voltar do Android: com a missão aberta, fecha só a folha (antes saía do app)
+{const errs=[];const ctx=await ctxOf(b);const p=await page(ctx,'2026-11-26T20:30:00-03:00',errs);await onboard(p);for(let i=0;i<3;i++){await pops(p);await p.waitForTimeout(400);}
+  const open=()=>p.evaluate(()=>{const b=[...document.querySelectorAll('#quests .msgo')].find(x=>!x.disabled);b.click();});
+  await open();await p.waitForTimeout(600);ok('Voltar: missão aberta',!!(await sheet(p)));
+  await p.goBack({timeout:3000}).catch(()=>{});await p.waitForTimeout(600);
+  ok('Voltar fecha a missão e continua no app',!(await sheet(p))&&/\/comecar\//.test(p.url())&&!!(await p.$('#quests')),p.url());
+  // fechar pelo botão não deixa estado sobrando: o próximo Voltar sai do app normalmente
+  await open();await p.waitForTimeout(600);await p.evaluate(()=>{const s=[...document.querySelectorAll('.mssheet')].find(x=>!x.hidden);[...s.querySelectorAll('button')].find(x=>/Minimizar/.test(x.textContent)).click();});await p.waitForTimeout(600);
+  ok('fechar pelo botão limpa o histórico',await p.evaluate(()=>!(history.state&&history.state.ntSheet)));
+  // desafio relâmpago também
+  await p.evaluate(()=>document.querySelector('.zapc:not(.done)').click());await p.waitForTimeout(600);await p.goBack({timeout:3000}).catch(()=>{});await p.waitForTimeout(600);
+  ok('Voltar fecha o desafio relâmpago',await p.evaluate(()=>{const z=document.querySelector('#zapSheet');return !!z&&z.hidden&&!document.body.classList.contains('inmission');})&&/\/comecar\//.test(p.url()));
+  ok('console limpo (Voltar)',errs.length===0,errs.join(' | '));await ctx.close();}
 // barra de abas: nenhum rótulo passa da própria aba em 320, 360 e 375px
 for(const w of [320,360,375,390]){const ctx=await b.newContext({viewport:{width:w,height:700}});await ctx.addInitScript(()=>{localStorage.setItem('asc-u-cfg',JSON.stringify({version:1,name:'T',startDate:'2026-11-20',quests:[{id:'a',title:'Estudar',xp:20,stat:'mente',main:true}]}));localStorage.setItem('asc-u-prog',JSON.stringify({log:{},rpg:{cls:'mago'},gd:{off:1}}));});
   const p=await ctx.newPage();await p.goto(U);await p.waitForTimeout(1200);
