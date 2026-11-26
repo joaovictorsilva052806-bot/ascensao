@@ -102,7 +102,8 @@ for(const [route,pre] of [['comecar/','asc-u'],['','ascensao']]){const tag=route
   await tap(p,'#fjPilT');ok(tag+' D: tirar os pilares',!(await CF(p,pre)).quests.some(q=>/^fj_/.test(q.id))&&(await LS(p,pre)).forja.pil===false);
   ok(tag+' D: console limpo',errs.length===0,errs.join(' | '));await ctx.close();
   // F: faltou na quarta (sexta-feira, último treino na segunda): recaída sem culpa
-  ({ctx,p,errs}=await open(route,pre,P({forja:FJ({ses:[{d:'2026-11-23',tipo:'A',min:30,r:0}]})}),'2026-11-27T10:00:00'));
+  // quem já treina não está no 1º uso: guia escondido (no 1º uso a Forja desce de propósito, #111/#131)
+  ({ctx,p,errs}=await open(route,pre,P({gd:{off:1},forja:FJ({ses:[{d:'2026-11-23',tipo:'A',min:30,r:0}]})}),'2026-11-27T10:00:00'));
   ok(tag+' F: faltou 1 dia, mensagem sem culpa',(await p.textContent('#fjCard')).includes('Faltou na qua? Normal'),await p.textContent('#fjCard'));
   ok(tag+' F: card antes das tarefas no dia de treino',await p.evaluate(()=>{const c=document.getElementById('fjCard');return !!(c.nextElementSibling&&c.nextElementSibling.querySelector('#quests'));}));
   ok(tag+' F: console limpo',errs.length===0,errs.join(' | '));await ctx.close();
