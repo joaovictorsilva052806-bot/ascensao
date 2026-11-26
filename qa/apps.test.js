@@ -66,6 +66,8 @@ for(const [nome,dev] of [['iPhone',devices['iPhone 13']],['Android',devices['Pix
   ok(nome+': tarefa sem horário e sem app fica limpa',!(await p.$('#quests .quest[data-q="t_nt"] .qapp')));
   ok(nome+': sem erro de console',!errs.length,errs.join(' | '));await c.close();}
 {const c=await b.newContext({viewport:{width:390,height:844}});const p=await c.newPage();const errs=[];p.on('pageerror',e=>errs.push(e.message));
+  await c.addInitScript(()=>{try{localStorage.setItem('ascensao-sync','https://script.google.com/macros/s/teste/exec');}catch(e){}});
+  await c.route(/script\.google\.com/,r=>r.fulfill({status:200,contentType:'application/json',body:'{}'}));
   await p.goto(B+'/');await p.waitForTimeout(1500);ok('raiz: módulo carregado',(await p.content()).includes('apDecorate'));
-  ok('raiz: sem atalho de criar (tarefas vêm da planilha)',!(await p.$('#apAddRow')));ok('raiz: sem erro de página',!errs.length,errs.join(' | '));await c.close();}
+  ok('raiz com planilha: sem atalho de criar (a sincronização sobrescreve)',!(await p.$('#apAddRow')));ok('raiz: sem erro de página',!errs.length,errs.join(' | '));await c.close();}
 await b.close();console.log(R.join('\n'));const f=R.filter(x=>x.startsWith('FAIL')).length;console.log((R.length-f)+'/'+R.length);process.exit(f?1:0);})();
