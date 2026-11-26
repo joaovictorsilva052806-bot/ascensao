@@ -11,9 +11,9 @@ async function ctxNew(vp){const ctx=await b.newContext({viewport:vp||{width:390,
   await ctx.route('https://docs.google.com/**',r=>{if(r.request().method()==='POST'){posts.push(decodeURIComponent((r.request().postData()||'').replace(/\+/g,' ')));return r.fulfill({status:200,body:''});}return r.fulfill({status:200,contentType:'text/csv',body:'nome,xp,nivel\n'});});
   const p=await ctx.newPage();p.on('pageerror',e=>errs.push(e.message));await p.clock.install({time:new Date(T+'T20:00:00')});return {ctx,p,posts,errs};}
 const A=posts=>posts.filter(x=>/entry\.807978446=A\|/.test(x));
-async function comecar(age,tele,qs){const c=await ctxNew();await c.p.goto(U+'comecar/');
+async function comecar(age,tele,qs){const c=await ctxNew();await c.p.goto(U+'comecar/__seed__');
   await c.p.evaluate(([cf,o,t])=>{localStorage.setItem('asc-u-cfg',JSON.stringify(cf));localStorage.setItem('asc-u-prog',JSON.stringify(o));for(const k of ['asc-u-season','asc-u-perm','asc-u-intro'])localStorage.setItem(k,'2');if(t)localStorage.setItem('asc-u-tele',JSON.stringify(t));},[CFG(age),PROG(qs),tele]);
-  await c.p.reload();await c.p.waitForTimeout(3000);return c;}
+  await c.p.goto(U+'comecar/');await c.p.waitForTimeout(3000);return c;}
 // 1) opt-in: 1ª missão e dia fechado viram etapas anônimas, 1 vez por dia
 {const c=await comecar('adult',{on:true,asked:true,uid:'u1',nick:'Fulano'},['q1','s_fech']);
   const a=A(c.posts);ok('opt-in: etapa 7-quest enviada',a.some(x=>/=A\|a\w+\|7-quest\|20261126\|/.test(x)),a.join(' / '));
@@ -40,8 +40,8 @@ for(const vp of [{width:390,height:844},{width:1280,height:800}]){const tag=vp.w
   await c.ctx.route('https://script.google.com/**',r=>{const u=r.request().url();reqs.push(u);if(u.startsWith(PEX))return r.fulfill({status:200,contentType:'application/json',body:JSON.stringify(PAINEL)});
     if(r.request().method()==='POST')return r.fulfill({status:200,contentType:'application/json',body:'{"ok":true}'});
     return r.fulfill({status:200,contentType:'application/json',body:JSON.stringify({config:CFG('adult'),progress:PROG(['q1','s_fech'])})});});
-  await c.p.goto(U);await c.p.evaluate(([e,pe,cf,o])=>{localStorage.setItem('ascensao-sync',e);localStorage.setItem('ascensao-painel',JSON.stringify({url:pe,k:'k'.repeat(24)}));localStorage.setItem('ascensao-cfg',JSON.stringify(cf));localStorage.setItem('ascensao-prog',JSON.stringify(o));for(const k of ['ascensao-season','ascensao-perm','ascensao-intro'])localStorage.setItem(k,'2');},[EXEC,PEX,CFG('adult'),PROG(['q1','s_fech'])]);
-  await c.p.reload();for(let i=0;i<5;i++){await c.p.waitForTimeout(2500);await c.p.evaluate(()=>{for(const m of document.querySelectorAll('.sysmodal:not(#tlModal)'))if(m.getClientRects().length)m.remove();});}
+  await c.p.goto(U+'__seed__');await c.p.evaluate(([e,pe,cf,o])=>{localStorage.setItem('ascensao-sync',e);localStorage.setItem('ascensao-painel',JSON.stringify({url:pe,k:'k'.repeat(24)}));localStorage.setItem('ascensao-cfg',JSON.stringify(cf));localStorage.setItem('ascensao-prog',JSON.stringify(o));for(const k of ['ascensao-season','ascensao-perm','ascensao-intro'])localStorage.setItem(k,'2');},[EXEC,PEX,CFG('adult'),PROG(['q1','s_fech'])]);
+  await c.p.goto(U);for(let i=0;i<5;i++){await c.p.waitForTimeout(2500);await c.p.evaluate(()=>{for(const m of document.querySelectorAll('.sysmodal:not(#tlModal)'))if(m.getClientRects().length)m.remove();});}
   ok(tag+' criador: não pede aceite para ele mesmo',!(await c.p.locator('#tlModal').count()));
   ok(tag+' criador: nenhuma etapa anônima enviada',!A(c.posts).length,A(c.posts).join(' / '));
   await c.p.evaluate(()=>{for(const m of document.querySelectorAll('.sysmodal'))m.remove();const l=document.getElementById('levelup');if(l)l.hidden=true;document.querySelector('#tabbar [data-go="criador"]').click();});

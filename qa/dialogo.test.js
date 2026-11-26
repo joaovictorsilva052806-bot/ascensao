@@ -17,9 +17,9 @@ for(const [route,pre] of [['comecar/','asc-u'],['','ascensao']])for(const rm of 
   const ctx=await b.newContext({viewport:{width:390,height:844},reducedMotion:rm});const p=await ctx.newPage();const errs=[];
   p.on('pageerror',e=>errs.push(e.message));p.on('console',m=>{if(m.type()==='error'&&!/Failed to load resource|ERR_|navigator.vibrate/.test(m.text()))errs.push(m.text())});
   await p.route(/^https?:\/\/(?!localhost)/,r=>r.abort());
-  await p.clock.install({time:new Date('2026-11-26T10:00:00')});await p.goto(U+route);
+  await p.clock.install({time:new Date('2026-11-26T10:00:00')});await p.goto(U+route+'__seed__');
   await p.evaluate(([c,o,pre])=>{localStorage.clear();localStorage.setItem(pre+'-cfg',JSON.stringify(c));localStorage.setItem(pre+'-prog',JSON.stringify(o));localStorage.setItem(pre+'-season','2');localStorage.setItem('asc-u-perm','1');localStorage.setItem('asc-u-intro','1');localStorage.setItem(pre+'-tele',JSON.stringify({asked:1}));},[CFG,PROG,pre]);
-  await p.reload();const tag=(route||'/')+(rm==='reduce'?' (reduce-motion)':'')+': ';
+  await p.goto(U+route);const tag=(route||'/')+(rm==='reduce'?' (reduce-motion)':'')+': ';
   // 1) a primeira janela do Sistema que abrir (check-in do dia)
   await p.waitForSelector('.sysmodal button.go',{state:'visible',timeout:10000});await p.waitForTimeout(400);
   const info=await p.evaluate(()=>{const m=[...document.querySelectorAll('.sysmodal')].find(x=>!x.hidden&&x.getClientRects().length);
