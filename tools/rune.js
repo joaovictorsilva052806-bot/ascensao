@@ -24,6 +24,13 @@ function rnCrit(x,y){const d=document.createElement("div");d.className="rncrit";
   d.style.left=x+"px";d.style.top=(y-56)+"px";document.body.append(d);setTimeout(()=>d.remove(),1500);}
 if(typeof fx==="function"){const _fx=fx;fx=function(xp,gold){const r=_fx.apply(this,arguments);try{rnCircle(rnX,rnY,gold);if(gold)rnCrit(rnX,rnY);}catch(e){}return r;};}
 
+// 4) Level up: círculo mágico grande girando atrás do card
+function rnLevel(){const l=$("levelup");if(!l||l.querySelector(".rnlv"))return;const ns="http://www.w3.org/2000/svg",s=document.createElementNS(ns,"svg");s.setAttribute("class","rnlv");s.setAttribute("viewBox","0 0 200 200");s.setAttribute("aria-hidden","true");
+  let tk="";for(let i=0;i<72;i++){const a=i*5*Math.PI/180,r1=i%6?92:88;tk+=`M${(100+r1*Math.cos(a)).toFixed(1)} ${(100+r1*Math.sin(a)).toFixed(1)}L${(100+95*Math.cos(a)).toFixed(1)} ${(100+95*Math.sin(a)).toFixed(1)}`;}
+  s.innerHTML='<g class="a"><circle cx="100" cy="100" r="96"/><path d="'+tk+'"/></g><g class="b">'+rnRing(100,100,74,16,.6)+'<circle cx="100" cy="100" r="62"/></g><g class="c"><path d="M100 40L152 130H48Z M100 160L48 70H152Z"/><circle cx="100" cy="100" r="40"/></g>';
+  l.prepend(s);}
+try{const l=$("levelup");if(l){rnLevel();}}catch(e){}
+
 // 3) Baú: rola um d20 antes do prêmio (o prêmio já está sorteado; o dado só mostra a raridade)
 function rnD20(n){return '<svg class="rnd20" viewBox="0 0 100 100" aria-hidden="true"><path class="f" d="M50 4L90 27V73L50 96L10 73V27Z"/><path class="l" d="M50 22L22 66H78Z M50 4L50 22M10 27L50 22M10 27L22 66M90 27L50 22M90 27L78 66M10 73L22 66M90 73L78 66M50 96L22 66M50 96L78 66"/><text x="50" y="52" text-anchor="middle" dominant-baseline="middle">'+n+'</text></svg>';}
 function rnRoll(out){if(!out||out.dataset.rn)return;out.dataset.rn="1";

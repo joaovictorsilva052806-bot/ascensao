@@ -25,6 +25,10 @@ for(const rm of ['no-preference','reduce']){const ctx=await b.newContext({viewpo
   const c=await p.evaluate(()=>!!document.querySelector('.rncirc'));ok(`Feito ${rm}: círculo rúnico ${rm==='reduce'?'desligado':'aparece'}`,rm==='reduce'?!c:c);
   ok(`Feito ${rm}: quest concluída`,await p.evaluate(id=>{const k=Object.keys(localStorage).find(k=>/prog$/.test(k));const o=JSON.parse(localStorage.getItem(k)||'{}');return Object.values(o.log||{}).some(l=>l.some(e=>e.q===id));},id));
   ok(`Feito ${rm}: missão cumprida ganha selo`,await p.evaluate(id=>{const q=document.querySelector(`.quest.done[data-q="${id}"]`);return !!q&&getComputedStyle(q,'::after').content.includes('✓');},id));
+  await p.evaluate(()=>{for(const m of document.querySelectorAll('.sysmodal'))m.remove();const l=document.getElementById('levelup');if(l)l.hidden=false;});await p.waitForTimeout(150);
+  ok(`Level up ${rm}: círculo mágico atrás do card`,await p.evaluate(()=>!!document.querySelector('#levelup .rnlv[aria-hidden=true]')));
+  {let cl=false;for(let k=0;k<4&&!cl;k++){await p.evaluate(()=>{for(const m of document.querySelectorAll('.sysmodal'))m.remove();});cl=await p.locator('#luClose').click({timeout:1500}).then(()=>true).catch(()=>false);}ok(`Level up ${rm}: Continuar clicável`,cl);}
+  ok(`Level up ${rm}: sem rolagem lateral`,await p.evaluate(()=>document.documentElement.scrollWidth<=innerWidth));
   ok(`Feito ${rm}: sem erro de JS`,!errs.length,errs.join(' | '));await ctx.close();}
 {const ctx=await b.newContext({viewport:{width:390,height:844}});const p=await ctx.newPage();const errs=[];p.on('pageerror',e=>errs.push(e.message));await p.goto(U);await p.waitForTimeout(800);ok('raiz: sem erro de JS',!errs.length,errs.join(' | '));await ctx.close();}
 await b.close();console.log(R.join('\n'));console.log(R.filter(x=>x.startsWith('PASS')).length+'/'+R.length);process.exit(R.some(x=>x.startsWith('FAIL'))?1:0);})();

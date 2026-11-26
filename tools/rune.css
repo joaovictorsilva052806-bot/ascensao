@@ -43,8 +43,19 @@
   background:radial-gradient(circle at 35% 30%,#d9a441,#8a5a12 70%);box-shadow:0 0 0 2px rgba(2,7,13,.9),0 0 0 3px rgba(242,193,78,.7),0 0 10px rgba(242,193,78,.45);transform:rotate(-12deg);pointer-events:none;z-index:2}
 .quest.done.pop::after{animation:rnStamp .5s cubic-bezier(.3,1.4,.5,1) .12s both}
 
+/* Level up: círculo mágico atrás do card */
+@keyframes rnLvIn{from{opacity:0;transform:scale(.4) rotate(-60deg)}to{opacity:.9;transform:none}}
+.levelup{isolation:isolate}
+.rnlv{position:absolute;left:50%;top:50%;width:min(118vw,520px);height:min(118vw,520px);margin:calc(min(118vw,520px)/-2) 0 0 calc(min(118vw,520px)/-2);pointer-events:none;z-index:-1;opacity:.9;filter:drop-shadow(0 0 6px rgba(0,212,255,.6))}
+.levelup:not([hidden]) .rnlv{animation:rnLvIn .7s cubic-bezier(.2,.8,.2,1) both}
+.rnlv circle,.rnlv path{fill:none;stroke:var(--accent);stroke-width:1.2;vector-effect:non-scaling-stroke;stroke-linecap:round}
+.rnlv g{transform-origin:100px 100px;transform-box:view-box}
+.rnlv .a{opacity:.5;animation:rnSpin 30s linear infinite}
+.rnlv .b{opacity:.7;animation:rnSpin 18s linear infinite reverse}
+.rnlv .c path{stroke:var(--gold,#f2c14e);opacity:.55}.rnlv .c{animation:rnSpin 40s linear infinite}
+
 @media (prefers-reduced-motion:reduce){
-  .quest.done.pop::after,.hxorb .rn,.rnroll .rnd20,.rnroll.land .rnd20,.rnroll.nat.land .rnd20{animation:none!important}
+  .levelup:not([hidden]) .rnlv,.rnlv g,.quest.done.pop::after,.hxorb .rn,.rnroll .rnd20,.rnroll.land .rnd20,.rnroll.nat.land .rnd20{animation:none!important}
   .rncirc,.rncrit{display:none!important}
   .rnlbl{transition:none}
 }
