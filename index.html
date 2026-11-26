@@ -1292,6 +1292,10 @@ section[data-hbg]>:not(.hrbg){position:relative;z-index:1}
 @keyframes hrHop{0%{translate:0 0}30%{translate:0 -10px}60%{translate:0 0}75%{translate:0 -4px}100%{translate:0 0}}
 @media (prefers-reduced-motion:reduce){.hrbox,.hav.hrhop{animation:none}}
 @media (max-width:360px){.hrat{grid-template-columns:1fr;justify-items:center}.hrtog .hrnx{display:none}}
+/* Comece por aqui compacto: só o passo da vez */
+.gd.gdmini .gdl li:not(.now),.gd.gdmini .gdoff{display:none}
+.gd .qhead[role=button]{cursor:pointer}
+.gd.gdmini .qhead .xp::after{content:" ▾"}
 /* ---- Arena do Sistema (tools/arena.js) ---- */
 .arhd,.lrhd{display:flex;justify-content:space-between;align-items:center;gap:8px;margin-bottom:6px}
 .arhd h2,.lrhd h2{margin:0}
@@ -4506,6 +4510,10 @@ function gtHero(){let h=$("gtHero");const st=$("dayPill");const host=st&&st.clos
   h.hidden=false;h.textContent="";let tier="";try{tier=lgName(lgSt().t);}catch(e){}
   const hd=gtEl("div","gthd");hd.append(gtEl("h2",null,"🏆 Ranking da semana"),gtEl("span","gtclock","⏳ fecha em "+tmLeft()));h.append(hd);
   const n=(rankRows||[]).length;
+  const held=!on&&prog.rank&&prog.rank.hold&&!prog.rank.par;
+  if(held){h.append(gtEl("p","gtlead","Seu nome saiu do ranking por enquanto."),gtEl("p","sm muted","Para quem tem 14 a 17 anos, agora o responsável precisa autorizar. Seu apelido, seus amigos e seu XP continuam guardados."));
+    const row=gtEl("div","row");const b=gtEl("button","go","Confirmar autorização");b.type="button";b.addEventListener("click",()=>{joinRank("autorizou");setTimeout(gtHero,500);});
+    const x=gtEl("button","link","Agora não");x.type="button";x.addEventListener("click",()=>{const d=new Date();d.setDate(d.getDate()+3);g.hx=dkey(d);save();h.hidden=true;});row.append(b,x);h.append(row);return;}
   if(!on){h.append(gtEl("p","gtlead",n?n+" pessoa"+(n>1?"s estão":" está")+" disputando a semana. Falta você.":"A semana está aberta. Seja o primeiro a pontuar."));
     const peek=gtEl("div","gtpeek");(rankRows||[]).slice(0,5).forEach((r,i)=>{const d=gtEl("span","gtpk");d.innerHTML=tmAv((typeof sqPub!=="undefined"&&sqPub[gtN(r.n)]||{}).av,34);d.title=r.n;d.style.zIndex=String(9-i);peek.append(d);});if(peek.children.length)h.append(peek);
     h.append(gtEl("p","sm muted",isMinor()?"Só aparece um apelido e o XP da semana. Nenhuma tarefa sai do seu celular.":"Aparece só o apelido (ou 1º nome) e o XP da semana. Os 3 primeiros sobem de liga."));
@@ -4533,8 +4541,15 @@ function gtHero(){let h=$("gtHero");const st=$("dayPill");const host=st&&st.clos
   const msg=gtEl("div","sm gtmsg");msg.setAttribute("role","status");c.append(msg);
   const row=gtEl("div","row");const ok=gtEl("button","go","Entrar");ok.type="button";const no=gtEl("button","ghost","Agora não");no.type="button";row.append(ok,no);c.append(row);
   ok.addEventListener("click",()=>{const n=cleanNick(nk.value);if(!n){msg.textContent="Escolha um apelido.";nk.focus();return;}if(!par.checked){msg.textContent=teen?"Para quem tem 14 a 17 anos, o responsável precisa autorizar.":"Marque a confirmação para entrar.";return;}
-    prog.rank=Object.assign(prog.rank||{},{nick:n,par:new Date().toISOString().slice(0,10)});save();m.remove();_jr.apply(null,args);try{tmUI();gtHero();}catch(e){}});
+    prog.rank=Object.assign(prog.rank||{},{nick:n,par:new Date().toISOString().slice(0,10)});delete prog.rank.hold;save();m.remove();_jr.apply(null,args);try{tmUI();gtHero();}catch(e){}});
   no.addEventListener("click",()=>m.remove());m.append(c);document.body.append(m);setTimeout(()=>nk.focus(),60);};}
+
+// LGPD: quem tem 14-17 (ou idade não informada no /comecar/) e já estava no ranking sem a autorização gravada sai da lista
+// até confirmar. Nada se apaga: apelido, uid e amigos ficam; só para de enviar e mostra o aviso (prog.rank.hold = data).
+function gtNeedHold(){try{const r=prog.rank;return !!(r&&r.on&&!r.par&&cfg&&!cfg.blank&&isMinor()&&ageNow()!=="kid");}catch(e){return false;}}
+function gtHold(){if(!gtNeedHold())return false;prog.rank.on=false;prog.rank.hold=todayKey();save();return true;}
+{const _sr=sendRank;sendRank=function(){if(gtHold()){try{renderRankUI();}catch(e){}return;}return _sr.apply(this,arguments);};}
+{const _r=render;render=function(){try{gtHold();}catch(e){}return _r.apply(this,arguments);};}
 setTimeout(()=>{try{gtSync();gtHero();}catch(e){}},0);
 // ---------- Desafio em dupla: chame um amigo ou aliado do Esquadrão para o mesmo desafio relâmpago do dia ----------
 // Canal: o mesmo formulário do ranking, linha K (como parabéns/cutucar): K|de|para|d-<desafio> (convite), da-<desafio> (aceite), dk-<desafio> (feito).
@@ -5735,6 +5750,12 @@ function hrOrder(){const q=$("quests")&&$("quests").closest("section");const z=$
   if(q.nextElementSibling!==z)q.after(z);const g=$("gdPanel");if(g&&(q.compareDocumentPosition(g)&Node.DOCUMENT_POSITION_FOLLOWING)){const sb=$("smBar");(sb&&sb.nextElementSibling===q?sb:q).before(g);}}
 {const _r3=render;render=function(){_r3.apply(this,arguments);try{hrOrder();}catch(e){}};}
 setTimeout(()=>{try{hrOrder();}catch(e){}},50);
+// "Comece por aqui": depois do 1º passo feito, vira uma linha só (o passo da vez); toque no título mostra os 3 de novo.
+function hrGuide(){const p=$("gdPanel");if(!p)return;const ok=p.querySelectorAll(".gdl li.ok").length;const mini=ok>0&&!p.dataset.full;p.classList.toggle("gdmini",mini);
+  const h=p.querySelector(".qhead");if(h&&!h.dataset.hr){h.dataset.hr="1";h.setAttribute("role","button");h.tabIndex=0;h.addEventListener("click",()=>{if(p.dataset.full)delete p.dataset.full;else p.dataset.full="1";hrGuide();});}
+  if(h)h.setAttribute("aria-expanded",mini?"false":"true");}
+{const _r4=render;render=function(){_r4.apply(this,arguments);try{hrGuide();}catch(e){}};}
+setTimeout(()=>{try{hrGuide();}catch(e){}},80);
 
 // ---------- Arena do Sistema: batalha por turnos com d20, movida pelos 8 atributos ----------
 // O herói é a própria pessoa: os números saem de atLevels() (atributos que sobem com tarefas reais).
