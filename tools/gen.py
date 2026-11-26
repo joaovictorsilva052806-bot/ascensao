@@ -1,5 +1,7 @@
-import os; SP=os.path.dirname(os.path.abspath(__file__))+'/'
+import os,sys; SP=os.path.dirname(os.path.abspath(__file__))+'/'
 import re
+# --root: mesmo app dos testadores para o JV (/ascensao/), com as chaves de dados dele, a planilha e a aba Criador
+ROOT='--root' in sys.argv
 s=open(SP+'base.html').read()
 def rep(a,b,n=1):
     global s
@@ -12,14 +14,14 @@ rep('<div class="toast" id="toast" hidden></div>',R('foco-room.html')+'<div clas
 rep('document.addEventListener("visibilitychange",()=>{if(!document.hidden)focusUI();});','document.addEventListener("visibilitychange",()=>{if(!document.hidden)focusUI();});\n'+R('foco.js'))
 rep('<title>Ascension</title>','<title>Ascension</title>')
 rep('<h2>Quests de hoje</h2>','<h2>Tarefas de hoje</h2>')
-rep('href="icon-180.png"','href="../icon-180.png"');rep('<link rel="icon" href="icon-192.png">','<link rel="icon" href="../icon-192.png">')
-s=s.replace('"ascensao-prog"','"asc-u-prog"').replace('"ascensao-cfg"','"asc-u-cfg"').replace('"ascensao-sync"','"asc-u-sync"')
+if not ROOT: rep('href="icon-180.png"','href="../icon-180.png"');rep('<link rel="icon" href="icon-192.png">','<link rel="icon" href="../icon-192.png">')
+if not ROOT: s=s.replace('"ascensao-prog"','"asc-u-prog"').replace('"ascensao-cfg"','"asc-u-cfg"').replace('"ascensao-sync"','"asc-u-sync"')
 rep('placeholder="Ex.: mandar a proposta pro cliente"','placeholder="Ex.: entregar a lista de Cálculo"')
 rep('placeholder="Ex.: mandar mensagem pro corretor que eu travo de chamar"','placeholder="Ex.: tirar minha dúvida com o professor"')
 rep('class="panel faith">','class="panel faith" id="faithPanel">')
 rep('<h2>Sincronizar com a Eva</h2>\n    <label for="syncUrl" class="sm muted">Endereço da planilha (a Eva te passa uma vez)</label>\n    <div class="add"><input id="syncUrl" placeholder="https://script.google.com/macros/s/.../exec" autocomplete="off"><button class="go" type="button" id="syncSave">Salvar</button></div>\n    <button class="go" type="button" id="syncPaste2">Colar e sincronizar</button>\n    <div class="sm muted" id="sync">Sem sincronização: o progresso fica só neste aparelho.</div>',
  '<h2>Ajustes e backup</h2>\n    <div class="row"><button type="button" class="ghost" id="redo">Refazer meu perfil (troca as tarefas, mantém XP e histórico)</button></div>\n    <div class="row"><button type="button" class="link" id="introMais">Ver a apresentação de novo</button></div>\n    <div class="sm muted" id="sync">Seu progresso fica só neste aparelho.</div>\n    <details>\n      <summary>Sincronizar com planilha (opcional)</summary>\n      <label for="syncUrl" class="sm muted">Endereço do Apps Script /exec</label>\n      <div class="add"><input id="syncUrl" placeholder="https://script.google.com/macros/s/.../exec" autocomplete="off"><button class="go" type="button" id="syncSave">Salvar</button></div>\n      <button class="go" type="button" id="syncPaste2">Colar e sincronizar</button>\n    </details>')
-rep('$("syncCard").hidden=!!SYNC;','$("syncCard").hidden=true;')
+if not ROOT: rep('$("syncCard").hidden=!!SYNC;','$("syncCard").hidden=true;')
 rep('a Eva lê seu placar.','placar atualizado.')
 rep('<li><b>Chefe da semana:</b> abordagens e follow-ups tiram vida dele. Derrotou, ganha 100 XP.','<li><b>Chefe da semana:</b> suas quests principais tiram vida dele. Derrotou, ganha XP extra.')
 rep('const STATS={foco:"Foco",vendas:"Vendas",mente:"Mente",corpo:"Corpo"};','const STATS={foco:"Foco",vendas:"Metas",mente:"Mente",corpo:"Corpo"};')
@@ -38,7 +40,7 @@ rep('for(const [id,name,,xp,test] of ACH)','for(const [id,name,,xp,test] of (ACH
 rep('$("achCount").textContent=got+" / "+ACH.length;','$("achCount").textContent=got+" / "+ACH.length;$("faithPanel").hidden=!(cfg&&cfg.faith);')
 rep('"serviceWorker" in navigator','"serviceWorker" in navigator&&location.protocol==="https:"')
 # replace default cfg with blank
-s=re.sub(r'const DEFAULT_CFG=\{.*?\};\n','const DEFAULT_CFG={"version":1,"quests":[],"blank":true};\n',s,count=1,flags=re.S)
+if not ROOT: s=re.sub(r'const DEFAULT_CFG=\{.*?\};\n','const DEFAULT_CFG={"version":1,"quests":[],"blank":true};\n',s,count=1,flags=re.S)
 onb_html=open(SP+'onb.html').read()
 onb_js=open(SP+'onb.js').read()
 onb_css=open(SP+'onb.css').read()
@@ -97,7 +99,7 @@ ci=open(SP+'checkin.js').read()
 rep('\nlet saveTimer=null, SYNC="";','\n'+ci+'\nlet saveTimer=null, SYNC="";')
 rep('applyCopy();renderEd();renderAdj();renderRPG();betaUI();','applyCopy();renderEd();renderAdj();renderRPG();betaUI();setTimeout(dailyCheckin,600);')
 s=s.replace('<h2>Check-in</h2>','<h2>Como você está</h2>')
-s=s.replace('String(e.q).startsWith("ach:")','/^(ach|checkin|tip|dun|sq|zap|ch):/.test(String(e.q))')
+s=s.replace('String(e.q).startsWith("ach:")','/^(ach|checkin|tip|dun|sq|zap|ch|adm):/.test(String(e.q))')
 rep('e qualquer pessoa com o app vê a lista.";','e qualquer pessoa com o app vê a lista. O criador do app também vê em que dias você fez check-in.";')
 rep('No ranking aparece só o seu apelido e o XP da semana. Nenhum','No ranking aparece só o seu apelido e o XP da semana (o criador do app também vê os dias de check-in). Nenhum')
 rep('</style></head>',open(SP+'quick.css').read()+'</style></head>')
@@ -144,6 +146,41 @@ rep('</style></head>',open(SP+'qtidy.css').read()+'</style></head>')
 rep('\nlet saveTimer=null, SYNC="";','\n'+open(SP+'qtidy.js').read()+'\nlet saveTimer=null, SYNC="";')
 # aba Amigos: liga, turma, novidades, parabéns e cutucar (tools/turma.*)
 rep('</style></head>',open(SP+'turma.css').read()+open(SP+'card.css').read()+'</style></head>')
-rep('\nlet saveTimer=null, SYNC="";','\n'+open(SP+'turma.js').read()+open(SP+'card.js').read()+'\nlet saveTimer=null, SYNC="";')
-open('comecar/index.html','w').write(s)
+rep('\nlet saveTimer=null, SYNC="";','\n'+open(SP+'daily.js').read()+open(SP+'turma.js').read()+open(SP+'card.js').read()+open(SP+'duo.js').read()+'\nlet saveTimer=null, SYNC="";')
+# chefão da turma, baú do dia e mural/figurinhas (tools/boss.*, tools/chest.*, tools/mural.*)
+rep('</style></head>',R('boss.css')+R('chest.css')+R('mural.css')+R('attr.css')+'</style></head>')
+rep('\nlet saveTimer=null, SYNC="";','\n'+R('boss.js')+R('chest.js')+R('mural.js')+R('attr.js')+'\nlet saveTimer=null, SYNC="";')
+# celular de verdade: 📅 agenda e tarefas de apps (tools/apps.*)
+rep('</style></head>',R('apps.css')+'</style></head>')
+rep('\nlet saveTimer=null, SYNC="";','\n'+R('apps.js')+'\nlet saveTimer=null, SYNC="";')
+rep('</style></head>',R('holo.css')+R('rune.css')+'</style></head>')
+rep('\nlet saveTimer=null, SYNC="";','\n'+R('holo.js')+R('rune.js')+'\nlet saveTimer=null, SYNC="";')
+rep('</style></head>',R('sistema.css')+'</style></head>')
+rep('\nlet saveTimer=null, SYNC="";','\n'+R('sistema.js')+'\nlet saveTimer=null, SYNC="";')
+rep('</style></head>',R('foco2.css')+'</style></head>')
+rep('\nlet saveTimer=null, SYNC="";','\n'+R('foco2.js')+R('foco-duo.js')+'\nlet saveTimer=null, SYNC="";')
+if not ROOT: open('comecar/index.html','w').write(s)
 pass
+
+if ROOT:
+    # chaves de dados do JV (nada muda no aparelho dele) e aba Criador
+    s=s.replace('"asc-u-','"ascensao-').replace("'asc-u-","'ascensao-")
+    # app do criador: sem cartão "Conectar ao sistema" para visitante (liga por link #s=) e sem pedir para liberar o painel para ele mesmo
+    rep('$("syncCard").hidden=!!SYNC;','$("syncCard").hidden=true;')
+    rep('setTimeout(tlBoot,1200);','')
+    rep('function tlAsk(){','function tlAsk(){return;')
+    # app do criador (adulto): perfil vindo da planilha pode não ter faixa de idade
+    rep('const AGE_UNK_MINOR=true;','const AGE_UNK_MINOR=false;')
+    rep('const SYSTIP_KEY=document.getElementById("o_go")?"asc-"+"u-systip":"ascensao-systip";','const SYSTIP_KEY="ascensao-systip";')
+    # raiz: service worker como era antes da unificação (offline também em teste local)
+    s=s.replace('"serviceWorker" in navigator&&location.protocol==="https:"','"serviceWorker" in navigator')
+    rep('    </details>\n  </section>\n</div>','    </details>\n  </section>\n'+R('creator.html')+'</div>')
+    # resumo do beta no Criador (tools/painel.*): só lê o que o painel já recebe
+    rep('</style></head>',R('painel.css')+'</style></head>')
+    rep('Mais</button>\n</nav>','Mais</button>\n  <button type="button" data-go="criador" hidden><svg viewBox="0 0 24 24"><path d="M12 2l2.6 6.3L21 9l-5 4.4L17.5 20 12 16.6 6.5 20 8 13.4 3 9l6.4-.7z"/></svg>Criador</button>\n</nav>')
+    rep('let t0="hoje";try{t0=sessionStorage.getItem("asc-tab")||"hoje";}catch(e){}','let t0="hoje";try{t0=sessionStorage.getItem("asc-tab")||"hoje";}catch(e){}if(t0==="criador"&&!crOn())t0="hoje";')
+    rep('\nlet saveTimer=null, SYNC="";','\n'+R('creator.js')+R('painel.js')+'\n// planilha ligada e tarefas chegaram: fecha o cadastro de pessoa nova se estiver aberto\n{const _rr=render;render=function(){_rr.apply(this,arguments);try{if(cfg&&!cfg.blank&&cfg.quests&&cfg.quests.length&&document.body.classList.contains("onboarding")&&localStorage.getItem("ascensao-sync")){for(const id of ["onb","quick","intro"]){const e=$(id);if(e)e.hidden=true;}document.body.classList.remove("onboarding");}}catch(e){}};}\nlet saveTimer=null, SYNC="";')
+    rep('setTimeout(dailyCheckin,600);','setTimeout(dailyCheckin,600);crApply();crRender();')
+    # com planilha ligada, as tarefas vêm dela: nunca abrir o cadastro de pessoa nova
+    rep('if(!cfg||cfg.blank||!cfg.quests||!cfg.quests.length)openOnb();','if((!cfg||cfg.blank||!cfg.quests||!cfg.quests.length)&&!(()=>{try{return localStorage.getItem("ascensao-sync");}catch(e){return "";}})())openOnb();')
+    open(SP+'../index.html','w').write(s)

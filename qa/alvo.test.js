@@ -15,7 +15,7 @@ const faixa=(p,sel)=>p.$eval(sel,e=>{const r=e.getBoundingClientRect(),x=r.left+
   while(a<40&&e.contains(document.elementFromPoint(x,c-a-1)))a++;while(b<40&&e.contains(document.elementFromPoint(x,c+b+1)))b++;return {alt:Math.round(r.height),hit:a+b+1};});
 (async()=>{const b=await chromium.launch();
 for(const [nome,vp] of [['celular',{width:390,height:844}],['desktop',{width:1280,height:800}]]){
-  const c=await b.newContext({viewport:vp,timezoneId:'America/Sao_Paulo'});const p=await c.newPage();const errs=[];p.on('pageerror',e=>errs.push(e.message));
+  const c=await b.newContext({viewport:vp,timezoneId:'America/Sao_Paulo'});await c.clock.install({time:new Date('2026-11-26T12:00:00-03:00')});const p=await c.newPage();const errs=[];p.on('pageerror',e=>errs.push(e.message));
   p.on('console',m=>{if(m.type()==='error'&&!/ERR_TUNNEL|ERR_PROXY|Failed to load resource|vibrate/.test(m.text()))errs.push(m.text());});
   await p.goto(B+'/comecar/');await p.waitForTimeout(800);await onboard(p);await p.waitForTimeout(600);
   await p.evaluate(()=>scrollTo(0,0));

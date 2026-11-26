@@ -25,10 +25,10 @@ for(const [nome,vp,rm] of [['celular',{width:390,height:844},'no-preference'],['
   await ctx.route('https://script.google.com/**',r=>{const u=r.request().url();if(r.request().method()==='POST'){posts.push(r.request().postData()||'');return r.fulfill({status:200,contentType:'application/json',body:'{"ok":true}'});}
     if(/[?&]k=/.test(u))return r.fulfill({status:200,contentType:'application/json',body:JSON.stringify(PAINEL)});
     return r.fulfill({status:200,contentType:'application/json',body:JSON.stringify({config:CFG,progress:PROG})});});
-  await p.clock.install({time:new Date('2026-11-26T14:00:00')});await p.goto(U);
-  await p.evaluate(([c,o,s])=>{localStorage.setItem('ascensao-cfg',JSON.stringify(c));localStorage.setItem('ascensao-prog',JSON.stringify(o));localStorage.setItem('ascensao-sync',s);
+  // semente antes do 1º carregamento: sem isso, o salvamento atrasado da 1ª abertura (aparelho vazio) pode sobrescrever a semente
+  await ctx.addInitScript(([c,o,s])=>{if(sessionStorage.getItem('seed'))return;sessionStorage.setItem('seed','1');localStorage.setItem('ascensao-cfg',JSON.stringify(c));localStorage.setItem('ascensao-prog',JSON.stringify(o));localStorage.setItem('ascensao-sync',s);
     localStorage.setItem('ascensao-painel',JSON.stringify({k:'chave_de_teste_1234567890abcd'}));localStorage.setItem('ascensao-season','2');},[CFG,PROG,SYNC]);
-  await p.reload();await p.waitForTimeout(1500);
+  await p.clock.install({time:new Date('2026-11-26T14:00:00')});await p.goto(U);await p.waitForTimeout(1500);
   for(let i=0;i<6;i++){const g=p.locator('.sysmodal button.ghost, .sysmodal .go');if(await g.count()&&await g.first().isVisible())await g.first().dispatchEvent('click');await p.waitForTimeout(200);}
   await p.evaluate(()=>document.querySelectorAll('.sysmodal').forEach(m=>m.remove()));await p.locator('#tabbar [data-go="criador"]').click();await p.waitForTimeout(1200);
   const sum=p.locator('#bpSum');const txt=(await sum.textContent())||'';
@@ -46,7 +46,7 @@ for(const [nome,vp,rm] of [['celular',{width:390,height:844},'no-preference'],['
   const h=await p.evaluate(()=>JSON.parse(localStorage.getItem('ascensao-painel-hist')||'{}'));
   ok(nome+': histórico local guarda só a contagem do dia',JSON.stringify(h)==='{"20261126":2}',JSON.stringify(h));
   ok(nome+': painel não envia nada novo',!posts.some(x=>/bpSum|painel-hist/.test(x)));
-  const st=await p.evaluate(()=>JSON.parse(localStorage.getItem('ascensao-prog')));ok(nome+': progresso antigo intacto',st&&st.velho==='fica'&&st.log['2026-11-26'].length>=1);
+  const st=await p.evaluate(()=>JSON.parse(localStorage.getItem('ascensao-prog')));ok(nome+': progresso antigo intacto',st&&st.velho==='fica'&&st.log['2026-11-26'].length>=1,JSON.stringify(st).slice(0,300));
   const ov=await p.evaluate(()=>document.documentElement.scrollWidth<=innerWidth+1);ok(nome+': sem rolagem lateral',ov);
   ok(nome+': console sem erros',!errs.length,errs.join(' | '));
   await sum.screenshot({path:SP+'painel-'+nome+'.png'});
