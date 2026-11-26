@@ -518,7 +518,7 @@ function render(){
 function toast(msg){const t=$("toast");t.textContent=msg;t.hidden=false;clearTimeout(toast._t);toast._t=setTimeout(()=>t.hidden=true,2600);}
 
 let lastPt=null;document.addEventListener("pointerdown",e=>{lastPt={x:e.clientX,y:e.clientY,el:e.target.closest(".quest")};},true);
-function fx(xp,gold){try{if(navigator.vibrate)navigator.vibrate(gold?[12,40,18]:12);}catch(e){}
+function fx(xp,gold){try{const ua=navigator.userActivation;if(navigator.vibrate&&(!ua||ua.hasBeenActive))navigator.vibrate(gold?[12,40,18]:12);}catch(e){}
   if(!xp)return;const f=document.createElement("div");f.className="xpfloat"+(gold?" gold":"");f.textContent="+"+xp+" XP";
   const pt=lastPt||{x:innerWidth/2,y:innerHeight/2};f.style.left=pt.x+"px";f.style.top=(pt.y-20)+"px";document.body.append(f);setTimeout(()=>f.remove(),1200);}
 // ---------- Sequência (estilo Duolingo: descanso congela, não quebra) ----------
@@ -550,14 +550,17 @@ function toggle(q,kind){
   if(ex&&ex.kind===kind){prog.log[tk]=list.filter(e=>e!==ex);save();render();return;}
   const xp=kind==="min"?Math.ceil(q.xp/2):q.xp;
   // baú surpresa: 1 em 5, entre 5 e 25 XP
-  const bonus=(!ex&&Math.random()<0.2)?(5+Math.floor(Math.random()*5)*5):(ex?ex.bonus||0:0);
+  // o sorteio vale para o dia: desmarcar e marcar de novo não sorteia outra vez (nem tira o que já saiu)
+  const R=prog.roll=(prog.roll&&prog.roll.d===tk)?prog.roll:{d:tk,q:{}};const fresh=!ex&&R.q[q.id]==null;
+  if(fresh)R.q[q.id]=Math.random()<0.2?(5+Math.floor(Math.random()*5)*5):0;
+  const bonus=ex?ex.bonus||0:R.q[q.id];
   const entry={q:q.id,kind,xp,stat:q.stat||"foco",bonus,t:new Date().toISOString()};
   prog.log[tk]=list.filter(e=>e!==ex).concat([entry]);
-  save();render();fx(xp+(ex?0:bonus),!!(bonus&&!ex));
+  save();render();fx(xp+(ex?0:bonus),!!(bonus&&fresh));
   const qc=document.querySelector('.quest[data-q="'+CSS.escape(String(q.id))+'"]');if(qc)qc.classList.add("pop");
   const after=levelOf(totalXP());
   if(after>before)levelUp(after);
-  else if(bonus&&!ex)toast("Baú surpresa: +"+bonus+" XP");
+  else if(bonus&&fresh)toast("Baú surpresa: +"+bonus+" XP");
 }
 $("addForm").addEventListener("submit",ev=>{ev.preventDefault();const v=$("addInput").value.trim();if(!v)return;
   const tk=todayKey();const q={id:"x"+Date.now(),title:v,xp:10,stat:"foco"};prog.extra[tk]=(prog.extra[tk]||[]).concat([q]);$("addInput").value="";save();render();});
@@ -705,7 +708,7 @@ const icsDT=x=>x.getFullYear()+String(x.getMonth()+1).padStart(2,"0")+String(x.g
 const icsEsc=s=>String(s).replace(/[\;,]/g,m=>"\\"+m).replace(/\n/g,"\\n");
 function buildICS(){const L=["BEGIN:VCALENDAR","VERSION:2.0","PRODID:-//Ascensao//PT-BR","CALSCALE:GREGORIAN","METHOD:PUBLISH"];const st=icsDT(new Date());
   remPlan().forEach((r,i)=>{const s=nextDate(r.h,r.d),e=new Date(s.getTime()+10*60000);
-    L.push("BEGIN:VEVENT","UID:asc-"+i+"-"+st+"@ascensao","DTSTAMP:"+st,"DTSTART:"+icsDT(s),"DTEND:"+icsDT(e),"RRULE:FREQ=WEEKLY;BYDAY="+r.d.map(x=>BYD[x]).join(","),"SUMMARY:"+icsEsc(r.t),"DESCRIPTION:"+icsEsc(r.n+"\n"+location.href.split("#")[0]),
+    L.push("BEGIN:VEVENT","UID:asc-r-"+String(r.t).normalize("NFD").replace(/[^\w]+/g,"-").toLowerCase().slice(0,40)+"@ascensao","DTSTAMP:"+st,"DTSTART:"+icsDT(s),"DTEND:"+icsDT(e),"RRULE:FREQ=WEEKLY;BYDAY="+r.d.map(x=>BYD[x]).join(","),"SUMMARY:"+icsEsc(r.t),"DESCRIPTION:"+icsEsc(r.n+"\n"+location.href.split("#")[0]),
       "BEGIN:VALARM","ACTION:DISPLAY","DESCRIPTION:"+icsEsc(r.t),"TRIGGER:PT0M","END:VALARM","END:VEVENT");});
   L.push("END:VCALENDAR");return L.join("\r\n");}
 function gcalLink(r){const s=nextDate(r.h,r.d),e=new Date(s.getTime()+10*60000);
