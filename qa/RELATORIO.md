@@ -7,10 +7,9 @@
 - Corrigido junto: o app do criador pedia "Liberar seu painel para o criador?" para o próprio JV (o intervalo do aceite não era desligado na raiz). Agora não pede e não envia nada.
 - Testes: qa/retencao.test.js 28/28 (390x844 e 1280x800); o teste do aceite falhava no código antigo. Suíte: alvo 24, apps 47, convite 69, foco 32, funil 16, ranking-dia 47, relampago 27, rotulos 17, segredos 38, toque 19 e os demais sem FAIL. qa/mural-servidor.test.js quebra no Node também na main (não é deste PR). Caches ascensao-v55 / ascensao-u-v67.
 
-## 26/11/2026 11h20 · Coleta anônima: folga extra para 14 a 17 anos
+## 26/11/2026 11h40 · Retenção: teste de 14 a 17 anos
 
-- JV liberou a coleta de retenção (já entrou no #104). Folga extra: para 14 a 17 anos, o envio anônimo e o painel só valem se o aceite foi dado com "meu responsável autorizou". Quem aceitou como adulto e depois virou 14 a 17 para de enviar até autorizar de novo.
-- Testes: qa/retencao.test.js 31/31 (3 novos de 14 a 17). Suíte inteira sem FAIL (foco 32/32, segredos 38/38 na 2ª rodada após 1 timeout de carregamento). Caches ascensao-v68 / ascensao-u-v80.
+- A folga para 14 a 17 anos (só envia com "responsável autorizou" gravado) entrou no #106. Este PR só cobre a regra no teste da retenção: 3 casos novos (sem autorização, com autorização, beta sem autorização). qa/retencao.test.js 31/31 contra a main.
 
 ## Revisões horárias
 
