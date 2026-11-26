@@ -208,3 +208,11 @@ Falhou e foi corrigido: `qa/mural-servidor.test.js` quebrava com `TypeError` qua
 Passou: contagens agregadas (repetido não conta duas vezes, datas em 4 formatos), retenção dia 2 e dia 8, % das principais, funil sem prefixo de etapa, aba `diario` opcional, nenhum apelido no resumo, nada enviado, progresso antigo intacto, sem rolagem lateral, console limpo, mensagem clara sem chave.
 Suíte completa (26/11, já com a main unificada até o #98): 33/33 arquivos verdes. O teste do painel passou a gravar a semente antes da 1ª abertura (em carga, o salvamento atrasado do aparelho vazio sobrescrevia a semente; 6/6 rodadas paralelas verdes).
 Cache: `ascensao-v63` (raiz). /comecar/ não mudou.
+
+## 26/11/2026 · Coleta do beta publicada com folga na LGPD (ok do JV)
+
+O resumo do beta (#64) e a métrica dos desafios (#69) já estavam na main pelo lançamento 1.0 (#104). Auditoria da coleta achou 3 brechas, fechadas aqui:
+- Idade desconhecida (perfil sem faixa) com aceite gravado enviava funil, desafios e linha `U`. Agora nada sai sem idade conhecida, e o aceite nem aparece.
+- 14-17 que aceitou antes de mudar a idade (sem autorização gravada), ou com beta ligado sem autorização, enviava. Agora só com `parent` gravado no próprio aceite.
+- Nota do "Teste do app" saía de qualquer pessoa ≥ 14 sem opt-in. Agora pede o envio ligado (14-17 com autorização). O pedido de exclusão ("sair") continua saindo sempre.
+**Placar:** `qa/funil.test.js` 20/20 (3 casos novos falham na main). Suíte completa: 41 arquivos verdes; 5 (amigos-avatar, relâmpago, runa, ranking-dia, sequência) falharam só com 4 testes em paralelo e passaram sozinhos, mesmo padrão da semente sobrescrita já corrigido em `painel.test.js`. Cache `ascensao-v68` / `ascensao-u-v80`.
