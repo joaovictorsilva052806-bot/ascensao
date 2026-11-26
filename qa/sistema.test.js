@@ -1,6 +1,5 @@
 // Modo Sistema: uma missão por vez, começo de 2 min, bateria do dia e missão de recuperação.
 // Rode com: python3 -m http.server 8000 & node qa/sistema.test.js
-// (Ignora o aviso "Blocked call to navigator.vibrate": vem do fx() da base ao liberar conquista na carga, antes de qualquer toque.)
 const {chromium,devices}=require('playwright');const B='http://localhost:8000';const R=[];const ok=(n,c,x)=>R.push((c?'PASS ':'FAIL ')+n+(x&&!c?' · '+x:''));
 const TK='2026-11-26';
 const CFG={version:1,startDate:'2026-11-20',profile:{name:'Teste',age:'18 a 29'},quests:[
@@ -12,7 +11,7 @@ const sheet=p=>p.evaluate(()=>{const m=document.getElementById('smSheet');return
 const btn=async(p,t)=>{const h=p.locator('#smSheet button:not([disabled])',{hasText:t}).first();if(!(await h.count()))return false;await h.click();return true;};
 const P=p=>p.evaluate(()=>JSON.parse(localStorage.getItem('asc-u-prog')||'{}'));
 async function boot(b,dev,prog){const c=await b.newContext({...dev,timezoneId:'America/Sao_Paulo'});const p=await c.newPage();const errs=[];p.on('pageerror',e=>errs.push(e.message));
-  p.on('console',m=>{if(m.type()==='error'&&!/ERR_TUNNEL|ERR_PROXY|Failed to load resource|ERR_CONNECTION|Blocked call to navigator.vibrate/.test(m.text()))errs.push(m.text());});
+  p.on('console',m=>{if(m.type()==='error'&&!/ERR_TUNNEL|ERR_PROXY|Failed to load resource|ERR_CONNECTION/.test(m.text()))errs.push(m.text());});
   if(process.env.VIB)await p.addInitScript(()=>{const v=navigator.vibrate.bind(navigator);navigator.vibrate=function(x){if(!navigator.userActivation.hasBeenActive)console.log('VIB '+new Error().stack.split('\n').slice(1,9).join(' | '));return v(x);};});
   if(process.env.VIB)p.on('console',m=>{if(/^VIB/.test(m.text()))console.log(m.text().slice(0,300));});
   await p.clock.install({time:new Date(TK+'T10:00:00-03:00')});

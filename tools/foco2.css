@@ -1,0 +1,22 @@
+/* ---- Foco com mais utilidade (tools/foco2.js) ---- */
+.fzbox{display:flex;flex-direction:column;gap:10px;margin:4px 0 8px}
+.fzmis{display:flex;flex-direction:column;align-items:flex-start;gap:2px;min-height:60px;padding:10px 14px;text-align:left;width:100%}
+.fzmis .fzk{font-family:var(--f-mono,monospace);font-size:.66rem;letter-spacing:.1em;opacity:.85}
+.fzmis .fzt{font-size:1rem;overflow-wrap:anywhere}
+.fzdur{display:flex;align-items:center;gap:8px;flex-wrap:wrap}.fzdur button{min-height:44px;padding:0 16px}
+.fzbar{height:4px;border-radius:2px;background:rgba(124,244,255,.15);overflow:hidden;margin:-4px auto 0;width:min(320px,90%)}
+.fzbar i{display:block;height:100%;width:0;background:var(--accent);box-shadow:0 0 10px var(--accent);transition:width 1s linear}
+.fzpk{min-height:44px;align-self:center}
+.fzpf{display:flex;gap:8px;width:100%}.fzpf input{flex:1;min-width:0;min-height:44px;padding:0 12px;border-radius:8px;border:1px solid var(--line);background:#0a1222;color:var(--fg);font:inherit}
+.fzpf button{min-height:44px}
+.fzpl{list-style:none;margin:8px 0 0;padding:0;display:flex;flex-direction:column;gap:6px}
+.fzpl li{display:flex;align-items:center;gap:6px}.fzpl .fzpt{flex:1;min-width:0;overflow-wrap:anywhere}
+.fzpl button{min-height:40px;padding:0 10px;font-size:.85rem}
+.fzrate,.fzstat{display:flex;gap:8px;flex-wrap:wrap}.fzrate button{flex:1;min-height:52px}.fzstat button{flex:1 1 calc(50% - 4px);min-height:44px}
+.fzrate button.on,.fzstat button.on{border-color:var(--accent);color:var(--accent);box-shadow:0 0 12px rgba(124,244,255,.25)}
+.fzgrid{display:grid;grid-template-columns:repeat(7,1fr);gap:5px;margin:6px 0}
+.fzdl{font-family:var(--f-mono,monospace);font-size:.66rem;text-align:center;color:var(--muted)}
+.fzc{display:block;aspect-ratio:1;border-radius:4px;background:rgba(124,244,255,.06);border:1px solid rgba(124,244,255,.12)}
+.fzc.l1{background:rgba(124,244,255,.22)}.fzc.l2{background:rgba(124,244,255,.42)}.fzc.l3{background:rgba(124,244,255,.65)}.fzc.l4{background:var(--accent);box-shadow:0 0 8px rgba(124,244,255,.5)}
+.fzc.lx{opacity:.25}.fzc.tdy{outline:2px solid var(--gold);outline-offset:1px}
+.fzleg{display:flex;align-items:center;gap:4px}.fzleg .fzc{width:12px;height:12px}
