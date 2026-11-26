@@ -643,6 +643,10 @@ body.avmkon{overflow:hidden}
 .levelup.lvfx .card{background-image:repeating-linear-gradient(0deg,rgba(255,255,255,.03) 0 1px,transparent 1px 3px)}
 @media (prefers-reduced-motion:reduce){svg.avbig *{animation:none!important}.avmkc,.levelup.lvfx::before,.levelup.lvfx .lvtag,.levelup.lvfx .lvav{animation:none}.avpt{opacity:.8}}
 .status .pills{row-gap:16px}
+/* apelido longo numa palavra só não pode alargar a página (iPhone) */
+.status .who,.status .who h1,#titleName,.sysmsg,.sysline,#sysTip,.hero .msg{min-width:0;max-width:100%;overflow-wrap:anywhere;word-break:break-word}
+.status{min-width:0}.wrap{max-width:100%}
+.avmkc{padding-left:max(14px,env(safe-area-inset-left));padding-right:max(14px,env(safe-area-inset-right));height:min(94dvh,calc(100dvh - env(safe-area-inset-top)))}
 /* ---- Tarefas limpas + horário (tools/qtidy.js) ---- */
 .quest:not(.open) .tag,.quest:not(.open) .if,.quest:not(.open) .qlink,.quest:not(.open) .qtmin,.quest:not(.open) .mshint{display:none!important}
 .quest:not(.open) .btns .ghost{display:none}
@@ -1889,6 +1893,7 @@ function openOnb(){let a=(cfg&&cfg.profile)||null;
   fillOnb(a);$("onb").hidden=false;document.body.classList.add("onboarding");let seen=false;try{seen=localStorage.getItem("asc-u-intro")==="1";}catch(e){}if(!(cfg&&!cfg.blank)){showIntro(false);return;}$("o_cancel").hidden=!(cfg&&!cfg.blank);window.scrollTo(0,0);}
 function closeOnb(){$("onb").hidden=true;document.body.classList.remove("onboarding");}
 $("o_go").addEventListener("click",()=>{const a=readOnb();if(!a.name){$("o_msg").textContent="Coloque seu nome.";return;}
+  if(!a.age){$("o_msg").textContent="Escolha sua faixa de idade (é ela que define ranking e privacidade).";try{$("o_age").scrollIntoView({block:"center"});}catch(e){}return;}
   cfg=buildCfg(a);
   try{localStorage.setItem("asc-u-cfg",JSON.stringify(cfg));}catch(e){}
   if(location.hash)history.replaceState(null,"",location.pathname);
@@ -2497,23 +2502,29 @@ setTimeout(secMount,0);
   const openKey="asc-ui-open";let opened={};try{opened=JSON.parse(sessionStorage.getItem(openKey)||"{}")||{};}catch(e){}
   const saveOpen=()=>{try{sessionStorage.setItem(openKey,JSON.stringify(opened));}catch(e){}};
   function foldAll(){for(const sec of document.querySelectorAll(".wrap>section.panel[data-tab]:not([data-sf])")){
-    sec.dataset.sf="1";const tab=sec.dataset.tab;
-    if(KEEP.has(sec.id)||sec.classList.contains("tip")||sec.classList.contains("onb")||tab==="criador")continue;
-    const hd=sec.firstElementChild;if(!hd||!(hd.matches(".qhead")||hd.matches("h2")))continue;
+    const tab=sec.dataset.tab;
+    if(KEEP.has(sec.id)||sec.classList.contains("tip")||sec.classList.contains("onb")||tab==="criador"){sec.dataset.sf="1";continue;}
+    const hd=sec.firstElementChild;if(!hd)continue; // ainda vazia: tenta de novo quando o conteúdo chegar
+    sec.dataset.sf="1";if(!(hd.matches(".qhead")||hd.matches("h2")))continue;
     // Hoje: perfil e tarefas ficam abertos. Progresso: a masmorra fica aberta. Mais: tudo vira menu.
     if(tab==="hoje"&&sec.querySelector("#quests"))continue;
     const key=sec.id||(tab+":"+(hd.textContent||"").trim().slice(0,40));
-    sec.classList.add("fold");hd.classList.add("fhd");hd.setAttribute("role","button");hd.tabIndex=0;
-    const set=(o)=>{sec.classList.toggle("open",o);hd.setAttribute("aria-expanded",o?"true":"false");};
-    set(!!opened[key]);
+    sec.classList.add("fold");sec._fkey=key;
+    const set=(o)=>{sec.classList.toggle("open",o);const h=sec.firstElementChild;if(h)h.setAttribute("aria-expanded",o?"true":"false");};
+    sec._fset=set;markHd(sec);set(!!opened[key]);
     const flip=()=>{const o=!sec.classList.contains("open");
-      if(o)for(const other of document.querySelectorAll('.panel.fold.open[data-tab="'+tab+'"]'))if(other!==sec){other.classList.remove("open");other.firstElementChild.setAttribute("aria-expanded","false");for(const k in opened)if(opened[k]===tab)delete opened[k];}
+      if(o)for(const other of document.querySelectorAll('.panel.fold.open[data-tab="'+tab+'"]'))if(other!==sec){other.classList.remove("open");if(other.firstElementChild)other.firstElementChild.setAttribute("aria-expanded","false");for(const k in opened)if(opened[k]===tab)delete opened[k];}
       set(o);if(o)opened[key]=tab;else delete opened[key];saveOpen();
       if(o){const r=sec.getBoundingClientRect();if(r.top<0||r.top>innerHeight*.6)sec.scrollIntoView({block:"start",behavior:matchMedia("(prefers-reduced-motion: reduce)").matches?"auto":"smooth"});}};
-    hd.addEventListener("click",e=>{if(e.target.closest("a,input,select,textarea")||(e.target.closest("button")&&e.target.closest("button")!==hd))return;flip();});
-    hd.addEventListener("keydown",e=>{if(e.key==="Enter"||e.key===" "){e.preventDefault();flip();}});
+    // delegado na seção: o cabeçalho pode ser recriado (Amigos, Esquadrão, Álbum) e continua abrindo
+    const onHd=e=>{const h=sec.firstElementChild;return h&&e.target.closest(".fhd")===h;};
+    sec.addEventListener("click",e=>{if(!onHd(e))return;if(e.target.closest("a,input,select,textarea")||(e.target.closest("button")&&e.target.closest("button")!==sec.firstElementChild))return;flip();});
+    sec.addEventListener("keydown",e=>{if(!onHd(e))return;if(e.key==="Enter"||e.key===" "){e.preventDefault();flip();}});
     }}
-  foldAll();const w=document.querySelector(".wrap");if(w&&window.MutationObserver)new MutationObserver(foldAll).observe(w,{childList:true});
+  function markHd(sec){const h=sec.firstElementChild;if(!h||h.classList.contains("fhd"))return;if(!(h.matches(".qhead")||h.matches("h2")))return;
+    h.classList.add("fhd");h.setAttribute("role","button");h.tabIndex=0;h.setAttribute("aria-expanded",sec.classList.contains("open")?"true":"false");}
+  let rq=0;const refold=()=>{if(rq)return;rq=1;Promise.resolve().then(()=>{rq=0;foldAll();for(const sec of document.querySelectorAll(".wrap>section.panel.fold"))markHd(sec);});};
+  foldAll();const w=document.querySelector(".wrap");if(w&&window.MutationObserver)new MutationObserver(refold).observe(w,{childList:true,subtree:true});
   // Foco: explicação longa vira uma linha
   const fn=document.getElementById("focusNote");if(fn&&/^Escolha a quest, aperte começar/.test(fn.textContent))fn.textContent="Celular virado para baixo. No fim, o XP entra sozinho.";
 })();
@@ -3409,7 +3420,7 @@ function clsApply(cl,dress){const r=rpgState();const st=clsCan();if(!st.ok){toas
   if(old){r.past=(r.past||[]).concat([{id:old.id,name:old.name,style:old.style,d:todayKey()}]).slice(-6);if(st.use==="tk")r.ctk=Math.max(0,(r.ctk||0)-1);r.clast=todayKey();}
   else{r.ct0=Date.now();}
   r.cls=cl;r.evo=lv>=20?2:lv>=10?1:0;r.seen=null;r.cg=1;if(dress){const a=avSt();a.o=0;a.hw=0;a.it=0;}save();render();try{avPost(true);}catch(e){}
-  sysPop(old?"CLASSE TROCADA":"CLASSE DEFINIDA",clsName(cl,lv),"Afinidade: "+STATS[cl.stat]+" sobe 1,5x mais rápido. Seu XP e nível continuam os mesmos."+(old?" Agora você é ex-"+old.name+".":""));return true;}
+  sysPop(old?"CLASSE TROCADA":"CLASSE DEFINIDA",clsName(cl,lv),"Afinidade: "+STATS[cl.stat]+" sobe 1,5x mais rápido."+(old?" Seu XP e nível continuam os mesmos. Agora você é ex-"+old.name+".":""));return true;}
 function clsPrev(id,sz){try{const o=avParse(avCode());o.cls=AV_CLS.includes(id)?id:"x";o.o=0;o.hw=0;o.it=0;return avSvg(o,sz);}catch(e){return "";}}
 let clsGalOpen=false;
 function openCls(){if(clsGalOpen||(rpgState().cls&&!openCls.force))return;const full=!!openCls.force;openCls.force=false;clsGalOpen=true;clsOpen=true;
@@ -3472,7 +3483,7 @@ function avHome(){const st=document.querySelector('.wrap>section[data-tab="hoje"
     w.addEventListener("click",e=>{if(e.target.closest("#rank"))return;if(typeof tmCard==="function")tmCard();else avMaker(false);});}
   const lv=avLv();w.querySelector(".hav").innerHTML=avMine(innerWidth<380?76:88);w.setAttribute("aria-label","Meu card: nível "+lv+". Toque para abrir");
   const pills=st.querySelector(".pills");if(!pills)return;let pp=$("heroPos");
-  let pos="";try{if(typeof cdPos==="function"&&typeof rankName==="function"&&rankName()){const ps=cdPos(rankName());pos=ps.t?"🏆 "+ps.t+"º na turma":ps.g?"🏆 "+ps.g+"º no geral":"";}}catch(e){}
+  let pos="";try{if(prog.rank&&prog.rank.on&&ageNow&&ageNow()!=="kid"&&typeof cdPos==="function"&&typeof rankName==="function"&&rankName()){const ps=cdPos(rankName());pos=ps.t?"🏆 "+ps.t+"º na turma":ps.g?"🏆 "+ps.g+"º no geral":"";}}catch(e){}
   if(!pp){pp=avEl("span","pill");pp.id="heroPos";pp.setAttribute("role","button");pp.tabIndex=0;pp.addEventListener("click",()=>{const t=document.querySelector('#tabbar [data-go="amigos"]');t&&t.click();});pills.append(pp);}
   pp.hidden=!pos;pp.textContent=pos;}
 {const _r=render;render=function(){_r.apply(this,arguments);try{avUI();}catch(e){}try{avHome();}catch(e){}try{clsTick();}catch(e){}try{avAskSoon();}catch(e){}};}
@@ -3571,8 +3582,7 @@ function qtFrom(q){if(!q)return null;if(Number.isFinite(+q.from)&&q.from!==""&&q
   if(/ao acordar|acordar|da manhã|primeira hora do dia/.test(t+" "+i))return 5;
   return null;}
 function qtLocked(q){const f=qtFrom(q);if(f==null)return null;const h=new Date().getHours();
-  if(f>=12)return (h<f&&h>=5)?f:null; // noite: libera de f até 4h59
-  return h<f?f:null;}
+  return h<f?f:null;} // o dia vira à meia-noite: 0h-4h59 já é o dia novo, então "Fechar o dia" fica trancado até a hora dele
 const QT_SHORT={s_fech:"🌙 Fechar o dia",q_fech:"🌙 Fechar o dia"};
 const QT_SHORT_RE=[[/^antes de dormir/i,"🌙 Fechar o dia"],[/^fechamento/i,"🌙 Fechar o dia"],[/trabalhar 90 min/i,"Bloco de foco: 90 min"],[/oferecer desenho/i,"Oferecer desenho técnico"],[/abordar 3 corretores/i,"Abordar 3 corretores"]];
 // título longo: corta o parêntese ou o que vem depois de ":" (o texto inteiro fica nos detalhes)

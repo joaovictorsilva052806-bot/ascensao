@@ -8,7 +8,9 @@ const init=()=>{window.__wl=0;window.__vib=[];window.__nav=[];
   navigator.vibrate=(p)=>{window.__vib.push(p);return true;};};
 (async()=>{const br=await chromium.launch();
 async function page(opts={}){const ctx=await br.newContext({viewport:{width:390,height:844},userAgent:opts.ua,reducedMotion:opts.rm?'reduce':'no-preference',serviceWorkers:opts.sw?'allow':'block'});
-  await ctx.route(/fonts\.(googleapis|gstatic)/,r=>r.abort());await ctx.addInitScript(init);if(opts.ls)await ctx.addInitScript(opts.ls);
+  await ctx.route(/fonts\.(googleapis|gstatic)/,r=>r.abort());await ctx.addInitScript(init);
+  // raiz unificada (Trem 1): sem perfil abre o cadastro; o app do JV sempre tem perfil, então semeia um
+  await ctx.addInitScript(()=>{try{if(location.pathname==='/'||location.pathname==='/index.html'){if(!localStorage.getItem('ascensao-cfg'))localStorage.setItem('ascensao-cfg','{"version":3,"quests":[{"id":"q_estudo","title":"Estudar 25 min","xp":10,"main":true,"stat":"mente"}]}');localStorage.setItem('ascensao-season','2');}}catch(e){}});if(opts.ls)await ctx.addInitScript(opts.ls);
   const p=await ctx.newPage();p.errs=[];p.on('pageerror',e=>p.errs.push(e.message));p.on('console',m=>{if(m.type()==='error'&&!/Failed to load resource/.test(m.text()))p.errs.push(m.text());});p.ctx=ctx;return p;}
 // 1. Root app, Android
 let p=await page({ua:ANDUA});await p.goto(B);await p.waitForTimeout(800);
@@ -39,7 +41,7 @@ ok('fim do foco fecha sala',!(await p.isVisible('#froom')));
 ok('fim do foco dá XP',await p.evaluate(()=>Object.values(JSON.parse(localStorage.getItem('ascensao-prog')).log).flat().some(e=>String(e.q).startsWith('foco:'))));
 ok('sem erro de console (android)',p.errs.length===0);if(p.errs.length)console.log(p.errs);
 await p.click('[data-go=mais]').catch(()=>{});await p.evaluate(()=>{document.body.dataset.tab='mais';});
-await p.evaluate(()=>{navigator.share=async(d)=>{window.__share=d;};});await p.click('#inviteBtn');
+await p.waitForTimeout(400);await p.evaluate(()=>document.querySelectorAll('.sysmodal,.levelup').forEach(e=>e.remove()));await p.evaluate(()=>{navigator.share=async(d)=>{window.__share=d;};});await p.click('#inviteBtn');
 ok('convidar usa folha de compartilhar',await p.evaluate(()=>window.__share&&window.__share.url.endsWith('/convite/')));
 await p.ctx.close();
 // 2. iPhone flow

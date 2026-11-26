@@ -129,6 +129,7 @@ function openOnb(){let a=(cfg&&cfg.profile)||null;
   fillOnb(a);$("onb").hidden=false;document.body.classList.add("onboarding");let seen=false;try{seen=localStorage.getItem("asc-u-intro")==="1";}catch(e){}if(!(cfg&&!cfg.blank)){showIntro(false);return;}$("o_cancel").hidden=!(cfg&&!cfg.blank);window.scrollTo(0,0);}
 function closeOnb(){$("onb").hidden=true;document.body.classList.remove("onboarding");}
 $("o_go").addEventListener("click",()=>{const a=readOnb();if(!a.name){$("o_msg").textContent="Coloque seu nome.";return;}
+  if(!a.age){$("o_msg").textContent="Escolha sua faixa de idade (é ela que define ranking e privacidade).";try{$("o_age").scrollIntoView({block:"center"});}catch(e){}return;}
   cfg=buildCfg(a);
   try{localStorage.setItem("asc-u-cfg",JSON.stringify(cfg));}catch(e){}
   if(location.hash)history.replaceState(null,"",location.pathname);
