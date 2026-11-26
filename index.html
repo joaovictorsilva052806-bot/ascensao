@@ -1365,6 +1365,9 @@ section[data-hbg]>:not(.hrbg){position:relative;z-index:1}
 .gd.gdmini .gdl li:not(.now),.gd.gdmini .gdoff{display:none}
 .gd .qhead[role=button]{cursor:pointer}
 .gd.gdmini .qhead .xp::after{content:" ▾"}
+/* Hoje no celular pequeno: selo PRÓXIMA legível (era 9px) e título do Comece por aqui com 44px de toque */
+.quest.next .nextlbl{font-size:.72rem;pointer-events:none}
+.gd .qhead{min-height:44px;align-items:center}
 /* ---- Arena do Sistema (tools/arena.js) ---- */
 .arhd,.lrhd{display:flex;justify-content:space-between;align-items:center;gap:8px;margin-bottom:6px}
 .arhd h2,.lrhd h2{margin:0}
@@ -2868,7 +2871,10 @@ $("dunOpen").addEventListener("click",()=>{const wk=dkey(dunWeek());if(Object.ke
 const SYSTIP_KEY="ascensao-systip";
 function sysTipUI(){let d="";try{d=localStorage.getItem(SYSTIP_KEY)||"";}catch(e){}const el=$("sysTip");if(!el)return;
   const days=1;el.hidden=!!d||!cfg||cfg.blank||!!document.querySelector(".sysmodal")||days<1;}
-$("sysTipYes").addEventListener("click",()=>{try{localStorage.setItem(SYSTIP_KEY,"1");}catch(e){}$("sysTip").hidden=true;if($("calIcs"))$("calIcs").click();toast("Abriu a agenda? Toque em Adicionar tudo. O aviso do Sistema vem junto.");});
+// Android não abre o arquivo .ics: lá o "Ativar" abre o Google Agenda já preenchido com o aviso diário (1 evento, todo dia)
+$("sysTipYes").addEventListener("click",()=>{try{localStorage.setItem(SYSTIP_KEY,"1");}catch(e){}$("sysTip").hidden=true;
+  if(/android/i.test(navigator.userAgent)){const r=remPlan()[0];if(r)window.open(gcalLink(r),"_blank","noopener");toast("Abriu o Google Agenda? Toque em Salvar. O aviso do Sistema vem todo dia.");return;}
+  if($("calIcs"))$("calIcs").click();toast("Abriu a agenda? Toque em Adicionar tudo. O aviso do Sistema vem junto.");});
 $("sysTipNo").addEventListener("click",()=>{try{localStorage.setItem(SYSTIP_KEY,"0");}catch(e){}$("sysTip").hidden=true;});
 
 // ---------- Beta: números anônimos com consentimento (LGPD). Nada sai sem o "sim". ----------
@@ -5846,7 +5852,7 @@ let fjEdit=false;
 function fjReady(){const hid=id=>{const e=$(id);return !e||e.hidden;};return !!(cfg&&!cfg.blank&&cfg.quests&&cfg.quests.length)&&hid("quick")&&hid("onb")&&!document.body.classList.contains("onboarding");}
 function fjCard(){let p=$("fjCard");const q=$("quests");const anchor=q&&q.closest(".wrap>section");if(!anchor)return;
   if(!p){p=fjEl("section","panel fjhome");p.id="fjCard";p.dataset.tab="hoje";p.dataset.sf="1";}
-  // no começo (body[data-hrstart], guia "Comece por aqui" visto nesta abertura) quem posiciona a Forja é o hrOrder (tools/heroi.js), abaixo das tarefas
+  // no 1º uso (body[data-hrstart]) quem posiciona a Forja é o hrOrder (tools/heroi.js), abaixo das tarefas
   if(!p.parentNode||(!document.body.dataset.hrstart&&p.nextElementSibling!==anchor))anchor.before(p);
   if(!fjReady()){p.hidden=true;return;}p.hidden=false;p.textContent="";
   const f=fjS(),cu=f.cur,dia=f.dias.includes(fjDow()),feito=fjTodayE(),t=fjNext(f);
@@ -6026,20 +6032,19 @@ function hrDayCount(){const el=$("dayxp");if(!el)return;const tk=todayKey();cons
   const n=done.filter(e=>ids.has(e.q)).length;let xp=0;for(const e of done)xp+=(e.xp||0)+(e.bonus||0);
   el.textContent=n?"Hoje: "+n+(n===1?" tarefa feita":" tarefas feitas")+" · +"+xp+" XP no dia":"Nenhuma tarefa ainda · +"+xp+" XP de bônus. Comece pela primeira.";}
 {const _r2=render;render=function(){_r2.apply(this,arguments);try{hrDayCount();}catch(e){}};}
-// Aba Hoje: as tarefas sobem. Os desafios relâmpago (extra de 30 s) passam para logo depois da lista de tarefas.
-// Começo (enquanto o "Comece por aqui" existe): a 1ª missão fica logo abaixo do cartão, na primeira tela;
-// o relâmpago, o guia, o ranking da semana, a barra do Sistema e a Forja vêm depois. Quando o guia some, a ordem de sempre volta na próxima abertura.
-function hrOrder(){const q=$("quests")&&$("quests").closest("section");const z=$("zapPanel");if(!q||!z)return;
-  const g=$("gdPanel"),sb=$("smBar"),gt=$("gtHero"),fj=$("fjCard"),top=$("tbStrip")||($("dayPill")&&$("dayPill").closest("section"));
-  const before=el=>el&&(q.compareDocumentPosition(el)&Node.DOCUMENT_POSITION_PRECEDING);
-  // guia visto nesta abertura: mantém a ordem do começo até fechar o app (nada pula na tela). A Forja (tools/forja.js) lê a mesma marca.
-  if(g&&!g.hidden)document.body.dataset.hrstart="1";
-  if(document.body.dataset.hrstart){if(top&&top.nextElementSibling!==q&&top!==q)top.after(q);
-    let at=q;for(const el of [z,g,sb,gt,fj]){if(!el)continue;if(at.nextElementSibling!==el)at.after(el);at=el;}return;}
-  if(q.nextElementSibling!==z)q.after(z);
-  if(gt&&top&&!before(gt)&&top.nextElementSibling!==gt)top.after(gt);
-  if(sb&&!before(sb))(fj&&before(fj)?fj:q).before(sb);
-  if(fj&&!before(fj))q.before(fj);}
+// Aba Hoje: as tarefas sobem para logo depois do cartão. Só ficam entre os dois a barra do Sistema (Próxima missão)
+// e a Forja (que se prende ao topo das tarefas). Desafios relâmpago, Comece por aqui, ranking da semana e chefão vão
+// para depois da lista, nessa ordem; qualquer bloco novo que apareça no meio também desce.
+const HR_AFTER=["zapPanel","gdPanel","gtHero","tbStrip"];
+function hrOrder(){const q=$("quests")&&$("quests").closest("section");const st=document.querySelector('.wrap>section[data-tab="hoje"] .status');const hero=st&&st.closest("section");
+  if(!q||!hero||hero.parentNode!==q.parentNode)return;
+  // 1º uso (guia "Comece por aqui" visto nesta abertura): a Forja também desce, para a 1ª missão caber na primeira tela.
+  // A marca fica até fechar o app (nada pula durante o uso); tools/forja.js lê a mesma marca e não se reposiciona.
+  const g=$("gdPanel");if(g&&!g.hidden)document.body.dataset.hrstart="1";
+  const stay=new Set(document.body.dataset.hrstart?["smBar"]:["smBar","fjCard"]);const mid=[];
+  for(let e=hero.nextElementSibling;e&&e!==q;e=e.nextElementSibling)if(!stay.has(e.id)&&!e.classList.contains("tip")&&e.dataset.tab==="hoje"||e.id==="tbStrip")mid.push(e);
+  const ord=HR_AFTER.map(id=>$(id)).filter(Boolean).concat(mid.filter(e=>!HR_AFTER.includes(e.id)));let at=q;
+  for(const e of ord){if(e.parentNode!==q.parentNode)continue;if(at.nextElementSibling!==e)at.after(e);at=e;}}
 {const _r3=render;render=function(){_r3.apply(this,arguments);try{hrOrder();}catch(e){}};}
 setTimeout(()=>{try{hrOrder();}catch(e){}},50);
 // "Comece por aqui": depois do 1º passo feito, vira uma linha só (o passo da vez); toque no título mostra os 3 de novo.
@@ -6048,6 +6053,11 @@ function hrGuide(){const p=$("gdPanel");if(!p)return;const ok=p.querySelectorAll
   if(h)h.setAttribute("aria-expanded",mini?"false":"true");}
 {const _r4=render;render=function(){_r4.apply(this,arguments);try{hrGuide();}catch(e){}};}
 setTimeout(()=>{try{hrGuide();}catch(e){}},80);
+// placeholder da quest rápida cortava em telas de 320-360px
+function hrPh(){const i=$("addInput");if(!i||!i.clientWidth||!/^(Quest rápida|Nova quest)/.test(i.placeholder))return;const cs=getComputedStyle(i);const c=document.createElement("canvas").getContext("2d");c.font=cs.fontSize+" "+cs.fontFamily;
+  const box=i.clientWidth-parseFloat(cs.paddingLeft)-parseFloat(cs.paddingRight)-2;const opts=["Quest rápida (vale 10 XP)","Quest rápida (+10 XP)","Quest rápida +10","Quest rápida"];
+  const want=opts.find(t=>c.measureText(t).width<=box)||opts[opts.length-1];if(i.placeholder!==want)i.placeholder=want;}
+addEventListener("resize",()=>{try{hrPh();}catch(e){}});setTimeout(()=>{try{hrPh();}catch(e){}},0);{const _r5=render;render=function(){_r5.apply(this,arguments);try{hrPh();}catch(e){}};}
 
 // ---------- Arena do Sistema: batalha por turnos com d20, movida pelos 8 atributos ----------
 // O herói é a própria pessoa: os números saem de atLevels() (atributos que sobem com tarefas reais).

@@ -22,7 +22,7 @@ for(const [nome,vp] of [['celular',{width:390,height:844}],['desktop',{width:128
   for(const s of ['#streak','#shieldPill','#clsPill']){const e=await p.$(s+':visible');if(!e){ok(nome+': '+s+' visível',false,'não achou');continue;}
     const f=await faixa(p,s);ok(nome+': selo '+s+' aceita toque em ≥ 44px',f.hit>=44,JSON.stringify(f));ok(nome+': selo '+s+' não cresceu na tela',f.alt<=32,f.alt+'px');}
   const tt='#quests .quest:not(.qtlock) .t .tt';const q=await p.$(tt);
-  if(!q)ok(nome+': há tarefa liberada',false);else{await q.scrollIntoViewIfNeeded();
+  if(!q)ok(nome+': há tarefa liberada',false);else{await q.evaluate(e=>e.scrollIntoView({block:'center'}));await p.waitForTimeout(100); // centro: a tarefa agora fica logo abaixo do cartão e o 'IfNeeded' a deixava encostada na barra de abas
     const f=await faixa(p,tt);ok(nome+': título da tarefa aceita toque em ≥ 44px',f.hit>=44,JSON.stringify(f));ok(nome+': título não cresceu na tela',f.alt<=30,f.alt+'px');
     const card=await q.evaluateHandle(e=>e.closest('.quest'));const r=await q.boundingBox();
     await p.mouse.click(r.x+r.width/2,r.y+r.height+8);await p.waitForTimeout(250);
