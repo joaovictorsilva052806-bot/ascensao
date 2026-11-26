@@ -11,9 +11,9 @@ const b0=()=>chromium.launch();
 (async()=>{const b=await b0();
 async function open(route,pre,prog,time,rm){const ctx=await b.newContext({viewport:{width:390,height:844},reducedMotion:rm||'no-preference'});const p=await ctx.newPage();const errs=[];
   p.on('pageerror',e=>errs.push(e.message));p.on('console',m=>{if(m.type()==='error'&&!/Failed to load resource|ERR_|navigator.vibrate/.test(m.text()))errs.push(m.text())});
-  await p.clock.install({time:new Date(time)});await p.goto(U+route);
+  await p.clock.install({time:new Date(time)});await p.goto(U+'privacidade/'); // semeia fora do app: o save() da página viva não regrava por cima
   await p.evaluate(([c,o,pre])=>{localStorage.setItem(pre+'-cfg',JSON.stringify(c));localStorage.setItem(pre+'-prog',JSON.stringify(o));localStorage.setItem(pre+'-season','2');localStorage.setItem('asc-u-perm','1');localStorage.setItem('asc-u-intro','1');},[CFG,prog,pre]);
-  await p.reload();await p.waitForTimeout(1200);return {ctx,p,errs};}
+  await p.goto(U+route);await p.waitForTimeout(1200);return {ctx,p,errs};}
 const LS=(p,pre)=>p.evaluate(k=>JSON.parse(localStorage.getItem(k)),pre+'-prog');
 for(const [route,pre] of [['comecar/','asc-u'],['','ascensao']]){const tag=route?'/comecar/':'/';
   // A: jogador novo, 1ª tarefa acende a sequência

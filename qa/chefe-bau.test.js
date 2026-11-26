@@ -9,9 +9,9 @@ const base=(x={})=>Object.assign({log:{'2026-11-25':[{q:'q1',kind:'full',xp:40,s
 async function open(prog,time,dev,cfg){const ctx=await b.newContext(dev||{viewport:{width:390,height:844},deviceScaleFactor:2});const p=await ctx.newPage();const errs=[];
   p.on('pageerror',e=>errs.push(e.message));p.on('console',m=>{if(m.type()==='error'&&!/Failed to load resource|ERR_|navigator.vibrate/.test(m.text()))errs.push(m.text())});
   await ctx.route('https://docs.google.com/**',r=>r.request().method()==='POST'?r.fulfill({status:200,body:''}):r.fulfill({status:200,contentType:'text/csv',body:CSV}));
-  await p.clock.install({time:new Date(time)});await p.goto(U);
+  await p.clock.install({time:new Date(time)});await p.goto(new URL('/privacidade/',U).href); // semeia fora do app: o save() da página viva não regrava por cima
   await p.evaluate(([c,o])=>{localStorage.setItem('asc-u-cfg',JSON.stringify(c));localStorage.setItem('asc-u-prog',JSON.stringify(o));localStorage.setItem('asc-u-season','2');localStorage.setItem('asc-u-perm','1');localStorage.setItem('asc-u-intro','1');localStorage.setItem('asc-u-tele','{"asked":1}');},[cfg||CFG,prog]);
-  await p.reload();await p.waitForTimeout(1800);return {ctx,p,errs};}
+  await p.goto(U);await p.waitForTimeout(1800);return {ctx,p,errs};}
 // 1: turma com 2 amigos, chefão com vida e faixa em Hoje
 let {ctx,p,errs}=await open(base(),'2026-11-25T21:00:00');await drain(p);
 const strip=await p.textContent('#tbStrip').catch(()=>'');ok('faixa do chefão em Hoje',/% de vida/.test(strip),strip);
