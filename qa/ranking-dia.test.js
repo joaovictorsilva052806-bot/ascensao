@@ -5,7 +5,7 @@ const R=[];const ok=(n,c,x)=>R.push((c?'PASS ':'FAIL ')+n+(x&&!c?' · '+x:''));
 const CFG={version:3,name:'Teste Silva',startDate:'2026-11-20',profile:{age:'adult'},quests:[{id:'q1',title:'Ler',xp:10,stat:'mente',main:true}]};
 const HD='nome,xp,nivel,,tipo,a,b,s,d,,pnick,seq,dz,av,at\n';
 const csv=(rank,soc=[])=>HD+rank.map(r=>r.join(',')).join('\n')+'\n'+soc.map(s=>',,,,'+s.join(',')).join('\n')+'\n';
-const base=(x={})=>Object.assign({log:{'2026-11-24':[{q:'q1',kind:'full',xp:25,stat:'mente',bonus:0,t:'x'}],'2026-11-25':[{q:'q1',kind:'full',xp:15,stat:'mente',bonus:0,t:'x'}]},extra:{},faith:{},energy:{},mit:{},reviews:{},money:[],rest:{},ach:{},rpg:{cls:{id:'mago',style:'fant',name:'Mago'}},rank:{on:true,asked:true,uid:'abc12345'},velho:'fica'},x);
+const base=(x={})=>Object.assign({log:{'2026-11-24':[{q:'q1',kind:'full',xp:25,stat:'mente',bonus:0,t:'x'}],'2026-11-25':[{q:'q1',kind:'full',xp:15,stat:'mente',bonus:0,t:'x'}]},extra:{},faith:{},energy:{},mit:{},reviews:{},money:[],rest:{},ach:{},rpg:{cls:{id:'mago',style:'fant',name:'Mago'}},rank:{on:true,asked:true,uid:'abc12345'},velho:'fica',hook:{got:{2:'2026-11-25'}}},x); // hook: presente do dia 2 (tools/hook.js) já aberto, para não somar XP aqui
 // ontem (24/11) este aparelho viu: Ana 100, Bia 55, Cadu 10. Hoje a lista mostra Ana 140, Bia 60, Cadu 10 → hoje: Ana 40, você (15 + check-in), Bia 5, Cadu 0
 const YDAY={d:'2026-11-24',base:{},last:{ana:100,bia:55,cadu:10,teste:25},ld:'2026-11-24',pos:{},nt:{}};
 const RANK=[['Ana',140,3],['Bia',60,2],['Teste',40,1],['Cadu',10,1]];
