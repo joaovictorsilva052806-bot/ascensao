@@ -51,8 +51,7 @@ let cdBusy=false;async function cdInvDo(){if(cdBusy)return;const a=cdInvBy();con
 // lado de quem convidou: aceita sozinho quem veio pelo link
 async function cdInbox(){const me=rankName();if(!me||typeof sqInvRows==="undefined")return;const f=frSt();let ch=false;
   const tk=tmSt().inv;if(!tk)return;for(const r of sqInvRows){if(r.k!=="F"||tmN(r.b)!==tmN(me)||!r.a||frHas(r.a))continue;
-    // formato antigo (código aberto na planilha) só vale para linhas até 25/11/2026
-    const old=r.s==="conv"+tk&&String(r.d).replace(/\D/g,"")<="20261125";let ok=old;if(!ok&&/^cv[0-9a-f]{12}$/.test(r.s)){try{ok=r.s===await cdSig(tk,r.a);}catch(e){}}if(!ok||frHas(r.a))continue;f.l.push(r.a);delete f.pend[r.a];sqiPost(["G",me,r.a,"",sqiDk()]);ch=true;
+    let ok=false;/* formato antigo (código aberto na planilha) não vale mais: a data vinha do cliente e dava para forjar */if(!ok&&/^cv[0-9a-f]{12}$/.test(r.s)){try{ok=r.s===await cdSig(tk,r.a);}catch(e){}}if(!ok||frHas(r.a))continue;f.l.push(r.a);delete f.pend[r.a];sqiPost(["G",me,r.a,"",sqiDk()]);ch=true;
     tmFeedAdd("conv",r.a,"🤝 "+r.a+" entrou pelo seu convite e agora é seu amigo");cdBadge(1);toast("🤝 "+r.a+" entrou pelo seu convite. Agora são amigos!");}
   if(ch){save();try{frUI();tmUI();}catch(e){}}}
 // cartão "Fulano te chamou" para quem chegou pelo link

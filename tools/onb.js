@@ -152,7 +152,7 @@ $("wipe").addEventListener("click",()=>{const b=$("wipe");
   try{Object.keys(localStorage).filter(k=>k.startsWith("asc-u-")).forEach(k=>localStorage.removeItem(k));}catch(e){}
   location.replace(location.pathname);});
 setTimeout(showNews,0);
-$("o_bkGo").addEventListener("click",()=>{let withCfg=false;try{withCfg=restoreBackup($("o_bk").value);}catch(e){$("o_msg").textContent="Esse texto não é um backup válido.";return;}
+$("o_bkGo").addEventListener("click",()=>{let withCfg=false;try{withCfg=restoreBackup($("o_bk").value);}catch(e){$("o_msg").textContent="Esse texto não é um backup válido.";return;}if(withCfg===null)return;
   $("o_bk").value="";if(withCfg){try{localStorage.setItem("asc-u-news",NEWS_V);}catch(e){}closeOnb();render();goTab("hoje");toast("Tudo de volta: tarefas, pontos e histórico.");}
   else{$("o_bkBox").open=false;$("o_msg").textContent="Pontos e histórico de volta. Esse backup é antigo e não tem as tarefas: confira o perfil e toque em Criar meu jogo.";}});
 
