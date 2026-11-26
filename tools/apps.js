@@ -79,7 +79,7 @@ function apAdd(t){if(!cfg||typeof edSave!=="function")return;const Q=(cfg.quests
 function apAddUI(){const ed=$("edNew");if(!ed||typeof edSave!=="function")return;let w=$("apAdd");
   // planilha ligada: as tarefas vêm dela (o que for criado aqui seria sobrescrito na próxima sincronização)
   let sy="";try{sy=SYNC;}catch(e){}if(sy){if(w)w.remove();return;}
-  if(!w){w=apEl("div","apadd");w.id="apAdd";w.append(apEl("div","sm muted","Tarefas com app e prova por print:"));const r=apEl("div","row");r.id="apAddRow";w.append(r);ed.parentNode.insertBefore(w,ed.nextSibling);}
+  if(!w){w=apEl("div","apadd");w.id="apAdd";w.append(apEl("div","sm muted","Tarefas com app e prova por print:"));const r=apEl("div","row");r.id="apAddRow";w.append(r);const hd=ed.closest(".qhead")||ed;hd.parentNode.insertBefore(w,hd.nextSibling);}
   const r=$("apAddRow");r.textContent="";const Q=(cfg&&cfg.quests)||[];
   for(const t of AP_ADD){const a=AP_APPS.find(x=>x.k===t.app);const has=Q.some(x=>x.app===t.app);const b=apEl("button","ghost",a.ic+" "+(has?"✓ ":"")+t.title);b.type="button";b.disabled=has;b.onclick=()=>apAdd(t);r.append(b);}}
 setTimeout(()=>{try{apAddUI();apDecorate();}catch(e){}},0);

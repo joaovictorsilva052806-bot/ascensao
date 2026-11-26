@@ -14,7 +14,7 @@ for(let i=0;i<16;i++){if(await p.$('.quest:visible'))break;
   if(!btn)for(const x of await p.$$('button:visible')){const id=(await x.getAttribute('id'))||'';if(['q_bk','q_full'].includes(id))continue;if(id.startsWith('q_')){btn=x;break;}}
   if(btn)await btn.click();await p.waitForTimeout(900);}
 const seen=[];const drain=async()=>{for(let i=0;i<8;i++){await p.waitForTimeout(700);const m=await p.$('#clsModal button.go:visible')||await p.$('#clsModal .clsbtn:visible');if(m){await m.click();continue;}
-  const bs=await p.$$('.sysmodal:not(#clsModal) button.go:visible');if(!bs.length)return;const h=await p.$$eval('.sysmodal:not(#clsModal) h3',x=>x.map(e=>e.textContent));seen.push(...h);await bs[bs.length-1].click();}};
+  const bs=await p.$$('.sysmodal:not(#clsModal) button.go:visible');if(!bs.length)return;const h=await p.$$eval('.sysmodal:not(#clsModal) h3',x=>x.map(e=>e.textContent));seen.push(...h);await bs[bs.length-1].click({timeout:3000}).catch(()=>{});/* o aviso pode sair de cena (pedido do painel cede a outro aviso) */}};
 await drain();await p.click('.quest:visible button.go:visible');await drain();
 const skills1=seen.slice();
 await p.clock.setSystemTime(new Date(T0.getTime()+864e5));await p.reload();await p.waitForTimeout(1500);seen.length=0;await drain();
