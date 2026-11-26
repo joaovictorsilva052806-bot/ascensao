@@ -28,12 +28,13 @@ for(const [nome,dev] of [['iPhone',devices['iPhone 13']],['Android',devices['Pix
   // ---- dia normal ----
   let {c,p,errs}=await boot(b,dev,{log:{'2026-11-25':[{q:'m1',kind:'full',xp:30}]},extra:{},energy:{},rest:{}});
   let s=await sheet(p);console.log('DBG',JSON.stringify(s),await p.evaluate(()=>[[...document.querySelectorAll('.sysmodal')].map(m=>m.textContent.slice(0,80)),document.querySelectorAll('.sysmodal').length,!!document.getElementById('onb')&&!document.getElementById('onb').hidden,document.body.className]));ok(nome+': Sistema abre sozinho',!!s,JSON.stringify(s));
-  ok(nome+': 1º pergunta a bateria',s&&/ENERGIA/.test(s.tag),s&&s.tag);
+  ok(nome+': abre direto na missão, com a bateria no cartão',s&&/MISSÃO PRINCIPAL/.test(s.tag)&&/Bateria hoje/.test(s.txt),s&&s.tag+' '+(s&&s.txt));
   await p.screenshot({path:'qa/shots-sistema-energia-'+nome+'.png'});
   await btn(p,'Baixa');await p.waitForTimeout(200);s=await sheet(p);
   ok(nome+': missão principal em tela cheia',s&&/MISSÃO PRINCIPAL/.test(s.tag),s&&s.tag);
   ok(nome+': abre no mínimo (2 min)',s&&/COMECE POR AQUI/.test(s.txt)&&/Abrir o caderno|10 polichinelos/.test(s.txt),s&&s.txt);
-  ok(nome+': bateria baixa sem culpa',s&&/o mínimo já vale/.test(s.txt));
+  ok(nome+': bateria baixa sem culpa',s&&/o mínimo já vale/.test(s.txt)&&!/Bateria hoje/.test(s.txt));
+  ok(nome+': bateria gravada',(await P(p)).energy[TK]==='baixa');
   ok(nome+': lista escondida atrás',await p.evaluate(()=>document.body.classList.contains('insm')));
   ok(nome+': sem rolagem lateral',await p.evaluate(()=>document.documentElement.scrollWidth<=innerWidth));
   const go=await p.$eval('#smSheet .smgo',e=>e.getBoundingClientRect().height);ok(nome+': ACEITAR grande (≥ 56px)',go>=55,String(go));
