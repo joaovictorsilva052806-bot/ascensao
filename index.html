@@ -448,9 +448,11 @@ body[data-tab=foco] #focusNote{font-size:.8rem;color:var(--muted)}
 @media (prefers-reduced-motion:reduce){.panel.fold>.fhd::after{transition:none}}
 /* ---- Missão ativa (tools/mission.*) ---- */
 .quest .btns .msgo{min-width:44px;min-height:40px;padding:0 12px;font-size:1rem;background:transparent;border:1px solid var(--glow);color:var(--glow);border-radius:8px;box-shadow:0 0 10px rgba(111,177,255,.25)}
-.quest.next .btns .msgo{background:var(--accent);color:#02121a;border-color:var(--accent);animation:msp 2.4s ease-in-out infinite}
-@keyframes msp{50%{box-shadow:0 0 18px rgba(111,177,255,.7)}}
-@media (prefers-reduced-motion:reduce){.quest.next .btns .msgo{animation:none}}
+.quest.next .btns .msgo{position:relative;background:var(--accent);color:#02121a;border-color:var(--accent)}
+/* o brilho pulsa pela opacidade de uma camada própria (compositor); animar box-shadow repintava a cada quadro */
+.quest.next .btns .msgo::before{content:"";position:absolute;inset:-1px;border-radius:inherit;box-shadow:0 0 18px rgba(111,177,255,.7);opacity:0;pointer-events:none;will-change:opacity;animation:msp 2.4s ease-in-out infinite}
+@keyframes msp{50%{opacity:1}}
+@media (prefers-reduced-motion:reduce){.quest.next .btns .msgo::before{animation:none}}
 .mshint{grid-column:1/-1;font-size:.78rem;color:var(--glow);font-family:var(--f-mono)}
 .mssheet{position:fixed;inset:0;z-index:60;background:rgba(3,6,14,.86);backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px);display:flex;align-items:flex-end;justify-content:center;padding:12px;padding-bottom:max(12px,env(safe-area-inset-bottom))}
 .mssheet[hidden]{display:none}
@@ -1183,9 +1185,10 @@ body[data-tab="prog"] .atp .atrow:nth-child(5){animation-delay:.12s}body[data-ta
 #xpbar.rn-gain::after{content:"";position:absolute;inset:0;background:linear-gradient(90deg,transparent,rgba(255,255,255,.85),transparent);animation:rnShine .9s ease-out .35s both}
 
 /* missão PRÓXIMA: uma luz corre pela borda de cima (chama o olho para começar) */
-@keyframes rnRun{from{background-position:-40% 0}to{background-position:140% 0}}
+/* só transform e opacity: roda no compositor. Animar background-position repintava a tela a cada quadro (cerca de 30% da CPU de um Android lento com o app parado) */
+@keyframes rnRun{0%{transform:translateX(0);opacity:0}18%{opacity:1}82%{opacity:1}100%{transform:translateX(186%);opacity:0}}
 .quest.next:not(.done){position:relative}
-.quest.next:not(.done)::after{content:"";position:absolute;left:0;right:0;top:-1px;height:2px;pointer-events:none;background:linear-gradient(90deg,transparent,var(--glow),transparent) no-repeat;background-size:35% 100%;animation:rnRun 2.8s ease-in-out infinite}
+.quest.next:not(.done)::after{content:"";position:absolute;left:0;width:35%;top:-1px;height:2px;pointer-events:none;background:linear-gradient(90deg,transparent,var(--glow),transparent);opacity:0;will-change:transform,opacity;animation:rnRun 2.8s ease-in-out infinite}
 
 @media (prefers-reduced-motion:reduce){
   .quest.next:not(.done)::after,#xpbar.rn-gain::after,body[data-tab="prog"] .atp .atrow,.levelup:not([hidden]) .rnlv,.rnlv svg,.quest.done.pop::after,.hxorb .rn,.rnroll .rnd20,.rnroll.land .rnd20,.rnroll.nat.land .rnd20{animation:none!important}
@@ -4054,7 +4057,7 @@ function avUI(){let p=$("avPanel");const first=document.querySelector('.wrap>sec
 function avHome(){const st=document.querySelector('.wrap>section[data-tab="hoje"] .status');if(!st)return;let w=$("heroAv");
   if(!w){w=avEl("button","heroav");w.type="button";w.id="heroAv";const rk=$("rank");st.insertBefore(w,rk||st.firstChild);const sv=avEl("span","hav");w.append(sv);if(rk)w.append(rk);
     w.addEventListener("click",e=>{if(e.target.closest("#rank"))return;if(typeof tmCard==="function")tmCard();else avMaker(false);});}
-  const lv=avLv();w.querySelector(".hav").innerHTML=avMine(innerWidth<380?76:88);w.setAttribute("aria-label","Meu card: nível "+lv+". Toque para abrir");
+  const lv=avLv();{const hv=w.querySelector(".hav"),h=avMine(innerWidth<380?76:88);if(hv._h!==h){hv.innerHTML=h;hv._h=h;}} /* só redesenha o avatar quando ele muda: render() roda a cada toque */w.setAttribute("aria-label","Meu card: nível "+lv+". Toque para abrir");
   const pills=st.querySelector(".pills");if(!pills)return;let pp=$("heroPos");
   let pos="";try{if(prog.rank&&prog.rank.on&&ageNow&&ageNow()!=="kid"&&typeof cdPos==="function"&&typeof rankName==="function"&&rankName()){const ps=cdPos(rankName());pos=ps.t?"🏆 "+ps.t+"º na turma":ps.g?"🏆 "+ps.g+"º no geral":"";}}catch(e){}
   if(!pp){pp=avEl("span","pill");pp.id="heroPos";pp.setAttribute("role","button");pp.tabIndex=0;pp.addEventListener("click",()=>{const t=document.querySelector('#tabbar [data-go="amigos"]');t&&t.click();});pills.append(pp);}
@@ -5354,7 +5357,8 @@ function rnLevel(){const l=$("levelup");if(!l||l.querySelector(".rnlv"))return;
 try{const l=$("levelup");if(l){rnLevel();}}catch(e){}
 
 // barra de XP: um brilho corre por ela quando o XP entra
-function rnShine(){if(RN_RM())return;const b=$("xpbar");if(!b)return;b.classList.remove("rn-gain");void b.offsetWidth;b.classList.add("rn-gain");clearTimeout(rnShine._t);rnShine._t=setTimeout(()=>b.classList.remove("rn-gain"),1500);}
+// reinicia no quadro seguinte em vez de forçar layout (void offsetWidth) no meio do toque, que travava o "Feito" em celular lento
+function rnShine(){if(RN_RM())return;const b=$("xpbar");if(!b)return;b.classList.remove("rn-gain");cancelAnimationFrame(rnShine._f);rnShine._f=requestAnimationFrame(()=>{rnShine._f=requestAnimationFrame(()=>b.classList.add("rn-gain"));});clearTimeout(rnShine._t);rnShine._t=setTimeout(()=>b.classList.remove("rn-gain"),1500);}
 // 3) Baú: rola um d20 antes do prêmio (o prêmio já está sorteado; o dado só mostra a raridade)
 function rnD20(n){return '<svg class="rnd20" viewBox="0 0 100 100" aria-hidden="true"><path class="f" d="M50 4L90 27V73L50 96L10 73V27Z"/><path class="l" d="M50 22L22 66H78Z M50 4L50 22M10 27L50 22M10 27L22 66M90 27L50 22M90 27L78 66M10 73L22 66M90 73L78 66M50 96L22 66M50 96L78 66"/><text x="50" y="52" text-anchor="middle" dominant-baseline="middle">'+n+'</text></svg>';}
 function rnRoll(out){if(!out||out.dataset.rn)return;out.dataset.rn="1";
