@@ -1,42 +1,52 @@
 // ---------- Estudo (aba Foco): Hoje com 3 tarefas, prazos com alerta, flashcards com revisão espaçada e horas complementares ----------
 // Feito para quem tem TDAH: uma tarefa em destaque, blocos de 25 min no timer que já existe, pausa de 5 (15 a cada 4 blocos).
-// Grava só prog.st = {tasks:[], cards:[], hc:{goal,items:[]}, cfg:{blocks,train,sleep}, blk:{dia:n}, cur, pause}. Nada sai do aparelho.
+// Grava prog.st = {tasks:[], hc:{goal,items:[]}, cfg:{blocks,train,sleep}, blk:{dia:n}, cur, curEnd, pause} (pequeno, sobe com o progresso).
+// Os flashcards ficam só no aparelho, numa chave própria (ST_CK): podem crescer muito e a planilha guarda o progresso numa célula só (limite de 50 mil caracteres).
 // XP novo: "st:t:<id>" (+10, tarefa entregue no prazo) e "st:c:<dia>" (+1 por card revisado, até 10 por dia).
 const ST_INT=[1,3,7,14,30],ST_SESS=10,ST_CARDXP=10,ST_TYPES={adm:"Administrativo",prova:"Prova",atividade:"Atividade",trabalho:"Trabalho"};
-function stS(){prog.st=prog.st||{};const s=prog.st;s.tasks=s.tasks||[];s.cards=s.cards||[];s.hc=s.hc||{goal:0,items:[]};s.hc.items=s.hc.items||[];
-  s.cfg=s.cfg||{};s.blk=s.blk||{};return s;}
+function stS(){prog.st=prog.st||{};const s=prog.st;s.tasks=s.tasks||[];s.hc=s.hc||{goal:0,items:[]};s.hc.items=s.hc.items||[];
+  s.cfg=s.cfg||{};s.blk=s.blk||{};
+  // mantém o progresso pequeno: tarefa entregue e contagem de blocos com mais de 60 dias saem
+  const old=stAdd(todayKey(),-60);if(s.tasks.some(t=>t.done&&t.done<old))s.tasks=s.tasks.filter(t=>!(t.done&&t.done<old));
+  for(const k in s.blk)if(k<old)delete s.blk[k];return s;}
+const ST_CK="asc-u-stcards";let stCards=null;
+function stC(){if(stCards)return stCards;try{stCards=JSON.parse(localStorage.getItem(ST_CK)||"[]");}catch(e){stCards=null;}if(!Array.isArray(stCards))stCards=[];return stCards;}
+function stCSave(){try{localStorage.setItem(ST_CK,JSON.stringify(stC()));}catch(e){toast("Sem espaço no aparelho para mais cards.");}}
 function stEl(t,c,x){const e=document.createElement(t);if(c)e.className=c;if(x!=null)e.textContent=x;return e;}
-function stBtn(txt,cls,fn,lab){const b=stEl("button",cls||"ghost",txt);b.type="button";if(lab)b.setAttribute("aria-label",lab);b.addEventListener("click",fn);return b;}
+function stBtn(txt,cls,fn,lab){const b=stEl("button",cls||"ghost",txt);b.type="button";b.dataset.fk=txt;if(lab)b.setAttribute("aria-label",lab);b.addEventListener("click",fn);return b;}
 function stId(){return Date.now().toString(36)+Math.random().toString(36).slice(2,6);}
 function stAdd(k,n){const [y,m,d]=k.split("-").map(Number);const x=new Date(y,m-1,d);x.setDate(x.getDate()+n);return dkey(x);}
 function stDays(due){if(!due)return null;const [y,m,d]=String(due).split("-").map(Number);if(!y)return null;const t=new Date();t.setHours(0,0,0,0);return Math.round((new Date(y,m-1,d)-t)/864e5);}
 function stWhen(dd){return dd==null?"sem data":dd<0?"atrasado "+(-dd)+(dd===-1?" dia":" dias"):dd===0?"é hoje":dd===1?"amanhã":"em "+dd+" dias";}
-// ---- ordem do "Hoje": administrativo primeiro; depois prazo, peso e tarefa mais curta ----
-function stOrder(a,b){const A=a.type==="adm"?0:1,B=b.type==="adm"?0:1;if(A!==B)return A-B;
+// ---- ordem do "Hoje": o passo de 10 min que a pessoa acabou de criar, depois administrativo; depois prazo, peso e tarefa mais curta ----
+function stOrder(a,b){const rk=t=>t.step?0:t.type==="adm"?1:2;const A=rk(a),B=rk(b);if(A!==B)return A-B;
   const da=stDays(a.due),db=stDays(b.due);const x=(da==null?9e9:da)-(db==null?9e9:db);if(x)return x;
   return (b.w||2)-(a.w||2)||(a.blocks||1)-(b.blocks||1);}
 function stOpen(){const tk=todayKey();return stS().tasks.filter(t=>!t.done&&t.sn!==tk).sort(stOrder);}
 function stToday(){return stOpen().slice(0,3);}
 // ---- treino e sono: nada de estudo no treino ±30 min nem 1 h antes de dormir ----
 // Sem configuração, usa a tarefa de treino da rotina (dias + q.from) quando existir.
-function stTrain(){const c=stS().cfg.train;if(c&&Array.isArray(c.days)&&Number.isFinite(+c.hour))return {days:c.days,hour:+c.hour,dur:+c.dur||60};
+function stTrain(){const c=stS().cfg.train;if(c===false)return null; // desligado no ajuste: não volta a ler da rotina
+  if(c&&Array.isArray(c.days)&&Number.isFinite(+c.hour))return {days:c.days,hour:+c.hour,dur:+c.dur||60};
   const q=((cfg&&cfg.quests)||[]).find(q=>q&&(/treino|academia|gym/i.test(q.id+" "+q.title))&&Number.isFinite(+q.from)&&q.from!==""&&q.from!=null);
   return q?{days:q.days||[0,1,2,3,4,5,6],hour:+q.from,dur:60,auto:true}:null;}
 function stTrainDay(d){const t=stTrain();if(!t)return false;d=d||new Date();return t.days.includes((d.getDay()+6)%7);}
 // devolve o motivo e a hora em que o estudo volta, ou null se agora pode estudar
+// janelas em minutos do dia, dando a volta na meia-noite (treino às 0h, dormir à meia-noite)
+const stIn=(m,a,len)=>((m-a)%1440+1440)%1440<len;
 function stBlocked(now){now=now||new Date();const m=now.getHours()*60+now.getMinutes();const t=stTrain();
-  if(t&&stTrainDay(now)){const a=t.hour*60-30,b=t.hour*60+t.dur+30;if(m>=a&&m<b)return {why:"treino",back:b};}
+  if(t&&stTrainDay(now)){const a=t.hour*60-30,len=t.dur+60;if(stIn(m,a,len))return {why:"treino",back:(a+len)%1440};}
   const sl=stS().cfg.sleep;const sh=Number.isFinite(+sl)&&sl!==""&&sl!=null?+sl:null;
-  if(sh!=null){const a=sh*60-60;if(m>=a&&m<sh*60)return {why:"sono",back:null};}
+  if(sh!=null&&stIn(m,sh*60-60,60))return {why:"sono",back:null};
   return null;}
 function stGoal(){const g=+stS().cfg.blocks||4;return Math.max(1,stTrainDay()?g-1:g);}
 function stHM(min){return pad(Math.floor(min/60)%24)+":"+pad(min%60);}
 // ---- timer: usa o foco que já existe; ao terminar, pergunta como foi ----
 function stStart(t){const s=stS();if(prog.focus&&prog.focus.end){toast("Já tem um bloco rodando.");return;}
   s.cur=t.id;s.pause=null;const sel=$("focusQuest");if(sel){try{fillFocusSelect();}catch(e){}sel.value="";}
-  save();startFocus(25);stRender();}
+  startFocus(25);s.curEnd=prog.focus&&prog.focus.end;save();stRender();}
 function stAfterBlock(id){const s=stS(),tk=todayKey();s.blk[tk]=(s.blk[tk]||0)+1;const t=s.tasks.find(x=>x.id===id);
-  if(t)t.bd=(t.bd||0)+1;s.ask=id;s.cur=null;save();stRender();
+  if(t)t.bd=(t.bd||0)+1;s.ask=id;s.cur=null;s.curEnd=null;save();stRender();
   const p=$("stPanel");if(p&&typeof goTab==="function"&&document.body.dataset.tab!=="foco")goTab("foco");}
 function stPause(){const s=stS(),n=s.blk[todayKey()]||0;const min=n>0&&n%4===0?15:5;s.pause={end:Date.now()+min*60000,min};s.ask=null;save();stRender();}
 function stDone(t){const s=stS();t.done=todayKey();s.ask=null;const dd=stDays(t.due);
@@ -46,10 +56,10 @@ function stDone(t){const s=stS();t.done=todayKey();s.ask=null;const dd=stDays(t.
 function stBreak(t){const s=stS();s.brk=t.id;s.ask=null;save();stRender();setTimeout(()=>{const i=$("stBrkIn");if(i)i.focus();},50);}
 function stSnooze(t){const tk=todayKey();if((t.sc||0)>=1){stBreak(t);return;}t.sc=(t.sc||0)+1;t.sn=tk;save();stRender();toast("Adiado para amanhã. Se travar de novo, a gente quebra em pedaço menor.");}
 // ---- flashcards: caixas 1-3-7-14-30 dias; errou volta para 1 dia ----
-function stDue(){const tk=todayKey();return stS().cards.filter(c=>!c.next||c.next<=tk);}
+function stDue(){const tk=todayKey();return stC().filter(c=>!c.next||c.next<=tk);}
 function stGrade(c,ok){const tk=todayKey();if(ok){c.box=Math.min(ST_INT.length-1,(c.box==null?-1:c.box)+1);}else c.box=0;c.next=stAdd(tk,ST_INT[c.box]);}
-function stCardXP(){const s=stS(),tk=todayKey(),k="st:c:"+tk;const e=(prog.log[tk]||[]).find(x=>x.q===k);
-  if(e){if(e.xp<ST_CARDXP){e.xp++;save();}return;}addXP({q:k,kind:"full",xp:1,stat:"mente",bonus:0,t:new Date().toISOString()},"Revisão do dia: +XP por card");}
+function stCardXP(){const tk=todayKey(),k="st:c:"+tk;const e=(prog.log[tk]||[]).find(x=>x.q===k);
+  if(e){if(e.xp<ST_CARDXP){const b=levelOf(totalXP());e.xp++;save();const a=levelOf(totalXP());if(a>b)levelUp(a);}return;}addXP({q:k,kind:"full",xp:1,stat:"mente",bonus:0,t:new Date().toISOString()},"Revisão do dia: +XP por card");}
 // importa "frente;verso" (ou tab / vírgula), um card por linha
 function stParse(txt,deck){const out=[];for(const ln of String(txt||"").split(/\r?\n/)){const l=ln.trim();if(!l)continue;
     const sep=l.includes(";")?";":l.includes("\t")?"\t":",";const i=l.indexOf(sep);if(i<1)continue;const f=l.slice(0,i).trim(),b=l.slice(i+1).trim();
@@ -68,12 +78,15 @@ function stSelect(id,opts,v){const s=document.createElement("select");s.id=id;fo
 function stDetails(sum,open){const d=document.createElement("details");d.className="stdet";const s=stEl("summary",null,sum);d.append(s);if(open)d.open=true;return d;}
 let stTick=null,stRev=null;
 function stRender(){const p=stPanel();if(!p)return;const s=stS(),tk=todayKey();
+  if(s.cur&&!(prog.focus&&prog.focus.end&&prog.focus.end===s.curEnd)){s.cur=null;s.curEnd=null;save();} // o foco acabou por outro caminho
+  // o painel é refeito a cada ação: guarda quem tinha o foco do teclado/leitor de tela para devolver depois
+  const ae=document.activeElement,fk=ae&&p.contains(ae)?(ae.dataset.fk||"go"):null;
   const keep={};for(const d of p.querySelectorAll("details[data-k]"))keep[d.dataset.k]=d.open;
   p.textContent="";const hd=stEl("div","qhead");hd.append(stEl("h2",null,"📚 Estudo"));
   const nb=s.blk[tk]||0,gl=stGoal();hd.append(stEl("span","xp mono",nb+"/"+gl+" blocos hoje"));p.append(hd);
   const run=!!(prog.focus&&prog.focus.end&&s.cur);
   // 1) depois do bloco: como foi?
-  if(s.ask){const t=s.tasks.find(x=>x.id===s.ask);const box=stEl("div","stbox stask");box.append(stEl("b",null,"Bloco feito"+(t?": "+t.t:"")+". Como foi?"));
+  if(s.ask){const t=s.tasks.find(x=>x.id===s.ask);const box=stEl("div","stbox stask");box.setAttribute("role","status");box.append(stEl("b",null,"Bloco feito"+(t?": "+t.t:"")+". Como foi?"));
     const r=stEl("div","row");
     if(t)r.append(stBtn("✓ Terminei a tarefa","go",()=>stDone(t)));
     r.append(stBtn("Avancei","ghost",()=>stPause()));
@@ -123,7 +136,8 @@ function stRender(){const p=stPanel();if(!p)return;const s=stS(),tk=todayKey();
   {const pend=s.tasks.filter(t=>!t.done&&t.due).sort((a,b)=>a.due<b.due?-1:1);
     if(pend.length){const d=stDetails("📅 Prazos ("+pend.length+")",keep.due);d.dataset.k="due";const ul=stEl("ul","stlist");
       for(const t of pend){const dd=stDays(t.due);const li=stEl("li",dd<0?"late":dd<=7?"hot":"");li.append(stEl("span",null,(t.type==="adm"?"📌 ":"")+t.t),stEl("span","sm mono",stWhen(dd)));
-        li.append(stBtn("✕","ghost stx",()=>{s.tasks=s.tasks.filter(x=>x.id!==t.id);save();stRender();},"Apagar "+t.t));ul.append(li);}
+        const x=stBtn("✕","ghost stx",()=>{if(x.dataset.sure){s.tasks=s.tasks.filter(y=>y.id!==t.id);save();stRender();toast("Apagado: "+t.t);return;}
+          x.dataset.sure="1";x.textContent="Apagar?";x.setAttribute("aria-label","Toque de novo para apagar "+t.t);setTimeout(()=>{if(x.isConnected){delete x.dataset.sure;x.textContent="✕";x.setAttribute("aria-label","Apagar "+t.t);}},3000);},"Apagar "+t.t);li.append(x);ul.append(li);}
       d.append(ul);p.append(d);}}
   // 7) flashcards
   {const due=stDue();const d=stDetails("🧠 Flashcards · "+due.length+" para revisar hoje",keep.cards||!!stRev);d.dataset.k="cards";
@@ -134,12 +148,12 @@ function stRender(){const p=stPanel();if(!p)return;const s=stS(),tk=todayKey();
       else box.append(stBtn("Mostrar resposta","go",()=>{stRev.show=true;stRender();}));
       box.append(stBtn("Parar","ghost",()=>{stRev=null;stRender();}));d.append(box);}
     else{if(due.length){d.append(stBtn("Revisar "+Math.min(ST_SESS,due.length)+" agora (cabe em 5 min)","go",()=>{const q=stDue().slice(0,ST_SESS);stRev={q,n:0,tot:q.length,show:false};stRender();}));}
-      else d.append(stEl("div","sm muted",s.cards.length?"Tudo revisado hoje. Os próximos voltam no dia certo.":"Nenhum card ainda. Crie abaixo ou cole uma lista."));
+      else d.append(stEl("div","sm muted",stC().length?"Tudo revisado hoje. Os próximos voltam no dia certo.":"Nenhum card ainda. Crie abaixo ou cole uma lista."));
       const f=stEl("div","stform");const dk=stInput("stDk","text","Baralho (ex.: Disciplina A)",40),fr=stInput("stFr","text","Frente (pergunta)",300),bk=stInput("stBkv","text","Verso (resposta)",600);
       f.append(stField("Baralho",dk),stField("Frente",fr),stField("Verso",bk));
-      f.append(stBtn("+ Card","go",()=>{const a=fr.value.trim(),b=bk.value.trim();if(!a||!b){(a?bk:fr).focus();return;}s.cards.push({id:stId(),deck:dk.value.trim()||"Geral",f:a,b,box:null,next:null});save();stRender();toast("Card criado.");}));
+      f.append(stBtn("+ Card","go",()=>{const a=fr.value.trim(),b=bk.value.trim();if(!a||!b){(a?bk:fr).focus();return;}stC().push({id:stId(),deck:dk.value.trim()||"Geral",f:a,b,box:null,next:null});stCSave();stRender();toast("Card criado.");}));
       const ta=document.createElement("textarea");ta.id="stCsv";ta.rows=3;ta.placeholder="Colar vários: frente;verso (1 por linha)";
-      f.append(stField("Importar lista",ta),stBtn("Importar","ghost",()=>{const n=stParse(ta.value,dk.value.trim());if(!n.length){toast("Nada para importar. Use frente;verso.");return;}s.cards.push(...n);save();stRender();toast(n.length+" cards importados.");}));
+      f.append(stField("Importar lista",ta),stBtn("Importar","ghost",()=>{const n=stParse(ta.value,dk.value.trim());if(!n.length){toast("Nada para importar. Use frente;verso.");return;}stC().push(...n);stCSave();stRender();toast(n.length+" cards importados.");}));
       d.append(f);}
     p.append(d);}
   // 8) horas complementares
@@ -167,10 +181,11 @@ function stRender(){const p=stPanel();if(!p)return;const s=stS(),tk=todayKey();
     if(tr&&tr.auto)f.append(stEl("div","sm muted","Treino lido da sua rotina. Salve para ajustar."));
     f.append(stEl("div","sm muted","Em dia de treino a meta cai 1 bloco, e nada de estudo 30 min antes e depois."));
     f.append(stBtn("Salvar","go",()=>{c.blocks=+bk.value;const h=th.value===""?null:Math.max(0,Math.min(23,+th.value));
-      c.train=h==null||!sel.size?null:{days:[...sel].sort(),hour:h,dur:60};c.sleep=sl.value===""?null:Math.max(0,Math.min(23,+sl.value));save();stRender();toast("Ritmo salvo.");}));
+      c.train=h==null||!sel.size?false:{days:[...sel].sort(),hour:h,dur:60};c.sleep=sl.value===""?null:Math.max(0,Math.min(23,+sl.value));save();stRender();toast("Ritmo salvo.");}));
     d.append(f);p.append(d);}
+  if(fk){const t=p.querySelector('[data-fk="'+CSS.escape(fk)+'"]')||p.querySelector("button.go:not([disabled])");if(t)t.focus({preventScroll:true});}
   stAlert();}
-function stAnswer(ok){if(!stRev)return;const c=stRev.q.shift();const real=stS().cards.find(x=>x.id===c.id);if(real)stGrade(real,ok);stRev.n++;stRev.show=false;save();stCardXP();
+function stAnswer(ok){if(!stRev)return;const c=stRev.q.shift();const real=stC().find(x=>x.id===c.id);if(real)stGrade(real,ok);stRev.n++;stRev.show=false;stCSave();stCardXP();
   if(!stRev.q.length){const n=stRev.tot;stRev=null;toast("Revisão feita: "+n+" cards.");}stRender();}
 // ---- alerta na aba Hoje: próximo prazo a 7 dias ou menos (ou atrasado) ----
 function stAlert(){const host=document.querySelector('section[data-tab="hoje"].panel');if(!host)return;let a=$("stAlert");
@@ -180,8 +195,8 @@ function stAlert(){const host=document.querySelector('section[data-tab="hoje"].p
   const t=pend[0],dd=stDays(t.due);a.className="stalert"+(dd<0?" late":dd<=3?" hot":"");
   a.textContent=(dd<0?"⚠️ ":"📚 ")+t.t+": "+stWhen(dd)+(pend.length>1?" · +"+(pend.length-1)+" prazo"+(pend.length>2?"s":"")+" na semana":"");}
 // ---- ganchos no foco que já existe ----
-{const _ff=finishFocus;finishFocus=function(){const id=prog.st&&prog.st.cur;_ff.apply(this,arguments);if(id)stAfterBlock(id);};}
-{const fs=$("focusStop");if(fs)fs.addEventListener("click",()=>{if(prog.st&&prog.st.cur){prog.st.cur=null;save();stRender();}});}
+{const _ff=finishFocus;finishFocus=function(){const s=prog.st,f=prog.focus;const id=s&&s.cur&&f&&f.end===s.curEnd?s.cur:null;_ff.apply(this,arguments);if(id)stAfterBlock(id);};}
+{const fs=$("focusStop");if(fs)fs.addEventListener("click",()=>{if(prog.st&&prog.st.cur){prog.st.cur=null;prog.st.curEnd=null;save();stRender();}});}
 {const tb=document.querySelector('#tabbar [data-go="foco"]');if(tb)tb.addEventListener("click",()=>setTimeout(stRender,0));}
 // não refaz o painel com a pessoa digitando nele (o texto do formulário não se perde)
 {const _sr=render;render=function(){_sr.apply(this,arguments);try{const p=$("stPanel"),ae=document.activeElement;if(p&&ae&&p.contains(ae)&&/INPUT|TEXTAREA|SELECT/.test(ae.tagName)){stAlert();return;}stRender();}catch(e){}};}

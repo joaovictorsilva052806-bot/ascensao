@@ -11,9 +11,10 @@ const ST={tasks:[
   {id:'t3',t:'Trabalho de Disciplina C',type:'trabalho',due:plus(5),w:3,blocks:3},
   {id:'t4',t:'Enviar documento na secretaria',type:'adm',due:plus(10),w:1,blocks:1},
   {id:'t5',t:'Prova final de Disciplina D',type:'prova',due:plus(20),w:3,blocks:4}],
- cards:[{id:'c1',deck:'Disciplina A',f:'Pergunta 1',b:'Resposta 1',box:null,next:null},{id:'c2',deck:'Disciplina A',f:'Pergunta 2',b:'Resposta 2',box:0,next:TK},{id:'c3',deck:'Disciplina A',f:'Pergunta 3',b:'Resposta 3',box:2,next:plus(4)}],
  hc:{goal:100,items:[{id:'h1',t:'Curso A',h:10,st:'validado'},{id:'h2',t:'Curso B',h:5,st:'concluido'},{id:'h3',t:'Curso C',h:20,st:'fazendo'}]},cfg:{},blk:{}};
+const CARDS=[{id:'c1',deck:'Disciplina A',f:'Pergunta 1',b:'Resposta 1',box:null,next:null},{id:'c2',deck:'Disciplina A',f:'Pergunta 2',b:'Resposta 2',box:0,next:TK},{id:'c3',deck:'Disciplina A',f:'Pergunta 3',b:'Resposta 3',box:2,next:plus(4)}];
 const PROG={log:{},extra:{},energy:{[TK]:'media'},rest:{},st:ST};
+const K=p=>p.evaluate(()=>JSON.parse(localStorage.getItem('asc-u-stcards')||'[]'));
 const P=p=>p.evaluate(()=>JSON.parse(localStorage.getItem('asc-u-prog')||'{}'));
 const clean=p=>p.evaluate(()=>{document.querySelectorAll('.sysmodal:not([hidden])').forEach(m=>m.remove());const l=document.getElementById('levelup');if(l)l.hidden=true;});
 const patch=async(p,fn)=>{await p.evaluate(fn);await p.reload();await p.clock.runFor(2500);await clean(p);await tab(p,'foco');await p.waitForTimeout(150);};
@@ -25,9 +26,9 @@ for(const [nome,dev] of [['iPhone',devices['iPhone 13']],['Android',devices['Pix
   const c=await b.newContext({...dev,timezoneId:'America/Sao_Paulo'});const p=await c.newPage();const errs=[];p.on('pageerror',e=>errs.push(e.message));
   p.on('console',m=>{if(m.type()==='error'&&!/ERR_TUNNEL|ERR_PROXY|Failed to load resource|ERR_CONNECTION/.test(m.text()))errs.push(m.text());});
   await p.clock.install({time:new Date(TK+'T09:00:00-03:00')});
-  await p.addInitScript(([c,o])=>{if(sessionStorage.getItem('qa-set'))return;sessionStorage.setItem('qa-set','1');for(const k of Object.keys(localStorage))localStorage.removeItem(k);
-    localStorage.setItem('asc-u-cfg',JSON.stringify(c));localStorage.setItem('asc-u-prog',JSON.stringify(o));
-    for(const k of ['asc-u-intro','asc-u-news','asc-u-perm','asc-u-tip','asc-u-guide'])localStorage.setItem(k,'1');localStorage.setItem('asc-u-season','2');localStorage.setItem('asc-u-tele',JSON.stringify({asked:1}));},[CFG,PROG]);
+  await p.addInitScript(([c,o,k])=>{if(sessionStorage.getItem('qa-set'))return;sessionStorage.setItem('qa-set','1');for(const k of Object.keys(localStorage))localStorage.removeItem(k);
+    localStorage.setItem('asc-u-cfg',JSON.stringify(c));localStorage.setItem('asc-u-prog',JSON.stringify(o));localStorage.setItem('asc-u-stcards',JSON.stringify(k));
+    for(const k of ['asc-u-intro','asc-u-news','asc-u-perm','asc-u-tip','asc-u-guide'])localStorage.setItem(k,'1');localStorage.setItem('asc-u-season','2');localStorage.setItem('asc-u-tele',JSON.stringify({asked:1}));},[CFG,PROG,CARDS]);
   await p.goto(B+'/comecar/');await p.clock.runFor(3000);await clean(p);
   // 1) alerta na aba Hoje (prazo a 7 dias ou menos)
   const al=await p.$eval('#stAlert',e=>e.textContent).catch(()=>'');ok(nome+': alerta de prazo em Hoje',/Atividade 3/.test(al)&&/em 2 dias/.test(al)&&/\+2 prazos/.test(al),al);
@@ -59,17 +60,19 @@ for(const [nome,dev] of [['iPhone',devices['iPhone 13']],['Android',devices['Pix
   // 6) flashcards: novo acerta → 1 dia; caixa 0 acerta → 3 dias; errou → 1 dia
   await p.evaluate(()=>{const d=document.querySelector('#stPanel details[data-k="cards"]');d.open=true;});
   ok(nome+': 2 cards para hoje',/2 para revisar hoje/.test(await p.textContent('#stPanel details[data-k="cards"] summary')));
-  await clickTxt(p,'Revisar 2 agora');await clickTxt(p,'Mostrar resposta');ok(nome+': verso aparece',/Resposta 1/.test(await p.textContent('#stPanel .stback')));
+  await clickTxt(p,'Revisar 2 agora');await p.focus('#stPanel button[data-fk="Mostrar resposta"]');await p.keyboard.press('Enter');await p.waitForTimeout(50);
+  ok(nome+': foco do teclado volta para o painel depois de refazer',await p.evaluate(()=>{const a=document.activeElement;return !!(a&&a.closest('#stPanel')&&a.tagName==='BUTTON');}));ok(nome+': verso aparece',/Resposta 1/.test(await p.textContent('#stPanel .stback')));
   await clickTxt(p,'Acertei');await clickTxt(p,'Mostrar resposta');await clickTxt(p,'Acertei');pr=await P(p);
-  const c1=pr.st.cards.find(x=>x.id==='c1'),c2=pr.st.cards.find(x=>x.id==='c2');
+  let ks=await K(p);const c1=ks.find(x=>x.id==='c1'),c2=ks.find(x=>x.id==='c2');
+  ok(nome+': cards ficam fora do progresso (não pesam na planilha)',!('cards' in pr.st)&&!JSON.stringify(pr).includes('Pergunta 1'));
   ok(nome+': card novo acertado volta em 1 dia',c1.box===0&&c1.next===plus(1),JSON.stringify(c1));
   ok(nome+': caixa 1 acertada volta em 3 dias',c2.box===1&&c2.next===plus(3),JSON.stringify(c2));
   ok(nome+': XP de revisão (1 por card)',(pr.log[TK]||[]).some(e=>e.q==='st:c:'+TK&&e.xp===2));
-  await patch(p,()=>{const o=JSON.parse(localStorage.getItem('asc-u-prog'));o.st.cards.find(x=>x.id==='c3').next=null;localStorage.setItem('asc-u-prog',JSON.stringify(o));});
+  await patch(p,()=>{const k=JSON.parse(localStorage.getItem('asc-u-stcards'));k.find(x=>x.id==='c3').next=null;localStorage.setItem('asc-u-stcards',JSON.stringify(k));});
   await p.evaluate(()=>{document.querySelector('#stPanel details[data-k="cards"]').open=true;});
   await clickTxt(p,'Revisar 1 agora');await clickTxt(p,'Mostrar resposta');await clickTxt(p,'Errei');pr=await P(p);
-  const c3=pr.st.cards.find(x=>x.id==='c3');ok(nome+': errou volta para 1 dia',c3.box===0&&c3.next===plus(1),JSON.stringify(c3));
-  await p.fill('#stCsv','Frente A;Verso A\nlinha ruim\nFrente B;Verso B');await clickTxt(p,'Importar');pr=await P(p);ok(nome+': importa frente;verso (ignora linha ruim)',pr.st.cards.length===5,pr.st.cards.length);
+  ks=await K(p);const c3=ks.find(x=>x.id==='c3');ok(nome+': errou volta para 1 dia',c3.box===0&&c3.next===plus(1),JSON.stringify(c3));
+  await p.fill('#stCsv','Frente A;Verso A\nlinha ruim\nFrente B;Verso B');await clickTxt(p,'Importar');ks=await K(p);ok(nome+': importa frente;verso (ignora linha ruim)',ks.length===5,ks.length);
   // 7) horas complementares: só validado conta
   const hc=await p.textContent('#stPanel details[data-k="hc"] summary');ok(nome+': horas validadas / meta',/10\/100 h/.test(hc),hc);
   // 8) treino: hoje às 12h → bloqueado de 11h30 a 13h30 e meta cai 1 bloco
@@ -86,6 +89,14 @@ for(const [nome,dev] of [['iPhone',devices['iPhone 13']],['Android',devices['Pix
   await p.evaluate(()=>{[...document.querySelectorAll('#stPanel details[data-k="cfg"] button')].find(b=>b.textContent==='Salvar').click();});
   await p.clock.setSystemTime(new Date(TK+'T22:15:00-03:00'));await p.evaluate(()=>document.querySelector('nav button[data-go="hoje"]').click());await tab(p,'foco');await p.waitForTimeout(100);
   ok(nome+': 1 h antes de dormir avisa',/Hora de desacelerar/.test(await p.textContent('#stPanel')));
+  // apagar pede 2 toques
+  await p.evaluate(()=>{document.querySelector('#stPanel details[data-k="due"]').open=true;});
+  const nb0=(await P(p)).st.tasks.length;await click(p,'#stPanel details[data-k="due"] .stx');
+  ok(nome+': 1º toque no ✕ só pergunta',(await P(p)).st.tasks.length===nb0&&/Apagar\?/.test(await p.textContent('#stPanel details[data-k="due"] .stx')));
+  await click(p,'#stPanel details[data-k="due"] .stx');ok(nome+': 2º toque apaga',(await P(p)).st.tasks.length===nb0-1);
+  // foco que acabou por outro caminho não fica preso à tarefa
+  await patch(p,()=>{const o=JSON.parse(localStorage.getItem('asc-u-prog'));o.st.cur='t1';o.st.curEnd=123;o.focus=null;localStorage.setItem('asc-u-prog',JSON.stringify(o));});
+  pr=await P(p);ok(nome+': tarefa presa a foco antigo é solta',!pr.st.cur);
   // 10) nova tarefa pelo formulário
   await p.evaluate(()=>{document.querySelector('#stPanel details[data-k="add"]').open=true;});
   await p.fill('#stT','Atividade nova');await p.selectOption('#stTy','atividade');await p.fill('#stDue',plus(1));await clickTxt(p,'Salvar');pr=await P(p);
