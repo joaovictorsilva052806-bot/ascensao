@@ -52,7 +52,10 @@ function tlUI(){let p=$("tlPanel");if(!p){const anchor=$("betaPanel");if(!anchor
   r.append(b);bd.append(r);}
 // nota do "Teste do app" também vai identificada para quem aceitou
 {const bs=$("betaSend");if(bs)bs.addEventListener("click",()=>{try{const t=tlGet();if(!t.on||tlKid()||!betaRate)return;const tx=$("betaText").value.trim().replace(/\S+@\S+/g,"[email]").replace(/\+?\d[\d\s().-]{7,}\d/g,"[número]").slice(0,240);tlSend("nota",betaRate+": "+tx);}catch(e){}},true);}
-function tlBoot(){try{anon(standalone()?"3-abriu-app":"2-abriu-navegador");if(cfg&&!cfg.blank&&cfg.quests&&cfg.quests.length){anon("4-perfil");tlDaily();setTimeout(tlAsk,2500);}tlUI();}catch(e){}}
+// funil anônimo do dia (mesmo opt-in e mesmo formato A|id|etapa|data): fez 1 missão de verdade hoje; fechou o dia (baú liberado)
+function tlFunnel(){try{if(!anonOk()||!cfg||cfg.blank||!cfg.quests||!cfg.quests.length)return;const L=prog.log[todayKey()]||[];const ids=new Set(cfg.quests.map(q=>q.id));
+  if(L.some(e=>ids.has(e.q)))anon("7-quest");if(typeof bxReady==="function"&&bxReady())anon("8-fechou-dia");}catch(e){}}
+function tlBoot(){try{anon(standalone()?"3-abriu-app":"2-abriu-navegador");if(cfg&&!cfg.blank&&cfg.quests&&cfg.quests.length){anon("4-perfil");tlDaily();setTimeout(tlAsk,2500);}tlUI();tlFunnel();setInterval(tlFunnel,15000);document.addEventListener("visibilitychange",()=>{if(document.hidden)tlFunnel();});}catch(e){}}
 setTimeout(tlBoot,1200);
 // quem acabou de criar o perfil vê o aceite depois de fechar os avisos de boas-vindas
 let tlTry=0;const tlIv=setInterval(()=>{if(tlGet().asked||tlKid()||++tlTry>120){clearInterval(tlIv);return;}try{if(cfg&&cfg.quests&&cfg.quests.length){anon("4-perfil");tlAsk();}}catch(e){}},5000);

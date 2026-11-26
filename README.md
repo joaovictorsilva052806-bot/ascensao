@@ -26,6 +26,7 @@ Pontos de entrada no JS: `render()` desenha tudo; `toggle(quest, "full"|"min")` 
 - Convite pessoal: o código fica só no link; na planilha vai `cv`+SHA-256(código|apelido), que não dá para copiar para outro apelido.
 - Links `#s=` e `#c=` pedem confirmação quando já há planilha/tarefas no aparelho. A chave do painel do criador fica só no aparelho (`#k=`), nunca no repositório.
 - Funil anônimo (linhas `A`, `tools/tele.js`) só com opt-in: aceite do painel ou "sim" do beta anônimo. O convite (`/convite/`, `/x/`) não envia nada. Teste: `node qa/funil.test.js`.
+- Retenção (só no Modo Criador, `tools/retencao.*`): D1/D3/D7 e funil perfil → 1ª missão (`7-quest`) → fechou o dia (`8-fechou-dia`), calculados no aparelho do JV a partir das linhas `A` (id aleatório + etapa + data). Não guarda nada. O app do criador não pede o aceite para ele mesmo nem envia linhas `A`. Teste: `node qa/retencao.test.js`.
 - CSP por `<meta>` (o GitHub Pages não deixa mudar cabeçalhos). Teste: `node qa/seguranca.test.js`.
 
 ## Segredos
