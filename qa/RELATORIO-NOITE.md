@@ -1,6 +1,6 @@
 # Relatório da noite · 26/11/2026 (ATENA)
 
-Bom dia, JV. Resumo: testei o app inteiro como **usuário novo** (do convite `/x/` até fechar o 1º dia) e como **usuário que volta no dia 3 depois de faltar um dia** (com relógio simulado), no celular 390x844 e no desktop. Achei 18 atritos:
+Bom dia, JV. Resumo: testei o app inteiro como **usuário novo** (do convite `/x/` até fechar o 1º dia) e como **usuário que volta no dia 3 depois de faltar um dia** (com relógio simulado), no celular 390x844 e no desktop. Achei 18 atritos (1 deles a thread do #83 já resolveu durante a noite):
 
 - **11 corrigidos** num PR testado, o #89.
 - **1 regra de XP pronta**, esperando você: a carência da dívida, no #99.
@@ -92,7 +92,7 @@ Menções honrosas:
 | Atrito | Dono | Sugestão (base) |
 |---|---|---|
 | Quem volta no dia 3 ainda passa por 3 janelas antes de ver o app (check-in, habilidade desbloqueada e escudo). Hoje elas abrem uma por vez (Trem 7), mas continuam sendo 3 toques | atributos (#75) e sequência | juntar as 3 num único "resumo da volta" (Sweller 1988, carga cognitiva; Nielsen #8) |
-| O "🎁 Presente do dia 2/3" do #83 fica abaixo das tarefas, a ~1450px, e quase ninguém vê | #83 (já avisei a thread, com a sugestão de levar o cartão para o topo) | o presente no topo da aba Hoje (Fogg: gatilho visível) |
+| ~~O "🎁 Presente do dia 2/3" do #83 ficava abaixo das tarefas (~1450px)~~ **resolvido no #83 às 5h13**: agora fica no topo (conferi junto com o #89: o cartão do presente aparece a 149px e o "Que bom te ver de volta" não repete) | #83 | — |
 | A janela da galeria de classes abre logo depois de "Criar meu jogo": 1 toque antes da 1ª missão | classes/avatar (#75) | oferecer a escolha depois da 1ª missão (Fogg) |
 | O olho do `/x/` leva ~5 s de animação até mostrar "Aceite a missão" | convite / holográfico | com 1 toque, pular direto para o fim |
 | Depois de "Fechar o dia" às 21h, o Modo Sistema ainda sugere uma tarefa de dia | Modo Sistema | sugerir descanso |
