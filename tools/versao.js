@@ -1,6 +1,6 @@
 // ---------- Versão do app e tela "Novidades" (1x por versão, só para quem já jogava) ----------
 // Quem é novo não vê: o onboarding já apresenta o jogo, e a versão fica marcada como vista ao terminar.
-// Nunca abre em cima de outro modal, do onboarding ou de missão ativa. Grava só a chave *-ver, fora do progresso.
+// Não abre para navegador automatizado (navigator.webdriver), para não travar os testes da qa/. Nunca abre em cima de outro modal, do onboarding ou de missão ativa. Grava só a chave *-ver, fora do progresso.
 const APP_VERSION="1.0.0";
 const VS_KEY=location.pathname.includes("/comecar/")?"asc-u-ver":"ascensao-ver";
 const VS_BASE=location.pathname.includes("/comecar/")?"../":"./";
@@ -30,12 +30,20 @@ function vsFoot(){if(document.getElementById("vsFoot"))return;const ms=[...docum
   const nb=document.createElement("button");nb.type="button";nb.className="link";nb.textContent="Novidades";nb.addEventListener("click",vsOpen);
   const mk=(href,txt)=>{const a=document.createElement("a");a.href=VS_BASE+href;a.textContent=txt;a.target="_blank";a.rel="noopener";return a;};
   d.append(v,nb,mk("privacidade/","Privacidade"),mk("termos/","Termos"));ms[ms.length-1].after(d);}
+let vsTried=false;
+function vsPending(){try{
+  if(location.pathname.includes("/comecar/")&&typeof tlGet==="function"&&typeof tlKid==="function"&&!tlKid()&&!tlGet().asked)return true;
+  if(typeof avAskNow==="function"&&typeof prog!=="undefined"&&!(prog.avatar&&prog.avatar.ok)&&!prog.avAsk)return true;
+  if(typeof clsNotice==="function"&&typeof prog!=="undefined"&&!(prog.rpg&&prog.rpg.cg))return true;}catch(e){}return false;}
 (function vsBoot(){let isNew=null,tries=0;
-  const tick=()=>{tries++;if(vsGet()===APP_VERSION)return;const playing=vsPlaying();
+  const tick=()=>{tries++;if(vsGet()===APP_VERSION||navigator.webdriver)return; // como os convites do avatar: robôs de teste não veem (os testes daqui forçam webdriver=false)
+    const playing=vsPlaying();
     if(isNew===null)isNew=!playing;
     if(isNew){if(playing)vsSet();else if(tries<400)setTimeout(tick,3000);return;} // novo: marca como visto ao terminar o perfil
-    // 1 tela do Sistema por abertura: se o aceite do painel (tools/tele.js) ainda vai aparecer, a Novidades fica para a próxima vez
-    if(location.pathname.includes("/comecar/")&&typeof tlGet==="function"&&typeof tlKid==="function"&&!tlKid()&&!tlGet().asked)return;
+    // 1 tela do Sistema por abertura: se ainda falta o aceite do painel (só /comecar/), montar o avatar ou o aviso de classe,
+    // a Novidades fica para a próxima abertura (no máximo 3 vezes; depois entra na fila normal)
+    if(!vsTried){vsTried=true;let skip=0;try{skip=+localStorage.getItem(VS_KEY+"-adia")||0;}catch(e){}
+      if(skip<3&&vsPending()){try{localStorage.setItem(VS_KEY+"-adia",String(skip+1));}catch(e){}return;}}
     if(!vsBusy()){vsOpen();return;}
     if(tries<60)setTimeout(tick,3000);};
   const start=()=>{try{vsFoot();}catch(e){}setTimeout(tick,2500);};
