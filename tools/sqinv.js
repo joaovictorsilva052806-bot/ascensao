@@ -6,11 +6,11 @@ let sqInvRows=[],sqiAt=0,sqPub={};
 function sqiSt(){if(!prog.sqInv||typeof prog.sqInv!=="object")prog.sqInv={seen:{}};prog.sqInv.seen=prog.sqInv.seen||{};return prog.sqInv;}
 const sqiN=v=>String(v||"").trim().toLowerCase();
 const sqiDk=()=>todayKey().replace(/-/g,"");
-function sqiFresh(d){const s=String(d||"").replace(/\D/g,"");if(s.length!==8)return true;const t=new Date(+s.slice(0,4),+s.slice(4,6)-1,+s.slice(6,8));return (Date.now()-t)/864e5<8;}
+function sqiFresh(d){const s=String(d||"").replace(/\D/g,"");if(s.length!==8)return false;/* data inválida nunca é recente */const t=new Date(+s.slice(0,4),+s.slice(4,6)-1,+s.slice(6,8));return (Date.now()-t)/864e5<8;}
 function sqiPost(parts){let v=parts.map(x=>String(x==null?"":x).replace(/[|,\n\r]/g," ").slice(0,40)).join("|");const tk=typeof rkTok==="function"?rkTok():"";if(tk)v+="|"+tk;
   try{fetch(RK_POST,{method:"POST",mode:"no-cors",keepalive:true,body:new URLSearchParams({"entry.807978446":v})}).catch(()=>{});}catch(e){}}
 async function sqiLoad(){if(ageNow()==="kid"||!(prog.rank&&prog.rank.on))return;sqiAt=Date.now();
-  try{const t=await (await fetch(RK_CSV+"&t="+Date.now(),{credentials:"omit"})).text();
+  try{const t=await rkGet();
     const all=t.trim().split(/\r?\n/).slice(1).map(l=>l.split(","));sqPub={};for(const r of all){const n=String(r[10]||"").trim();if(n&&n!=="pnick"&&/\./.test(r[13]||""))sqPub[n.toLowerCase()]={seq:+r[11]||0,dz:+r[12]||0,av:String(r[13]).trim(),at:/^\d+(-\d+){3}$/.test(String(r[14]||"").trim())?String(r[14]).trim():""};}
     sqInvRows=all.filter(r=>/^[IJFGK]$/.test(String(r[4]||"").trim())).map(r=>({k:r[4].trim(),a:String(r[5]||"").trim(),b:String(r[6]||"").trim(),s:String(r[7]||"").trim(),d:String(r[8]||"").trim()}));}catch(e){return;}
   sqiCheck();try{if(typeof frCheck==="function")frCheck();}catch(e){}}

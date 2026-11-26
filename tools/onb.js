@@ -129,6 +129,7 @@ function openOnb(){let a=(cfg&&cfg.profile)||null;
   fillOnb(a);$("onb").hidden=false;document.body.classList.add("onboarding");let seen=false;try{seen=localStorage.getItem("asc-u-intro")==="1";}catch(e){}if(!(cfg&&!cfg.blank)){showIntro(false);return;}$("o_cancel").hidden=!(cfg&&!cfg.blank);window.scrollTo(0,0);}
 function closeOnb(){$("onb").hidden=true;document.body.classList.remove("onboarding");}
 $("o_go").addEventListener("click",()=>{const a=readOnb();if(!a.name){$("o_msg").textContent="Coloque seu nome.";return;}
+  if(!a.age){$("o_msg").textContent="Escolha sua faixa de idade (é ela que define ranking e privacidade).";try{$("o_age").scrollIntoView({block:"center"});}catch(e){}return;}
   cfg=buildCfg(a);
   try{localStorage.setItem("asc-u-cfg",JSON.stringify(cfg));}catch(e){}
   if(location.hash)history.replaceState(null,"",location.pathname);
@@ -152,7 +153,7 @@ $("wipe").addEventListener("click",()=>{const b=$("wipe");
   try{Object.keys(localStorage).filter(k=>k.startsWith("asc-u-")).forEach(k=>localStorage.removeItem(k));}catch(e){}
   location.replace(location.pathname);});
 setTimeout(showNews,0);
-$("o_bkGo").addEventListener("click",()=>{let withCfg=false;try{withCfg=restoreBackup($("o_bk").value);}catch(e){$("o_msg").textContent="Esse texto não é um backup válido.";return;}
+$("o_bkGo").addEventListener("click",()=>{let withCfg=false;try{withCfg=restoreBackup($("o_bk").value);}catch(e){$("o_msg").textContent="Esse texto não é um backup válido.";return;}if(withCfg===null)return;
   $("o_bk").value="";if(withCfg){try{localStorage.setItem("asc-u-news",NEWS_V);}catch(e){}closeOnb();render();goTab("hoje");toast("Tudo de volta: tarefas, pontos e histórico.");}
   else{$("o_bkBox").open=false;$("o_msg").textContent="Pontos e histórico de volta. Esse backup é antigo e não tem as tarefas: confira o perfil e toque em Criar meu jogo.";}});
 
