@@ -538,6 +538,11 @@ body.inmission{overflow:hidden}
 .gdl li.now .n{background:var(--gold);color:#1a1200;border-color:var(--gold)}
 .gdl li.ok button{opacity:.55}.gdl li.ok .n{border-color:var(--good);color:var(--good)}
 .gdoff{justify-self:start;font-size:.8rem;opacity:.75}
+/* revisão noturna: criar card com área de toque de 44px (campos tinham 24px, "+ Criar cards" 32px) */
+.msadd input{min-height:44px}
+.msadd summary{min-height:44px;line-height:44px}
+/* atalho "⭐ Colar figurinha" (8 s depois de concluir) ficava em cima do "✓ Concluir missão" da próxima missão */
+body.inmission .much{display:none}
 /* ---- Quebrar correntes (tools/chain.*) ---- */
 .chc{display:grid;gap:8px;padding:12px;border:1px solid var(--line);border-radius:12px;background:linear-gradient(160deg,#0f1d38,#0a1222);margin-bottom:10px}
 .chc.done{border-color:var(--good)}
@@ -1421,7 +1426,8 @@ function render(){
   const list=((cfg&&cfg.quests)||[]).filter(q=>visibleToday(q,dow,tk)).sort((a,b)=>(b.main?2:b.once?1:0)-(a.main?2:a.once?1:0)).concat(prog.extra[tk]||[]);
   if(!list.length){const e=document.createElement("div");e.className="empty";e.textContent=cfg?"Nenhuma quest para hoje. Adicione uma quest rápida abaixo, ou toque em Refazer meu perfil.":"Responda o perfil para montar suas quests. Enquanto isso, adicione uma quest rápida abaixo.";qEl.append(e);}
   let dayxp=0;for(const e of done)dayxp+=(e.xp||0)+(e.bonus||0);
-  $("dayxp").textContent=done.length?("Hoje: "+done.length+" concluída(s) · +"+dayxp+" XP"):"Comece pela primeira. Só uma já deixa o dia ativo.";
+  const nFeitas=done.filter(e=>!/^(ach|checkin|tip|dun|boss|sq|adm|hook|volta):/.test(String(e.q))).length;
+  $("dayxp").textContent=nFeitas?("Hoje: "+nFeitas+" concluída(s) · +"+dayxp+" XP"):"Comece pela primeira. Só uma já deixa o dia ativo.";
   const pens=penalties();const open=pens.filter(p=>!p.forgiven);const redeem=pens.find(p=>p.redeemable&&!p.forgiven);
   const debtEl=$("debt");
   if(open.length){debtEl.hidden=false;
@@ -2189,7 +2195,7 @@ function sysLine(){const dt=new Date();const h=dt.getHours();const nm=((cfg&&cfg
   if(!ms.length)return hi+(done.length?"Dia ativo. Quer pegar uma extra?":"Sem missão principal hoje. Uma tarefa já ativa o dia.");
   if(!left.length)return hi+"Missão diária completa. Sequência protegida. Descanse, você mereceu.";
   const nx=left[0];
-  if(h>=20)return hi+"Faltam "+left.length+". Sugestão: "+(nx.minTitle||nx.title)+" (o mínimo já vale).";
+  if(h>=20)return hi+(left.length>1?"Faltam ":"Falta ")+left.length+". Sugestão: "+(nx.minTitle||nx.title)+" (o mínimo já vale).";
   return hi+(left.length<ms.length?"Bom ritmo. ":"")+"Próxima missão: "+nx.title+".";}
 function typeSys(el,t){if(el.dataset.t===t)return;el.dataset.t=t;clearInterval(typeSys.i);
   if(matchMedia("(prefers-reduced-motion: reduce)").matches||document.body.dataset.tab!=="hoje"){el.textContent=t;return;}
@@ -2341,7 +2347,7 @@ for(const bt of document.querySelectorAll("#tabbar button"))bt.addEventListener(
 function ciStreak(){let n=0;const d=new Date();d.setDate(d.getDate()-1);for(let i=0;i<365;i++){if((prog.log[dkey(d)]||[]).some(e=>String(e.q).startsWith("checkin:")))n++;else break;d.setDate(d.getDate()-1);}return n;}
 function dailyCheckin(){if(!cfg||cfg.blank||($("onb")&&!$("onb").hidden)||document.getElementById("clsModal"))return;const tk=todayKey();if((prog.log[tk]||[]).some(e=>String(e.q).startsWith("checkin:")))return;
   if(dailyCheckin.shown===tk)return;dailyCheckin.shown=tk;const s=ciStreak()+1;const bonus=Math.min(10,(s-1)*2);
-  sysPop("CHECK-IN DIÁRIO","Dia "+s+(s>1?" seguido":""),"Você apareceu, e isso já conta. +10 XP"+(bonus?" e +"+bonus+" de bônus pela sequência de check-ins.":". Volte amanhã para ganhar bônus."),()=>{
+  sysPop("CHECK-IN DIÁRIO",s>1?s+" dias de check-in":"Dia 1","Você apareceu, e isso já conta. +10 XP"+(bonus?" e +"+bonus+" de bônus pela sequência de check-ins.":". Volte amanhã para ganhar bônus."),()=>{
     if((prog.log[todayKey()]||[]).some(e=>String(e.q).startsWith("checkin:")))return;
     addXP({q:"checkin:"+todayKey(),kind:"checkin",xp:10,stat:"foco",bonus,t:new Date().toISOString()},"Check-in feito: +"+(10+bonus)+" XP");
     if(typeof sendRank==="function")sendRank("checkin",true);},"Fazer check-in");}
@@ -2670,7 +2676,7 @@ function shieldAuto(){if(!cfg||cfg.blank||($("onb")&&!$("onb").hidden))return;co
   const before=stRun(d);if(!before){save();return;}
   if(gap.length>s.n){save();if(before>=3)sysPop("NOVA SEQUÊNCIA","Recomeço, sem culpa","Sua sequência de "+before+" dias parou, e tudo bem: o seu XP e o seu nível continuam. Hoje é o dia 1 de novo. Uma tarefa já acende o fogo.",null,"Bora");return;}
   for(const k of gap)s.used[k]=1;s.n-=gap.length;save();render();
-  sysPop("ESCUDO ATIVADO","🛡️ Sequência salva: "+streakDays()+" dias",(gap.length>1?"Dois dias":"Ontem")+" passou em branco e o escudo segurou o fogo sozinho. Faça 1 tarefa hoje para ela seguir. Escudos restantes: "+s.n+".",null,"Valeu, Sistema");}
+  sysPop("ESCUDO ATIVADO","🛡️ Sequência salva: "+streakDays()+(streakDays()===1?" dia":" dias"),(gap.length>1?"Dois dias ficaram":"Ontem ficou")+" sem tarefa e o escudo segurou o fogo sozinho. Faça 1 tarefa hoje para ela seguir. Escudos restantes: "+s.n+".",null,"Valeu, Sistema");}
 const ST_TXT={1:["Sequência iniciada 🔥","Dia 1. Volte amanhã e vira 2. Uma tarefa por dia já mantém o fogo aceso."],
   3:["3 dias seguidos 🔥","Seu cérebro já está pegando o ritmo. Com 7 dias você ganha um escudo de sequência."],
   7:["1 semana! 🛡️ +1 escudo","Se um dia passar em branco, o escudo salva sua sequência sozinho. Você guarda até 2."]};
@@ -2965,6 +2971,28 @@ function gdGo(k){if(k==="q"){const b=document.querySelector("#quests .quest.next
 document.addEventListener("click",e=>{const b=e.target.closest&&e.target.closest('nav button[data-go="prog"]');if(b&&prog){prog.gd=prog.gd||{};if(!prog.gd.rank){prog.gd.rank=1;save();}}},true);
 {const _r=render;render=function(){_r.apply(this,arguments);try{gdUI();}catch(e){}};}
 setTimeout(()=>{try{gdUI();}catch(e){}},50);
+
+// ---------- Revisão noturna (26/11): atritos do usuário novo ----------
+// 1) Madrugada (0h-5h): as principais têm cadeado e o passo 1 do guia ("Toque em ▶") tocava no ▶ trancado (nada acontecia).
+//    Agora abre a 1ª missão liberada (mesmo extra); se nenhuma estiver liberada, explica a hora e abre um desafio relâmpago.
+// 2) A mensagem do [SISTEMA] com tudo trancado aponta o que dá para fazer agora.
+// Não grava nada novo: só usa o que já existe (gdGo, sysLine, desafios relâmpago).
+function ntLockHour(){let h=null;for(const c of document.querySelectorAll("#quests .quest.qtlock[data-q]")){try{const q=questById(c.dataset.q);const l=q&&typeof qtLocked==="function"?qtLocked(q):null;if(l!=null&&(h==null||l<h))h=l;}catch(e){}}return h;}
+// 1ª missão liberada (principal ou extra)
+function ntFreeMs(){return document.querySelector("#quests .quest.next .msgo:not(:disabled)")||[...document.querySelectorAll("#quests .msgo")].find(b=>!b.disabled)||null;}
+if(typeof gdGo==="function"){const _gd=gdGo;gdGo=function(k){try{
+  // sem PRÓXIMA liberada, o original tocava no ▶ trancado (nada acontecia): vai para a 1ª liberada, mesmo extra
+  const nx=document.querySelector("#quests .quest.next .msgo:not(:disabled)"),fr=ntFreeMs();
+  if(k==="q"&&!nx&&fr){fr.scrollIntoView({block:"center",behavior:matchMedia("(prefers-reduced-motion: reduce)").matches?"auto":"smooth"});setTimeout(()=>{try{fr.click();}catch(e){}},350);return;}
+  if(k==="q"&&!fr&&document.querySelector("#quests .msgo")){
+  const h=ntLockHour();const z=document.querySelector(".zapc:not(.done)");
+  toast((h!=null?"🔒 Suas missões liberam às "+h+"h. ":"🔒 Suas missões ainda estão trancadas. ")+(z?"Agora: 1 desafio relâmpago ⚡ +10 XP.":""));
+  if(z){z.scrollIntoView({block:"center",behavior:matchMedia("(prefers-reduced-motion: reduce)").matches?"auto":"smooth"});setTimeout(()=>{try{z.click();}catch(e){}},450);}
+  return;}}catch(e){}return _gd.apply(this,arguments);};}
+// embrulha depois de todos os módulos (qtidy também embrulha sysLine)
+setTimeout(()=>{if(typeof sysLine!=="function")return;const _sl=sysLine;sysLine=function(){const t=_sl.apply(this,arguments);
+  try{if(/libera às \d+h/.test(t)&&!ntFreeMs()&&document.querySelector(".zapc:not(.done)"))return t+" Agora vale 1 desafio relâmpago ⚡ (+10 XP).";}catch(e){}return t;};
+  try{render();}catch(e){}},0);
 
 // ---------- Convite de Esquadrão: tocar no nome chama o amigo; o aviso aparece no app dele ----------
 // Usa o mesmo formulário do ranking: I|de|para|esquadrão|data (convite) e J|quem|de|esquadrão|data (aceite).

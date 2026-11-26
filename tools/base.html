@@ -452,7 +452,8 @@ function render(){
   const list=((cfg&&cfg.quests)||[]).filter(q=>visibleToday(q,dow,tk)).sort((a,b)=>(b.main?2:b.once?1:0)-(a.main?2:a.once?1:0)).concat(prog.extra[tk]||[]);
   if(!list.length){const e=document.createElement("div");e.className="empty";e.textContent=cfg?"Nenhuma quest para hoje. Adicione uma quest rápida abaixo, ou peça à Eva para montar as suas.":"Suas quests aparecem aqui assim que a Eva carregar. Enquanto isso, adicione uma quest rápida abaixo.";qEl.append(e);}
   let dayxp=0;for(const e of done)dayxp+=(e.xp||0)+(e.bonus||0);
-  $("dayxp").textContent=done.length?("Hoje: "+done.length+" concluída(s) · +"+dayxp+" XP"):"Comece pela primeira. Só uma já deixa o dia ativo.";
+  const nFeitas=done.filter(e=>!/^(ach|checkin|tip|dun|boss|sq|adm|hook|volta):/.test(String(e.q))).length;
+  $("dayxp").textContent=nFeitas?("Hoje: "+nFeitas+" concluída(s) · +"+dayxp+" XP"):"Comece pela primeira. Só uma já deixa o dia ativo.";
   const pens=penalties();const open=pens.filter(p=>!p.forgiven);const redeem=pens.find(p=>p.redeemable&&!p.forgiven);
   const debtEl=$("debt");
   if(open.length){debtEl.hidden=false;

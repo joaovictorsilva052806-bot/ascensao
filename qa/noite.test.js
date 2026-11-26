@@ -1,0 +1,81 @@
+// Revisão noturna 26/11 (tools/noite.*, rpg.js, streak.js, base.html): atritos do usuário novo.
+// 1) Madrugada: o passo 1 do guia ("Toque em ▶") tocava no ▶ trancado e nada acontecia. Agora abre a 1ª missão liberada;
+//    sem nenhuma liberada, diz a hora e abre um desafio relâmpago.
+// 2) Textos: "Falta 1." (não "Faltam 1."), "Sequência salva: 1 dia", "Ontem ficou sem tarefa" e "2 dias de check-in".
+// 3) "Hoje: N concluída(s)" conta só o que a pessoa fez (check-in e conquista não contam como tarefa).
+// 4) Criar card: campos e "+ Criar cards" com 44px de altura.
+// Mais: celular 390x844 e desktop, reduce-motion, dados antigos intactos, raiz abre, console limpo.
+// Rode com: python3 -m http.server 8000 --bind 127.0.0.1 & node qa/noite.test.js
+const {chromium}=require('playwright');const B='http://127.0.0.1:8000';const U=B+'/comecar/';const R=[];
+const ok=(n,c,x)=>R.push((c?'PASS ':'FAIL ')+n+(x&&!c?' · '+x:''));
+const noise=t=>/TUNNEL|fonts\.g|docs\.google|Failed to load resource|vibrate/.test(t);
+async function ctxOf(b,o={}){return b.newContext({viewport:{width:390,height:844},hasTouch:true,isMobile:true,timezoneId:'America/Sao_Paulo',...o});}
+async function page(ctx,iso,errs){const p=await ctx.newPage();p.on('console',m=>{if(m.type()==='error'&&!noise(m.text()))errs.push(m.text());});p.on('pageerror',e=>errs.push('PE '+e.message));await p.clock.install({time:new Date(iso)});return p;}
+// fecha avisos do Sistema; o pedido do painel do criador recebe "Agora não" (nunca "Aceito")
+async function pops(p){for(let i=0;i<10;i++){const r=await p.evaluate(()=>{const tl=document.querySelector('#tlModal');if(tl&&tl.getClientRects().length){tl.querySelector('button.ghost').click();return 1;}
+  const cm=document.querySelector('#clsModal');if(cm&&cm.getClientRects().length){const l=[...cm.querySelectorAll('button.link')].find(x=>/depois/i.test(x.textContent));if(l){l.click();return 1;}}
+  const lu=document.querySelector('#luClose');if(lu&&lu.getClientRects().length){lu.click();return 1;}
+  for(const m of document.querySelectorAll('.sysmodal')){if(m.id==='secZen'||m.id==='tlModal'||!m.getClientRects().length)continue;const g=m.querySelector('button.go');if(g){g.click();return 1;}}return 0;});
+  if(!r)break;await p.waitForTimeout(450);}}
+async function onboard(p){await p.goto(U);await p.waitForTimeout(900);await p.click('#q_perm');await p.fill('#q_name','Teste');await p.click('#q_n0');
+  await p.click('button:has-text("18 a 29")');await p.click('button:has-text("Faculdade")');await p.click('#q_done');await p.waitForTimeout(2200);await pops(p);}
+const guide1=p=>p.evaluate(()=>{const b=document.querySelector('#gdPanel li.now button')||document.querySelector('#gdPanel button');b.click();return b.textContent;});
+const sheet=p=>p.evaluate(()=>{for(const s of document.querySelectorAll('.mssheet')){if(!s.hidden&&s.getClientRects().length)return s.id||s.innerText.slice(0,80);}return null;});
+const sysTxt=p=>p.evaluate(()=>(document.body.innerText.match(/(Boa madrugada|Bom dia|Boa tarde|Boa noite)[^\n]*/)||[''])[0]);
+(async()=>{const b=await chromium.launch();
+for(const [nome,opt] of [['celular',{}],['desktop + reduce-motion',{viewport:{width:1280,height:800},isMobile:false,hasTouch:false,reducedMotion:'reduce'}]]){
+  const errs=[];const ctx=await ctxOf(b,opt);const p=await page(ctx,'2026-11-27T02:00:00-03:00',errs);await onboard(p);
+  ok(nome+': madrugada, principais trancadas',(await p.$$('#quests .quest.qtlock')).length>=1);
+  await guide1(p);await p.waitForTimeout(900);const s1=await sheet(p);const t1=await p.evaluate(()=>{const s=[...document.querySelectorAll('.mssheet')].find(x=>!x.hidden&&x.getClientRects().length);return s?s.innerText:'';});
+  ok(nome+': passo 1 do guia abre a 1ª missão liberada (antes: nada)',!!s1&&!/libera às/.test(t1),String(s1));
+  // sem nenhuma liberada: só as trancadas no perfil
+  const lockIds=await p.evaluate(()=>[...document.querySelectorAll('#quests .quest.qtlock[data-q]')].map(c=>c.dataset.q));
+  await p.evaluate(ids=>{const c=JSON.parse(localStorage.getItem('asc-u-cfg'));c.quests=c.quests.filter(q=>ids.includes(q.id));localStorage.setItem('asc-u-cfg',JSON.stringify(c));const g=JSON.parse(localStorage.getItem('asc-u-prog'));g.msUsed=0;localStorage.setItem('asc-u-prog',JSON.stringify(g));},lockIds);
+  await p.reload();await p.waitForTimeout(2200);await pops(p);
+  const st=await sysTxt(p);ok(nome+': Sistema aponta o desafio relâmpago quando tudo está trancado',/libera às 5h/.test(st)&&/desafio relâmpago/.test(st),st);
+  await guide1(p);await p.waitForTimeout(250);const toast=await p.evaluate(()=>(document.querySelector('#toast')||{}).textContent||'');
+  ok(nome+': passo 1 explica a hora',/liberam às 5h/.test(toast),toast);await p.waitForTimeout(900);
+  ok(nome+': e abre um desafio relâmpago (vitória rápida)',await p.evaluate(()=>{const z=document.querySelector('#zapSheet');return !!z&&!z.hidden;}));
+  ok(nome+': console limpo',errs.length===0,errs.join(' | '));await ctx.close();}
+
+// noite (20h30): "Falta 1.", contador do dia e campos de 44px
+{const errs=[];const ctx=await ctxOf(b);const p=await page(ctx,'2026-11-26T20:30:00-03:00',errs);await onboard(p);
+  await p.evaluate(()=>document.querySelector('#quests .quest.next .msgo').click());await p.waitForTimeout(900);
+  const hs=await p.evaluate(()=>[...document.querySelectorAll('.msadd input,.msadd summary')].filter(e=>e.getClientRects().length).map(e=>Math.round(e.getBoundingClientRect().height)));
+  ok('criar card: campos e "+ Criar cards" com 44px ou mais',hs.length>=2&&hs.every(h=>h>=44),hs.join(','));
+  await p.evaluate(()=>{const s=[...document.querySelectorAll('.mssheet')].find(x=>!x.hidden);[...s.querySelectorAll('button')].find(x=>/Concluir miss/.test(x.textContent)).click();});await p.waitForTimeout(1200);await pops(p);
+  // o atalho "⭐ Colar figurinha" não cobre o "Concluir missão" da próxima missão
+  for(let i=0;i<10&&!(await p.$('#muChip'));i++){await pops(p);await p.waitForTimeout(300);}const hadChip=!!(await p.$('#muChip'));
+  for(let i=0;i<4;i++){await pops(p);await p.waitForTimeout(500);}  await p.evaluate(()=>{const b=[...document.querySelectorAll('#quests .msgo')].find(x=>!x.disabled);if(b)b.click();});await p.waitForTimeout(600);
+  const cover=await p.evaluate(()=>{const c=document.querySelector('#muChip');const s=[...document.querySelectorAll('.mssheet')].find(x=>!x.hidden&&x.getClientRects().length);if(!s)return 'sem missão aberta';
+    const g=[...s.querySelectorAll('button')].find(x=>/Concluir miss/.test(x.textContent));const r=g.getBoundingClientRect();const t=document.elementFromPoint(r.left+r.width-12,r.top+r.height/2);return (c&&c.getClientRects().length?'chip visível ':'')+(g.contains(t)?'ok':'coberto por '+(t&&(t.id||t.className))+' '+(t&&t.closest('.sysmodal')?t.closest('.sysmodal').innerText.slice(0,90):''));});
+  ok('figurinha não cobre o "Concluir missão" (chip apareceu: '+hadChip+')',hadChip&&cover==='ok',cover);
+  await p.evaluate(()=>{const s=[...document.querySelectorAll('.mssheet')].find(x=>!x.hidden);const m=s&&[...s.querySelectorAll('button')].find(x=>/Minimizar/.test(x.textContent));if(m)m.click();});await p.waitForTimeout(400);
+  const st=await sysTxt(p);ok('Sistema: "Falta 1." no singular',/Falta 1\./.test(st)&&!/Faltam 1\./.test(st),st);
+  const dx=await p.evaluate(()=>document.querySelector('#dayxp').textContent);const log=await p.evaluate(()=>{const g=JSON.parse(localStorage.getItem('asc-u-prog'));const k=Object.keys(g.log).pop();return g.log[k].map(e=>e.q);});
+  ok('placar do dia conta só a tarefa (check-in e conquista não)',/^Hoje: 1 (concluída|feita)/.test(dx)&&log.length>1,dx+' · log: '+log.join(','));
+  // dados antigos: tudo que existia continua lá depois de abrir a versão nova
+  const before=await p.evaluate(()=>{const g=JSON.parse(localStorage.getItem('asc-u-prog'));g.campoAntigo={x:1};g.log['2026-11-20']=[{q:'velha',kind:'full',xp:10,stat:'foco',t:'2026-11-20T12:00:00Z'}];localStorage.setItem('asc-u-prog',JSON.stringify(g));return {g,c:localStorage.getItem('asc-u-cfg')};});
+  await p.reload();await p.waitForTimeout(2000);
+  const after=await p.evaluate(()=>({g:JSON.parse(localStorage.getItem('asc-u-prog')),c:localStorage.getItem('asc-u-cfg')}));
+  const keep=(a,z)=>Object.keys(a).every(k=>k in z&&(typeof a[k]!=='object'||a[k]===null||keep(a[k],z[k]||{})));
+  ok('dados antigos intactos (nenhum campo some)',keep(before.g,after.g)&&after.g.campoAntigo&&after.g.log['2026-11-20'].length===1&&before.c===after.c);
+  ok('console limpo (noite)',errs.length===0,errs.join(' | '));
+  // dia 27: só abre o app (check-in, sem tarefa). O título diz que é check-in, não a sequência 🔥
+  const p2=await page(ctx,'2026-11-27T13:00:00-03:00',errs);await p2.goto(U);await p2.waitForTimeout(2500);
+  let ck='';for(let i=0;i<6;i++){ck=await p2.evaluate(()=>{const m=[...document.querySelectorAll('.sysmodal')].find(x=>x.getClientRects().length&&/CHECK-IN/.test(x.innerText));return m?m.innerText:'';});if(ck)break;
+    await p2.evaluate(()=>{for(const m of document.querySelectorAll('.sysmodal')){if(m.id==='secZen'||!m.getClientRects().length)continue;const g=m.id==='tlModal'?m.querySelector('button.ghost'):m.querySelector('button.go');if(g){g.click();return;}}});await p2.waitForTimeout(500);}
+  ok('check-in do dia 2: "2 dias de check-in" (antes "Dia 2 seguido", que brigava com 🔥 1 dia)',/2 dias de check-in/.test(ck)&&!/seguido/.test(ck),ck.replace(/\s+/g,' ').slice(0,120));
+  await p2.evaluate(()=>{for(const m of document.querySelectorAll('.sysmodal')){if(m.getClientRects().length&&/CHECK-IN/.test(m.innerText)){m.querySelector('button.go').click();}}});await p2.waitForTimeout(800);await p2.close();
+  // escudo: fez tarefa dia 26, dia 27 só abriu, abre dia 28 → "1 dia" e "Ontem ficou sem tarefa"
+  const p3=await page(ctx,'2026-11-28T09:00:00-03:00',errs);await p3.goto(U);await p3.waitForTimeout(2500);
+  let sh='';for(let i=0;i<6;i++){sh=await p3.evaluate(()=>{const m=[...document.querySelectorAll('.sysmodal')].find(x=>x.getClientRects().length&&/ESCUDO/.test(x.innerText));return m?m.innerText:'';});if(sh)break;
+    await p3.evaluate(()=>{for(const m of document.querySelectorAll('.sysmodal')){if(m.id==='secZen'||!m.getClientRects().length)continue;const g=m.id==='tlModal'?m.querySelector('button.ghost'):m.querySelector('button.go');if(g){g.click();return;}}});await p3.waitForTimeout(500);}
+  ok('escudo: "Sequência salva: 1 dia" e "Ontem ficou sem tarefa"',/Sequência salva: 1 dia\b/.test(sh)&&!/1 dias/.test(sh)&&/Ontem ficou sem tarefa/.test(sh),sh.replace(/\s+/g,' ').slice(0,160));
+  await ctx.close();}
+
+// raiz (app do JV): abre com a planilha de exemplo e sem erro
+{const errs=[];const ctx=await ctxOf(b);await ctx.addInitScript(()=>{if(!localStorage.getItem('ascensao-cfg')){localStorage.setItem('ascensao-cfg',JSON.stringify({version:3,startDate:'2026-11-20',name:'JV',quests:[{id:'q1',title:'Estudar 20 min',xp:20,stat:'mente',main:true},{id:'q_fech',title:'Fechamento do dia',xp:10,stat:'foco',main:true}]}));localStorage.setItem('ascensao-prog',JSON.stringify({log:{},rpg:{cls:'mago'}}));}});
+  const p=await page(ctx,'2026-11-27T02:00:00-03:00',errs);await p.goto(B+'/');await p.waitForTimeout(2500);
+  ok('raiz abre com as tarefas',(await p.$$('#quests .quest')).length>=2);ok('raiz: console limpo',errs.length===0,errs.join(' | '));await ctx.close();}
+await b.close();console.log(R.join('\n'));console.log(R.filter(x=>x.startsWith('PASS')).length+'/'+R.length);process.exit(R.some(x=>x.startsWith('FAIL'))?1:0);})();

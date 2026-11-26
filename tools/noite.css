@@ -1,0 +1,5 @@
+/* revisão noturna: criar card com área de toque de 44px (campos tinham 24px, "+ Criar cards" 32px) */
+.msadd input{min-height:44px}
+.msadd summary{min-height:44px;line-height:44px}
+/* atalho "⭐ Colar figurinha" (8 s depois de concluir) ficava em cima do "✓ Concluir missão" da próxima missão */
+body.inmission .much{display:none}
