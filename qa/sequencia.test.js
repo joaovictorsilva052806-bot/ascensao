@@ -5,7 +5,8 @@ const R=[];const ok=(n,c,x)=>R.push((c?'PASS ':'FAIL ')+n+(x&&!c?' · '+x:''));
 const CFG={version:3,name:'Teste',startDate:'2026-11-01',quests:[{id:'q1',title:'Ler 10 min',xp:10,stat:'mente',main:true,minTitle:'Ler 1 página'},{id:'q2',title:'Treinar',xp:20,stat:'corpo',main:true},{id:'q3',title:'Água',xp:5,stat:'corpo'}]};
 const E=(q,d)=>({q,kind:'full',xp:10,stat:'mente',bonus:0,t:d+'T10:00:00'});
 const P=(days,extra={})=>Object.assign({log:Object.fromEntries(days.map(d=>[d,[E('q1',d)]])),extra:{},faith:{},energy:{},mit:{},reviews:{},money:[],rest:{},ach:{a_first:'2026-11-01'},rpg:{cls:{id:'mago',style:'fant',name:'Mago'}},velho:'fica'},extra);
-async function drain(p){const t=await drain1(p);await p.waitForTimeout(1000);return t.concat(await drain1(p));}
+// esvazia os avisos até ficar 2 rodadas seguidas sem nenhum (a galeria de classes do #91 atrasa os avisos seguintes)
+async function drain(p){let t=[],vaz=0;for(let r=0;r<8&&vaz<2;r++){const x=await drain1(p);t=t.concat(x);vaz=x.length?0:vaz+1;await p.waitForTimeout(700);}return t;}
 async function drain1(p){const t=[];for(let i=0;i<10;i++){const m=p.locator('.sysmodal button.go');if(await m.count()){t.push(await p.locator('.sysmodal h3').first().textContent());await m.first().dispatchEvent('click');await p.waitForTimeout(150);continue;}if(await p.locator('#levelup').isVisible()){await p.locator('#luClose').dispatchEvent('click');continue;}await p.waitForTimeout(250);if(!(await p.locator('.sysmodal button.go').count()))break;}return t;}
 const b0=()=>chromium.launch();
 (async()=>{const b=await b0();
