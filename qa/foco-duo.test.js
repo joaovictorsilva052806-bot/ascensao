@@ -21,8 +21,8 @@ async function open(body0){const ctx=await b.newContext({viewport:{width:390,hei
 // A) quem convida
 let {ctx,p,errs,posts,set}=await open();
 await p.locator('#tabbar [data-go="foco"]').dispatchEvent('click');await p.waitForTimeout(300);
-ok('botão 🤝 Em dupla na aba Foco',await p.locator('#fzBox .fdgo').count()===1);
-await p.locator('#fzBox .fdgo').dispatchEvent('click');await p.waitForTimeout(150);
+ok('botão 🤝 Em dupla na aba Foco',await p.locator('#fzTop .fdgo').count()===1);
+await p.locator('#fzTop .fdgo').dispatchEvent('click');await p.waitForTimeout(150);
 ok('escolha do amigo com o horário',/Quem foca com você/.test(await p.textContent('#fdSheet'))&&/às 14:0\d/.test(await p.textContent('#fdSheet')));
 await p.locator('#fdSheet .duochips button',{hasText:'Bia'}).dispatchEvent('click');await p.waitForTimeout(200);
 const HM=(await P(p)).fd.hm;const at=new Date('2026-11-25T'+HM.slice(0,2)+':'+HM.slice(2)+':00').getTime();

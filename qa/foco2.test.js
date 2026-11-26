@@ -17,7 +17,7 @@ for(const [nome,dev] of [['iPhone',devices['iPhone 13']],['Android',devices['Pix
     for(const k of ['asc-u-intro','asc-u-news','asc-u-perm','asc-u-tip','asc-u-guide'])localStorage.setItem(k,'1');localStorage.setItem('asc-u-season','2');localStorage.setItem('asc-u-tele',JSON.stringify({asked:1}));},[CFG,PROG]);
   await p.goto(B+'/comecar/');await p.clock.runFor(3000);await tab(p,'foco');await p.waitForTimeout(200);
   // 1) missão do Sistema e tempos
-  const mis=await p.$eval('#fzBox .fzmis',e=>e.textContent).catch(()=>'');ok(nome+': botão focar na missão do Sistema',/FOCAR NA MISSÃO/.test(mis)&&/estudo/i.test(mis),mis);
+  const mis=await p.$eval('#fzTop .fzmis',e=>e.textContent).catch(()=>'');ok(nome+': botão focar na missão do Sistema',/FOCAR NA MISSÃO/.test(mis)&&/estudo/i.test(mis),mis);
   ok(nome+': tempos 15 e 50 min',(await p.$$eval('#fzBox .fzdur button',b=>b.map(x=>x.textContent).join(','))).includes('15 min,50 min'));
   // 5) mapa de calor com o histórico antigo
   const cells=await p.$$eval('#fzHeat .fzc[title]',c=>c.map(x=>x.title+'|'+x.className));ok(nome+': mapa com 28 dias',cells.length===28,String(cells.length));
@@ -30,7 +30,7 @@ for(const [nome,dev] of [['iPhone',devices['iPhone 13']],['Android',devices['Pix
   await p.fill('#fzIn','Responder o grupo');await p.click('#fzPark button.go');await p.waitForTimeout(150);
   ok(nome+': anota distração',(await P(p)).fz.park[0].t==='Responder o grupo');
   // foco na missão: sala com barra e anotação
-  await p.click('#fzBox .fzmis');await p.waitForTimeout(300);
+  await p.click('#fzTop .fzmis');await p.waitForTimeout(300);
   ok(nome+': sala de foco abre na missão',await p.isVisible('#froom')&&/estudo/i.test(await p.textContent('#froomQ')));
   ok(nome+': quest ligada ao foco',(await P(p)).focus.q==='m1');
   await p.clock.runFor(5*60000);await p.waitForTimeout(1200);const w=await p.$eval('#fzBar i',e=>parseFloat(e.style.width));ok(nome+': barra de progresso anda (~20%)',w>15&&w<25,String(w));

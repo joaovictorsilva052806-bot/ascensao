@@ -9,12 +9,14 @@ function fzMinutes(k){const s=fzSt();if(s.min[k]!=null)return s.min[k];let m=0;f
 // ---- 1) foco ligado à missão do Sistema + mais tempos ----
 function fzTarget(){try{if(typeof smPick==="function"){const q=smPick();if(q)return q;}}catch(e){}
   const d=prog.log[todayKey()]||[];return todaysQuests().find(q=>q.main&&!d.some(e=>e.q===q.id))||null;}
-function fzUI(){const p=$("focusPanel");if(!p)return;const on=!!(prog.focus&&prog.focus.end);let w=$("fzBox");
+function fzUI(){const p=$("focusPanel");if(!p)return;const on=!!(prog.focus&&prog.focus.end);let t=$("fzTop"),w=$("fzBox");
+  // topo da aba: focar na missão (e, logo abaixo, foco em dupla); embaixo dos botões de começar: outros tempos
+  if(!t){t=fzEl("div","fzbox fztop");t.id="fzTop";const h=p.querySelector(".qhead");if(h)h.after(t);else p.prepend(t);}
   if(!w){w=fzEl("div","fzbox");w.id="fzBox";const note=$("focusNote");p.insertBefore(w,note);}
-  w.hidden=on;if(on)return;w.textContent="";
+  t.hidden=on;w.hidden=on;if(on)return;t.textContent="";w.textContent="";
   const q=fzTarget();
   if(q){const b=fzEl("button","go fzmis");b.type="button";b.append(fzEl("span","fzk","[ SISTEMA ] FOCAR NA MISSÃO"),fzEl("span","fzt",(typeof qtShort==="function"&&qtShort(q))||q.title));
-    b.onclick=()=>{const sel=$("focusQuest");if(sel){fillFocusSelect();sel.value=q.id;}startFocus(25);};w.append(b);}
+    b.onclick=()=>{const sel=$("focusQuest");if(sel){fillFocusSelect();sel.value=q.id;}startFocus(25);};t.append(b);}
   const r=fzEl("div","fzdur");r.append(fzEl("span","sm muted","Outro tempo:"));
   for(const m of [15,50]){const b=fzEl("button","ghost",m+" min");b.type="button";b.onclick=()=>startFocus(m);r.append(b);}w.append(r);}
 // ---- 2) sala de foco: barra de progresso e anotar distração sem sair ----
@@ -29,7 +31,7 @@ function fzParkOpen(o){const f=$("fzPf");if(!f)return;f.hidden=!o;$("fzPk").hidd
 // ---- 3) estacionamento de distrações ----
 function fzPark(t){t=String(t||"").trim().slice(0,120);if(!t)return;const s=fzSt();s.park.unshift({t,d:todayKey()});s.park=s.park.slice(0,FZ_PARK);save();fzParkUI();toast("Guardado. Volte para a missão: depois você vê.");}
 function fzParkUI(){const p=$("focusPanel");if(!p)return;let w=$("fzPark");
-  if(!w){w=fzEl("section","panel fzpark");w.id="fzPark";w.dataset.tab="foco";w.dataset.sf="1";p.after(w);
+  if(!w){w=fzEl("section","panel fzpark");w.id="fzPark";w.dataset.tab="foco";w.dataset.sf="1";($("fzHeat")||p).after(w);
     const h=fzEl("div","qhead");h.append(fzEl("h2",null,"💭 Estacionamento"),fzEl("span","sm muted","pensou? anota e volta"));w.append(h);
     const f=fzEl("form","add");const i=fzEl("input");i.id="fzIn";i.maxLength=120;i.autocomplete="off";i.placeholder="Algo que apareceu na cabeça";i.setAttribute("aria-label","Anotar distração");
     const b=fzEl("button","go","Anotar");b.type="submit";f.append(i,b);f.onsubmit=ev=>{ev.preventDefault();fzPark(i.value);i.value="";};w.append(f);
@@ -53,7 +55,7 @@ function fzReflect(f){const s=fzSt(),tk=todayKey();let m=$("fzRef");if(!m){m=fzE
     if(rate==="1")setTimeout(()=>toast("Dica: no próximo, anote as distrações no 💭 em vez de abrir o app."),2800);};
   const sk=fzEl("button","link","Pular");sk.type="button";sk.onclick=()=>{m.hidden=true;};c.append(go,sk);}
 // ---- 5) mapa de calor: 4 semanas, seg a dom ----
-function fzHeat(){const p=$("fzPark")||$("focusPanel");if(!p)return;let w=$("fzHeat");
+function fzHeat(){const p=$("focusPanel");if(!p)return;let w=$("fzHeat");
   if(!w){w=fzEl("section","panel fzheat");w.id="fzHeat";w.dataset.tab="foco";w.dataset.sf="1";p.after(w);}
   w.textContent="";const h=fzEl("div","qhead");h.append(fzEl("h2",null,"🔥 Mapa de foco"));w.append(h);
   const d=new Date();const dow=(d.getDay()+6)%7;d.setDate(d.getDate()-dow-21);let week=0,best=0,cur=0;const tk=todayKey();
@@ -68,6 +70,6 @@ function fzHeat(){const p=$("fzPark")||$("focusPanel");if(!p)return;let w=$("fzH
 {const _ff=finishFocus;finishFocus=function(){const f=prog.focus?Object.assign({},prog.focus):null;const tk0=todayKey(),m0=fzMinutes(tk0);const r=_ff.apply(this,arguments);
   try{if(f){const s=fzSt(),tk=todayKey();s.min[tk]=(tk===tk0?m0:fzMinutes(tk))+(f.min||25);save();fzAll();setTimeout(()=>fzReflect(f),900);}}catch(e){}return r;};}
 {const _fu=focusUI;focusUI=function(){const r=_fu.apply(this,arguments);try{fzUI();fzRoom();}catch(e){}return r;};}
-function fzAll(){try{fzUI();fzRoom();fzParkUI();fzHeat();}catch(e){}}
+function fzAll(){try{fzUI();fzRoom();fzHeat();fzParkUI();}catch(e){}}
 {const _r=render;render=function(){_r.apply(this,arguments);if(!(prog.focus&&prog.focus.end))fzAll();};}
 setTimeout(fzAll,0);

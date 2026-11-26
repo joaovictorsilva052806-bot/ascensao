@@ -51,6 +51,7 @@ function fdBadge(){const o=prog.fd;let b=$("fdBadge");const fq=$("froomQ");
 {const _ff=finishFocus;finishFocus=function(){const f=prog.focus;const was=!!(f&&f.fd);const r=_ff.apply(this,arguments);
   try{const o=prog.fd;if(was&&o&&o.d===todayKey()&&o.w&&!o.me){o.me=1;save();if(fdOn())sqiPost(["K",rankName(),o.w,"fdk-"+o.hm,sqiDk()]);fdPay();fdBadge();}}catch(e){}return r;};}
 if(typeof sqiCheck==="function"){const _ck=sqiCheck;sqiCheck=function(){_ck.apply(this,arguments);try{fdCheck();}catch(e){}};}
-// botão na aba Foco, ao lado de "Outro tempo"
-{const _fz=typeof fzUI==="function"?fzUI:null;if(_fz)fzUI=function(){_fz.apply(this,arguments);try{const r=document.querySelector("#fzBox .fzdur");if(r&&fdOn()&&!r.querySelector(".fdgo")){const b=fdEl("button","ghost fdgo","🤝 Em dupla");b.type="button";b.onclick=fdStart;r.append(b);}}catch(e){}};}
+// botão na aba Foco, logo abaixo de "Focar na missão"
+{const _fz=typeof fzUI==="function"?fzUI:null;if(_fz)fzUI=function(){_fz.apply(this,arguments);try{const t=$("fzTop");if(t&&!t.hidden&&fdOn()&&!t.querySelector(".fdgo")){const o=prog.fd&&prog.fd.d===todayKey()&&prog.fd.w?prog.fd:null;
+  const b=fdEl("button","ghost fdgo",o?"🤝 Dupla com "+o.w+(o.paid?" ✓":" · "+fdShow(o.hm)):"🤝 Focar em dupla com um amigo");b.type="button";b.onclick=fdStart;t.append(b);}}catch(e){}};}
 setInterval(fdTick,5000);setTimeout(()=>{fdTick();fdBadge();},1500);
