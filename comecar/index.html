@@ -1154,6 +1154,8 @@ body.insm .sysmodal:not([hidden]),body.insm .levelup:not([hidden]){z-index:90}
 #fzRef .link{min-height:44px}
 /* a aba Foco agora começa pela missão: sem o respiro de 8vh que existia quando era só o relógio */
 body[data-tab=foco] #focusPanel.panel{margin-top:0}
+/* aviso que chegar com o relatório aberto fica por cima dele */
+body.infz .sysmodal:not([hidden]),body.infz .levelup:not([hidden]){z-index:90}
 </style></head><body>
 
 <div class="hudtop"><span>ASCENSION<i>//</i>SISTEMA ONLINE</span><span class="mono" id="clock">--:--</span></div>
@@ -5053,17 +5055,22 @@ function fzParkUI(){const p=$("focusPanel");if(!p)return;let w=$("fzPark");
     const rm=fzEl("button","ghost","✓");rm.type="button";rm.setAttribute("aria-label","Resolvido: tirar da lista");rm.onclick=()=>{s.park.splice(ix,1);save();fzParkUI();};
     li.append(tq,rm);ul.append(li);});}
 // ---- 4) reflexão no fim do bloco: 10 s, alimenta o atributo escolhido ----
+// o relatório entra por último: espera a fila de avisos (atributo, tempo cumprido, marco) esvaziar e ficar 2 checagens seguidas sem nada na tela
+function fzBusy(){return (typeof sysQ!=="undefined"&&sysQ.length)||[...document.querySelectorAll(".sysmodal:not([hidden]),.levelup:not([hidden]),#clsModal:not([hidden])")].some(e=>e.getClientRects().length);}
+function fzAfter(fn,n,ok){n=n||0;ok=ok||0;if(fzBusy()){ok=0;}else ok++;if(ok>=2||n>=400){fn();return;}setTimeout(()=>fzAfter(fn,n+1,ok),300);}
+function fzRefClose(){const m=$("fzRef");if(m&&!m.hidden){m.hidden=true;document.body.classList.remove("infz");}}
+document.addEventListener("keydown",e=>{if(e.key==="Escape")fzRefClose();});
 function fzReflect(f){const s=fzSt(),tk=todayKey();let m=$("fzRef");if(!m){m=fzEl("div","smsheet fzref");m.id="fzRef";m.setAttribute("role","dialog");m.setAttribute("aria-modal","true");m.setAttribute("aria-label","Como foi o foco");document.body.append(m);}
-  m.textContent="";m.hidden=false;const c=fzEl("div","smcard");m.append(c);let rate="",stat=(f&&f.q&&(todaysQuests().find(x=>x.id===f.q)||{}).stat)||"mente";
+  m.textContent="";m.hidden=false;document.body.classList.add("infz");const c=fzEl("div","smcard");m.append(c);let rate="",stat=(f&&f.q&&(todaysQuests().find(x=>x.id===f.q)||{}).stat)||"mente";
   c.append(fzEl("div","smtag","[ SISTEMA ] RELATÓRIO DO BLOCO"),fzEl("h3","smh",(f.min||25)+" min de foco. Como foi?"));
   const rr=fzEl("div","fzrate");for(const [k,l] of [["1","😵 Disperso"],["2","🙂 Ok"],["3","🔥 Fluxo"]]){const b=fzEl("button","ghost",l);b.type="button";b.onclick=()=>{rate=k;for(const x of rr.children)x.classList.toggle("on",x===b);go.disabled=false;};rr.append(b);}c.append(rr);
   c.append(fzEl("div","sm muted","Qual atributo você treinou?"));const sr=fzEl("div","fzstat");
   for(const k of Object.keys(STATS)){const b=fzEl("button","ghost"+(k===stat?" on":""),STATS[k]);b.type="button";b.onclick=()=>{stat=k;for(const x of sr.children)x.classList.toggle("on",x===b);};sr.append(b);}c.append(sr);
   const can=(s.ref[tk]||0)<FZ_REFCAP;const go=fzEl("button","go smgo",can?"Registrar (+"+FZ_REF+" XP)":"Registrar");go.type="button";go.disabled=true;
-  go.onclick=()=>{m.hidden=true;s.ref[tk]=(s.ref[tk]||0)+1;(s.rates=s.rates||{})[tk]=((s.rates[tk]||"")+rate).slice(-12);
+  go.onclick=()=>{fzRefClose();s.ref[tk]=(s.ref[tk]||0)+1;(s.rates=s.rates||{})[tk]=((s.rates[tk]||"")+rate).slice(-12);
     if(can)addXP({q:"fr:"+Date.now(),kind:"full",xp:FZ_REF,stat},"Relatório registrado. +"+FZ_REF+" XP em "+STATS[stat]+".");else{save();render();}
     if(rate==="1")setTimeout(()=>toast("Dica: no próximo, anote as distrações no 💭 em vez de abrir o app."),2800);};
-  const sk=fzEl("button","link","Pular");sk.type="button";sk.onclick=()=>{m.hidden=true;};c.append(go,sk);}
+  const sk=fzEl("button","link","Pular");sk.type="button";sk.onclick=fzRefClose;c.append(go,sk);setTimeout(()=>{try{rr.firstChild.focus();}catch(e){}},60);}
 // ---- 5) mapa de calor: 4 semanas, seg a dom ----
 function fzHeat(){const p=$("focusPanel");if(!p)return;let w=$("fzHeat");
   if(!w){w=fzEl("section","panel fzheat");w.id="fzHeat";w.dataset.tab="foco";w.dataset.sf="1";p.after(w);}
@@ -5078,7 +5085,7 @@ function fzHeat(){const p=$("focusPanel");if(!p)return;let w=$("fzHeat");
   const h2=Math.floor(week/60),mm=week%60;w.append(fzEl("div","sm","Esta semana: "+(h2?h2+" h ":"")+mm+" min · melhor sequência de dias com foco: "+best));}
 // ---- ligações ----
 {const _ff=finishFocus;finishFocus=function(){const f=prog.focus?Object.assign({},prog.focus):null;const tk0=todayKey(),m0=fzMinutes(tk0);const r=_ff.apply(this,arguments);
-  try{if(f){const s=fzSt(),tk=todayKey();s.min[tk]=(tk===tk0?m0:fzMinutes(tk))+(f.min||25);save();fzAll();setTimeout(()=>fzReflect(f),900);}}catch(e){}return r;};}
+  try{if(f){const s=fzSt(),tk=todayKey();s.min[tk]=(tk===tk0?m0:fzMinutes(tk))+(f.min||25);save();fzAll();setTimeout(()=>fzAfter(()=>fzReflect(f)),900);}}catch(e){}return r;};}
 {const _fu=focusUI;focusUI=function(){const r=_fu.apply(this,arguments);try{fzUI();fzRoom();}catch(e){}return r;};}
 function fzAll(){try{fzUI();fzRoom();fzHeat();fzParkUI();}catch(e){}}
 {const _r=render;render=function(){_r.apply(this,arguments);if(!(prog.focus&&prog.focus.end))fzAll();};}
