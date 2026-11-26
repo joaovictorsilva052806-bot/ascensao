@@ -1,6 +1,6 @@
 # Relatório da noite · 26/11/2026 (ATENA)
 
-Bom dia, JV. Conclusão primeiro: rodei o app inteiro como **usuário novo** (do convite `/x/` até fechar o 1º dia) e como **usuário no dia 3** (relógio simulado), no celular 390x844 e no desktop. Achei 15 atritos. Corrigi os 9 que eram da minha área num PR testado (#89), deixei 1 mudança de regra de XP pronta esperando você, e registrei o resto para os donos de cada área.
+Bom dia, JV. Conclusão primeiro: rodei o app inteiro como **usuário novo** (do convite `/x/` até fechar o 1º dia) e como **usuário no dia 3** (relógio simulado), no celular 390x844 e no desktop. Achei 16 atritos. Corrigi os 9 que eram da minha área num PR testado (#89), deixei 1 mudança de regra de XP pronta esperando você, e registrei o resto para os donos de cada área.
 
 ## 1. O que foi publicado (entregue ao trem de publicação)
 
@@ -59,7 +59,8 @@ Menções honrosas: o Voltar do Android que fechava o app (sem print, é comport
 | No dia 1, nenhuma tarefa aparece na 1ª tela: guia, desafios e chefão vêm antes | Hoje | #67 (modo simples resolve) | uma ação clara por vez (Fogg) |
 | A 1ª missão de quem faz faculdade pede para criar flashcards antes de começar, e às 21h mostra o gatilho "depois do café da manhã" | Missão ativa | #67 (pergunta "usa flashcards?") | começar pelo mínimo ("5 cards") já pronto |
 | "Sugestão: 5 cards" é jargão para quem não usa Anki | Sistema | #67 / textos | dizer a ação ("revisar 5 perguntas") |
-| Modo Sistema/Foco, holográfico e segurança | — | fora do meu escopo | sem achados novos nesta rodada |
+| Depois de "Fechar o dia" às 21h, o cartão do Modo Sistema ainda sugere "Próxima: Na aula: anotar 1 dúvida…" (tarefa de dia, à noite) | Hoje | Modo Sistema (#78/#91) | depois de fechar o dia, sugerir descanso ou nada (Fogg: o gatilho certo na hora certa) |
+| Holográfico e segurança | — | fora do meu escopo | sem achados nesta rodada |
 
 ## 5. O que só você pode fazer
 
