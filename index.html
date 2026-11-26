@@ -2556,7 +2556,7 @@ function clsSuggest(){const P=(cfg&&cfg.profile)||{};const occ=P.occ||"";const F
   return {cl:{style:"fant",id:f[0],name:f[1],stat:f[2]},why:why0};}
 function chgCls(){openCls.force=true;clsOpen=false;openCls();}
 $("clsChange").addEventListener("click",chgCls);
-if($("clsPill")){const cp=$("clsPill");cp.setAttribute("role","button");cp.tabIndex=0;cp.addEventListener("click",chgCls);}
+if($("clsPill")){const cp=$("clsPill");cp.setAttribute("role","button");cp.tabIndex=0;cp.addEventListener("click",chgCls);cp.addEventListener("keydown",e=>{if(e.key==="Enter"||e.key===" "){e.preventDefault();chgCls();}});}
 
 // ---------- Masmorra da semana: 7 andares (seg a dom). Andar limpo = todas as principais do dia (ou 1 tarefa, se não houver principal). 5 andares abrem o baú. ----------
 const DUN_NEED=5,DUN_XP=50;
