@@ -8,7 +8,8 @@
 // Rode com: python3 -m http.server 8000 --bind 127.0.0.1 & node qa/dialogo.test.js
 const {chromium}=require('playwright');const U=process.env.QA_URL||'http://localhost:8000/';
 const R=[];const ok=(n,c,x)=>R.push((c?'PASS ':'FAIL ')+n+(x&&!c?' · '+x:''));
-const CFG={version:3,name:'Teste',startDate:'2026-11-26',profile:{age:'adult'},quests:[{id:'q1',title:'Ler 10 min',xp:10,stat:'mente',main:true}]};
+// startDate antes de hoje: no 1º dia do jogo o check-in entra sozinho (sem janela), e este teste precisa da janela
+const CFG={version:3,name:'Teste',startDate:'2026-11-20',profile:{age:'adult'},quests:[{id:'q1',title:'Ler 10 min',xp:10,stat:'mente',main:true}]};
 const PROG={log:{},extra:{},ach:{},rpg:{cls:{id:'mago',style:'fant',name:'Mago'},cg:1},simple:{off:'2026-11-01'},velho:'fica'};
 process.on('unhandledRejection',e=>{console.log(R.join('\n'));console.log('ERRO',String(e.message).split('\n')[0]);process.exit(1);});
 const dentro=p=>p.evaluate(()=>{const o=[...document.querySelectorAll('.sysmodal,.levelup')].filter(m=>!m.hidden&&m.getClientRects().length);const m=o[o.length-1];return !!(m&&m.contains(document.activeElement));});

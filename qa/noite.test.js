@@ -7,6 +7,7 @@
 // 5) Barra de abas abaixo de 390px: "PROGRESSO" não passa mais da aba.
 // 6) Voltar do Android com missão/desafio aberto fecha só a folha (antes saía do app).
 // 7) "Desfazer" no aviso por 5 s depois de concluir; o aviso sobe quando o atalho da figurinha aparece.
+// 10) Galeria de classes: no dia em que o jogo foi criado, espera a 1ª tarefa (a pílula abre na hora).
 // 9) Volta depois de faltar 1 dia: cartão sem cobrança no topo da aba Hoje e 1 toque abre a 1ª missão.
 // 8) Dia 1: o check-in entra sozinho, sem a janela "Você apareceu" entre "Criar meu jogo" e a 1ª missão.
 // Mais: celular 390x844 e desktop, reduce-motion, dados antigos intactos, raiz abre, console limpo.
@@ -137,6 +138,26 @@ for(const w of [320,360,375,390]){const ctx=await b.newContext({viewport:{width:
     await p.evaluate(()=>{const s=[...document.querySelectorAll('.mssheet')].find(x=>!x.hidden);[...s.querySelectorAll('button')].find(x=>/Concluir miss/.test(x.textContent)).click();});for(let i=0;i<4;i++){await p.waitForTimeout(700);await pops(p);}
     ok('volta: cartão some depois da 1ª tarefa',await p.evaluate(()=>{const c=document.getElementById('ntVolta');const hk=document.getElementById('hkPanel');return (!c||c.hidden)&&!(hk&&!hk.hidden&&hk.dataset.mode==='gift'&&hk.getBoundingClientRect().top<400);}));
     ok('volta: console limpo',errs.length===0,errs.join(' | '));await ctx.close();}}
+// galeria de classes: no 1º dia espera a 1ª tarefa (antes abria logo depois de "Criar meu jogo"); a pílula abre na hora
+{const errs=[];const ctx=await ctxOf(b);await ctx.addInitScript(()=>{window.__cls=0;new MutationObserver(()=>{const m=document.getElementById('clsModal');if(m&&m.getClientRects().length&&!window.__clsAt)window.__clsAt=JSON.parse(localStorage.getItem('asc-u-prog')||'{"log":{}}');}).observe(document,{subtree:true,childList:true});});
+  const p=await page(ctx,'2026-11-26T19:00:00-03:00',errs);await onboard(p);await p.waitForTimeout(1200);
+  const antes=await p.evaluate(()=>!!window.__clsAt);ok('classe: galeria não abre antes da 1ª missão',!antes);
+  await p.evaluate(()=>{const c=document.getElementById('clsPill');if(c)c.click();});await p.waitForTimeout(700);
+  ok('classe: a pílula "Escolher classe" abre a galeria na hora',await p.evaluate(()=>{const m=document.getElementById('clsModal');return !!m&&m.getClientRects().length>0;}));
+  await p.evaluate(()=>{const l=[...document.querySelectorAll('#clsModal button.link')].find(x=>/depois|Fechar/i.test(x.textContent));if(l)l.click();});await p.waitForTimeout(500);
+  await guide1(p);await p.waitForTimeout(900);
+  await p.evaluate(()=>{const s=[...document.querySelectorAll('.mssheet')].find(x=>!x.hidden);[...s.querySelectorAll('button')].find(x=>/Concluir miss/.test(x.textContent)).click();});
+  let depois=false;for(let i=0;i<10&&!depois;i++){await p.waitForTimeout(700);depois=await p.evaluate(()=>{const m=document.getElementById('clsModal');return !!m&&m.getClientRects().length>0;});
+    if(!depois)await p.evaluate(()=>{for(const m of document.querySelectorAll('.sysmodal')){if(m.id==='clsModal'||m.id==='secZen'||!m.getClientRects().length)continue;const g=m.id==='tlModal'?m.querySelector('button.ghost'):m.querySelector('button.go');if(g){g.click();return;}}});}
+  ok('classe: depois de "Escolher depois", a galeria não volta sozinha no mesmo dia (como antes)',!depois);
+  ok('classe: console limpo',errs.length===0,errs.join(' | '));await ctx.close();}
+{const errs=[];const ctx=await ctxOf(b);const p=await page(ctx,'2026-11-26T19:00:00-03:00',errs);await onboard(p);
+  await guide1(p);await p.waitForTimeout(900);
+  await p.evaluate(()=>{const s=[...document.querySelectorAll('.mssheet')].find(x=>!x.hidden);[...s.querySelectorAll('button')].find(x=>/Concluir miss/.test(x.textContent)).click();});
+  let depois=false;for(let i=0;i<12&&!depois;i++){await p.waitForTimeout(700);depois=await p.evaluate(()=>{const m=document.getElementById('clsModal');return !!m&&m.getClientRects().length>0;});
+    if(!depois)await p.evaluate(()=>{for(const m of document.querySelectorAll('.sysmodal')){if(m.id==='clsModal'||m.id==='secZen'||!m.getClientRects().length)continue;const g=m.id==='tlModal'?m.querySelector('button.ghost'):m.querySelector('button.go');if(g){g.click();return;}}});}
+  ok('classe: a galeria abre depois da 1ª tarefa feita',depois);
+  ok('classe: e sozinha (nenhum outro aviso aberto junto)',await p.evaluate(()=>[...document.querySelectorAll('.sysmodal,.levelup')].filter(m=>m.id!=='clsModal'&&m.id!=='secZen'&&m.getClientRects().length).length===0));ok('classe: console limpo (2)',errs.length===0,errs.join(' | '));await ctx.close();}
 // raiz (app do JV): abre com a planilha de exemplo e sem erro
 {const errs=[];const ctx=await ctxOf(b);await ctx.addInitScript(()=>{if(!localStorage.getItem('ascensao-cfg')){localStorage.setItem('ascensao-cfg',JSON.stringify({version:3,startDate:'2026-11-20',name:'JV',quests:[{id:'q1',title:'Estudar 20 min',xp:20,stat:'mente',main:true},{id:'q_fech',title:'Fechamento do dia',xp:10,stat:'foco',main:true}]}));localStorage.setItem('ascensao-prog',JSON.stringify({log:{},rpg:{cls:'mago'}}));}});
   const p=await page(ctx,'2026-11-27T02:00:00-03:00',errs);await p.goto(B+'/');await p.waitForTimeout(2500);

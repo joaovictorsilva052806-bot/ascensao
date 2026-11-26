@@ -3294,7 +3294,7 @@ addEventListener("popstate",()=>{if(ntSkip){ntSkip=false;return;}if(!document.bo
   try{if($("msSheet")&&!$("msSheet").hidden)msClose();else if($("zapSheet")&&!$("zapSheet").hidden)zapClose();else document.body.classList.remove("inmission");}catch(e){}});
 // 4) Marcou sem querer? "Desfazer" no aviso por 5 s depois de concluir uma tarefa (antes: abrir "Concluídas" e achar o botão).
 //    Desfazer = o mesmo que desmarcar pela lista (toggle de novo). Nada novo é salvo.
-let ntPend=null;
+let ntPend=null,ntTgAt=0;
 function ntAttach(){const t=$("toast");if(!t||!ntPend||Date.now()>ntPend.until||t.querySelector(".ntundo"))return;const {q,kind}=ntPend;
   // linha própria com o nome da tarefa: junto de "Check-in feito" o "Desfazer" parecia desfazer o check-in
   const row=document.createElement("span");row.className="ntrow";row.textContent="✓ "+(((typeof qtShort==="function"&&qtShort(q))||q.title)+"").slice(0,32);
@@ -3306,7 +3306,7 @@ function ntUndo(q,kind){ntPend={q,kind,until:Date.now()+5000};setTimeout(()=>{tr
 // outro aviso no meio dos 5 s (conquista, baú, check-in) não some com o "Desfazer"
 setTimeout(()=>{if(typeof toast!=="function")return;const _to=toast;toast=function(){const r=_to.apply(this,arguments);try{ntAttach();}catch(e){}return r;};},0);
 setTimeout(()=>{if(typeof toggle!=="function")return;const _t=toggle;toggle=function(q,kind){let had=true;try{had=(prog.log[todayKey()]||[]).some(e=>e.q===q.id);}catch(e){}
-  const r=_t.apply(this,arguments);try{const now=(prog.log[todayKey()]||[]).find(e=>e.q===q.id);if(!had&&now)ntUndo(q,now.kind);}catch(e){}return r;};},0);
+  const r=_t.apply(this,arguments);ntTgAt=Date.now();try{const now=(prog.log[todayKey()]||[]).find(e=>e.q===q.id);if(!had&&now)ntUndo(q,now.kind);}catch(e){}return r;};},0);
 // 5) Volta depois de faltar um dia: antes a 1ª tela não tinha nenhuma tarefa (ranking, avatar, chefe, desafios) e a primeira
 //    ficava a ~2 telas de rolagem, com "Dívida" logo acima. Agora, no topo da aba Hoje, 1 cartão sem cobrança e 1 toque que
 //    abre a 1ª missão liberada (o mínimo dela já vale). Some quando a 1ª tarefa do dia é feita. Nada é salvo ("Agora não"
@@ -3333,6 +3333,16 @@ function ntVolta(){let c=$("ntVolta");const show=!ntVoltaOff&&ntMissed()&&!docum
   const no=document.createElement("button");no.type="button";no.className="link";no.textContent="Agora não";no.addEventListener("click",()=>{ntVoltaOff=true;c.hidden=true;});
   row.append(go,no);c.append(h,p,row);}
 setTimeout(()=>{const _r=render;render=function(){const x=_r.apply(this,arguments);try{ntVolta();}catch(e){}return x;};try{ntVolta();}catch(e){}},0);
+// 6) Galeria de classes: abria sozinha logo depois de "Criar meu jogo", 1 janela entre a pessoa e a 1ª missão.
+//    No dia em que o jogo foi criado, ela espera a 1ª tarefa feita (abre no render seguinte, depois da vitória).
+//    Trocar de classe pela pílula (openCls.force) continua abrindo na hora. Nada novo é salvo.
+let ntClsT=0;
+setTimeout(()=>{if(typeof openCls!=="function")return;const _oc=openCls;openCls=function(){try{
+  if(!openCls.force&&!(rpgState().cls)&&cfg&&cfg.startDate===todayKey()){if(!ntReal(todayKey()))return;
+    // logo depois da 1ª tarefa vêm os avisos da vitória (marco, conquista): a galeria espera eles fecharem, uma janela por vez
+    const busy=(typeof sysQ!=="undefined"&&sysQ.length)||[...document.querySelectorAll(".sysmodal,.levelup")].some(m=>m.id!=="secZen"&&m.getClientRects().length)||Date.now()-ntTgAt<2500;
+    if(busy){clearTimeout(ntClsT);ntClsT=setTimeout(()=>{try{openCls();}catch(e){}},1500);return;}}}catch(e){}
+  return _oc.apply(this,arguments);};},0); // o original lê openCls.force pelo nome, que agora aponta para este embrulho
 
 // ---------- Convite de Esquadrão: tocar no nome chama o amigo; o aviso aparece no app dele ----------
 // Usa o mesmo formulário do ranking: I|de|para|esquadrão|data (convite) e J|quem|de|esquadrão|data (aceite).
