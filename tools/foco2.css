@@ -27,3 +27,5 @@
 #fzRef .link{min-height:44px}
 /* a aba Foco agora começa pela missão: sem o respiro de 8vh que existia quando era só o relógio */
 body[data-tab=foco] #focusPanel.panel{margin-top:0}
+/* aviso que chegar com o relatório aberto fica por cima dele */
+body.infz .sysmodal:not([hidden]),body.infz .levelup:not([hidden]){z-index:90}
