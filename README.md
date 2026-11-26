@@ -26,6 +26,7 @@ Pontos de entrada no JS: `render()` desenha tudo; `toggle(quest, "full"|"min")` 
 - Convite pessoal: o código fica só no link; na planilha vai `cv`+SHA-256(código|apelido), que não dá para copiar para outro apelido.
 - Links `#s=` e `#c=` pedem confirmação quando já há planilha/tarefas no aparelho. A chave do painel do criador fica só no aparelho (`#k=`), nunca no repositório.
 - Funil anônimo (linhas `A`, `tools/tele.js`) só com opt-in: aceite do painel ou "sim" do beta anônimo. O convite (`/convite/`, `/x/`) não envia nada. Teste: `node qa/funil.test.js`.
+- Retenção (só no Modo Criador, `tools/retencao.*`): D1/D3/D7 e funil perfil → 1ª missão (`7-quest`) → fechou o dia (`8-fechou-dia`), calculados no aparelho do JV a partir das linhas `A` (id aleatório + etapa + data). Não guarda nada. O app do criador não pede o aceite para ele mesmo nem envia linhas `A`. Teste: `node qa/retencao.test.js`.
 - CSP por `<meta>` (o GitHub Pages não deixa mudar cabeçalhos). Teste: `node qa/seguranca.test.js`.
 
 ## Segredos
@@ -56,6 +57,10 @@ Teste: `node qa/ranking-dia.test.js`.
 `tools/forja.js` e `tools/forja.css` (entram nos dois geradores pelo `gen.py`): treino sem equipamento, Treino A/B alternado 3x por semana (seg/qua/sex por padrão, editável em 1 toque no card "🔥 Forja" de Hoje). Cada movimento (empurrar, puxar, ombro, perna, ponte, core) tem uma escada de 5 níveis e dupla progressão: alvo = última vez +1 repetição (8 a 12; core 20 a 45 s); bateu o topo em todas as séries, o app sugere o próximo nível (+30 XP uma vez por nível). "Dia ruim" = 1 série de cada, ~10 min, +20 XP e conta para a sequência. 3 treinos na semana = "Semana forjada" (+25); 4 semanas seguidas = segredo "Aço". Aviso de segurança genérico antes do 1º treino e sempre no rodapé ("Quando parar"). Quests opcionais dos 4 pilares (nunca principais, não geram dívida). O ▶ da quest `s_treino` abre o Forja.
 
 Grava só `prog.forja` (`lv`, `last`, `ses`, `ok`, `dias`, `pil`, `pt`, `cur`); XP em `forja:<dia>` (1 por dia), `forja:lv:<mov>:<n>` e `forja:sem:<segunda>`. Nenhum dado de corpo, peso ou saúde é coletado. Teste: `node qa/forja.test.js`.
+
+## Resumo do beta (Modo Criador)
+
+`tools/painel.js` e `tools/painel.css` (só na aba Criador do app do JV, via `gen.py --root`): números agregados em cima das abas privadas que o painel já lê (testadores, ativos hoje e em 7 dias, volta no dia 2 e no dia 8, missões feitas, feedbacks, funil e ativos por dia). Colunas achadas pelo nome do cabeçalho. Não envia nada; guarda no aparelho do criador só a contagem diária em `ascensao-painel-hist`. Teste: `node qa/painel.test.js`. Integração com a EVA: `docs/integracao-eva.md`.
 
 ## Reinstalação do app pessoal
 

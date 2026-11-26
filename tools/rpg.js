@@ -47,7 +47,9 @@ function statXP(){const st={foco:0,vendas:0,mente:0,corpo:0};for(const e of entr
 function coinsEarned(){let s=0;for(const e of entries())s+=Math.max(0,(e.xp||0)+(e.bonus||0));return Math.floor(s/10);}
 function rpgTip(){const d=new Date();const n=Math.floor((d-new Date(d.getFullYear(),0,0))/864e5);return TIPS[n%TIPS.length];}
 let sysQ=[];function sysPop(tag,title,text,cb,lbl){sysQ.push([tag,title,text,cb,lbl]);if(sysQ.length===1)sysNext();}
-let sysShown=null;function sysNext(){if(!sysQ.length||(sysShown&&sysShown.isConnected))return;const [tag,title,text,cb,lbl]=sysQ[0];const m=document.createElement("div");m.className="sysmodal";m.setAttribute("role","dialog");sysShown=m;
+let sysShown=null;function sysNext(){if(!sysQ.length||(sysShown&&sysShown.isConnected))return;
+  // uma janela por vez: espera o criador de avatar fechar (ele abre sozinho no 1º acesso)
+  if(document.querySelector(".avmk")||(()=>{const r=document.getElementById("fzRef");return r&&!r.hidden&&r.getClientRects().length;})()){clearTimeout(sysNext._t);sysNext._t=setTimeout(sysNext,1000);return;}const [tag,title,text,cb,lbl]=sysQ[0];const m=document.createElement("div");m.className="sysmodal";m.setAttribute("role","dialog");sysShown=m;
   const c=document.createElement("div");c.className="card";const a=document.createElement("div");a.className="tag";a.textContent="[ SISTEMA ] "+tag;const h=document.createElement("h3");h.textContent=title;const p=document.createElement("p");p.className="sm";p.textContent=text;
   const b=document.createElement("button");b.className="go";b.type="button";b.textContent=lbl||"Aceitar";b.addEventListener("click",()=>{m.remove();sysQ.shift();if(cb)try{cb();}catch(e){}if(sysQ.length)sysNext();else setTimeout(render,50);});c.append(a,h,p,b);m.append(c);document.body.append(m);try{const ua=navigator.userActivation;if(navigator.vibrate&&(!ua||ua.hasBeenActive))navigator.vibrate([10,30,10]);}catch(e){}}
 function sparks(gold){if(matchMedia("(prefers-reduced-motion: reduce)").matches)return;const pt=lastPt||{x:innerWidth/2,y:innerHeight/2};
@@ -70,7 +72,7 @@ function renderRPG(){renderDun();sysTipUI();const r=rpgState();const st=statXP()
   const cur={};for(const k in STATS)cur[k]=slvl(st[k]);
   // grava o que já foi anunciado, senão o alerta volta ao reabrir o app
   if(!r.seen){r.seen=Object.assign({},cur);try{save();}catch(e){}}
-  else{let ch=false;for(const k in STATS){const was=r.seen[k]||1;if(cur[k]>was){for(const [lvN,nm,tx] of SKILLS[k])if(lvN>was&&lvN<=cur[k])sysPop("HABILIDADE DESBLOQUEADA",nm,STATS[k]+" nível "+lvN+". "+tx);r.seen[k]=cur[k];ch=true;}}if(ch)try{save();}catch(e){}}
+  else{let ch=false;for(const k in STATS){const was=r.seen[k]||1;if(cur[k]>was){for(const [lvN,nm,tx] of SKILLS[k])if(lvN>was&&lvN<=cur[k]){if(cfg&&cfg.startDate===todayKey())toast("✨ Habilidade nova: "+nm+" ("+STATS[k]+" nv "+lvN+")");else sysPop("HABILIDADE DESBLOQUEADA",nm,STATS[k]+" nível "+lvN+". "+tx);}r.seen[k]=cur[k];ch=true;}}if(ch)try{save();}catch(e){}}
   if(typeof r.cls==="string")r.cls=null;
   if(r.cls){const t=lv>=20?2:lv>=10?1:0;if(t>(r.evo||0)){r.evo=t;sysPop("EVOLUÇÃO DE CLASSE",clsName(r.cls,lv),"Nível "+lv+". Sua classe evoluiu. Continue no seu ritmo.");}}
   else if(cfg&&!cfg.blank&&(!$("onb")||$("onb").hidden)&&!clsOpen&&!sysQ.length)setTimeout(()=>{if(!sysQ.length)openCls();},400);
@@ -148,7 +150,7 @@ function clsSuggest(){const P=(cfg&&cfg.profile)||{};const occ=P.occ||"";const F
   return {cl:{style:"fant",id:f[0],name:f[1],stat:f[2]},why:why0};}
 function chgCls(){openCls.force=true;clsOpen=false;openCls();}
 $("clsChange").addEventListener("click",chgCls);
-if($("clsPill")){const cp=$("clsPill");cp.setAttribute("role","button");cp.tabIndex=0;cp.addEventListener("click",chgCls);}
+if($("clsPill")){const cp=$("clsPill");cp.setAttribute("role","button");cp.tabIndex=0;cp.addEventListener("click",chgCls);cp.addEventListener("keydown",e=>{if(e.key==="Enter"||e.key===" "){e.preventDefault();chgCls();}});}
 
 // ---------- Masmorra da semana: 7 andares (seg a dom). Andar limpo = todas as principais do dia (ou 1 tarefa, se não houver principal). 5 andares abrem o baú. ----------
 const DUN_NEED=5,DUN_XP=50;

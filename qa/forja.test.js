@@ -27,6 +27,7 @@ for(const [route,pre] of [['comecar/','asc-u'],['','ascensao']]){const tag=route
   ok(tag+' A: botões Começar e Dia ruim',await p.locator('#fjStart').isVisible()&&(await p.textContent('#fjRuim')).includes('Dia ruim (10 min)'));
   await tap(p,'#fjStart');
   ok(tag+' A: aviso de segurança antes do 1º treino',await p.locator('#fjSheet').isVisible()&&(await p.textContent('#fjSheet')).includes('Pare na hora')&&(await p.textContent('#fjSheet')).includes('não substitui orientação médica'));
+  ok(tag+' A: janela acessível (foco dentro, outras telas esperam)',await p.evaluate(()=>{const m=document.getElementById('fjSheet');return m.getAttribute('role')==='dialog'&&m.contains(document.activeElement)&&document.body.classList.contains('inmission');}));
   await tap(p,'#fjOk');let st=await LS(p,pre);ok(tag+' A: aviso lido grava prog.forja.ok',st.forja&&st.forja.ok===true);
   ok(tag+' A: teste de nível e pergunta dos pilares',await p.locator('[data-pt="push"]').count()===1&&await p.locator('#fjPilYes').count()===1);
   await tap(p,'[data-pt="push"]');await tap(p,'#fjPilYes');await tap(p,'#fjGo');
@@ -41,7 +42,7 @@ for(const [route,pre] of [['comecar/','asc-u'],['','ascensao']]){const tag=route
   ok(tag+' A: XP forja:<dia> = 40',lg.filter(e=>e.q==='forja:2026-11-25').length===1&&lg.find(e=>e.q==='forja:2026-11-25').xp===40);
   ok(tag+' A: quest s_treino marcada sem XP dobrado',lg.some(e=>e.q==='s_treino'&&e.xp===0));
   ok(tag+' A: sessão gravada',st.forja.ses.length===1&&st.forja.ses[0].tipo==='A'&&st.forja.ses[0].r===0&&st.forja.lv.push===3&&st.forja.last.push[0]===9,JSON.stringify(st.forja));
-  ok(tag+' A: campos antigos intactos',st.velho==='fica'&&st.rpg.cls.id==='mago'&&st.log['2026-11-20'].length===1);
+  ok(tag+' A: campos antigos intactos',st.velho==='fica'&&st.rpg.cls.id==='mago'&&st.log['2026-11-20'].length===1,JSON.stringify({v:st.velho,r:st.rpg,l:st.log['2026-11-20']}));
   let cf=await CF(p,pre);const fq=cf.quests.filter(q=>/^fj_/.test(q.id));
   ok(tag+' A: 3 quests dos pilares, nenhuma principal',fq.length===3&&fq.every(q=>!q.main&&q.ifThen),JSON.stringify(fq.map(q=>q.id)));
   ok(tag+' A: card mostra treino feito',(await p.textContent('#fjCard')).includes('Treino de hoje feito'));

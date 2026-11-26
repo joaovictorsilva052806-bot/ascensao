@@ -373,7 +373,7 @@ input,select,textarea{font-size:16px!important}
       <summary>Como o jogo funciona</summary>
       <ul>
         <li><b>Feito</b> dá o XP inteiro. <b>Mínimo</b> dá metade e já conta como dia ativo.</li>
-        <li><b>Dívida:</b> cada quest principal sem nem o mínimo custa 10 XP. Fez todas as principais no dia seguinte? A dívida de ontem é perdoada.</li>
+        <li><b>Dívida:</b> nos 3 primeiros dias não tem. Depois, cada quest principal sem nem o mínimo custa 10 XP. Fez todas as principais no dia seguinte? A dívida de ontem é perdoada.</li>
         <li><b>Baú surpresa:</b> 1 chance em 5 de XP extra ao concluir uma quest.</li>
         <li><b>Chefe da semana:</b> abordagens e follow-ups tiram vida dele. Derrotou, ganha 100 XP. Ele volta toda segunda.</li>
         <li><b>Dia de descanso:</b> 1 por semana. Nesse dia nenhuma quest gera dívida. Use em dia de doença ou cansaço de verdade.</li>
@@ -411,14 +411,14 @@ function entries(){const out=[];for(const k in prog.log){for(const e of (prog.lo
 function earnedXP(){return entries().reduce((s,e)=>s+(e.xp||0)+(e.bonus||0),0);}
 // Punição leve e recuperável: cada quest principal não feita (nem no mínimo) num dia passado = -10 XP.
 // Redenção: fazer todas as principais no dia seguinte perdoa a dívida do dia anterior.
-const PEN=10, DEBT_DAYS=3;
+const PEN=10, DEBT_DAYS=3, DEBT_GRACE=3; // carência: os 3 primeiros dias de jogo nunca geram dívida
 function mainsFor(dt){const dow=(dt.getDay()+6)%7;return ((cfg&&cfg.quests)||[]).filter(q=>q.main&&!q.once&&(!q.days||q.days.includes(dow)));}
 function onceDoneBefore(q,tk){if(!q.once)return false;for(const k in prog.log){if(k!==tk&&(prog.log[k]||[]).some(e=>e.q===q.id))return true;}return false;}
 function visibleToday(q,dow,tk){return (!q.days||q.days.includes(dow))&&!onceDoneBefore(q,tk);}
 function allMainsDone(dt){const k=dkey(dt);const done=prog.log[k]||[];const m=mainsFor(dt);return m.length>0&&m.every(q=>done.some(e=>e.q===q.id));}
 function penalties(){
   const out=[];if(!cfg||!cfg.startDate)return out;
-  const [y,m,d]=cfg.startDate.split("-").map(Number);const dt=new Date(y,m-1,d);const tk=todayKey();
+  const [y,m,d]=cfg.startDate.split("-").map(Number);const dt=new Date(y,m-1,d+DEBT_GRACE);const tk=todayKey();
   // Punição leve: só os últimos DEBT_DAYS dias contam. Quem some uma semana volta sem o XP zerado.
   const lim=new Date();lim.setHours(0,0,0,0);lim.setDate(lim.getDate()-DEBT_DAYS);if(dt<lim)dt.setTime(lim.getTime());
   while(dkey(dt)<tk){const k=dkey(dt);const done=prog.log[k]||[];if(isRest(k)){dt.setDate(dt.getDate()+1);continue;}
@@ -518,7 +518,7 @@ function render(){
 function toast(msg){const t=$("toast");t.textContent=msg;t.hidden=false;clearTimeout(toast._t);toast._t=setTimeout(()=>t.hidden=true,2600);}
 
 let lastPt=null;document.addEventListener("pointerdown",e=>{lastPt={x:e.clientX,y:e.clientY,el:e.target.closest(".quest")};},true);
-function fx(xp,gold){try{if(navigator.vibrate)navigator.vibrate(gold?[12,40,18]:12);}catch(e){}
+function fx(xp,gold){try{const ua=navigator.userActivation;if(navigator.vibrate&&(!ua||ua.hasBeenActive))navigator.vibrate(gold?[12,40,18]:12);}catch(e){}
   if(!xp)return;const f=document.createElement("div");f.className="xpfloat"+(gold?" gold":"");f.textContent="+"+xp+" XP";
   const pt=lastPt||{x:innerWidth/2,y:innerHeight/2};f.style.left=pt.x+"px";f.style.top=(pt.y-20)+"px";document.body.append(f);setTimeout(()=>f.remove(),1200);}
 // ---------- Sequência (estilo Duolingo: descanso congela, não quebra) ----------
@@ -550,14 +550,17 @@ function toggle(q,kind){
   if(ex&&ex.kind===kind){prog.log[tk]=list.filter(e=>e!==ex);save();render();return;}
   const xp=kind==="min"?Math.ceil(q.xp/2):q.xp;
   // baú surpresa: 1 em 5, entre 5 e 25 XP
-  const bonus=(!ex&&Math.random()<0.2)?(5+Math.floor(Math.random()*5)*5):(ex?ex.bonus||0:0);
+  // o sorteio vale para o dia: desmarcar e marcar de novo não sorteia outra vez (nem tira o que já saiu)
+  const R=prog.roll=(prog.roll&&prog.roll.d===tk)?prog.roll:{d:tk,q:{}};const fresh=!ex&&R.q[q.id]==null;
+  if(fresh)R.q[q.id]=Math.random()<0.2?(5+Math.floor(Math.random()*5)*5):0;
+  const bonus=ex?ex.bonus||0:R.q[q.id];
   const entry={q:q.id,kind,xp,stat:q.stat||"foco",bonus,t:new Date().toISOString()};
   prog.log[tk]=list.filter(e=>e!==ex).concat([entry]);
-  save();render();fx(xp+(ex?0:bonus),!!(bonus&&!ex));
+  save();render();fx(xp+(ex?0:bonus),!!(bonus&&fresh));
   const qc=document.querySelector('.quest[data-q="'+CSS.escape(String(q.id))+'"]');if(qc)qc.classList.add("pop");
   const after=levelOf(totalXP());
   if(after>before)levelUp(after);
-  else if(bonus&&!ex)toast("Baú surpresa: +"+bonus+" XP");
+  else if(bonus&&fresh)toast("Baú surpresa: +"+bonus+" XP");
 }
 $("addForm").addEventListener("submit",ev=>{ev.preventDefault();const v=$("addInput").value.trim();if(!v)return;
   const tk=todayKey();const q={id:"x"+Date.now(),title:v,xp:10,stat:"foco"};prog.extra[tk]=(prog.extra[tk]||[]).concat([q]);$("addInput").value="";save();render();});
@@ -705,7 +708,7 @@ const icsDT=x=>x.getFullYear()+String(x.getMonth()+1).padStart(2,"0")+String(x.g
 const icsEsc=s=>String(s).replace(/[\;,]/g,m=>"\\"+m).replace(/\n/g,"\\n");
 function buildICS(){const L=["BEGIN:VCALENDAR","VERSION:2.0","PRODID:-//Ascensao//PT-BR","CALSCALE:GREGORIAN","METHOD:PUBLISH"];const st=icsDT(new Date());
   remPlan().forEach((r,i)=>{const s=nextDate(r.h,r.d),e=new Date(s.getTime()+10*60000);
-    L.push("BEGIN:VEVENT","UID:asc-"+i+"-"+st+"@ascensao","DTSTAMP:"+st,"DTSTART:"+icsDT(s),"DTEND:"+icsDT(e),"RRULE:FREQ=WEEKLY;BYDAY="+r.d.map(x=>BYD[x]).join(","),"SUMMARY:"+icsEsc(r.t),"DESCRIPTION:"+icsEsc(r.n+"\n"+location.href.split("#")[0]),
+    L.push("BEGIN:VEVENT","UID:asc-r-"+String(r.t).normalize("NFD").replace(/[\u0300-\u036f]/g,"").replace(/[^\w]+/g,"-").replace(/^-+|-+$/g,"").toLowerCase().slice(0,40)+"@ascensao","DTSTAMP:"+st,"DTSTART:"+icsDT(s),"DTEND:"+icsDT(e),"RRULE:FREQ=WEEKLY;BYDAY="+r.d.map(x=>BYD[x]).join(","),"SUMMARY:"+icsEsc(r.t),"DESCRIPTION:"+icsEsc(r.n+"\n"+location.href.split("#")[0]),
       "BEGIN:VALARM","ACTION:DISPLAY","DESCRIPTION:"+icsEsc(r.t),"TRIGGER:PT0M","END:VALARM","END:VEVENT");});
   L.push("END:VCALENDAR");return L.join("\r\n");}
 function gcalLink(r){const s=nextDate(r.h,r.d),e=new Date(s.getTime()+10*60000);

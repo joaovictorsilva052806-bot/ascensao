@@ -14,7 +14,7 @@ async function page(opts={}){const ctx=await br.newContext({viewport:{width:390,
   const p=await ctx.newPage();p.errs=[];p.on('pageerror',e=>p.errs.push(e.message));p.on('console',m=>{if(m.type()==='error'&&!/Failed to load resource/.test(m.text()))p.errs.push(m.text());});p.ctx=ctx;return p;}
 // 1. Root app, Android
 let p=await page({ua:ANDUA});await p.goto(B);await p.waitForTimeout(800);
-await p.evaluate(()=>document.querySelectorAll('.sysmodal,.levelup').forEach(e=>e.remove()));
+await p.evaluate(()=>document.querySelectorAll('.sysmodal,.levelup,.smsheet').forEach(e=>e.remove()));
 ok('root abre sem erro',p.errs.length===0);
 await p.evaluate(()=>{document.body.dataset.tab='foco';});
 ok('android: dica Não perturbe visível',await p.isVisible('#fDroid'));
@@ -41,13 +41,13 @@ ok('fim do foco fecha sala',!(await p.isVisible('#froom')));
 ok('fim do foco dá XP',await p.evaluate(()=>Object.values(JSON.parse(localStorage.getItem('ascensao-prog')).log).flat().some(e=>String(e.q).startsWith('foco:'))));
 ok('sem erro de console (android)',p.errs.length===0);if(p.errs.length)console.log(p.errs);
 // raiz unificada: o pedido do beta anônimo (tlModal) pode abrir depois do foco; fecha antes de convidar
-await p.evaluate(()=>document.querySelectorAll('.sysmodal,.levelup').forEach(e=>e.remove()));await p.click('[data-go=mais]').catch(()=>{});await p.evaluate(()=>{document.body.dataset.tab='mais';});
+await p.evaluate(()=>document.querySelectorAll('.sysmodal,.levelup,.smsheet').forEach(e=>e.remove()));await p.click('[data-go=mais]').catch(()=>{});await p.evaluate(()=>{document.body.dataset.tab='mais';});
 await p.waitForTimeout(300);await p.evaluate(()=>{const m=document.getElementById('tlModal');if(m)[...m.querySelectorAll('button')].find(b=>b.textContent==='Agora não').click();});
-await p.evaluate(()=>{navigator.share=async(d)=>{window.__share=d;};});await p.click('#inviteBtn');
+await p.waitForTimeout(500);await p.evaluate(()=>document.querySelectorAll('.sysmodal,.levelup,.smsheet').forEach(e=>e.remove()));await p.evaluate(()=>{navigator.share=async(d)=>{window.__share=d;};});await p.click('#inviteBtn');
 ok('convidar usa folha de compartilhar',await p.evaluate(()=>window.__share&&window.__share.url.endsWith('/convite/')));
 await p.ctx.close();
 // 2. iPhone flow
-p=await page({ua:IOSUA});await p.goto(B);await p.waitForTimeout(800);await p.evaluate(()=>{document.querySelectorAll('.sysmodal,.levelup').forEach(e=>e.remove());document.body.dataset.tab='foco';});
+p=await page({ua:IOSUA});await p.goto(B);await p.waitForTimeout(800);await p.evaluate(()=>{document.querySelectorAll('.sysmodal,.levelup,.smsheet').forEach(e=>e.remove());document.body.dataset.tab='foco';});
 ok('iphone: botão silenciar visível',await p.isVisible('#fSilence'));
 await p.click('#fSilence');ok('iphone: botão 1 toque do atalho',await p.isVisible('#fScGet')&&!(await p.isVisible('#fScSteps')));
 await p.evaluate(()=>{window.open=(u)=>{window.__open=u;return {};};});await p.click('#fScGet');ok('iphone: abre link iCloud',await p.evaluate(()=>window.__open)==='https://www.icloud.com/shortcuts/e1277fb50e5843498731ef5a9727f806');
@@ -69,7 +69,7 @@ p=await page({rm:true,ua:ANDUA});await p.goto(B+'comecar/');await p.waitForTimeo
 ok('/comecar/ sem cfg não inicia foco por atalho',true);
 await p.goto(B+'comecar/?foco=25');await p.waitForTimeout(800);ok('/comecar/ sem perfil ignora ?foco',await p.evaluate(()=>!(JSON.parse(localStorage.getItem('asc-u-prog')||'{}').focus)));
 await p.goto(B+'convite/');await p.waitForTimeout(500);ok('/convite/ sem erro',p.errs.length===0);
-await p.goto(B);await p.waitForTimeout(600);await p.evaluate(()=>{document.querySelectorAll('.sysmodal,.levelup').forEach(e=>e.remove());document.body.dataset.tab='foco';});await p.click('#focusShort');
+await p.goto(B);await p.waitForTimeout(600);await p.evaluate(()=>{document.querySelectorAll('.sysmodal,.levelup,.smsheet').forEach(e=>e.remove());document.body.dataset.tab='foco';});await p.click('#focusShort');
 ok('reduce-motion: sala sem animação',await p.evaluate(()=>getComputedStyle(document.getElementById('froom')).animationName)==='none');
 await p.ctx.close();
 // 5. dados antigos preservados
