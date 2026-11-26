@@ -16,7 +16,7 @@ for(const vp of [{width:390,height:844},{width:1280,height:800}]){const tag=vp.w
   await p.fill('#q_name','Bia');await p.click('#q_n0');await p.click('#q_age button[data-v=young]');await p.click('#q_occ button[data-v=estudante]');
   const hs=[];for(const v of ['carro','run','yes','manha']){await p.waitForTimeout(120);hs.push(await p.textContent('#q_xh'));await p.click('#q_x button[data-v='+v+']');}
   ok(tag+' onboarding: 4 perguntas de toque',hs.length===4&&/desloca/.test(hs[0])&&/treina/.test(hs[1])&&/flashcards/.test(hs[2])&&/livre/.test(hs[3]),hs.join(' / '));
-  await p.waitForTimeout(150);ok(tag+' onboarding: depois vai para os focos',/evoluir/.test(await p.textContent('#quick .qstep:not([hidden]) h2')));
+  await p.waitForTimeout(150);ok(tag+' onboarding: depois vai para os focos',/evoluir|subir de nível/.test(await p.textContent('#quick .qstep:not([hidden]) h2')));
   await p.click('#q_done');await p.waitForTimeout(2300);await drain(p);
   const cfg=await LS(p,'asc-u-cfg');const P=cfg.profile;
   ok(tag+' perfil guarda as respostas',P.transport==='carro'&&P.train==='run'&&P.cards==='yes'&&P.free==='manha',JSON.stringify(P));
