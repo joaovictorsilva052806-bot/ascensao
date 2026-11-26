@@ -28,6 +28,10 @@ async function comecar(age,tele,qs){const c=await ctxNew();await c.p.goto(U+'com
 // 3) sem opt-in e até 13 anos: nada
 {const c=await comecar('adult',{asked:true,on:false},['q1','s_fech']);ok('sem opt-in: nada sai',!A(c.posts).length,A(c.posts).join(' / '));await c.ctx.close();}
 {const c=await comecar('kid',{on:true,asked:true,uid:'u2',nick:'K'},['q1','s_fech']);ok('até 13 anos: nada sai',!A(c.posts).length,A(c.posts).join(' / '));await c.ctx.close();}
+// 3b) 14 a 17: só com "responsável autorizou" gravado no aceite
+{const c=await comecar('teen',{on:true,asked:true,uid:'u3',nick:'T'},['q1']);ok('14-17 sem autorização do responsável: nada sai',!A(c.posts).length,A(c.posts).join(' / '));await c.ctx.close();}
+{const c=await comecar('teen',{on:true,asked:true,uid:'u3',nick:'T',parent:1},['q1']);ok('14-17 com autorização: etapa anônima vai',A(c.posts).some(x=>/7-quest/.test(x)),A(c.posts).join(' / '));await c.ctx.close();}
+{const c=await comecar('teen',{asked:true,on:false},['q1']);await c.p.evaluate(()=>localStorage.setItem('asc-u-beta','{"on":true,"id":"b1"}'));await c.p.reload();await c.p.waitForTimeout(3000);ok('14-17 beta sem autorização: nada sai',!A(c.posts).length,A(c.posts).join(' / '));await c.ctx.close();}
 // 4) app do criador: não pede aceite para ele mesmo, não envia nada, e mostra a retenção
 const SID='AKfycbTESTE_1234567890abcdefghij';const EXEC='https://script.google.com/macros/s/'+SID+'/exec';const PEX='https://script.google.com/macros/s/PAINEL_teste/exec';
 const row=s=>['26/11/2026 10:00:00','A|'+s];

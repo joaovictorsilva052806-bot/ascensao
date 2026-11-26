@@ -7,6 +7,10 @@
 - Corrigido junto: o app do criador pedia "Liberar seu painel para o criador?" para o próprio JV (o intervalo do aceite não era desligado na raiz). Agora não pede e não envia nada.
 - Testes: qa/retencao.test.js 28/28 (390x844 e 1280x800); o teste do aceite falhava no código antigo. Suíte: alvo 24, apps 47, convite 69, foco 32, funil 16, ranking-dia 47, relampago 27, rotulos 17, segredos 38, toque 19 e os demais sem FAIL. qa/mural-servidor.test.js quebra no Node também na main (não é deste PR). Caches ascensao-v55 / ascensao-u-v67.
 
+## 26/11/2026 11h40 · Retenção: teste de 14 a 17 anos
+
+- A folga para 14 a 17 anos (só envia com "responsável autorizou" gravado) entrou no #106. Este PR só cobre a regra no teste da retenção: 3 casos novos (sem autorização, com autorização, beta sem autorização). qa/retencao.test.js 31/31 contra a main.
+
 ## Revisões horárias
 
 - 26/11 16h23 · Achado: o cartão "Quer que o Sistema te chame?" (aviso diário, `#sysTip`) nunca aparecia na Hoje: o `sysTipUI` escondia o cartão se existisse qualquer `.sysmodal` no DOM, e o `#secZen` (Modo Zen) fica sempre no DOM, só com `hidden`. Mudou: só janela aberta de verdade segura o cartão (1 linha em `tools/rpg.js`); continua respeitando "uma dica por vez". Caches ascensao-v80 / ascensao-u-v92. Placar: novo qa/aviso-visivel.test.js 16/16 (4 falham na main); main 51/51; branch 52/52 (`arena` oscilou 1x sob carga, 37/37 sozinho 2x).
