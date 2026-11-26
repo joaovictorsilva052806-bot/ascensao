@@ -88,7 +88,6 @@ for(const [route,pre] of [['comecar/','asc-u'],['','ascensao']]){const tag=route
   const cfgP=JSON.parse(JSON.stringify(CFG));cfgP.quests.push({id:'fj_prot',title:'Proteína',xp:15,stat:'corpo',fj:1});
   ({ctx,p,errs}=await open(route,pre,P({forja:FJ({pil:true})}),'2026-11-26T10:00:00',{vp:{width:1280,height:800},cfg:cfgP}));
   ok(tag+' D: quinta é descanso',(await p.textContent('#fjCard')).includes('Hoje é descanso'),await p.textContent('#fjCard'));
-  ok(tag+' D: no descanso o card vai para depois das tarefas',await p.evaluate(()=>{const c=document.getElementById('fjCard'),q=document.getElementById('quests').closest('section');return !!(q.compareDocumentPosition(c)&Node.DOCUMENT_POSITION_FOLLOWING);}));
   ok(tag+' D: sem rolagem lateral no desktop',await p.evaluate(()=>document.documentElement.scrollWidth<=innerWidth));
   await tap(p,'#fjDaysBtn');await tap(p,'#fjCard .fjday[data-d="3"]');
   ok(tag+' D: quinta virou dia de treino',(await p.textContent('#fjCard')).includes('~30 min')&&(await LS(p,pre)).forja.dias.join()==='0,2,3,4');
@@ -104,7 +103,6 @@ for(const [route,pre] of [['comecar/','asc-u'],['','ascensao']]){const tag=route
   // F: faltou na quarta (sexta-feira, último treino na segunda): recaída sem culpa
   ({ctx,p,errs}=await open(route,pre,P({forja:FJ({ses:[{d:'2026-11-23',tipo:'A',min:30,r:0}]})}),'2026-11-27T10:00:00'));
   ok(tag+' F: faltou 1 dia, mensagem sem culpa',(await p.textContent('#fjCard')).includes('Faltou na qua? Normal'),await p.textContent('#fjCard'));
-  ok(tag+' F: card antes das tarefas no dia de treino',await p.evaluate(()=>{const c=document.getElementById('fjCard');return !!(c.nextElementSibling&&c.nextElementSibling.querySelector('#quests'));}));
   ok(tag+' F: console limpo',errs.length===0,errs.join(' | '));await ctx.close();
   // E: celular sem rolagem lateral com o treino aberto + prog.forja quebrado não derruba o app
   ({ctx,p,errs}=await open(route,pre,P({forja:{lv:'x',last:null,ses:{},cur:{d:'2020-01-01',tipo:'Z'}}}),'2026-11-25T10:00:00'));

@@ -186,10 +186,10 @@ let fjEdit=false;
 function fjReady(){const hid=id=>{const e=$(id);return !e||e.hidden;};return !!(cfg&&!cfg.blank&&cfg.quests&&cfg.quests.length)&&hid("quick")&&hid("onb")&&!document.body.classList.contains("onboarding");}
 function fjCard(){let p=$("fjCard");const q=$("quests");const anchor=q&&q.closest(".wrap>section");if(!anchor)return;
   if(!p){p=fjEl("section","panel fjhome");p.id="fjCard";p.dataset.tab="hoje";p.dataset.sf="1";}
-  const f=fjS(),cu=f.cur,dia=f.dias.includes(fjDow()),feito=fjTodayE(),t=fjNext(f);
-  // dia de treino: o card vem antes das tarefas; feito ou descanso: vai para depois, sem empurrar as tarefas
-  const top=!!cu||(dia&&!feito);if(top){if(p.nextElementSibling!==anchor)anchor.before(p);}else if(anchor.nextElementSibling!==p)anchor.after(p);
+  // no 1º uso (body[data-hrstart]) quem posiciona a Forja é o hrOrder (tools/heroi.js), abaixo das tarefas
+  if(!p.parentNode||(!document.body.dataset.hrstart&&p.nextElementSibling!==anchor))anchor.before(p);
   if(!fjReady()){p.hidden=true;return;}p.hidden=false;p.textContent="";
+  const f=fjS(),cu=f.cur,dia=f.dias.includes(fjDow()),feito=fjTodayE(),t=fjNext(f);
   const hd=fjEl("div","qhead");hd.append(fjEl("h2",null,"🔥 Forja"));
   const ed=fjBtn("link fjdl",f.dias.map(d=>FJ_DN[d]).join(" · ")+(fjHora(f)?" · "+fjHora(f):"")+" ✎",()=>{fjEdit=!fjEdit;fjCard();},"fjDaysBtn");ed.setAttribute("aria-label","Dias de treino: "+f.dias.map(d=>FJ_DN[d]).join(", ")+". Toque para mudar");ed.setAttribute("aria-expanded",fjEdit?"true":"false");hd.append(ed);p.append(hd);
   if(fjEdit){fjDays(p);fjHoraIn(p);}

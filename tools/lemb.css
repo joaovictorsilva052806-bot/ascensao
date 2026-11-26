@@ -1,0 +1,8 @@
+.lemb .lembchips{display:flex;flex-wrap:wrap;gap:8px;justify-content:center}
+.lemb .lembchip{min-width:56px;min-height:44px;padding:8px 14px;border-radius:999px;border:1px solid var(--line);background:#0a1222;color:var(--fg);font:inherit;font-weight:600;cursor:pointer}
+.lemb .lembchip.on{border-color:var(--accent);background:rgba(0,212,255,.16);color:var(--glow);box-shadow:0 0 0 1px var(--accent)}
+.lemb .lembchip:focus-visible{outline:2px solid var(--glow);outline-offset:2px}
+.lemb .lembtime{min-height:44px;padding:8px 12px;border-radius:8px;border:1px solid var(--line);background:#0a1222;color:var(--fg);font:inherit;align-self:center}
+.lemb .lembbt{justify-content:center;gap:10px;flex-wrap:wrap}
+.lemb .lembbt button{min-height:44px}
+#lembMais{min-height:44px;margin:6px 0}
