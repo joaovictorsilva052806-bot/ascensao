@@ -1,0 +1,72 @@
+/* ---------- Holo: camada visual de projeção holográfica (só CSS + 1 SVG). Não muda layout nem texto. ---------- */
+/* 1) Janelas do Sistema, level up e baú abrem como projeção: linha de luz -> painel -> leve tremulação */
+@keyframes hxUnfold{0%{opacity:0;transform:scale(.04,.01)}28%{opacity:1;transform:scale(1,.01)}62%{transform:scale(1,1.03)}72%{transform:none;opacity:1}78%{opacity:.72}84%{opacity:1}90%{opacity:.88}100%{opacity:1;transform:none}}
+@keyframes hxStep{0%{opacity:0;transform:translateY(6px) scaleY(.6)}60%{opacity:1;transform:scaleY(1.02)}100%{opacity:1;transform:none}}
+@keyframes hxIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+@keyframes hxScan{from{transform:translateY(-12%)}to{transform:translateY(112%)}}
+@keyframes hxWipe{from{clip-path:inset(0 100% 0 0)}to{clip-path:inset(0 0 0 0)}}
+@keyframes hxSpin{to{transform:rotate(360deg)}}
+@keyframes hxSpinR{to{transform:rotate(-360deg)}}
+@keyframes hxBeam{0%,100%{opacity:.55}50%{opacity:.85}}
+@keyframes hxRing{from{opacity:.8;transform:translate(-50%,-50%) scale(.2)}to{opacity:0;transform:translate(-50%,-50%) scale(1)}}
+@keyframes hxBurst{0%{opacity:.9;transform:scale(.3)}100%{opacity:0;transform:scale(3.2)}}
+@keyframes hxFlash{0%{opacity:0}20%{opacity:.14}100%{opacity:0}}
+@keyframes hxGlitch{0%{opacity:0}20%{opacity:.8;transform:translateX(-3px)}30%{opacity:.3}45%{opacity:1;transform:translateX(2px)}60%{transform:none}70%{opacity:.6}100%{opacity:1;transform:none}}
+@keyframes hxBlink{50%{opacity:.25}}
+
+.sysmodal:not([hidden]) .card,.levelup:not([hidden]) .card{animation:hxUnfold .52s cubic-bezier(.2,.9,.25,1) both;transform-origin:50% 50%}
+.sysmodal:not([hidden]) .card .tag{animation:hxWipe .45s linear .28s both}
+.sysmodal:not([hidden]) .card h3{animation:hxGlitch .5s linear .3s both}
+.levelup:not([hidden]) .card .big{animation:hxGlitch .5s linear .3s both,lvPulse 1.6s ease-in-out .8s infinite}
+.hx-rel{position:relative}
+/* película holográfica por cima do card: scanlines, cantos e uma varredura de luz (não recebe toque) */
+.hxfx{position:absolute;inset:0;pointer-events:none;overflow:hidden;border-radius:inherit;z-index:3;
+  background:
+    linear-gradient(var(--accent),var(--accent)) left top/14px 2px no-repeat,linear-gradient(var(--accent),var(--accent)) left top/2px 14px no-repeat,
+    linear-gradient(var(--accent),var(--accent)) right top/14px 2px no-repeat,linear-gradient(var(--accent),var(--accent)) right top/2px 14px no-repeat,
+    linear-gradient(var(--accent),var(--accent)) left bottom/14px 2px no-repeat,linear-gradient(var(--accent),var(--accent)) left bottom/2px 14px no-repeat,
+    linear-gradient(var(--accent),var(--accent)) right bottom/14px 2px no-repeat,linear-gradient(var(--accent),var(--accent)) right bottom/2px 14px no-repeat,
+    repeating-linear-gradient(180deg,rgba(124,244,255,.05) 0 1px,transparent 1px 3px)}
+.hxfx b{position:absolute;left:0;right:0;top:0;height:100%;background:linear-gradient(180deg,transparent 0,rgba(124,244,255,.0) 40%,rgba(124,244,255,.22) 49%,rgba(255,255,255,.35) 50%,transparent 52%);transform:translateY(-12%);animation:hxScan .9s cubic-bezier(.4,0,.2,1) .45s 1 both;will-change:transform}
+
+/* 2) Começo (Despertar): projetor com anéis girando, feixe de luz e leituras nos cantos */
+.qperm{position:relative}
+.qorb{position:relative}
+.hxorb{position:absolute;left:50%;top:50%;width:190px;height:190px;margin:-95px 0 0 -95px;pointer-events:none;overflow:visible}
+.hxorb g{transform-origin:95px 95px;transform-box:view-box}
+.hxorb .r1{animation:hxSpin 14s linear infinite}
+.hxorb .r2{animation:hxSpinR 9s linear infinite}
+.hxorb .r3{animation:hxSpin 22s linear infinite}
+.hxorb circle,.hxorb path{fill:none;stroke:var(--accent);vector-effect:non-scaling-stroke}
+.hxbeam{position:absolute;left:50%;bottom:-6vh;width:min(84vw,340px);height:62vh;transform:translateX(-50%);pointer-events:none;z-index:-1;
+  background:radial-gradient(ellipse 50% 9% at 50% 100%,rgba(0,212,255,.5),transparent 70%),linear-gradient(0deg,rgba(0,212,255,.16),rgba(0,212,255,0) 75%);
+  clip-path:polygon(44% 100%,56% 100%,100% 0,0 0);animation:hxBeam 3.4s ease-in-out infinite}
+.qtype{position:relative;padding:10px 14px;max-width:330px;width:100%;box-sizing:border-box}
+.qtype.hx-frame{background:linear-gradient(90deg,transparent,rgba(0,212,255,.07),transparent);animation:hxStep .45s cubic-bezier(.2,.9,.25,1) both}
+.qtype.hx-frame::before,.qtype.hx-frame::after{content:"";position:absolute;top:0;bottom:0;width:10px;border:1px solid var(--accent);opacity:.7}
+.qtype.hx-frame::before{left:0;border-right:0}.qtype.hx-frame::after{right:0;border-left:0}
+.hxhud{position:absolute;top:max(10px,env(safe-area-inset-top));left:14px;right:14px;bottom:max(10px,env(safe-area-inset-bottom));pointer-events:none;font-family:var(--f-mono,ui-monospace,monospace);font-size:.6rem;letter-spacing:.18em;color:var(--accent);opacity:.75;text-transform:uppercase}
+.hxhud span{position:absolute}
+.hxhud .tl{top:0;left:0}.hxhud .tr{top:0;right:0;text-align:right}.hxhud .bl{bottom:0;left:0}.hxhud .br{bottom:0;right:0;text-align:right}
+.hxhud .dot{display:inline-block;width:6px;height:6px;border-radius:50%;background:var(--glow);margin-right:6px;vertical-align:1px;animation:hxBlink 1.2s steps(2) infinite}
+.hxhud .bars i{display:inline-block;width:3px;margin-left:2px;background:var(--accent);vertical-align:bottom}
+.hxburst{position:fixed;left:50%;top:40%;width:180px;height:180px;margin:-90px 0 0 -90px;border-radius:50%;border:2px solid var(--glow);box-shadow:0 0 40px var(--accent),inset 0 0 30px var(--accent);pointer-events:none;z-index:80;animation:hxBurst .6s cubic-bezier(.2,.8,.2,1) forwards}
+.hxflash{position:fixed;inset:0;background:var(--glow);pointer-events:none;z-index:79;animation:hxFlash .5s ease-out forwards}
+
+/* 3) Passos do começo e grades de escolha entram em sequência */
+#quick .qstep:not(.qperm){animation:hxStep .42s cubic-bezier(.2,.9,.25,1) both;transform-origin:50% 0}
+#quick .qstep:not(.qperm) .tag{animation:hxWipe .45s steps(20,end) .1s both}
+.qgrid button{animation:hxIn .32s cubic-bezier(.2,.9,.25,1) both}
+.qgrid button:nth-child(2){animation-delay:.04s}.qgrid button:nth-child(3){animation-delay:.08s}.qgrid button:nth-child(4){animation-delay:.12s}
+.qgrid button:nth-child(5){animation-delay:.16s}.qgrid button:nth-child(6){animation-delay:.2s}.qgrid button:nth-child(n+7){animation-delay:.24s}
+
+/* 4) Toque: anel de luz no ponto do toque + botão afunda de leve */
+.hxtap{position:fixed;left:0;top:0;width:64px;height:64px;border-radius:50%;border:1.5px solid var(--glow);box-shadow:0 0 12px var(--accent);pointer-events:none;z-index:90;opacity:0;will-change:transform,opacity}
+.hxtap.on{animation:hxRing .42s cubic-bezier(.2,.8,.2,1) forwards}
+.go:active,.qgrid button:active{transform:scale(.97);transition:transform .08s}
+
+@media (prefers-reduced-motion:reduce){
+  .sysmodal:not([hidden]) .card,.levelup:not([hidden]) .card,.sysmodal .card h3,.levelup .card .big,.sysmodal .card .tag,#quick .qstep,#quick .qstep .tag,.qgrid button,.qtype.hx-frame,.hxbeam,.hxorb g,.hxhud .dot{animation:none!important}
+  .hxfx b,.hxtap,.hxburst,.hxflash{display:none!important}
+  .go:active,.qgrid button:active{transform:none}
+}
