@@ -17,6 +17,7 @@ ok(nm+' próximo desbloqueio no botão',/nv \d+:/.test(await p.textContent('#hrT
 await sec.screenshot({path:OUT+'/card-fechado-'+nm+'.png'});
 ok(nm+' Comece por aqui compacto (só o passo da vez)',await p.locator('#gdPanel.gdmini').count()===1&&await p.locator('#gdPanel .gdl li:visible').count()===1);
 await p.locator('#gdPanel .qhead').dispatchEvent('click');await p.waitForTimeout(200);ok(nm+' toque no título mostra os 3 passos',await p.locator('#gdPanel .gdl li:visible').count()===3);
+ok(nm+' tarefas logo depois do cartão (só Sistema e Forja no meio)',await p.evaluate(()=>{const q=document.getElementById('quests').closest('section');const h=document.querySelector('.status').closest('section');const m=[];for(let e=h.nextElementSibling;e&&e!==q;e=e.nextElementSibling)if(e.offsetParent)m.push(e.id);return m.every(id=>id==='smBar'||id==='fjCard');}));
 ok(nm+' relâmpago logo depois das tarefas',await p.evaluate(()=>document.getElementById('quests').closest('section').nextElementSibling.id==='zapPanel'));
 await drain(p);await p.locator('#hrTog').click();await p.waitForTimeout(500);
 ok(nm+' abre a ficha',await p.locator('#hrBox').isVisible());
