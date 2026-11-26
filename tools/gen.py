@@ -151,11 +151,15 @@ rep('\nlet saveTimer=null, SYNC="";','\n'+open(SP+'qtidy.js').read()+'\nlet save
 rep('</style></head>',open(SP+'turma.css').read()+open(SP+'card.css').read()+'</style></head>')
 rep('\nlet saveTimer=null, SYNC="";','\n'+open(SP+'daily.js').read()+open(SP+'turma.js').read()+open(SP+'card.js').read()+open(SP+'duo.js').read()+'\nlet saveTimer=null, SYNC="";')
 # chefão da turma, baú do dia e mural/figurinhas (tools/boss.*, tools/chest.*, tools/mural.*)
-rep('</style></head>',R('boss.css')+R('chest.css')+R('mural.css')+'</style></head>')
-rep('\nlet saveTimer=null, SYNC="";','\n'+R('boss.js')+R('chest.js')+R('mural.js')+'\nlet saveTimer=null, SYNC="";')
+rep('</style></head>',R('boss.css')+R('chest.css')+R('mural.css')+R('attr.css')+'</style></head>')
+rep('\nlet saveTimer=null, SYNC="";','\n'+R('boss.js')+R('chest.js')+R('mural.js')+R('attr.js')+'\nlet saveTimer=null, SYNC="";')
 # celular de verdade: 📅 agenda e tarefas de apps (tools/apps.*)
 rep('</style></head>',R('apps.css')+'</style></head>')
 rep('\nlet saveTimer=null, SYNC="";','\n'+R('apps.js')+'\nlet saveTimer=null, SYNC="";')
+rep('</style></head>',R('sistema.css')+'</style></head>')
+rep('\nlet saveTimer=null, SYNC="";','\n'+R('sistema.js')+'\nlet saveTimer=null, SYNC="";')
+rep('</style></head>',R('foco2.css')+'</style></head>')
+rep('\nlet saveTimer=null, SYNC="";','\n'+R('foco2.js')+R('foco-duo.js')+'\nlet saveTimer=null, SYNC="";')
 if not ROOT: open('comecar/index.html','w').write(s)
 pass
 
@@ -165,6 +169,8 @@ if ROOT:
     # app do criador: sem cartão "Conectar ao sistema" para visitante (liga por link #s=) e sem pedir para liberar o painel para ele mesmo
     rep('$("syncCard").hidden=!!SYNC;','$("syncCard").hidden=true;')
     rep('setTimeout(tlBoot,1200);','')
+    # app do criador (adulto): perfil vindo da planilha pode não ter faixa de idade
+    rep('const AGE_UNK_MINOR=true;','const AGE_UNK_MINOR=false;')
     # raiz: service worker como era antes da unificação (offline também em teste local)
     s=s.replace('"serviceWorker" in navigator&&location.protocol==="https:"','"serviceWorker" in navigator')
     rep('    </details>\n  </section>\n</div>','    </details>\n  </section>\n'+R('creator.html')+'</div>')
