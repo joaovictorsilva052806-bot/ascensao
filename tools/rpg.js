@@ -171,8 +171,8 @@ $("dunOpen").addEventListener("click",()=>{const wk=dkey(dunWeek());if(Object.ke
 const SYSTIP_KEY=document.getElementById("o_go")?"asc-"+"u-systip":"ascensao-systip";
 function sysTipUI(){let d="";try{d=localStorage.getItem(SYSTIP_KEY)||"";}catch(e){}const el=$("sysTip");if(!el)return;
   const days=1;el.hidden=!!d||!cfg||cfg.blank||[...document.querySelectorAll(".sysmodal:not([hidden])")].some(m=>m.getClientRects().length)||days<1;}
-// Android não abre o arquivo .ics: lá o "Ativar" abre o Google Agenda já preenchido com o aviso diário (1 evento, todo dia)
-$("sysTipYes").addEventListener("click",()=>{try{localStorage.setItem(SYSTIP_KEY,"1");}catch(e){}$("sysTip").hidden=true;
-  if(/android/i.test(navigator.userAgent)){const r=remPlan()[0];if(r)window.open(gcalLink(r),"_blank","noopener");toast("Abriu o Google Agenda? Toque em Salvar. O aviso do Sistema vem todo dia.");return;}
-  if($("calIcs"))$("calIcs").click();toast("Abriu a agenda? Toque em Adicionar tudo. O aviso do Sistema vem junto.");});
+// "Ativar" abre a oferta de 1 evento diário com chips de horário (tools/lemb.js): .ics no iPhone/PC, Google Agenda no Android
+$("sysTipYes").addEventListener("click",()=>{$("sysTip").hidden=true;
+  if(typeof window.lembOffer==="function"){window.lembOffer(ok=>{try{localStorage.setItem(SYSTIP_KEY,ok?"1":"0");}catch(e){}});return;}
+  try{localStorage.setItem(SYSTIP_KEY,"1");}catch(e){}if($("calIcs"))$("calIcs").click();});
 $("sysTipNo").addEventListener("click",()=>{try{localStorage.setItem(SYSTIP_KEY,"0");}catch(e){}$("sysTip").hidden=true;});
