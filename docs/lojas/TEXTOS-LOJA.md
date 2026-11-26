@@ -46,7 +46,7 @@ Grátis. Feito no Brasil, para quem quer subir de nível na vida real.
 ```
 
 **Categoria:** Produtividade · **Tags:** hábitos, rotina, foco, gamificação
-**E-mail de contato:** `[e-mail de contato]` · **Política de privacidade:** `https://joaovictorsilva052806-bot.github.io/ascensao/privacidade/`
+**E-mail de contato:** `ascension.app.contato@gmail.com` · **Política de privacidade:** `https://joaovictorsilva052806-bot.github.io/ascensao/privacidade/`
 
 **Notas da versão 1.0** (até 500):
 ```
