@@ -197,6 +197,8 @@ input:focus,select:focus,textarea:focus{outline:none;border-color:var(--accent)!
 .day{border-radius:2px!important}
 .day.today{outline:none;box-shadow:0 0 0 1px var(--glow);animation:blink 2s infinite}
 .toast{animation:toastIn .35s var(--ease)}
+/* o aviso é só texto: toque passa para o que está embaixo (menos o botão Desfazer) */
+.toast{pointer-events:none}.toast button,.toast a{pointer-events:auto}
 @keyframes toastIn{from{opacity:0;transform:translate(-50%,12px)}to{opacity:1;transform:translate(-50%,0)}}
 .xpfloat{position:fixed;z-index:70;pointer-events:none;font-family:var(--f-hud);font-weight:700;font-size:1rem;color:#eaffff;text-shadow:0 0 10px var(--accent),0 0 20px var(--accent);animation:xpUp 1.1s var(--ease) forwards}
 .xpfloat.gold{color:#fff3cf;text-shadow:0 0 10px var(--gold),0 0 22px var(--gold)}
@@ -4370,6 +4372,8 @@ const AP_ADD=[{app:"duo",title:"Duolingo: 1 lição",minTitle:"1 lição curta",
 function apAdd(t){if(!cfg||typeof edSave!=="function")return;const Q=(cfg.quests||[]).slice();if(Q.some(x=>x.app===t.app)){toast("Você já tem essa tarefa.");return;}
   Q.push(Object.assign({id:"ap_"+t.app+Date.now().toString(36)},t));cfg=Object.assign({},cfg,{quests:Q,blank:false});edSave();save();render();toast(t.title+": adicionada às tarefas de hoje (extra).");apAddUI();}
 function apAddUI(){const ed=$("edNew");if(!ed||typeof edSave!=="function")return;let w=$("apAdd");
+  // planilha ligada: as tarefas vêm dela (o que for criado aqui seria sobrescrito na próxima sincronização)
+  let sy="";try{sy=SYNC;}catch(e){}if(sy){if(w)w.remove();return;}
   if(!w){w=apEl("div","apadd");w.id="apAdd";w.append(apEl("div","sm muted","Tarefas com app e prova por print:"));const r=apEl("div","row");r.id="apAddRow";w.append(r);ed.parentNode.insertBefore(w,ed.nextSibling);}
   const r=$("apAddRow");r.textContent="";const Q=(cfg&&cfg.quests)||[];
   for(const t of AP_ADD){const a=AP_APPS.find(x=>x.k===t.app);const has=Q.some(x=>x.app===t.app);const b=apEl("button","ghost",a.ic+" "+(has?"✓ ":"")+t.title);b.type="button";b.disabled=has;b.onclick=()=>apAdd(t);r.append(b);}}

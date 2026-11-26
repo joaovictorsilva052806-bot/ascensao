@@ -79,6 +79,8 @@ ok('comecar: console sem erros',errs.length===0,errs.join(' | '));await ctx.clos
 ({ctx,p,errs}=await page({viewport:{width:1280,height:800}}));await p.goto(U);await seed(p,b2);await p.click('#tabbar [data-go="prog"]');await p.screenshot({path:SP+'desktop.png'});
 await p.goto(U+'convite/');await p.waitForTimeout(500);await p.goto(U+'comecar/');await p.waitForTimeout(500);ok('desktop: /, /comecar/, /convite/ sem erros',errs.length===0,errs.join(' | '));await ctx.close();
 // offline
-({ctx,p,errs}=await page());await p.goto(U);await p.waitForTimeout(1500);await p.reload();await p.waitForTimeout(800);await ctx.setOffline(true);await p.reload();await p.waitForTimeout(800);
+({ctx,p,errs}=await page());await p.goto(U);await p.waitForTimeout(500);
+// o app só registra o SW em https; no localhost registra à mão o mesmo sw.js
+await p.evaluate(async()=>{await navigator.serviceWorker.register('sw.js');await navigator.serviceWorker.ready;});await p.waitForTimeout(800);await p.reload();await p.waitForTimeout(800);await ctx.setOffline(true);await p.reload();await p.waitForTimeout(800);
 ok('offline: abre do cache com Segredos',await p.locator('#secPanel').count()===1);await ctx.close();
 await b.close();console.log(R.join('\n'));console.log(R.filter(r=>r.startsWith('PASS')).length+'/'+R.length);})();
