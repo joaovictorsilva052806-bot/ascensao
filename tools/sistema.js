@@ -40,11 +40,6 @@ function smShell(tag){const m=smSheet();m.hidden=false;document.body.classList.a
   const x=smEl("button","smx","✕");x.type="button";x.setAttribute("aria-label","Fechar e ver a lista");x.onclick=smClose;m.append(x);return c;}
 function smOpen(){smShow();}
 function smShow(){clearInterval(smIv);const s=smSt();
-  // 1º do dia: bateria
-  if(!smEnergy()&&document.querySelector("#energy button")){const c=smShell("CHECK-IN DE ENERGIA");c.append(smEl("h3","smh","Como está sua bateria hoje?"),smEl("p","sm muted","Sem resposta certa. O Sistema ajusta o tamanho do dia para você."));
-    const r=smEl("div","smen");for(const [k,l,d] of [["alta","🔋 Cheia","Dá para ir além"],["media","🔋 Média","Dia normal"],["baixa","🪫 Baixa","Só o essencial"]]){const b=smEl("button","ghost");b.type="button";b.append(smEl("b",null,l),smEl("small",null,d));
-      b.onclick=()=>{const eb=document.querySelector('#energy button[data-e="'+k+'"]');if(eb)eb.click();smIdx=0;setTimeout(smShow,60);};r.append(b);}
-    c.append(r);const sk=smEl("button","link","Pular");sk.type="button";sk.onclick=()=>{prog.energy=prog.energy||{};prog.energy[smTk()]="media";save();smShow();};c.append(sk);c.querySelector(".smen button").focus();return;}
   const q=smPick();smQ=q;const e=smEnergy();
   if(smRecNeeded()&&!smRecDone()&&q){const c=smShell("MISSÃO DE RECUPERAÇÃO");c.append(smEl("h3","smh","Ontem passou em branco. Ainda dá para salvar."),
       smEl("p","sm","Faça só o mínimo de uma missão hoje e sua sequência de ontem é salva. +"+SM_REC+" XP."),smEl("p","sm muted","Vale 1 vez a cada 7 dias."));
@@ -58,6 +53,10 @@ function smMission(q,rec){const c=smShell(rec?"MISSÃO DE RECUPERAÇÃO":q.main?
   c.append(smEl("h3","smh",smName(q)));
   const min=q.minTitle?q.minTitle:"só os primeiros 2 minutos";
   const st=smEl("div","smstart");st.append(smEl("div","smlbl","COMECE POR AQUI · 2 MIN"),smEl("div","smmin",min));c.append(st);
+  // bateria do dia dentro do cartão (1 tela a menos): enquanto não responder, vale "média"
+  if(!e&&!rec&&document.querySelector("#energy button")){const r=smEl("div","smen");r.setAttribute("role","group");r.setAttribute("aria-label","Bateria de hoje");r.append(smEl("span","smenl","Bateria hoje?"));
+    for(const [k,l] of [["baixa","🪫 Baixa"],["media","🔋 Média"],["alta","⚡ Cheia"]]){const b=smEl("button","ghost",l);b.type="button";b.dataset.e=k;
+      b.onclick=()=>{const eb=document.querySelector('#energy button[data-e="'+k+'"]');if(eb)eb.click();else{prog.energy=prog.energy||{};prog.energy[smTk()]=k;save();}smIdx=0;setTimeout(smShow,60);};r.append(b);}c.append(r);}
   c.append(smEl("p","sm muted",(e==="baixa"?"Bateria baixa: hoje o mínimo já vale o dia inteiro. ":e==="alta"?"Bateria cheia: terminou o mínimo, vá até o fim e ganhe bônus. ":"")+"Recompensa: +"+q.xp+" XP"+(q.minTitle?" (mínimo: +"+Math.ceil(q.xp/2)+")":"")+"."));
   const go=smEl("button","go smgo","ACEITAR");go.type="button";go.onclick=()=>smTimer(q,rec);c.append(go);
   const r=smEl("div","smrow");const n=smCands().length;
