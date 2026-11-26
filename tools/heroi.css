@@ -31,3 +31,7 @@ section[data-hbg]>:not(.hrbg){position:relative;z-index:1}
 @keyframes hrHop{0%{translate:0 0}30%{translate:0 -10px}60%{translate:0 0}75%{translate:0 -4px}100%{translate:0 0}}
 @media (prefers-reduced-motion:reduce){.hrbox,.hav.hrhop{animation:none}}
 @media (max-width:360px){.hrat{grid-template-columns:1fr;justify-items:center}.hrtog .hrnx{display:none}}
+/* Comece por aqui compacto: só o passo da vez */
+.gd.gdmini .gdl li:not(.now),.gd.gdmini .gdoff{display:none}
+.gd .qhead[role=button]{cursor:pointer}
+.gd.gdmini .qhead .xp::after{content:" ▾"}
