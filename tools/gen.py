@@ -164,6 +164,9 @@ rep('\nlet saveTimer=null, SYNC="";','\n'+R('dialogo.js')+'\nlet saveTimer=null,
 # fim da cadeia: versão do app + tela Novidades 1x por versão + rodapé com Privacidade/Termos em Mais (tools/versao.*)
 rep('</style></head>',R('versao.css')+'</style></head>')
 rep('\nlet saveTimer=null, SYNC="";','\n'+R('versao.js')+'\nlet saveTimer=null, SYNC="";')
+# cartão do jogador: ficha expansível na aba Hoje (tools/heroi.*)
+rep('</style></head>',R('heroi.css')+'</style></head>')
+rep('\nlet saveTimer=null, SYNC="";','\n'+R('heroi.js')+'\nlet saveTimer=null, SYNC="";')
 if not ROOT: open('comecar/index.html','w').write(s)
 pass
 

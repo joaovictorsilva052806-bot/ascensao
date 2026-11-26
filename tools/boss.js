@@ -107,7 +107,7 @@ function tbStrip(st){let el=$("tbStrip");const hoje=document.querySelector('.wra
     const sec=hoje.closest("section");sec.after(el);}
   st=st||tbState();el.hidden=false;el.textContent="";const b=st.boss;const dead=st.left<=0;
   const ic=tbEl("span","tbsico");ic.innerHTML=tbArt(b,st.pct,dead);
-  const tx=tbEl("span","tbstx");tx.append(tbEl("b",null,dead?b[1]+" derrotado ✔":"🐉 "+b[1]+" · "+st.pct+"% de vida"));
+  const tx=tbEl("span","tbstx");tx.append(tbEl("b",null,dead?"Vitória sobre "+b[1]+" ✔":"🐉 "+b[1]+" · "+st.pct+"% de vida"));
   const bar=tbEl("span","tbsbar");const f=tbEl("i");f.style.width=st.pct+"%";bar.append(f);tx.append(bar);
   tx.append(tbEl("span","tbssub",dead?(tbSocial()?"A turma venceu esta semana.":"Você venceu esta semana."):"Cada tarefa sua tira vida dele."));
   el.append(ic,tx);el.setAttribute("aria-label",dead?"Chefão derrotado. Abrir o chefão":"Chefão "+b[1]+" com "+st.pct+"% de vida. Abrir o chefão");}
