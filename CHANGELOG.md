@@ -3,6 +3,15 @@
 Formato: [Keep a Changelog](https://keepachangelog.com/pt-BR/1.1.0/). Versões: [SemVer](https://semver.org/lang/pt-BR/) (`MAIOR.MENOR.CORREÇÃO`).
 Regra de ouro de toda versão: o progresso salvo no aparelho nunca é apagado nem renomeado.
 
+## Forja (26/11/2026, dentro da 1.0)
+
+### Novo
+- **Forja**: treino em casa, sem equipamento, que evolui sozinho. Card "🔥 Forja" em Hoje (seg/qua/sex, editável em 1 toque), Treino A/B, escada de 5 níveis por movimento e dupla progressão (8 a 12 repetições; core 20 a 45 s).
+- **Dia ruim** (10 min): 1 série de cada, +20 XP e conta para a sequência.
+- XP: treino +40 (1 por dia), subir de nível +30 (uma vez por nível), 3 treinos na semana +25. Segredo novo: "Aço".
+- Aviso "Quando parar" antes do 1º treino e sempre no rodapé. Quests opcionais dos 4 pilares.
+- Grava só `prog.forja`. Nenhum dado de corpo ou saúde é coletado. Caches `ascensao-v74` / `ascensao-u-v86`.
+
 ## [1.0.0] - 2026-11-26 (lançamento, aguardando o ok do JV)
 
 A primeira versão pública. Tudo o que os testadores ajudaram a construir no beta, com nome oficial **Ascension**.
