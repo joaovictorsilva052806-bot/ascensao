@@ -1,79 +1,114 @@
 # Relatório da noite · 26/11/2026 (ATENA)
 
-Bom dia, JV. Conclusão primeiro: rodei o app inteiro como **usuário novo** (do convite `/x/` até fechar o 1º dia) e como **usuário no dia 3** (relógio simulado), no celular 390x844 e no desktop. Achei 16 atritos. Corrigi os 9 que eram da minha área num PR testado (#89), deixei 1 mudança de regra de XP pronta esperando você, e registrei o resto para os donos de cada área.
+Bom dia, JV. Resumo: testei o app inteiro como **usuário novo** (do convite `/x/` até fechar o 1º dia) e como **usuário que volta no dia 3 depois de faltar um dia** (com relógio simulado), no celular 390x844 e no desktop. Achei 18 atritos:
 
-## 1. O que foi publicado (entregue ao trem de publicação)
+- **11 corrigidos** num PR testado, o #89.
+- **1 regra de XP pronta**, esperando você: a carência da dívida, no #99.
+- **6 registrados** para os donos de cada área.
+
+Nenhum dado salvo foi apagado ou renomeado.
+
+## 1. O que foi entregue ao trem de publicação
 
 | PR | O que muda | Testes | Situação |
 |---|---|---|---|
-| #89 Revisão noturna | 9 atritos do usuário (abaixo) + 2 testes instáveis | `qa/noite.test.js` 36/36 (no código antigo: 12 falhas e o teste do Voltar trava) + suíte inteira verde | entregue ao trem na #22 |
-| #82 Textos da 1ª sessão (outra thread) | textos mais curtos | 35/35 | entregue ao trem |
-| #83 Volta do dia 1 ao 3 (outra thread) | presente do dia 2 e 3, teaser e resgate | 44/44 | entregue ao trem |
-| #67 Feedback dos testadores (outra thread) | Missão ativa v2, onboarding de toque, modo simples | 60/60, inclusive junto com o #82 | pronto, no trem |
+| #89 Revisão noturna | 11 atritos (lista abaixo) e 2 testes instáveis | `qa/noite.test.js` 45/45; suíte inteira 33 de 33 arquivos verdes (987 verificações) | entregue ao trem na #22, já atualizado com a main (Trens 4 a 8) |
+| #82 Textos da 1ª sessão (outra thread) | textos mais curtos | 35/35 | na fila do trem |
+| #83 Volta do dia 1 ao 3 (outra thread) | presente do dia 2 e do dia 3, teaser e resgate | 44/44 | na fila do trem |
+| #67 Feedback dos testadores (outra thread) | Missão ativa v2, onboarding de toque, modo simples | 60/60 | na fila do trem |
 
-Montei o trem inteiro localmente (main + #89 + #82 + #83 + #67): o app funciona junto. Dois testes de PRs diferentes brigam entre si (o do #67 espera o título antigo do #82, e o do #82 não conhece as perguntas novas do #67). Mandei o ajuste para cada thread e para a EVA na #22, e as duas threads já corrigiram: `textos1` 35/35 e `feedback` 60/60 com os dois juntos.
+Montei o trem inteiro localmente (main + #89 + #82 + #83 + #67) e tudo funciona junto. O único conflito é de texto, no `tools/gen.py`, e se resolve mantendo as duas linhas.
 
-**As 9 correções do #89, cada uma com a base:**
+**As 11 correções do #89, cada uma com a fonte em que se baseia:**
 
-1. **Madrugada sem toque morto.** Entre 0h e 5h as missões principais têm cadeado. O passo 1 do guia ("Toque em ▶") tocava no ▶ trancado e nada acontecia. Agora abre a 1ª missão liberada; se nada estiver liberado, diz a hora e abre um desafio relâmpago (+10 XP na hora). O Sistema também aponta o desafio.
-   *Base:* Modelo de Comportamento de Fogg (B = Motivação × Habilidade × Gatilho: gatilho sem ação possível não vira comportamento), behaviormodel.org; heurística 1 de Nielsen (visibilidade do estado do sistema), nngroup.com/articles/ten-usability-heuristics.
-2. **"⭐ Colar figurinha" cobria o "✓ Concluir missão".** O atalho de 8 s ficava por cima do botão principal da próxima missão. Agora some enquanto uma missão está aberta.
-   *Base:* WCAG 2.2, critério 2.4.11 (o foco/ação não pode ficar escondido por conteúdo do próprio site); heurística 5 de Nielsen (prevenir erro).
-3. **Check-in brigava com a sequência.** No dia 2 o Sistema dizia "Dia 2 seguido" enquanto o 🔥 mostrava "1 dia". Agora é "2 dias de check-in". No dia 3, o escudo dizia "Sequência salva: 1 dias. Ontem passou em branco" para quem abriu o app ontem; agora "1 dia. Ontem ficou sem tarefa".
-   *Base:* heurística 4 de Nielsen (consistência); o Duolingo mostra um único número de sequência, ligado a uma ação clara (fazer a lição).
-4. **"Faltam 1." virou "Falta 1."** (mensagem do Sistema depois das 20h).
-   *Base:* credibilidade do texto (Stanford Web Credibility Guidelines, credibility.stanford.edu/guidelines: erros simples derrubam a confiança).
-5. **Placar do dia contava check-in e conquista como tarefa.** Depois de 1 tarefa aparecia "Hoje: 3 concluída(s)" ao lado de "Concluídas (1)". Agora conta só o que você fez.
-   *Base:* heurística 2 de Nielsen (falar a língua do usuário: "concluída" = tarefa feita).
-6. **Criar card com área de toque de 44px.** Os campos "Pergunta/Resposta" tinham 24px e "+ Criar cards" 32px.
-   *Base:* Apple Human Interface Guidelines (alvo mínimo 44x44 pt); WCAG 2.5.5.
-7. **Barra de abas cortada em telas menores.** Abaixo de 390px (Android de 360px, iPhone SE/mini de 375px), "PROGRESSO" passava da aba e encostava em "AMIGOS". Agora cabe de 320px para cima.
-   *Base:* 360px é a largura mais comum de Android (StatCounter, resoluções de tela móvel); Material Design: rótulo da barra de navegação não pode truncar nem encostar no vizinho.
-8. **Botão Voltar do Android fechava o app.** Com uma missão ou um desafio aberto, o Voltar (ou o gesto) saía do app inteiro. Agora o 1º Voltar fecha só a folha, como num app nativo.
-   *Base:* Android, guia "Navegação para trás" (developer.android.com/guide/navigation/custom-back): Voltar fecha o que está por cima antes de sair; Material Design, folhas inferiores fecham no Voltar.
-9. **Marcou sem querer? "Desfazer" por 5 s.** Antes, para desmarcar, era preciso abrir "Concluídas" e achar o botão. Agora o aviso mostra "✓ nome da tarefa · Desfazer" (é o mesmo que desmarcar pela lista). De quebra, o aviso ficava no mesmo lugar do "⭐ Colar figurinha" e sumia atrás dele; agora sobe quando o atalho aparece.
-   *Base:* Nielsen #3 (controle e liberdade: "saída de emergência" para o erro); Material Design, snackbar com ação "Desfazer"; o "Desfazer envio" do Gmail.
+1. **Madrugada sem toque morto.**
+   - Antes: entre 0h e 5h as missões principais ficam trancadas, e o passo 1 do guia ("Toque em ▶") tocava no ▶ trancado. Nada acontecia.
+   - Agora: o toque abre a 1ª missão liberada. Se nenhuma estiver liberada, o app diz a hora em que elas liberam e abre um desafio relâmpago (+10 XP).
+   - *Base:* Modelo de Comportamento de Fogg (gatilho sem ação possível não vira comportamento), behaviormodel.org; Nielsen #1 (visibilidade do estado do sistema).
+2. **"⭐ Colar figurinha" cobria o "✓ Concluir missão".** Agora o atalho some enquanto uma missão está aberta.
+   - *Base:* WCAG 2.2, critério 2.4.11; Nielsen #5 (prevenir erro).
+3. **Check-in e sequência se contradiziam.**
+   - Dia 2: o Sistema dizia "Dia 2 seguido" enquanto o 🔥 mostrava "1 dia". Agora diz "2 dias de check-in".
+   - Dia 3: o escudo dizia "1 dias. Ontem passou em branco". Agora diz "1 dia. Ontem ficou sem tarefa".
+   - *Base:* Nielsen #4 (consistência); o Duolingo usa um único número de sequência.
+4. **"Faltam 1." virou "Falta 1."**
+   - *Base:* Stanford Web Credibility Guidelines (erros simples derrubam a confiança).
+5. **Placar do dia contava check-in e conquista como tarefa.** Depois de 1 tarefa aparecia "Hoje: 3 concluída(s)". Agora conta só as tarefas.
+   - *Base:* Nielsen #2 (falar a língua do usuário).
+6. **Criar card com área de toque de 44px.** Antes os campos tinham 24px e o botão 32px.
+   - *Base:* Apple HIG (alvo mínimo de 44 pt); WCAG 2.5.5.
+7. **Barra de abas cortada abaixo de 390px.** "PROGRESSO" encostava em "AMIGOS" no Android de 360px. Agora cabe a partir de 320px.
+   - *Base:* 360px é a largura de Android mais comum (StatCounter); Material Design.
+8. **O Voltar do Android fechava o app.** Com uma missão aberta, agora o 1º Voltar fecha só a missão.
+   - *Base:* Android, "Navegação para trás" (developer.android.com/guide/navigation/custom-back).
+9. **"Desfazer" por 5 s depois de concluir.** O aviso mostra "✓ nome da tarefa · Desfazer".
+   - *Base:* Nielsen #3 (controle e liberdade); snackbar do Material; "Desfazer envio" do Gmail.
+10. **NOVO · Dia 1: o check-in entra sozinho.** Entre "Criar meu jogo" e a 1ª missão aparecia a janela "Você apareceu, +10 XP". Era 1 toque a mais justamente no momento mais frágil.
+    - Agora o check-in é registrado do mesmo jeito (mesmo registro, mesmos +10 XP), sem janela.
+    - Vale só para quem criou o jogo hoje. Do dia 2 em diante a janela volta.
+    - Do `/x/` até a 1ª tarefa marcada: **de 13 para 12 toques**.
+    - *Base:* Fogg (cada passo a mais derruba a Habilidade); Nielsen #8 (minimalismo).
+11. **NOVO · Volta depois de faltar um dia: 1 toque para voltar, sem culpa.**
+    - Antes: quem faltou ontem abria o app e passava por 3 janelas seguidas (check-in, habilidade e escudo). Depois via o ranking, o avatar e o chefe. A 1ª tarefa estava a ~1450px, quase 2 telas abaixo, e logo acima dela aparecia "Dívida: −10 XP".
+    - Agora: no topo da aba Hoje aparece "👋 Que bom te ver de volta. Sem cobrança: ontem passou. Recomeçar leva 1 minuto: Abrir o caderno.", com o botão **▶ Começar agora**, que abre a 1ª missão liberada.
+    - O cartão some depois da 1ª tarefa do dia. Ele não aparece para quem fez tarefa ontem, nem em dia de descanso, nem no 1º dia. Quando o presente de volta do #83 está na tela, o cartão também não aparece, para não repetir a mensagem.
+    - *Base:* Fogg, *Tiny Habits* (recomeçar pelo mínimo, sem punição); recuperação de sequência sem culpa do Duolingo; enquadramento (Tversky e Kahneman, 1981): "recomeçar" em vez de "você perdeu".
 
-Nada de dado novo: nenhum campo salvo foi criado, renomeado ou apagado. Teste de dados antigos: nenhum campo some. O Voltar só empilha um estado no histórico do navegador, nada no progresso.
+Nada de dado novo: nenhum campo salvo foi criado, renomeado ou apagado. O teste de dados antigos confirma que nenhum campo some.
 
 ## 2. Pronto, esperando você
 
-1. **Carência da dívida nos 3 primeiros dias (regra de XP).** Hoje quem entra às 21h e faz 1 das 2 principais acorda no dia 2 com "Dívida: −10 XP", logo acima do cartão "🎁 Presente do dia 2 · sem culpa" do #83. Mensagem dupla e punição no pior momento. O patch está pronto e testado (dia 2 sem dívida, dia 5 com): `revisao-noturna/carencia-divida-3-dias.patch` nos arquivos do projeto (3 linhas em `tools/base.html`). Ninguém perde XP; só deixa de cobrar nos 3 primeiros dias.
-   *Base:* aversão à perda (Kahneman e Tversky, 1979: perda pesa cerca de 2x o ganho); Fogg, *Tiny Habits* (2019): comece pequeno e celebre, sem punição no começo. Para ligar, diga "pode publicar a carência".
-2. **Coleta de dados (decisão sua, nada publicado):** #81 retenção D1/D3/D7, #64 resumo do beta, #69 métrica dos desafios. Ficam prontos; nenhum foi para o trem.
+1. **#99 · Carência da dívida nos 3 primeiros dias (regra de XP).** Está separada do #89 para não travar o resto.
+   - **O que muda:** de `startDate` até o 3º dia, nenhuma quest principal gera "Dívida". Do 4º dia em diante, a regra é a mesma de hoje.
+   - **Por quê:** hoje, quem entra às 21h e faz 1 das 2 principais acorda no dia 2 com "Dívida: −10 XP", logo acima do "🎁 Presente do dia 2 · sem culpa" do #83. As duas mensagens se contradizem, e a punição vem no pior momento.
+   - **Prós:** acaba a mensagem dupla do dia 2, e o 1º dia incompleto não vira perda. A reversão é trivial: `DEBT_GRACE=0`. Nenhum dado é gravado, porque a dívida é calculada na hora.
+   - **Contras:**
+     - Nos 3 primeiros dias, a dívida deixa de empurrar a pessoa a fazer todas as principais.
+     - Quem está hoje no dia 2 ou 3 vê a dívida sumir e o XP subir um pouco.
+     - Quem já passou do dia 3 não nota diferença.
+   - **Testes:** `qa/carencia.test.js` 9/9. No código antigo, 3 falham.
+   - *Base:* aversão à perda (Kahneman e Tversky, 1979); Fogg, *Tiny Habits* (2019).
+   - **Para ligar:** diga "pode publicar a carência".
+2. **Coleta de dados (decisão sua, nada publicado):**
+   - #81 retenção D1/D3/D7: verde junto com a main atual (28/28).
+   - #69 métrica dos desafios: verde junto com a main atual (7/7).
+   - #64 resumo do beta: 34/34 no próprio ramo, mas **conflita com a main atual** (`tools/genroot.py`, `README.md`, `qa/RELATORIO.md`). A thread dona precisa atualizar o PR antes de publicar.
+   - #65 (funil só com opt-in): já estava publicado desde ontem. Ele reduz a coleta, e `qa/funil.test.js` segue verde.
 
-## 3. Os 3 maiores ganhos
+## 3. Os 3 maiores ganhos (com prints)
 
-1. **O botão principal não fica mais escondido** (antes à esquerda, depois à direita): `qa/noite/1-figurinha-cobria-concluir.png`
-2. **De madrugada, o 1º toque leva a uma vitória** (antes: nada acontecia; depois: abre o desafio relâmpago): `qa/noite/2-madrugada-toque-morto.png`
-3. **O Sistema parou de se contradizer no dia 2 e no dia 3**: `qa/noite/3a-checkin-vs-sequencia.png` e `qa/noite/3b-escudo-texto.png`
+1. **Quem volta depois de faltar um dia recomeça com 1 toque, sem culpa.** Antes, a 1ª tela não tinha nenhuma tarefa. Print à esquerda (antes) e à direita (depois): `qa/noite/6-volta-1-toque.png`
+2. **O botão principal não fica mais escondido** pela figurinha: `qa/noite/1-figurinha-cobria-concluir.png`
+3. **De madrugada, o 1º toque leva a uma vitória** (antes não acontecia nada): `qa/noite/2-madrugada-toque-morto.png`
 
-Menções honrosas: o Voltar do Android que fechava o app (sem print, é comportamento), a barra de abas em 360px (`qa/noite/4-abas-360px.png`) e o "Desfazer" (`qa/noite/5-desfazer.png`).
+Menções honrosas:
+- O Sistema parou de se contradizer no dia 2 e no dia 3: `3a-checkin-vs-sequencia.png` e `3b-escudo-texto.png`.
+- A barra de abas em 360px: `4-abas-360px.png`.
+- O "Desfazer": `5-desfazer.png`.
+- O Voltar do Android, sem print porque é comportamento.
 
 ## 4. Atritos registrados para os donos (não mexi)
 
-| Atrito | Onde | Dono | Sugestão (com base) |
-|---|---|---|---|
-| Depois da 1ª missão chegam 3 avisos seguidos (habilidade, check-in, marco) + 1 toast: 4 toques para voltar ao jogo | Hoje | atributos (#75) e sequência | juntar num único "resumo da vitória" (teoria da carga cognitiva, Sweller 1988; Nielsen #8, design minimalista) |
-| "Liberar seu painel para o criador?" aparece no meio de uma ação (ao tocar ▶ de outra missão) | /comecar/ | painel do criador (você decide) | pedir num momento calmo, depois de fechar o dia (Apple HIG: pedir permissão no contexto, quando faz sentido) |
-| No dia 1, nenhuma tarefa aparece na 1ª tela: guia, desafios e chefão vêm antes | Hoje | #67 (modo simples resolve) | uma ação clara por vez (Fogg) |
-| A 1ª missão de quem faz faculdade pede para criar flashcards antes de começar, e às 21h mostra o gatilho "depois do café da manhã" | Missão ativa | #67 (pergunta "usa flashcards?") | começar pelo mínimo ("5 cards") já pronto |
-| "Sugestão: 5 cards" é jargão para quem não usa Anki | Sistema | #67 / textos | dizer a ação ("revisar 5 perguntas") |
-| Depois de "Fechar o dia" às 21h, o cartão do Modo Sistema ainda sugere "Próxima: Na aula: anotar 1 dúvida…" (tarefa de dia, à noite) | Hoje | Modo Sistema (#78/#91) | depois de fechar o dia, sugerir descanso ou nada (Fogg: o gatilho certo na hora certa) |
-| Holográfico e segurança | — | fora do meu escopo | sem achados nesta rodada |
+| Atrito | Dono | Sugestão (base) |
+|---|---|---|
+| Quem volta no dia 3 ainda passa por 3 janelas antes de ver o app (check-in, habilidade desbloqueada e escudo). Hoje elas abrem uma por vez (Trem 7), mas continuam sendo 3 toques | atributos (#75) e sequência | juntar as 3 num único "resumo da volta" (Sweller 1988, carga cognitiva; Nielsen #8) |
+| O "🎁 Presente do dia 2/3" do #83 fica abaixo das tarefas, a ~1450px, e quase ninguém vê | #83 (já avisei a thread, com a sugestão de levar o cartão para o topo) | o presente no topo da aba Hoje (Fogg: gatilho visível) |
+| A janela da galeria de classes abre logo depois de "Criar meu jogo": 1 toque antes da 1ª missão | classes/avatar (#75) | oferecer a escolha depois da 1ª missão (Fogg) |
+| O olho do `/x/` leva ~5 s de animação até mostrar "Aceite a missão" | convite / holográfico | com 1 toque, pular direto para o fim |
+| Depois de "Fechar o dia" às 21h, o Modo Sistema ainda sugere uma tarefa de dia | Modo Sistema | sugerir descanso |
+| Na faculdade, a 1ª missão pede para criar flashcards, e "5 cards" é jargão | #67 | começar pelo mínimo, já pronto |
+| "Bem-vindo de volta" (#83) no masculino para todo mundo | #83 / textos | "Que bom te ver de volta" (neutro) |
 
 ## 5. O que só você pode fazer
 
-1. Dizer "pode publicar a carência" (ou não) para a regra da dívida.
-2. Decidir as coletas de dados (#81, #64, #69) e o momento do pedido "Liberar seu painel".
-3. Testar no seu iPhone real: abrir o `/x/`, instalar e fazer a 1ª missão (o que a nuvem não consegue simular: instalação e vibração).
+1. Dizer "pode publicar a carência" (#99), ou não.
+2. Decidir as coletas (#81, #64 e #69) e o momento do pedido "Liberar seu painel".
+3. Testar no seu iPhone real: abrir o `/x/`, instalar o app e fazer a 1ª missão. A nuvem não consegue simular a instalação nem a vibração.
 
 ## 6. Placar
 
-- `qa/noite.test.js`: 36/36 (celular 390x844, desktop 1280x800 com reduce-motion, madrugada, noite, dia 2, dia 3, abas de 320 a 390px, Voltar, Desfazer, dados antigos, raiz, console limpo).
-- Suíte inteira (main com Trem 3 + #89): 29 de 30 arquivos verdes; o `qa/mural-servidor.test.js` falha igual na main (erro do Node, sem relação).
-- Trem 3 (#91: atributos, Modo Sistema, Foco) entrou na main durante a noite. O #89 já está atualizado com ele, e a suíte continua verde.
-- `qa/sequencia.test.js` falhava 2 de 3 vezes na própria main depois do Trem 3: a galeria de classes atrasa os avisos e o teste parava de ler antes do escudo. Corrigido no #89 (30/30 em 3 rodadas).
-- Achado extra: `qa/alvo.test.js` falhava na main entre 0h e 5h (usava o relógio real; de madrugada a única tarefa liberada é uma extra de 2 linhas). Agora usa relógio fixo ao meio-dia: 24/24.
-- Telas de 320px: sem rolagem horizontal no convite, no onboarding, em Hoje e na missão. Contraste: nenhum texto abaixo de 4,5:1 nas 5 abas, fora os dias passados da masmorra (apagados de propósito).
-- Cache do service worker: não subiu no PR (sobe no trem, como #82 e #83).
+- `qa/noite.test.js` 45/45. Cobre celular e desktop (com reduce-motion), madrugada, noite, dia 1, dia 2, dia 3, a volta depois de faltar, as abas de 320 a 390px, o Voltar, o Desfazer, os dados antigos e a raiz, com console limpo.
+- `qa/carencia.test.js` 9/9, no #99.
+- Suíte inteira do #89 com a main (Trens 4 a 8): 33 de 33 arquivos verdes (987 verificações).
+- Corrigi 2 testes instáveis da main: `alvo` falhava entre 0h e 5h, e `sequencia` falhava 2 de 3 vezes.
+- O cache do service worker não sobe no PR; ele sobe no trem.
