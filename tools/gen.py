@@ -161,6 +161,9 @@ rep('</style></head>',R('foco2.css')+'</style></head>')
 rep('\nlet saveTimer=null, SYNC="";','\n'+R('foco2.js')+R('foco-duo.js')+'\nlet saveTimer=null, SYNC="";')
 # janelas do Sistema acessíveis: nome, aria-modal, foco no botão principal e volta do foco (tools/dialogo.js)
 rep('\nlet saveTimer=null, SYNC="";','\n'+R('dialogo.js')+'\nlet saveTimer=null, SYNC="";')
+# fim da cadeia: versão do app + tela Novidades 1x por versão + rodapé com Privacidade/Termos em Mais (tools/versao.*)
+rep('</style></head>',R('versao.css')+'</style></head>')
+rep('\nlet saveTimer=null, SYNC="";','\n'+R('versao.js')+'\nlet saveTimer=null, SYNC="";')
 if not ROOT: open('comecar/index.html','w').write(s)
 pass
 
