@@ -1,0 +1,37 @@
+# Aviso diário com o app fechado (Web Push), sem servidor novo: o GitHub Actions é o "relógio".
+# Segredos (Settings > Secrets and variables > Actions): VAPID_PRIVATE, VAPID_SUBJECT (mailto:…), LEMB_KEY (o mesmo das Script Properties do Apps Script).
+# Sem segredos, o robô só diz "nada a fazer" e termina verde.
+# Atenção: em repositório público, o GitHub pausa workflow agendado depois de 60 dias sem commit. Qualquer trem novo reativa.
+name: Aviso diário (push)
+on:
+  schedule:
+    - cron: "7,22,37,52 * * * *"
+  workflow_dispatch:
+permissions:
+  contents: read
+concurrency:
+  group: lembrete-push
+  cancel-in-progress: false
+jobs:
+  enviar:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          sparse-checkout: tools/push-send.mjs
+          sparse-checkout-cone-mode: false
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+      - name: Instalar web-push
+        run: npm install --no-save --no-audit --no-fund web-push@3.6.7
+      - name: Mandar os avisos da vez
+        env:
+          VAPID_PRIVATE: ${{ secrets.VAPID_PRIVATE }}
+          VAPID_SUBJECT: ${{ secrets.VAPID_SUBJECT }}
+          LEMB_KEY: ${{ secrets.LEMB_KEY }}
+        run: |
+          if [ -n "$LEMB_KEY" ]; then echo "::add-mask::$LEMB_KEY"; fi
+          if [ -n "$VAPID_PRIVATE" ]; then echo "::add-mask::$VAPID_PRIVATE"; fi
+          node tools/push-send.mjs
