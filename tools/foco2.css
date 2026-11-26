@@ -20,3 +20,6 @@
 .fzc.l1{background:rgba(124,244,255,.22)}.fzc.l2{background:rgba(124,244,255,.42)}.fzc.l3{background:rgba(124,244,255,.65)}.fzc.l4{background:var(--accent);box-shadow:0 0 8px rgba(124,244,255,.5)}
 .fzc.lx{opacity:.25}.fzc.tdy{outline:2px solid var(--gold);outline-offset:1px}
 .fzleg{display:flex;align-items:center;gap:4px}.fzleg .fzc{width:12px;height:12px}
+.fdgo{min-height:44px}
+.fdbadge{font-size:.9rem;color:var(--gold)}
+.fzrate button{white-space:nowrap;padding:0 8px}
