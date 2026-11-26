@@ -92,7 +92,11 @@ function hrDayCount(){const el=$("dayxp");if(!el)return;const tk=todayKey();cons
 // para depois da lista, nessa ordem; qualquer bloco novo que apareça no meio também desce.
 const HR_AFTER=["zapPanel","gdPanel","gtHero","tbStrip"];
 function hrOrder(){const q=$("quests")&&$("quests").closest("section");const st=document.querySelector('.wrap>section[data-tab="hoje"] .status');const hero=st&&st.closest("section");
-  if(!q||!hero||hero.parentNode!==q.parentNode)return;const stay=new Set(["smBar","fjCard"]);const mid=[];
+  if(!q||!hero||hero.parentNode!==q.parentNode)return;
+  // 1º uso (guia "Comece por aqui" visto nesta abertura): a Forja também desce, para a 1ª missão caber na primeira tela.
+  // A marca fica até fechar o app (nada pula durante o uso); tools/forja.js lê a mesma marca e não se reposiciona.
+  const g=$("gdPanel");if(g&&!g.hidden)document.body.dataset.hrstart="1";
+  const stay=new Set(document.body.dataset.hrstart?["smBar"]:["smBar","fjCard"]);const mid=[];
   for(let e=hero.nextElementSibling;e&&e!==q;e=e.nextElementSibling)if(!stay.has(e.id)&&!e.classList.contains("tip")&&e.dataset.tab==="hoje"||e.id==="tbStrip")mid.push(e);
   const ord=HR_AFTER.map(id=>$(id)).filter(Boolean).concat(mid.filter(e=>!HR_AFTER.includes(e.id)));let at=q;
   for(const e of ord){if(e.parentNode!==q.parentNode)continue;if(at.nextElementSibling!==e)at.after(e);at=e;}}

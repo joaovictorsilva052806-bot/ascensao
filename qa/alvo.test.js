@@ -31,6 +31,8 @@ for(const [nome,vp] of [['celular',{width:390,height:844}],['desktop',{width:128
     ok(nome+': toque logo abaixo do título abre os detalhes',await card.evaluate(e=>e.classList.contains('open')));
     ok(nome+': aria-expanded acompanha',(await q.getAttribute('aria-expanded'))==='true');
     // os botões da tarefa continuam recebendo o próprio toque
+    // (com a lista no topo da tela, os botões do cartão aberto podem ficar atrás da barra de abas: traz para o meio antes de medir)
+    await card.evaluate(e=>{const b=e.querySelector('.btns');if(b)b.scrollIntoView({block:'center'});});await p.waitForTimeout(150);
     const bt=await card.evaluate(e=>[...e.querySelectorAll('.btns button')].filter(b=>b.offsetParent).every(b=>{const r=b.getBoundingClientRect();const pts=[[r.left+r.width/2,r.top+2],[r.left+r.width/2,r.top+r.height/2]];return pts.every(([x,y])=>b.contains(document.elementFromPoint(x,y)));}));
     ok(nome+': botões da tarefa não perdem o toque',bt);}
   ok(nome+': sem erro de console',!errs.length,errs.join(' | '));await c.close();}
