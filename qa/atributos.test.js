@@ -14,9 +14,11 @@ async function open(prog,time,dev){const ctx=await b.newContext(dev||{viewport:{
   p.on('pageerror',e=>errs.push(e.message));p.on('console',m=>{if(m.type()==='error'&&!/Failed to load resource|ERR_|navigator.vibrate/.test(m.text()))errs.push(m.text())});
   await ctx.route('https://docs.google.com/**',r=>r.request().method()==='POST'?r.fulfill({status:200,body:''}):r.fulfill({status:200,contentType:'text/csv',body:'nome,xp,nivel\n'}));
   await ctx.route('https://script.google.com/**',r=>r.fulfill({status:200,contentType:'application/json',body:'{"ok":true,"posts":[]}'}));
-  await p.clock.install({time:new Date(time)});await p.goto(U);
+  await p.clock.install({time:new Date(time)});
+  // semeia numa página vazia da mesma origem: se o app abrisse antes, o save do unload podia sobrescrever o seed (falha intermitente)
+  await p.goto(U+'__seed__');
   await p.evaluate(([c,o])=>{localStorage.setItem('asc-u-cfg',JSON.stringify(c));localStorage.setItem('asc-u-prog',JSON.stringify(o));localStorage.setItem('asc-u-season','2');localStorage.setItem('asc-u-perm','1');localStorage.setItem('asc-u-intro','1');localStorage.setItem('asc-u-tele','{"asked":1}');},[CFG,prog]);
-  await p.reload();await p.waitForTimeout(1800);await drain(p);return {ctx,p,errs};}
+  await p.goto(U);await p.waitForTimeout(1800);await drain(p);return {ctx,p,errs};}
 const st=p=>p.evaluate(()=>JSON.parse(localStorage.getItem('asc-u-prog')));
 // 1: painel com 8 atributos e radar; classe Guerreiro (Força ★, Disciplina ☆, passiva Combo)
 let {ctx,p,errs}=await open(base(),'2026-11-25T10:00:00');
