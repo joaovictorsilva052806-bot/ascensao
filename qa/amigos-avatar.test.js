@@ -59,7 +59,7 @@ for(const [route,pre] of [['comecar/','asc-u'],['','ascensao']]){const tag=route
   ok(tag+' amigos: toque no título abre',await p.locator('#frPanel>.fhd').getAttribute('aria-expanded')==='true'&&await fp.locator('button.go',{hasText:'Adicionar amigo'}).isVisible());
   ok(tag+' amigos: painel abre',await fp.isVisible());
   ok(tag+' amigos: lista com você e Ana (dados)',(await fp.locator('.frlist li').count())===2&&(await fp.textContent()).includes('Ana'),await fp.textContent());
-  await p.locator('#tmPanel .tmseg button',{hasText:'Amigos'}).click();await p.waitForTimeout(300);
+  await p.locator('#tmPanel .tmseg button[data-v="turma"]').click();await p.waitForTimeout(300);
   ok(tag+' amigos: Ana na turma',(await p.locator('#tmPanel .tmlist').textContent()).includes('Ana'),await p.locator('#tmPanel').textContent());
   ok(tag+' amigos: pendente aparece',(await fp.textContent()).includes('Aguardando aceitar: Bia'));
   ok(tag+' amigos: todos os botões com nome',(await noName(p,'#frPanel')).length===0,(await noName(p,'#frPanel')).join(' | '));
@@ -88,7 +88,7 @@ for(const [route,pre] of [['comecar/','asc-u'],['','ascensao']]){const tag=route
     localStorage.clear();localStorage.setItem(pre+'-cfg',JSON.stringify(c));localStorage.setItem(pre+'-prog',JSON.stringify(o));localStorage.setItem(pre+'-season','2');localStorage.setItem('asc-u-perm','1');localStorage.setItem('asc-u-intro','1');localStorage.setItem(pre+'-tele',JSON.stringify({asked:1}));},[CFG,pre]);
   await p.reload();await p.waitForTimeout(1200);await calm(p);await tab(p,'amigos');await p.waitForTimeout(300);
   const tmA=p.locator('#tmPanel .tmempty button.go');
-  if(!(await tmA.count())){await p.locator('#tmPanel .tmseg button',{hasText:'Amigos'}).click();await p.waitForTimeout(300);}
+  if(!(await tmA.count())){await p.locator('#tmPanel .tmseg button[data-v="turma"]').click();await p.waitForTimeout(300);}
   await p.locator('#tmPanel .tmempty button.go').click();await p.waitForTimeout(500);
   ok(tag+' turma vazia: botão abre o painel de amigos',await p.locator('#frPanel>.fhd').getAttribute('aria-expanded')==='true'&&await p.locator('#frPanel input').isVisible());
   ok(tag+' turma vazia: foco no campo do apelido',await p.evaluate(()=>document.activeElement&&document.activeElement.closest('#frPanel')&&document.activeElement.tagName==='INPUT'));

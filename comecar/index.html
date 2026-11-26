@@ -448,7 +448,7 @@ body[data-tab=foco] #focusNote{font-size:.8rem;color:var(--muted)}
 @media (prefers-reduced-motion:reduce){.panel.fold>.fhd::after{transition:none}}
 /* ---- Missão ativa (tools/mission.*) ---- */
 .quest .btns .msgo{min-width:44px;min-height:40px;padding:0 12px;font-size:1rem;background:transparent;border:1px solid var(--glow);color:var(--glow);border-radius:8px;box-shadow:0 0 10px rgba(111,177,255,.25)}
-.quest.next .btns .msgo{background:var(--accent);color:#fff;border-color:var(--accent);animation:msp 2.4s ease-in-out infinite}
+.quest.next .btns .msgo{background:var(--accent);color:#02121a;border-color:var(--accent);animation:msp 2.4s ease-in-out infinite}
 @keyframes msp{50%{box-shadow:0 0 18px rgba(111,177,255,.7)}}
 @media (prefers-reduced-motion:reduce){.quest.next .btns .msgo{animation:none}}
 .mshint{grid-column:1/-1;font-size:.78rem;color:var(--glow);font-family:var(--f-mono)}
@@ -763,6 +763,69 @@ body[data-tab=amigos] #frPanel .frlist{display:none}
 .cdlink{display:flex;flex-direction:column;gap:6px;padding:12px;margin-bottom:10px;border:1px dashed var(--accent);border-radius:12px;background:rgba(0,212,255,.05)}
 .cdurl{font-family:var(--f-mono);font-size:.74rem;color:var(--glow);overflow-wrap:anywhere;user-select:all;-webkit-user-select:all;padding:8px;border-radius:8px;background:rgba(0,0,0,.25)}
 .cdlbtn{display:grid;grid-template-columns:1fr 1fr;gap:6px}.cdlbtn button{min-height:42px}
+/* ---- Várias turmas + ranking em destaque (tools/grupos.js) ---- */
+.gtbar{display:flex;gap:6px;overflow-x:auto;padding:2px 2px 8px;margin:0 -2px 6px;scrollbar-width:none;-webkit-overflow-scrolling:touch}
+.gtbar::-webkit-scrollbar{display:none}
+.gtchip{flex:0 0 auto;display:inline-flex;align-items:center;gap:6px;min-height:44px;padding:0 14px;border-radius:999px;border:1px solid var(--line);background:rgba(0,212,255,.03);color:var(--muted);font-size:.86rem;white-space:nowrap}
+.gtchip .gte{font-size:1rem}
+.gtchip .gtc{font-family:var(--f-mono);font-size:.7rem;padding:1px 6px;border-radius:999px;background:rgba(255,255,255,.06);color:var(--muted)}
+.gtchip.on{border-color:var(--accent);color:var(--fg);background:linear-gradient(135deg,rgba(0,212,255,.16),rgba(0,212,255,.04));box-shadow:0 0 0 1px rgba(0,212,255,.25) inset,0 0 14px rgba(0,212,255,.18)}
+.gtchip.on .gtc{background:rgba(0,212,255,.2);color:var(--glow)}
+.gtchip.on::after{content:"✎";font-size:.8rem;color:var(--glow);opacity:.8}
+.gtchip.gtnew{border-style:dashed;color:var(--glow)}
+.gtcount{font-family:var(--f-mono);font-size:.74rem;letter-spacing:.08em;color:var(--glow);margin:2px 0 8px}
+/* pódio */
+.gtpod{display:grid;grid-template-columns:1fr 1.15fr 1fr;align-items:end;gap:8px;margin:4px 0 12px}
+.gtpod:has(> .gtp:nth-child(2):last-child){grid-template-columns:1fr 1.15fr}
+.gtp{position:relative;display:flex;flex-direction:column;align-items:center;gap:3px;min-width:0;text-align:center}
+.gtp b{max-width:100%;font-size:.82rem;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.gtp.me b{color:var(--glow)}
+.gtpm{font-size:1.2rem;line-height:1}
+.gtpav svg{display:block}
+.gtpx{font-family:var(--f-mono);font-size:.76rem;color:var(--gold)}
+.gtpb{display:block;width:100%;border-radius:8px 8px 3px 3px;border:1px solid var(--line);border-bottom:0;background:linear-gradient(180deg,rgba(0,212,255,.14),rgba(0,212,255,.02));margin-top:4px}
+.gtp1 .gtpb{height:54px;border-color:rgba(242,193,78,.55);background:linear-gradient(180deg,rgba(242,193,78,.26),rgba(242,193,78,.03));box-shadow:0 -6px 18px rgba(242,193,78,.14)}
+.gtp2 .gtpb{height:38px}
+.gtp3 .gtpb{height:26px}
+.gtp1 .gtpav{filter:drop-shadow(0 0 10px rgba(242,193,78,.35))}
+/* destaque em Hoje */
+.gthero{position:relative;overflow:hidden;border-color:rgba(242,193,78,.4)!important;background:linear-gradient(160deg,rgba(242,193,78,.1),rgba(0,212,255,.05) 55%,transparent)!important}
+.gthero::before{content:"";position:absolute;inset:0;pointer-events:none;background:repeating-linear-gradient(180deg,rgba(255,255,255,.025) 0 1px,transparent 1px 4px);opacity:.6}
+.gthero>*{position:relative}
+.gthd{display:flex;justify-content:space-between;align-items:center;gap:8px;margin-bottom:8px}
+.gthd h2{margin:0;color:var(--gold);white-space:nowrap}
+.gtclock{font-family:var(--f-mono);font-size:.72rem;color:var(--gold);white-space:nowrap}
+.gtme{display:flex;align-items:baseline;gap:8px;margin-bottom:8px}
+.gtpos{font-family:var(--f-hud);font-size:1.7rem;line-height:1;color:var(--gold);text-shadow:0 0 14px rgba(242,193,78,.35)}
+.gtme span{font-size:.84rem;color:var(--muted)}
+.gttop{list-style:none;margin:0 0 6px;padding:0;display:flex;flex-direction:column;gap:4px}
+.gttop li{display:grid;grid-template-columns:28px 30px minmax(0,1fr) auto;align-items:center;gap:8px;padding:5px 8px;border-radius:8px;background:rgba(255,255,255,.03)}
+.gttop li.me{background:rgba(0,212,255,.09);box-shadow:inset 0 0 0 1px rgba(0,212,255,.35)}
+.gttop li.gtgap{margin-top:4px}
+.gttop .gtm{text-align:center;font-family:var(--f-mono);font-size:.8rem;color:var(--muted)}
+.gttop .gtav svg{display:block;width:30px;height:30px}
+.gtnm{font-size:.88rem;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.gtx{font-family:var(--f-mono);font-size:.78rem;color:var(--gold);white-space:nowrap}
+.gtlead{margin:4px 0 8px;font-size:.9rem;color:var(--fg)}
+.gtpeek{display:flex;margin:2px 0 8px;padding-left:8px}
+.gtpk{margin-left:-8px;border-radius:50%;box-shadow:0 0 0 2px #0a1222}
+.gtpk svg{display:block}
+.gthero .row{flex-wrap:wrap}
+/* folha de criar/editar */
+.gtcard{max-height:86vh;overflow:auto}
+.gtlbl{display:flex;flex-direction:column;gap:6px;margin:10px 0 6px;font-size:.8rem;color:var(--muted)}
+.gtname{font:inherit;width:100%;min-height:44px;background:rgba(0,212,255,.04);border:1px solid var(--line);color:var(--fg);border-radius:6px;padding:8px 10px}
+.gtems{display:flex;flex-wrap:wrap;gap:6px}
+.gtems button{width:44px;height:44px;border-radius:10px;border:1px solid var(--line);background:transparent;font-size:1.2rem}
+.gtems button.on{border-color:var(--accent);background:rgba(0,212,255,.12);box-shadow:0 0 10px rgba(0,212,255,.25)}
+.gtmem{display:flex;flex-direction:column;gap:4px;max-height:34vh;overflow:auto}
+.gtchk{display:flex;align-items:center;gap:10px;min-height:44px;padding:4px 8px;border-radius:8px;background:rgba(255,255,255,.03);color:var(--fg);font-size:.9rem}
+.gtchk input{width:20px;height:20px;accent-color:var(--accent)}
+.gtav svg{display:block}
+.gtmsg{min-height:1.2em;color:var(--gold);margin-top:6px}
+.gtdel{display:block;margin:10px auto 0;color:var(--bad,#ff6b6b)}
+#gtAge label.chk{display:flex;align-items:center;gap:8px;margin:10px 0;font-size:.86rem}
+@media (prefers-reduced-motion:reduce){.gtchip,.gtp{transition:none}}
 /* ---- Chefão da turma (tools/boss.js) ---- */
 .tb{position:relative;overflow:hidden;background:radial-gradient(120% 80% at 50% 0%,rgba(123,44,255,.16),transparent 60%),var(--panel,#0b1220)}
 .tbhd{display:flex;justify-content:space-between;align-items:center;gap:8px;margin-bottom:6px}
@@ -1217,6 +1280,43 @@ body.infz .sysmodal:not([hidden]),body.infz .levelup:not([hidden]){z-index:90}
 .vsfoot{display:flex;flex-wrap:wrap;gap:4px 6px;align-items:center;justify-content:center;padding:14px 8px 4px;text-align:center}
 .vsfoot>span{padding:0 8px}
 .vsfoot a,.vsfoot .link{display:inline-flex;align-items:center;justify-content:center;min-height:44px;min-width:44px;padding:0 10px;color:var(--muted)}
+/* ---- Cartão do jogador: ficha expansível na aba Hoje (tools/heroi.js) ---- */
+.hrbg{position:absolute;inset:0;pointer-events:none;z-index:0;opacity:.95;background-size:cover}
+section[data-hbg]>:not(.hrbg){position:relative;z-index:1}
+.hrmotto{font-size:.82rem;font-style:italic;color:var(--muted);margin-top:2px;overflow-wrap:anywhere}
+.hrtog{display:flex;align-items:center;gap:8px;width:100%;min-height:44px;margin:-2px 0 -4px;padding:8px 10px;border:1px dashed var(--line);border-radius:8px;background:rgba(0,212,255,.04);color:var(--glow);font:inherit;font-size:.8rem;cursor:pointer;text-align:left}
+.hrtog:active{background:rgba(0,212,255,.1)}
+.hrtog .hrtl{font-family:var(--f-display);letter-spacing:.06em;text-transform:uppercase;font-weight:600;white-space:nowrap}
+.hrtog .hrnx{flex:1;min-width:0;color:var(--muted);font-family:var(--f-mono);font-size:.72rem;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.hrtog .hrch{margin-left:auto;font-size:1rem}
+.hrbox{display:flex;flex-direction:column;gap:12px;animation:hrIn .28s ease-out backwards}
+@keyframes hrIn{from{opacity:0;clip-path:inset(0 0 100% 0)}to{opacity:1;clip-path:inset(0 0 0 0)}}
+.hrup{display:flex;flex-direction:column;gap:2px;padding:10px 12px;border-left:3px solid var(--gold);background:rgba(242,193,78,.06);border-radius:4px}
+.hrup b{font-size:.9rem;color:var(--gold)}
+.hrat{display:grid;grid-template-columns:112px minmax(0,1fr);gap:10px;align-items:center;width:100%;padding:8px;border:1px solid var(--line);border-radius:8px;background:rgba(10,18,34,.6);color:var(--fg);font:inherit;text-align:left;cursor:pointer}
+.hrrd svg{display:block;max-width:100%;height:auto}
+.hrati{display:flex;flex-direction:column;gap:6px;min-width:0}
+.hrati>b{font-size:.86rem}
+.hrtop{display:flex;flex-wrap:wrap;gap:4px}
+.hrchip{font-size:.72rem;padding:3px 7px;border-radius:999px;border:1px solid var(--ac);color:var(--ac);white-space:nowrap}
+.hrgo{font-size:.75rem;color:var(--glow)}
+.hrrow{display:flex;flex-direction:column;gap:6px}
+.hrlb{font-family:var(--f-display);font-size:.74rem;letter-spacing:.1em;text-transform:uppercase;color:var(--glow)}
+.hrchips{display:flex;flex-wrap:wrap;gap:6px}
+.hrin{width:100%;box-sizing:border-box;min-height:44px;padding:10px 12px;border-radius:8px;border:1px solid var(--line);background:#0a1222;color:var(--fg);font:inherit;font-size:16px}
+.avchip.hrbgc{background:var(--hb),#0a1222;background-size:cover}
+.hracts{display:grid!important;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}
+.hracts button{min-height:44px}
+.heroav .hrsay{position:absolute;left:50%;top:-6px;translate:-50% -100%;padding:3px 8px;border-radius:8px;border:1px solid var(--glow);background:var(--panel2,#0b1626);color:var(--glow);font-family:var(--f-display);font-size:.8rem;white-space:nowrap;pointer-events:none;animation:hrSay 1.4s ease-out forwards;z-index:3}
+@keyframes hrSay{0%{opacity:0}15%{opacity:1}80%{opacity:1}100%{opacity:0}}
+.hav.hrhop{animation:hrHop .7s cubic-bezier(.3,1.6,.5,1)}
+@keyframes hrHop{0%{translate:0 0}30%{translate:0 -10px}60%{translate:0 0}75%{translate:0 -4px}100%{translate:0 0}}
+@media (prefers-reduced-motion:reduce){.hrbox,.hav.hrhop{animation:none}}
+@media (max-width:360px){.hrat{grid-template-columns:1fr;justify-items:center}.hrtog .hrnx{display:none}}
+/* Comece por aqui compacto: só o passo da vez */
+.gd.gdmini .gdl li:not(.now),.gd.gdmini .gdoff{display:none}
+.gd .qhead[role=button]{cursor:pointer}
+.gd.gdmini .qhead .xp::after{content:" ▾"}
 </style></head><body>
 
 <div class="hudtop"><span>ASCENSION<i>//</i>SISTEMA ONLINE</span><span class="mono" id="clock">--:--</span></div>
@@ -2628,7 +2728,7 @@ function betaPost(parts){const v=["B"].concat(parts).map(x=>String(x==null?"":x)
   try{fetch(RK_POST,{method:"POST",mode:"no-cors",keepalive:true,body:new URLSearchParams({"entry.807978446":v})}).catch(()=>{});}catch(e){}}
 function betaTab(t){const b=betaGet();if(!b.on)return;const k=todayKey();b.tabs=b.tabs||{};b.tabs[k]=b.tabs[k]||{};b.tabs[k][t]=(b.tabs[k][t]||0)+1;
   for(const d in b.tabs)if(d<k&&Object.keys(b.tabs).length>3)delete b.tabs[d];betaSet(b);}
-function betaDaily(){const b=betaGet();if(!b.on||betaKid())return;const tk=todayKey();if(b.last===tk)return;
+function betaDaily(){const b=betaGet();if(!b.on||betaKid()||!betaAge()||(betaAge()==="teen"&&!b.parent))return;const tk=todayKey();if(b.last===tk)return;
   const y=new Date();y.setDate(y.getDate()-1);const yk=dkey(y);const L=(prog.log[yk]||[]).filter(e=>!/^(ach|checkin|tip|dun|sq|zap|ch|adm):/.test(String(e.q)));
   const ms=mainsFor(y);const mDone=ms.filter(q=>L.some(e=>e.q===q.id)).length;
   let act=0;const d=new Date();for(let i=1;i<=14;i++){d.setDate(d.getDate()-1);if((prog.log[dkey(d)]||[]).length)act++;}
@@ -2648,6 +2748,7 @@ $("betaTipYes").addEventListener("click",()=>{const b=betaGet();b.asked=true;bet
 $("betaTipNo").addEventListener("click",()=>{const b=betaGet();b.asked=true;betaSet(b);betaUI();});
 let betaRate=0;for(const x of $("betaRate").children)x.addEventListener("click",()=>{betaRate=+x.dataset.v;for(const y of $("betaRate").children)y.classList.toggle("on",y===x);});
 $("betaSend").addEventListener("click",()=>{if(betaKid()){toast("Para até 13 anos, mande pelo WhatsApp com ajuda de um adulto.");return;}if(!betaRate){toast("Escolha uma carinha primeiro.");return;}
+  {const b0=betaGet(),tp=(()=>{try{return JSON.parse(localStorage.getItem("asc-u-tele")||"{}")||{};}catch(e){return {};}})();if(!betaAge()||(betaAge()==="teen"&&!b0.parent&&!tp.parent)){toast("Para mandar a nota, ligue antes o envio anônimo (14 a 17 anos: com a autorização do responsável).");return;}}
   const t=$("betaText").value.trim().replace(/\S+@\S+/g,"[email]").replace(/\+?\d[\d\s().-]{7,}\d/g,"[número]").slice(0,280);
   const b=betaGet();const lr=b.rated||"";if(lr===todayKey()+":"+betaRate+":"+t){toast("Essa nota já foi enviada.");return;}
   betaPost([betaId(),"nota",todayKey().replace(/-/g,""),betaRate,betaAge(),t]);b.rated=todayKey()+":"+betaRate+":"+t;betaSet(b);$("betaText").value="";toast("Valeu! Nota enviada sem seu nome.");});
@@ -3082,9 +3183,12 @@ function sqUI(){let p=$("sqPanel");const rp=$("rankPanel");if(!rp)return;
     if(!r.me){const x=sqEl("button","link","✕");x.type="button";x.title="Remover";x.addEventListener("click",()=>{s.m=s.m.filter(n=>n!==r.n);save();sqUI();});li.append(x);}
     ol.append(li);}
   p.append(ol);
-  const cand=(rankRows||[]).map(r=>r.n).filter(n=>n&&n!==rankName()&&!s.m.includes(n));
-  if(s.m.length<SQ_MAX&&cand.length){p.append(sqEl("div","sm muted","Recrutar do ranking:"));const ch=sqEl("div","sqchips");
-    for(const n of cand.slice(0,24)){const c=sqEl("button","chip","+ "+n);c.type="button";c.addEventListener("click",()=>{if(s.m.length>=SQ_MAX)return;s.m.push(n);save();sqUI();toast(n+" entrou no esquadrão.");sqCheckWin();});ch.append(c);}
+  // convidados ficam de fora (sem XP nem dano) até aceitarem; convite some em 7 dias
+  s.inv=s.inv||{};for(const k in s.inv)if((Date.now()-new Date(s.inv[k]).getTime())/864e5>7)delete s.inv[k];const inv=Object.keys(s.inv).filter(n=>!s.m.includes(n));
+  if(inv.length){const ul=sqEl("ul","sqm sqinv");for(const n of inv){const li=sqEl("li");li.append(sqEl("span","n",n),sqEl("span","x","convidado · aguardando"));const x=sqEl("button","link","✕");x.type="button";x.title="Cancelar convite";x.addEventListener("click",()=>{delete s.inv[n];save();sqUI();});li.append(x);ul.append(li);}p.append(ul);}
+  const cand=(rankRows||[]).map(r=>r.n).filter(n=>n&&n!==rankName()&&!s.m.includes(n)&&!s.inv[n]);
+  if(s.m.length+inv.length<SQ_MAX&&cand.length){p.append(sqEl("div","sm muted","Recrutar do ranking:"));const ch=sqEl("div","sqchips");
+    for(const n of cand.slice(0,24)){const c=sqEl("button","chip","+ "+n);c.type="button";c.addEventListener("click",()=>{if(s.m.length+Object.keys(s.inv||{}).length>=SQ_MAX)return;s.inv=s.inv||{};s.inv[n]=new Date().toISOString();save();try{sqiInvite(n);}catch(e){}sqUI();toast("Convite enviado para "+n+". Entra no esquadrão quando aceitar.");});ch.append(c);}
     p.append(ch);}
   const row=sqEl("div","row");const sh=sqEl("button","ghost","📡 Chamar aliados");sh.type="button";sh.addEventListener("click",sqShare);
   const lv=sqEl("button","link","Desfazer esquadrão");lv.type="button";lv.addEventListener("click",()=>{if(!confirm("Desfazer o esquadrão "+s.n+"?"))return;prog.squad=null;save();sqUI();});
@@ -3106,7 +3210,10 @@ const tlClean=v=>String(v==null?"":v).replace(/[|\n\r]/g," ").slice(0,280);
 function tlPost(parts){const v=parts.map(tlClean).join("|");try{fetch(RK_POST,{method:"POST",mode:"no-cors",keepalive:true,body:new URLSearchParams({"entry.807978446":v})}).catch(()=>{});}catch(e){}}
 // contador anônimo: 1 vez por etapa por dia, id aleatório sem ligação com o nome.
 // Só com opt-in (aceite do painel ou "sim" do beta anônimo): sem consentimento, nada sai do celular.
-function anonOk(){if(tlKid())return false;if(tlGet().on)return true;try{return !!(JSON.parse(localStorage.getItem("asc-u-beta")||"{}")||{}).on;}catch(e){return false;}}
+// Folga na LGPD: idade desconhecida conta como "não pode"; 14-17 só com a autorização do responsável gravada no próprio aceite.
+function tlTeenOk(o){return ageNow()!=="teen"||!!(o&&o.parent);}
+function tlAgeOk(){const a=ageNow();return !!a&&a!=="kid";}
+function anonOk(){if(!tlAgeOk())return false;const t=tlGet();if(t.on&&tlTeenOk(t))return true;try{const b=JSON.parse(localStorage.getItem("asc-u-beta")||"{}")||{};return !!b.on&&tlTeenOk(b);}catch(e){return false;}}
 function anonId(){let id="";try{id=localStorage.getItem("asc-anon")||"";if(!id){id="a"+Math.random().toString(36).slice(2,10);localStorage.setItem("asc-anon",id);}}catch(e){id="a0";}return id;}
 function anon(step){if(!anonOk())return;const t=tlGet();t.an=t.an||{};const k=step+":"+tlDk();if(t.an[k])return;
   for(const x in t.an)if(!x.endsWith(tlDk()))delete t.an[x];t.an[k]=1;tlSet(t);
@@ -3116,11 +3223,11 @@ function tlStats(){const y=new Date();y.setDate(y.getDate()-1);const yk=dkey(y);
   const ms=mainsFor(y);const skip=ms.filter(q=>!L.some(e=>e.q===q.id)).length;
   let act=0;const d=new Date();for(let i=0;i<14;i++){if((prog.log[dkey(d)]||[]).length)act++;d.setDate(d.getDate()-1);}
   return {xp:totalXP(),lv:levelOf(totalXP()),act,done:L.filter(e=>e.kind!=="min").length,min:L.filter(e=>e.kind==="min").length,skip,streak:(typeof streakDays==="function"?streakDays():""),nq:((cfg&&cfg.quests)||[]).length,ms:+prog.msUsed||0,cards:(prog.cards||[]).length};}
-function tlSend(ev,extra){const t=tlGet();if(!t.on||tlKid()||!t.uid)return;const P=(cfg&&cfg.profile)||{};const s=tlStats();
+function tlSend(ev,extra){const t=tlGet();if(!t.on||!t.uid||(ev!=="sair"&&(!tlAgeOk()||!tlTeenOk(t))))return;const P=(cfg&&cfg.profile)||{};const s=tlStats();
   tlPost(["U",t.uid,t.nick||rankName()||"?",tlPlat(),ev,tlDk(),P.age||"",P.occ||"",s.xp,s.lv,s.act,ev==="dia"?s.done:"",ev==="dia"?s.min:"",ev==="dia"?s.skip:"",s.streak,s.nq,s.ms,s.cards,extra||("v"+(standalone()?"app":"web"))]);}
 function tlDaily(){const t=tlGet();if(!t.on||t.last===tlDk())return;tlSend("dia");t.last=tlDk();tlSet(t);}
 // aceite interativo no tema do Sistema
-function tlAsk(){if(document.body.classList.contains("insm")){setTimeout(tlAsk,5000);return;}if(!cfg||cfg.blank||!cfg.quests||!cfg.quests.length||tlKid())return;const t=tlGet();if(t.asked||(t.disp&&t.disp!==tlDk())||$("tlModal")||[...document.querySelectorAll(".sysmodal")].some(x=>x.getClientRects().length)||document.body.classList.contains("onboarding")||document.body.classList.contains("inmission")||!$("onb").hidden)return;
+function tlAsk(){if(document.body.classList.contains("insm")){setTimeout(tlAsk,5000);return;}if(!cfg||cfg.blank||!cfg.quests||!cfg.quests.length||!tlAgeOk())return;const t=tlGet();if(t.asked||(t.disp&&t.disp!==tlDk())||$("tlModal")||[...document.querySelectorAll(".sysmodal")].some(x=>x.getClientRects().length)||document.body.classList.contains("onboarding")||document.body.classList.contains("inmission")||!$("onb").hidden)return;
   const teen=ageNow()==="teen";const m=document.createElement("div");m.className="sysmodal";m.id="tlModal";m.setAttribute("role","dialog");m.setAttribute("aria-modal","true");
   const c=document.createElement("div");c.className="card tlc";const el=(tag,cls,txt)=>{const e=document.createElement(tag);if(cls)e.className=cls;if(txt!=null)e.textContent=txt;return e;};
   c.append(el("div","tag","[ SISTEMA ] PROTOCOLO DE ACESSO"),el("h3",null,"Liberar seu painel para o criador?"),
@@ -3145,7 +3252,7 @@ function tlUI(){let p=$("tlPanel");if(!p){const anchor=$("betaPanel");if(!anchor
   if(t.on){b.className="link";b.textContent="Sair e apagar meus dados";b.addEventListener("click",tlLeave);}else{b.className="go";b.textContent="Liberar meu painel";b.addEventListener("click",()=>{const t2=tlGet();t2.asked=false;tlSet(t2);tlAsk();});}
   r.append(b);bd.append(r);}
 // nota do "Teste do app" também vai identificada para quem aceitou
-{const bs=$("betaSend");if(bs)bs.addEventListener("click",()=>{try{const t=tlGet();if(!t.on||tlKid()||!betaRate)return;const tx=$("betaText").value.trim().replace(/\S+@\S+/g,"[email]").replace(/\+?\d[\d\s().-]{7,}\d/g,"[número]").slice(0,240);tlSend("nota",betaRate+": "+tx);}catch(e){}},true);}
+{const bs=$("betaSend");if(bs)bs.addEventListener("click",()=>{try{const t=tlGet();if(!t.on||!tlAgeOk()||!tlTeenOk(t)||!betaRate)return;const tx=$("betaText").value.trim().replace(/\S+@\S+/g,"[email]").replace(/\+?\d[\d\s().-]{7,}\d/g,"[número]").slice(0,240);tlSend("nota",betaRate+": "+tx);}catch(e){}},true);}
 // funil anônimo do dia (mesmo opt-in e mesmo formato A|id|etapa|data): fez 1 missão de verdade hoje; fechou o dia (baú liberado)
 function tlFunnel(){try{if(!anonOk()||!cfg||cfg.blank||!cfg.quests||!cfg.quests.length)return;const L=prog.log[todayKey()]||[];const ids=new Set(cfg.quests.map(q=>q.id));
   if(L.some(e=>ids.has(e.q)))anon("7-quest");if(typeof bxReady==="function"&&bxReady())anon("8-fechou-dia");}catch(e){}}
@@ -3310,16 +3417,16 @@ async function sqiLoad(){if(ageNow()==="kid"||!(prog.rank&&prog.rank.on))return;
     sqInvRows=all.filter(r=>/^[IJFGK]$/.test(String(r[4]||"").trim())).map(r=>({k:r[4].trim(),a:String(r[5]||"").trim(),b:String(r[6]||"").trim(),s:String(r[7]||"").trim(),d:String(r[8]||"").trim()}));}catch(e){return;}
   sqiCheck();try{if(typeof frCheck==="function")frCheck();}catch(e){}}
 // convite que o Esquadrão manda ao tocar no nome
-function sqiInvite(to){const s=sqSt();const me=rankName();if(!s||!me||!to)return;const st=sqiSt();st.sent=st.sent||{};st.sent[sqiN(to)]=1;save();sqiPost(["I",me,to,s.n,sqiDk()]);}
+function sqiInvite(to){const s=sqSt();const me=rankName();if(!s||!me||!to)return;const st=sqiSt();st.sent=st.sent||{};st.sent[sqiN(to)]=new Date().toISOString();save();sqiPost(["I",me,to,s.n,sqiDk()]);}
 // quem aceitou o meu convite entra sozinho no meu esquadrão
 function sqiMerge(){const s=sqSt();const me=sqiN(rankName());if(!s||!me)return false;let ch=false;
   for(const r of sqInvRows){if(r.k!=="J"||sqiN(r.b)!==me||sqiN(r.s)!==sqiN(s.n)||!r.a)continue;
     if(sqiN(r.a)===me||s.m.some(n=>sqiN(n)===sqiN(r.a))||s.m.length>=SQ_MAX)continue;
     if(!sqiOk(r.a))continue;
-    const key="j:"+sqiN(r.a)+":"+sqiN(r.s);const st=sqiSt();s.m.push(r.a);ch=true;if(!st.seen[key]){st.seen[key]=1;toast(r.a+" aceitou e entrou no esquadrão "+s.n+".");}}
+    const key="j:"+sqiN(r.a)+":"+sqiN(r.s);const st=sqiSt();s.m.push(r.a);if(s.inv)for(const k in s.inv)if(sqiN(k)===sqiN(r.a))delete s.inv[k];ch=true;if(!st.seen[key]){st.seen[key]=1;toast(r.a+" aceitou e entrou no esquadrão "+s.n+".");}}
   if(ch){save();try{sqUI();sqCheckWin();}catch(e){}}return ch;}
 // só entra sozinho quem é meu amigo ou aceitou um convite que eu mandei (ninguém se força no esquadrão alheio)
-function sqiOk(n){try{if(frHas(n))return true;}catch(e){}return !!sqiSt().sent&&!!sqiSt().sent[sqiN(n)];}
+function sqiOk(n){try{if(frHas(n))return true;}catch(e){}const v=sqiSt().sent&&sqiSt().sent[sqiN(n)];if(!v)return false;if(v===1)return true;return (Date.now()-new Date(v).getTime())/864e5<=7;}
 // aliados do mesmo esquadrão (quem já aceitou o mesmo líder)
 function sqiAllies(from,squad,me){const out=[from];for(const r of sqInvRows)if(r.k==="J"&&sqiN(r.b)===sqiN(from)&&sqiN(r.s)===sqiN(squad)&&sqiN(r.a)!==sqiN(me)&&!out.some(n=>sqiN(n)===sqiN(r.a)))out.push(r.a);return out.slice(0,SQ_MAX);}
 function sqiCheck(){sqiMerge();const me=rankName();if(!me||$("sqiModal")||[...document.querySelectorAll(".sysmodal")].some(x=>x.getClientRects().length)||document.body.classList.contains("inmission"))return;
@@ -3341,8 +3448,7 @@ function sqiAsk(r){const st=sqiSt();const key="i:"+sqiN(r.a)+":"+sqiN(r.s);const
     sqiPost(["J",me,r.a,r.s,sqiDk()]);try{haptic([15,40,15]);}catch(e){}toast("Você entrou no esquadrão "+r.s+".");close();try{goTab("prog");sqUI();sqCheckWin();}catch(e){}});
   no.addEventListener("click",close);m.append(c);document.body.append(m);setTimeout(()=>ok.focus(),60);}
 // tocar no nome do ranking também manda o convite (o amigo recebe o aviso no app dele)
-document.addEventListener("click",e=>{const b=e.target.closest&&e.target.closest("#sqPanel .sqchips .chip");if(!b)return;const n=b.textContent.replace(/^\+\s*/,"").trim();
-  setTimeout(()=>{const s=sqSt();if(s&&s.m.includes(n)){sqiInvite(n);toast("Convite enviado para "+n+". Aparece no app dele.");}},0);},true);
+// (o próprio botão do esquadrão já manda o convite e deixa a pessoa como "convidado" até aceitar)
 // dica no painel do Esquadrão
 {const _sq=sqUI;sqUI=function(){_sq();try{const p=$("sqPanel");if(p&&!p.hidden&&sqSt()&&!p.querySelector(".sqitip")){const d=document.createElement("div");d.className="sm muted sqitip";d.textContent="Tocou no nome, o amigo recebe o convite no app dele. Quando ele aceita, entra aqui sozinho.";const ch=p.querySelector(".sqchips");if(ch)ch.after(d);}}catch(e){}};}
 document.addEventListener("visibilitychange",()=>{if(!document.hidden)sqiLoad();});
@@ -4057,9 +4163,11 @@ function tmPlace(){const wrap=document.querySelector(".wrap");if(!wrap)return;le
 // --- quem está na turma ---
 function tmMe(){let sq=0;try{sq=streakDays()||0;}catch(e){}let av="";try{av=avCode();}catch(e){}return {n:rankName()||"Você",xp:weekXP(),lv:levelOf(totalXP()),seq:sq,av,me:true};}
 function tmFriends(){try{return frSt().l.map(n=>frRow(n));}catch(e){return [];}}
+// quem aparece na lista "turma": por padrão todos os amigos; tools/grupos.js troca pela turma escolhida (igreja, família...)
+let tmGroup=function(){return tmFriends();};let tmGroupName=function(){return "Amigos";};
 function tmAll(){return (rankRows||[]).map(r=>{const p=(typeof sqPub!=="undefined"&&sqPub[tmN(r.n)])||{};return {n:r.n,xp:r.xp,lv:r.lv,seq:p.seq||0,av:p.av||""};});}
 function tmBoard(view){if(view==="hoje"&&typeof dyBoard==="function"){const pub=r=>(typeof sqPub!=="undefined"&&sqPub[tmN(r.n)])||{};return dyBoard().map(r=>{const m=r.me?tmMe():{};return Object.assign({},r,{lv:r.me?m.lv:r.lv,seq:r.me?m.seq:(pub(r).seq||0),av:r.me?m.av:(pub(r).av||"")});});}
-  const me=tmMe();const L=view==="geral"?tmAll().filter(r=>tmN(r.n)!==tmN(me.n)):tmFriends();
+  const me=tmMe();const L=view==="geral"?tmAll().filter(r=>tmN(r.n)!==tmN(me.n)):tmGroup();
   return [me,...L].sort((a,b)=>(b.xp||0)-(a.xp||0)||(b.lv||0)-(a.lv||0));}
 // --- novidades: compara com a última vez que viu cada amigo ---
 function tmFeedAdd(k,n,t){const s=tmSt();const id=k+":"+tmN(n)+":"+todayKey();if(s.feed.some(f=>f.id===id))return;s.feed.unshift({id,k,n,t,d:todayKey()});s.feed=s.feed.slice(0,20);}
@@ -4093,18 +4201,18 @@ function tmUI(){const p=tmPlace();if(!p)return;if(tmKid()||!cfg||cfg.blank){p.hi
     const b=tmEl("button","go","Entrar no ranking");b.type="button";b.addEventListener("click",()=>{const j=$("rkJoin");if(j&&!j.hidden){j.click();setTimeout(tmUI,600);}else{const r=$("rankPanel");if(r)r.scrollIntoView({block:"start",behavior:"smooth"});}});c.append(b);p.append(c);return;}
   // liga + seletor
   const lg=tmEl("div","tmlg");lg.append(tmEl("b",null,tier||"Liga"),tmEl("span","sm muted","Os 3 primeiros da semana sobem. Ninguém cai."));p.append(lg);
-  const fr=tmFriends();const seg=tmEl("div","tmseg");const VW=[["turma","Amigos"+(fr.length?" ("+fr.length+")":"")],["geral","Semana"]];if(typeof dyBoard==="function")VW.unshift(["hoje","Hoje"]);else if(s.view==="hoje")s.view="turma";
-  for(const [k,l] of VW){const b=tmEl("button",s.view===k?"on":"",l);b.type="button";b.setAttribute("aria-pressed",s.view===k?"true":"false");b.addEventListener("click",()=>{s.view=k;save();tmUI();});seg.append(b);}p.append(seg);
+  const fr=tmFriends(),gr=tmGroup();const seg=tmEl("div","tmseg");const VW=[["turma",tmGroupName()+(gr.length?" ("+gr.length+")":"")],["geral","Semana · todos"]];if(typeof dyBoard==="function")VW.unshift(["hoje","Hoje"]);else if(s.view==="hoje")s.view="turma";
+  for(const [k,l] of VW){const b=tmEl("button",s.view===k?"on":"",l);b.type="button";b.dataset.v=k;b.setAttribute("aria-pressed",s.view===k?"true":"false");b.addEventListener("click",()=>{s.view=k;save();tmUI();});seg.append(b);}p.append(seg);
   const L=tmBoard(s.view);
   if(s.view==="hoje"){const box=tmEl("div","dybox");const rv=typeof dyRival==="function"?dyRival():null;box.append(tmEl("div","dyriv",rv?rv.txt:"Ranking de hoje: zera à meia-noite. Cada XP de hoje conta."));
     const nt=dyNote();if(nt)box.append(tmEl("div","sm muted",nt));box.append(dyNtfBtn());p.append(box);}
-  if(s.view==="turma"&&!fr.length){const e=tmEl("div","tmempty");e.append(tmEl("p",null,"Sua turma ainda está vazia. Chame alguém para jogar com você."));
+  if(s.view==="turma"&&!gr.length){const e=tmEl("div","tmempty");e.append(tmEl("p",null,"Sua turma ainda está vazia. Chame alguém para jogar com você."));
     const b=tmEl("button","go","+ Adicionar amigo");b.type="button";b.addEventListener("click",()=>{try{frAdd=true;frUI();}catch(e){}setTimeout(()=>{const f=$("frPanel");if(!f)return;if(f.classList.contains("fold")&&!f.classList.contains("open")){const h=f.querySelector(":scope>.fhd");if(h)h.click();}f.scrollIntoView({block:"start",behavior:matchMedia("(prefers-reduced-motion: reduce)").matches?"auto":"smooth"});const i=f.querySelector("input");if(i)setTimeout(()=>i.focus(),80);},0);});e.append(b);p.append(e);}
   if(rankRows&&typeof rankErr!=="undefined"&&rankErr){const w=tmEl("div","sm muted tmoff","Sem conexão · mostrando a última lista. Toque para tentar de novo.");w.setAttribute("role","button");w.tabIndex=0;w.style.cursor="pointer";w.addEventListener("click",()=>{rankErr=false;try{tmUI();}catch(e){}loadRank();});const f0=p.firstElementChild;if(f0)f0.after(w);else p.append(w);}
   if(!rankRows){const w=tmEl("div","sm muted",(typeof rankErr!=="undefined"&&rankErr)?"Sem conexão com o ranking. Toque aqui para tentar de novo.":"Carregando a turma…");if(typeof rankErr!=="undefined"&&rankErr){w.style.cursor="pointer";w.addEventListener("click",()=>{rankErr=false;try{tmUI();}catch(e){}loadRank();});}p.append(w);}
-  const ol=tmEl("ol","tmlist");L.slice(0,30).forEach((r,i)=>{const li=tmEl("li",(r.me?"me ":"")+(i<3&&L.length>=2?"up":""));
+  const ol=tmEl("ol","tmlist");L.slice(0,300).forEach((r,i)=>{const li=tmEl("li",(r.me?"me ":"")+(i<3&&L.length>=2?"up":""));
     li.append(tmEl("span","tmpos",i<3?["🥇","🥈","🥉"][i]:String(i+1)));const av=tmEl("span","tmav");av.innerHTML=tmAv(r.av,44);li.append(av);
-    const tx=tmEl("div","tmtx");const cls=tmCls(r.av);tx.append(tmEl("b",null,r.n+(r.me?" (você)":"")),tmEl("span","tmmeta",(r.lv?"Nv "+r.lv:"")+(cls?" · "+cls:"")+(r.seq?" · 🔥 "+r.seq:"")));li.append(tx);
+    const tx=tmEl("div","tmtx");const cls=tmCls(r.av);tx.append(tmEl("b",null,r.n+(r.me?" (você)":"")),tmEl("span","tmmeta",(r.lv?"Nv "+r.lv:"")+(cls?" · "+cls:"")+(r.seq?" · 🔥 "+r.seq:"")+(!r.me&&r.on===false&&s.view==="turma"?" · ainda não pontuou na semana":"")));li.append(tx);
     li.append(tmEl("span","tmxp",s.view==="hoje"?"+"+(r.xp||0)+" hoje":(r.xp||0)+" XP"));
     if(!r.me){const fz=fr.some(f=>tmN(f.n)===tmN(r.n));const act=tmEl("div","tmact");
       if(fz){for(const k of ["p","c"]){const t=TM_K[k];const done=s.sent[k+":"+tmN(r.n)+":"+todayKey()];const b=tmEl("button","tmbtn"+(done?" done":""),t[0]);b.type="button";b.title=(k==="p"?"Dar parabéns para ":"Cutucar ")+r.n;b.setAttribute("aria-label",b.title);b.addEventListener("click",ev=>{ev.stopPropagation();tmSend(r.n,k);});act.append(b);}
@@ -4212,6 +4320,152 @@ document.addEventListener("click",e=>{const li=e.target.closest&&e.target.closes
 setTimeout(()=>{try{cdBadgeUI();tmUI();}catch(e){}},0);
 // menor de 18 sem apelido: o pedido de apelido fica na aba Amigos (o ranking mora lá agora)
 if(typeof joinRank==="function"){const _jr=joinRank;joinRank=function(){_jr.apply(this,arguments);try{if(!tmOn()&&$("rkNick")){goTab("amigos");const r=$("rankPanel");if(r){if(r.classList.contains("fold")&&!r.classList.contains("open")){const h=r.querySelector(".fhd");if(h)h.click();}r.scrollIntoView({block:"center"});}setTimeout(()=>$("rkNick").focus(),80);}}catch(e){}};}
+// ---------- Várias turmas (igreja, família, trabalho...) + ranking semanal em destaque ----------
+// Turma = grupo de amigos que você organiza. Tudo fica neste aparelho: o canal público (F/G/K) não muda e nada novo sai do celular.
+// Só ADICIONA prog.turmas = {l:[{id,n,e,c,m:[apelidos]}], cur:id, hx:"AAAA-MM-DD"}.
+// Migração: quem já joga ganha a turma "Minha turma" com todos os amigos de hoje e o mesmo link de convite (links já enviados continuam valendo).
+// Link por turma: ...?amigo=APELIDO&c=CÓDIGO-DA-TURMA&t=NOME. Quem entra vira amigo (mesma assinatura do card.js) e cai na turma certa dos dois lados.
+// LGPD: até 13 anos, nada disso aparece. 14-17 (e idade não informada no /comecar) só entram no ranking com apelido e "meu responsável autorizou".
+const GT_EM=["⭐","⛪","🏠","⚽","🎓","💼","🎮","💪","🎸","❤️"];
+const GT_MAX=12;
+const gtN=v=>String(v||"").trim().toLowerCase();
+const gtClean=v=>String(v||"").replace(/[|,;"<>\n\r]/g,"").replace(/\s+/g," ").trim().slice(0,20);
+function gtEl(t,cl,x){const e=document.createElement(t);if(cl)e.className=cl;if(x!=null)e.textContent=x;return e;}
+function gtCode(){const a=new Uint8Array(8);crypto.getRandomValues(a);return [...a].map(x=>(x%36).toString(36)).join("");}
+function gtSt(){let g=prog.turmas;
+  if(!g||typeof g!=="object"||!Array.isArray(g.l)||!g.l.length){let fr=[];try{fr=frSt().l.slice();}catch(e){}
+    g=prog.turmas={l:[{id:"t0",n:"Minha turma",e:"⭐",c:"",m:fr}],cur:"t0"};save();}
+  for(const t of g.l){t.m=Array.isArray(t.m)?t.m:[];t.n=gtClean(t.n)||"Turma";if(!GT_EM.includes(t.e))t.e="⭐";}
+  if(!g.l.some(t=>t.id===g.cur))g.cur=g.l[0].id;return g;}
+function gtCur(){const g=gtSt();return g.l.find(t=>t.id===g.cur)||g.l[0];}
+function gtByName(n){return gtSt().l.find(t=>gtN(t.n)===gtN(n));}
+// amigo novo que ainda não está em nenhuma turma entra na turma aberta (ou na turma do link pelo qual entrou)
+function gtPendGet(){try{return JSON.parse(localStorage.getItem("asc-amigo-t")||"null");}catch(e){return null;}}
+function gtSync(){const g=gtSt();let fr=[];try{fr=frSt().l;}catch(e){return;}let ch=false;const has=n=>fr.some(x=>gtN(x)===gtN(n));
+  for(const t of g.l){const k=t.m.filter(has);if(k.length!==t.m.length){t.m=k;ch=true;}}
+  const pd=gtPendGet();
+  for(const n of fr){if(g.l.some(t=>t.m.some(x=>gtN(x)===gtN(n))))continue;let t=gtCur();
+    if(pd&&gtN(pd.a)===gtN(n)&&pd.t){t=gtByName(pd.t);if(!t&&g.l.length<GT_MAX){t={id:"t"+Date.now().toString(36),n:gtClean(pd.t),e:"⭐",c:"",m:[]};g.l.push(t);}t=t||gtCur();
+      try{localStorage.removeItem("asc-amigo-t");}catch(e){}setTimeout(()=>toast("🤝 "+n+" entrou na turma "+t.n+"."),1800);}
+    t.m.push(n);ch=true;}
+  if(ch)save();}
+// a lista "turma" da aba Amigos passa a ser a turma escolhida
+tmGroup=function(){try{gtSync();}catch(e){}const t=gtCur();return t.m.map(n=>frRow(n));};
+tmGroupName=function(){const t=gtCur();return t.e+" Turma";};
+// --- link de convite por turma ---
+{const _cl=cdLink;cdLink=function(){const u=_cl();if(!u)return u;const t=gtCur();if(t.id==="t0"&&!t.c)return u;
+  if(!t.c){t.c=gtCode();save();}return u.replace(/&c=[a-z0-9]*/,"&c="+t.c)+"&t="+encodeURIComponent(t.n);};}
+(function(){try{const u=new URLSearchParams(location.search);const t=gtClean(u.get("t")||"");if(!u.has("t"))return;
+  const a=localStorage.getItem("asc-amigo")||"";if(t&&a)localStorage.setItem("asc-amigo-t",JSON.stringify({a,t}));
+  u.delete("t");history.replaceState(null,"",location.pathname+(u.toString()?"?"+u:""));}catch(e){}})();
+// lado de quem convidou: quem entrou pelo link de uma turma vira amigo e cai nela
+let gtBusy=false;
+async function gtInbox(){const me=rankName();if(gtBusy||!me||typeof sqInvRows==="undefined"||!tmOn())return;const g=gtSt();const T=g.l.filter(t=>t.c&&t.id!=="t0");if(!T.length)return;
+  gtBusy=true;let ch=false;try{const f=frSt();
+    for(const r of sqInvRows){if(r.k!=="F"||gtN(r.b)!==gtN(me)||!r.a||frHas(r.a)||!/^cv[0-9a-f]{12}$/.test(r.s))continue;
+      for(const t of T){let ok=false;try{ok=r.s===await cdSig(t.c,r.a);}catch(e){}if(!ok||frHas(r.a))continue;
+        f.l.push(r.a);delete f.pend[r.a];if(!t.m.some(x=>gtN(x)===gtN(r.a)))t.m.push(r.a);sqiPost(["G",me,r.a,"",sqiDk()]);ch=true;
+        tmFeedAdd("conv",r.a,"🤝 "+r.a+" entrou pelo link da turma "+t.n);try{cdBadge(1);}catch(e){}toast("🤝 "+r.a+" entrou na turma "+t.n+". Agora são amigos!");break;}}}
+  finally{gtBusy=false;}if(ch){save();try{frUI();tmUI();}catch(e){}}}
+{const _ck=sqiCheck;sqiCheck=function(){gtInbox().catch(()=>{});_ck.apply(this,arguments);};}
+// --- criar, editar e trocar de turma ---
+function gtGo(id){const g=gtSt();g.cur=id;try{tmSt().view="turma";}catch(e){}save();try{haptic([8]);}catch(e){}tmUI();}
+function gtSheet(id){const g=gtSt();const novo=!id;const t=novo?{id:"",n:"",e:GT_EM[g.l.length%GT_EM.length],c:"",m:[]}:g.l.find(x=>x.id===id);if(!t)return;
+  let fr=[];try{fr=frSt().l.slice();}catch(e){}
+  const m=gtEl("div","sysmodal gtmodal");m.setAttribute("role","dialog");m.setAttribute("aria-modal","true");m.setAttribute("aria-label",novo?"Nova turma":"Editar turma");
+  const c=gtEl("div","card gtcard");c.append(gtEl("div","tag",novo?"[ SISTEMA ] NOVA TURMA":"[ SISTEMA ] EDITAR TURMA"));
+  const close=()=>{m.remove();};m.addEventListener("click",e=>{if(e.target===m)close();});
+  const lb=gtEl("label","gtlbl","Nome da turma");const inp=gtEl("input","gtname");inp.maxLength=20;inp.autocomplete="off";inp.placeholder="Ex.: Igreja, Família, Trabalho";inp.value=t.n;lb.append(inp);c.append(lb);
+  const ems=gtEl("div","gtems");ems.setAttribute("role","radiogroup");ems.setAttribute("aria-label","Ícone da turma");let em=t.e;
+  for(const e of GT_EM){const b=gtEl("button",e===em?"on":"",e);b.type="button";b.setAttribute("role","radio");b.setAttribute("aria-checked",e===em?"true":"false");
+    b.addEventListener("click",()=>{em=e;for(const x of ems.children){x.classList.toggle("on",x===b);x.setAttribute("aria-checked",x===b?"true":"false");}});ems.append(b);}
+  c.append(ems);
+  const sel=new Set(t.m.map(gtN));
+  if(fr.length){c.append(gtEl("div","gtlbl","Quem está nesta turma"));const ul=gtEl("div","gtmem");
+    for(const n of fr){const l=gtEl("label","gtchk");const x=gtEl("input");x.type="checkbox";x.checked=sel.has(gtN(n));x.addEventListener("change",()=>{if(x.checked)sel.add(gtN(n));else sel.delete(gtN(n));});
+      const av=gtEl("span","gtav");av.innerHTML=tmAv((typeof sqPub!=="undefined"&&sqPub[gtN(n)]||{}).av,28);l.append(x,av,gtEl("span",null,n));ul.append(l);}c.append(ul);
+    c.append(gtEl("p","sm muted","Um amigo pode estar em mais de uma turma. Para chamar gente nova, use o link da turma."));}
+  else c.append(gtEl("p","sm muted","Ainda sem amigos para pôr aqui. Crie a turma e mande o link dela no grupo do WhatsApp: quem entrar cai direto nela."));
+  const msg=gtEl("div","sm gtmsg");msg.setAttribute("role","status");c.append(msg);inp.addEventListener("input",()=>{msg.textContent="";});
+  const row=gtEl("div","row");const ok=gtEl("button","go",novo?"Criar turma":"Salvar");ok.type="button";const no=gtEl("button","ghost","Cancelar");no.type="button";row.append(ok,no);c.append(row);
+  ok.addEventListener("click",()=>{const n=gtClean(inp.value);if(!n){msg.textContent="Dê um nome para a turma.";inp.focus();return;}
+    if(g.l.some(x=>x!==t&&gtN(x.n)===gtN(n))){msg.textContent="Já existe uma turma com esse nome.";inp.focus();return;}
+    t.n=n;t.e=em;t.m=fr.filter(x=>sel.has(gtN(x)));
+    if(novo){if(g.l.length>=GT_MAX){msg.textContent="Limite de "+GT_MAX+" turmas.";return;}t.id="t"+Date.now().toString(36);g.l.push(t);}
+    g.cur=t.id;try{tmSt().view="turma";}catch(e){}save();close();tmUI();toast(novo?t.e+" Turma "+t.n+" criada. Mande o link dela no grupo.":"Turma salva.");});
+  no.addEventListener("click",close);
+  if(!novo&&g.l.length>1){const del=gtEl("button","link gtdel","Apagar esta turma");del.type="button";del.addEventListener("click",()=>{
+      if(del.dataset.k!=="1"){del.dataset.k="1";del.textContent="Toque de novo para apagar (os amigos continuam seus amigos)";return;}
+      g.l=g.l.filter(x=>x!==t);g.cur=g.l[0].id;save();close();tmUI();toast("Turma apagada. Os amigos continuam na sua lista.");});c.append(del);}
+  m.append(c);document.body.append(m);setTimeout(()=>(novo?inp:ok).focus(),60);}
+function gtBar(){const g=gtSt();const bar=gtEl("div","gtbar");bar.setAttribute("role","tablist");bar.setAttribute("aria-label","Suas turmas");
+  for(const t of g.l){const on=t.id===g.cur;const b=gtEl("button","gtchip"+(on?" on":""));b.type="button";b.setAttribute("role","tab");b.setAttribute("aria-selected",on?"true":"false");b.dataset.t=t.id;
+    b.append(gtEl("span","gte",t.e),gtEl("span","gtn",t.n),gtEl("span","gtc",String(t.m.length)));
+    b.addEventListener("click",()=>{if(on)gtSheet(t.id);else gtGo(t.id);});bar.append(b);}
+  if(g.l.length<GT_MAX){const nb=gtEl("button","gtchip gtnew","+ Nova turma");nb.type="button";nb.addEventListener("click",()=>gtSheet());bar.append(nb);}
+  return bar;}
+// pódio: os 3 primeiros em destaque, com avatar grande
+function gtPodium(L,view){const top=L.slice(0,3);if(top.length<2)return null;const w=gtEl("div","gtpod");w.setAttribute("aria-label","Pódio da semana");
+  const ord=top.length===3?[1,0,2]:[1,0];for(const i of ord){const r=top[i];if(!r)continue;const d=gtEl("div","gtp gtp"+(i+1)+(r.me?" me":""));
+    const av=gtEl("div","gtpav");av.innerHTML=tmAv(r.av,i===0?72:56);d.append(gtEl("span","gtpm",["🥇","🥈","🥉"][i]),av,gtEl("b",null,r.n+(r.me?" (você)":"")),gtEl("span","gtpx",(view==="hoje"?"+":"")+(r.xp||0)+" XP"),gtEl("i","gtpb"));w.append(d);}
+  return w;}
+{const _tu=tmUI;tmUI=function(){_tu.apply(this,arguments);try{const p=$("tmPanel");if(!p||p.hidden||!tmOn())return;const s=tmSt();
+  const hd=p.querySelector(".tmhd");if(hd&&!p.querySelector(".gtbar"))hd.after(gtBar());
+  if(s.view==="turma"){const t=gtCur();const lk=p.querySelector(".cdlink > b");if(lk)lk.textContent="🔗 Link da turma "+t.e+" "+t.n;
+    const em=p.querySelector(".tmempty p");if(em&&t.id!=="t0")em.textContent="Ninguém na turma "+t.n+" ainda. Mande o link dela no grupo ou toque na turma para pôr amigos que você já tem.";}
+  const ol=p.querySelector(".tmlist");if(ol&&s.view!=="hoje"&&!p.querySelector(".gtpod")){const L=tmBoard(s.view);const pd=gtPodium(L,s.view);if(pd)ol.before(pd);}
+  if(ol&&!p.querySelector(".gtcount")){const L=tmBoard(s.view);const me=L.findIndex(r=>r.me);if(L.length>1&&me>=0)ol.before(gtEl("div","gtcount",(me+1)+"º de "+L.length+(s.view==="geral"?" no ranking da semana":s.view==="hoje"?" hoje":" na turma")));}}catch(e){}};}
+// --- destaque em Hoje: ranking da semana sempre à vista ---
+function gtHero(){let h=$("gtHero");const st=$("dayPill");const host=st&&st.closest("section");if(!host)return;
+  if(!h){h=gtEl("section","panel gthero");h.id="gtHero";h.dataset.tab="hoje";host.after(h);}
+  const kid=(()=>{try{return ageNow()==="kid";}catch(e){return false;}})();
+  if(kid||!cfg||cfg.blank||document.body.classList.contains("onboarding")){h.hidden=true;return;}
+  const g=gtSt();const on=tmOn();const pc=$("pingCard");
+  if(!on&&((pc&&!pc.hidden)||(g.hx&&g.hx>=todayKey()))){h.hidden=true;return;}
+  h.hidden=false;h.textContent="";let tier="";try{tier=lgName(lgSt().t);}catch(e){}
+  const hd=gtEl("div","gthd");hd.append(gtEl("h2",null,"🏆 Ranking da semana"),gtEl("span","gtclock","⏳ fecha em "+tmLeft()));h.append(hd);
+  const n=(rankRows||[]).length;
+  const held=!on&&prog.rank&&prog.rank.hold&&!prog.rank.par;
+  if(held){h.append(gtEl("p","gtlead","Seu nome saiu do ranking por enquanto."),gtEl("p","sm muted","Para quem tem 14 a 17 anos, agora o responsável precisa autorizar. Seu apelido, seus amigos e seu XP continuam guardados."));
+    const row=gtEl("div","row");const b=gtEl("button","go","Confirmar autorização");b.type="button";b.addEventListener("click",()=>{joinRank("autorizou");setTimeout(gtHero,500);});
+    const x=gtEl("button","link","Agora não");x.type="button";x.addEventListener("click",()=>{const d=new Date();d.setDate(d.getDate()+3);g.hx=dkey(d);save();h.hidden=true;});row.append(b,x);h.append(row);return;}
+  if(!on){h.append(gtEl("p","gtlead",n?n+" pessoa"+(n>1?"s estão":" está")+" disputando a semana. Falta você.":"A semana está aberta. Seja o primeiro a pontuar."));
+    const peek=gtEl("div","gtpeek");(rankRows||[]).slice(0,5).forEach((r,i)=>{const d=gtEl("span","gtpk");d.innerHTML=tmAv((typeof sqPub!=="undefined"&&sqPub[gtN(r.n)]||{}).av,34);d.title=r.n;d.style.zIndex=String(9-i);peek.append(d);});if(peek.children.length)h.append(peek);
+    h.append(gtEl("p","sm muted",isMinor()?"Só aparece um apelido e o XP da semana. Nenhuma tarefa sai do seu celular.":"Aparece só o apelido (ou 1º nome) e o XP da semana. Os 3 primeiros sobem de liga."));
+    const row=gtEl("div","row");const b=gtEl("button","go","Entrar no ranking");b.type="button";b.addEventListener("click",()=>{joinRank("destaque");setTimeout(gtHero,500);});
+    const x=gtEl("button","link","Agora não");x.type="button";x.addEventListener("click",()=>{const d=new Date();d.setDate(d.getDate()+3);g.hx=dkey(d);save();h.hidden=true;});row.append(b,x);h.append(row);return;}
+  let t=gtCur();let L=tmBoard("turma");let where="em "+t.e+" "+t.n;if(L.length<2){L=tmBoard("geral");where="no geral";}
+  const i=L.findIndex(r=>r.me);
+  const me=gtEl("div","gtme");me.append(gtEl("b","gtpos",i>=0?(i+1)+"º":"–"),gtEl("span",null,"de "+L.length+" "+where+(tier?" · "+tier:"")));h.append(me);
+  const top=gtEl("ol","gttop");L.slice(0,3).forEach((r,k)=>{const li=gtEl("li",r.me?"me":"");const av=gtEl("span","gtav");av.innerHTML=tmAv(r.av,30);li.append(gtEl("span","gtm",["🥇","🥈","🥉"][k]),av,gtEl("span","gtnm",r.n+(r.me?" (você)":"")),gtEl("span","gtx",(r.xp||0)+" XP"));top.append(li);});
+  if(i>2){const li=gtEl("li","me gtgap");const av=gtEl("span","gtav");av.innerHTML=tmAv(L[i].av,30);li.append(gtEl("span","gtm",(i+1)+"º"),av,gtEl("span","gtnm",L[i].n+" (você)"),gtEl("span","gtx",(L[i].xp||0)+" XP"));top.append(li);}
+  h.append(top);
+  let tip="";if(i>0){const a=L[i-1];const d=(a.xp||0)-(L[i].xp||0)+1;tip="Faltam "+d+" XP para passar "+a.n+(d<=20?": 1 tarefa resolve.":".");}else if(L.length>1)tip="Você lidera. Segura até domingo.";
+  if(tip)h.append(gtEl("p","gtlead",tip));
+  const row=gtEl("div","row");const b=gtEl("button","ghost","Ver ranking completo");b.type="button";b.addEventListener("click",()=>{try{tmSt().view=where==="no geral"?"geral":"turma";save();}catch(e){}goTab("amigos");try{loadRank();}catch(e){}tmUI();});
+  const inv=gtEl("button","ghost","📨 Chamar alguém");inv.type="button";inv.addEventListener("click",()=>{try{cdInvite();}catch(e){}});row.append(b,inv);h.append(row);}
+{const _rr=renderRankUI;renderRankUI=function(){_rr.apply(this,arguments);try{gtHero();}catch(e){}};}
+{const _r=render;render=function(){_r.apply(this,arguments);try{gtHero();}catch(e){}};}
+// --- LGPD: 14-17 (e idade não informada) só entram no ranking com apelido e autorização do responsável ---
+{const _jr=joinRank;joinRank=function(){const args=arguments;let need=false;try{need=isMinor()&&ageNow()!=="kid"&&!(prog.rank&&prog.rank.on)&&!(prog.rank&&prog.rank.par);}catch(e){}
+  if(!need)return _jr.apply(this,args);if($("gtAge"))return;const teen=ageNow()==="teen";
+  const m=gtEl("div","sysmodal");m.id="gtAge";m.setAttribute("role","dialog");m.setAttribute("aria-modal","true");m.setAttribute("aria-label","Entrar no ranking");const c=gtEl("div","card gtcard");
+  c.append(gtEl("div","tag","[ SISTEMA ] ENTRAR NO RANKING"),gtEl("h3",null,"Escolha como você aparece"),gtEl("p","sm","No ranking aparece só o apelido e o XP da semana. Nada de nome real, tarefa ou horário."));
+  const lb=gtEl("label","gtlbl","Apelido (não use seu nome real)");const nk=gtEl("input","gtname");nk.maxLength=16;nk.autocomplete="off";nk.value=(prog.rank&&prog.rank.nick)||"";lb.append(nk);c.append(lb);
+  const l2=gtEl("label","chk sm");const par=gtEl("input");par.type="checkbox";l2.append(par,document.createTextNode(teen?" Meu responsável autorizou eu aparecer no ranking":" Tenho 18 anos ou mais, ou meu responsável autorizou"));c.append(l2);
+  const msg=gtEl("div","sm gtmsg");msg.setAttribute("role","status");c.append(msg);
+  const row=gtEl("div","row");const ok=gtEl("button","go","Entrar");ok.type="button";const no=gtEl("button","ghost","Agora não");no.type="button";row.append(ok,no);c.append(row);
+  ok.addEventListener("click",()=>{const n=cleanNick(nk.value);if(!n){msg.textContent="Escolha um apelido.";nk.focus();return;}if(!par.checked){msg.textContent=teen?"Para quem tem 14 a 17 anos, o responsável precisa autorizar.":"Marque a confirmação para entrar.";return;}
+    prog.rank=Object.assign(prog.rank||{},{nick:n,par:new Date().toISOString().slice(0,10)});delete prog.rank.hold;save();m.remove();_jr.apply(null,args);try{tmUI();gtHero();}catch(e){}});
+  no.addEventListener("click",()=>m.remove());m.append(c);document.body.append(m);setTimeout(()=>nk.focus(),60);};}
+
+// LGPD: quem tem 14-17 (ou idade não informada no /comecar/) e já estava no ranking sem a autorização gravada sai da lista
+// até confirmar. Nada se apaga: apelido, uid e amigos ficam; só para de enviar e mostra o aviso (prog.rank.hold = data).
+function gtNeedHold(){try{const r=prog.rank;return !!(r&&r.on&&!r.par&&cfg&&!cfg.blank&&isMinor()&&ageNow()!=="kid");}catch(e){return false;}}
+function gtHold(){if(!gtNeedHold())return false;prog.rank.on=false;prog.rank.hold=todayKey();save();return true;}
+{const _sr=sendRank;sendRank=function(){if(gtHold()){try{renderRankUI();}catch(e){}return;}return _sr.apply(this,arguments);};}
+{const _r=render;render=function(){try{gtHold();}catch(e){}return _r.apply(this,arguments);};}
+setTimeout(()=>{try{gtSync();gtHero();}catch(e){}},0);
 // ---------- Desafio em dupla: chame um amigo ou aliado do Esquadrão para o mesmo desafio relâmpago do dia ----------
 // Canal: o mesmo formulário do ranking, linha K (como parabéns/cutucar): K|de|para|d-<desafio> (convite), da-<desafio> (aceite), dk-<desafio> (feito).
 // Só vale de amigo ou aliado do Esquadrão, só no mesmo dia, 1 dupla por dia, no máximo 3 convites recebidos por dia. Quem tem até 13 anos não participa.
@@ -4378,7 +4632,7 @@ function tbStrip(st){let el=$("tbStrip");const hoje=document.querySelector('.wra
     const sec=hoje.closest("section");sec.after(el);}
   st=st||tbState();el.hidden=false;el.textContent="";const b=st.boss;const dead=st.left<=0;
   const ic=tbEl("span","tbsico");ic.innerHTML=tbArt(b,st.pct,dead);
-  const tx=tbEl("span","tbstx");tx.append(tbEl("b",null,dead?b[1]+" derrotado ✔":"🐉 "+b[1]+" · "+st.pct+"% de vida"));
+  const tx=tbEl("span","tbstx");tx.append(tbEl("b",null,dead?"Vitória sobre "+b[1]+" ✔":"🐉 "+b[1]+" · "+st.pct+"% de vida"));
   const bar=tbEl("span","tbsbar");const f=tbEl("i");f.style.width=st.pct+"%";bar.append(f);tx.append(bar);
   tx.append(tbEl("span","tbssub",dead?(tbSocial()?"A turma venceu esta semana.":"Você venceu esta semana."):"Cada tarefa sua tira vida dele."));
   el.append(ic,tx);el.setAttribute("aria-label",dead?"Chefão derrotado. Abrir o chefão":"Chefão "+b[1]+" com "+st.pct+"% de vida. Abrir o chefão");}
@@ -5505,6 +5759,108 @@ function vsPending(){try{
     if(tries<60)setTimeout(tick,3000);};
   const start=()=>{try{vsFoot();}catch(e){}setTimeout(tick,2500);};
   if(document.readyState==="loading")document.addEventListener("DOMContentLoaded",start);else start();})();
+
+// ---------- Cartão do jogador na aba Hoje: ficha expansível (tools/heroi.*) ----------
+// O topo da aba Hoje ganha uma "ficha" que abre ali mesmo: XP até o próximo nível e o próximo desbloqueio,
+// radar dos 8 atributos com a classe, título em uso, lema, fundo do cartão (destrava por nível) e atalhos.
+// Só ADICIONA prog.hero = {open:0|1, bg:"id", motto:"texto"}. O lema e o fundo ficam só neste aparelho (nada vai para o ranking).
+const HR_BG=[// [id, nome, nível, camada de fundo]
+ ["grade","Grade do Sistema",1,""],
+ ["aurora","Aurora",3,"radial-gradient(120% 90% at 0% 0%,rgba(61,220,151,.22),transparent 60%),radial-gradient(120% 90% at 100% 100%,rgba(122,162,255,.24),transparent 60%)"],
+ ["runas","Círculo Rúnico",6,"repeating-conic-gradient(from 0deg at 85% 30%,rgba(111,177,255,.10) 0 6deg,transparent 6deg 18deg),radial-gradient(80% 80% at 85% 30%,rgba(0,212,255,.18),transparent 70%)"],
+ ["brasa","Brasa",9,"radial-gradient(130% 80% at 50% 120%,rgba(255,90,31,.32),transparent 65%),linear-gradient(180deg,transparent,rgba(255,209,102,.07))"],
+ ["galaxia","Galáxia",12,"radial-gradient(1.5px 1.5px at 20% 30%,#fff,transparent),radial-gradient(1px 1px at 70% 20%,#cfe3ff,transparent),radial-gradient(1.5px 1.5px at 85% 70%,#fff,transparent),radial-gradient(1px 1px at 35% 80%,#e9d7ff,transparent),radial-gradient(110% 90% at 80% 10%,rgba(179,136,255,.30),transparent 60%),radial-gradient(90% 80% at 10% 100%,rgba(0,212,255,.18),transparent 60%)"],
+ ["sombra","Sombra Roxa",16,"linear-gradient(135deg,rgba(123,44,255,.28),transparent 55%),linear-gradient(315deg,rgba(255,79,216,.18),transparent 50%)"],
+ ["lenda","Lenda Dourada",20,"radial-gradient(120% 90% at 50% -10%,rgba(242,193,78,.34),transparent 60%),repeating-linear-gradient(115deg,rgba(255,242,176,.05) 0 2px,transparent 2px 14px)"]];
+const HR_POSE=["💪","🔥","⚡","Bora!","Subindo!","GG","Foco.","⚔️"];
+function hrSt(){if(!prog.hero||typeof prog.hero!=="object")prog.hero={};const h=prog.hero;if(typeof h.motto!=="string")h.motto="";return h;}
+function hrEl(t,cl,x){const e=document.createElement(t);if(cl)e.className=cl;if(x!=null)e.textContent=x;return e;}
+function hrBtn(cl,x,fn){const b=hrEl("button",cl,x);b.type="button";b.addEventListener("click",fn);return b;}
+function hrLv(){try{return levelOf(totalXP());}catch(e){return 1;}}
+// o que destrava nos próximos níveis (acessórios, molduras e evolução do avatar, rank, fundos do cartão)
+function hrUnlocks(){const L=[];try{for(const [n,l] of AV_ACC)if(l>1)L.push([l,"acessório "+n]);for(const [n,l] of AV_FRAME)if(l>1)L.push([l,"moldura "+n]);}catch(e){}
+  L.push([10,"aura viva no avatar"],[20,"olhos do Sistema"]);try{for(const r of RANKS)if(r[0]>1)L.push([r[0],"Rank "+r[1]]);}catch(e){}
+  for(const b of HR_BG)if(b[2]>1)L.push([b[2],"fundo "+b[1]]);return L.sort((a,b)=>a[0]-b[0]);}
+function hrNext(lv){const L=hrUnlocks().filter(x=>x[0]>lv);if(!L.length)return null;const l=L[0][0];return {lv:l,what:L.filter(x=>x[0]===l).slice(0,2).map(x=>x[1]).join(" e ")};}
+// títulos que a pessoa já tem (conquistas secretas + baú) e o que está em uso
+function hrTitles(){const out=[];try{for(const id in (prog.sec||{})){const s=secById(id);if(s)out.push({src:"sec",id,n:s[3]});}}catch(e){}
+  try{for(const t of bxSt().titles)out.push({src:"bx",id:t.id,n:t.n});}catch(e){}return out;}
+function hrTitleNow(){try{const c=bxSt();const t=c.title&&c.titles.find(x=>x.id===c.title);if(t)return t.n;}catch(e){}try{if(prog.secTitle&&prog.sec&&prog.sec[prog.secTitle])return secById(prog.secTitle)[3];}catch(e){}return "";}
+function hrEquip(t){try{if(!t){if(typeof bxEquipTitle==="function")bxEquipTitle("");if(typeof secEquip==="function"&&prog.secTitle)secEquip("");else toast("Título removido.");}
+  else if(t.src==="bx"){bxEquipTitle(t.id);toast("Título em uso: "+t.n);}else secEquip(t.id);}catch(e){}render();}
+function hrApplyBg(sec){const h=hrSt();const lv=hrLv();let b=HR_BG.find(x=>x[0]===h.bg);if(!b||b[2]>lv)b=HR_BG[0];
+  let g=sec.querySelector(":scope>.hrbg");if(!g){g=hrEl("div","hrbg");g.setAttribute("aria-hidden","true");sec.prepend(g);}
+  sec.dataset.hbg=b[0];g.style.backgroundImage=b[3]||"none";}
+function hrMotto(){const h1=$("titleName");if(!h1)return;let m=$("heroMotto");const t=hrSt().motto.trim();
+  if(!m){m=hrEl("div","hrmotto");m.id="heroMotto";const after=$("bxTitle")||$("secTitle")||h1;after.after(m);}m.hidden=!t;m.textContent=t?"“"+t+"”":"";}
+function hrPose(){const w=$("heroAv");if(!w)return;const av=w.querySelector(".hav");if(!av)return;
+  const old=w.querySelector(".hrsay");if(old)old.remove();const s=hrEl("span","hrsay",HR_POSE[Math.floor(Math.random()*HR_POSE.length)]);s.setAttribute("aria-hidden","true");w.append(s);
+  av.classList.remove("hrhop");void av.offsetWidth;av.classList.add("hrhop");try{haptic([12,40,12]);}catch(e){}setTimeout(()=>{s.remove();av.classList.remove("hrhop");},1400);}
+// --- a ficha ---
+function hrBody(box){box.textContent="";const lv=hrLv();let xp=0;try{xp=totalXP();}catch(e){}const need=Math.max(0,xpFor(lv+1)-xp);const nx=hrNext(lv);
+  // 1. próximo nível
+  const up=hrEl("div","hrup");up.append(hrEl("b",null,"⬆️ Faltam "+need+" XP para o nível "+(lv+1)),hrEl("span","sm muted",nx?"No nível "+nx.lv+": "+nx.what+".":"Você destravou tudo o que existe hoje. Lenda."));box.append(up);
+  // 2. atributos (radar) + classe
+  const at=hrEl("button","hrat");at.type="button";at.setAttribute("aria-label","Ver atributos em Progresso");
+  let ok=false;try{const l=atLevels();const k=atCls();const rd=hrEl("span","hrrd");rd.innerHTML=atRadar(l,112);const inf=hrEl("span","hrati");
+    const top=AT_IDS.slice().sort((a,b)=>l[b]-l[a]).slice(0,3);inf.append(hrEl("b",null,"🧬 Atributos · total "+AT_IDS.reduce((s,a)=>s+l[a],0)));
+    const ch=hrEl("span","hrtop");for(const a of top){const x=hrEl("span","hrchip",AT_BY[a][1]+" "+AT_BY[a][2]+" "+l[a]);x.style.setProperty("--ac",AT_BY[a][3]);ch.append(x);}inf.append(ch);
+    if(k){const pa=AT_PAS[k.pas];inf.append(hrEl("span","sm muted","Classe: "+AT_BY[k.p][1]+" "+AT_BY[k.p][2]+" ★ · "+AT_BY[k.s][1]+" "+AT_BY[k.s][2]+" ☆"+(pa?" · ✨ "+pa[0]:"")));}
+    else inf.append(hrEl("span","sm muted","Escolha uma classe para ganhar bônus e uma habilidade passiva."));
+    inf.append(hrEl("span","hrgo","Ver todos ›"));at.append(rd,inf);ok=true;}catch(e){}
+  if(ok){at.addEventListener("click",()=>{goTab("prog");setTimeout(()=>{const p=$("atPanel");if(p)p.scrollIntoView({block:"start"});},60);});box.append(at);}
+  // 3. título
+  const tt=hrTitles();const now=hrTitleNow();const tr=hrEl("div","hrrow");tr.append(hrEl("span","hrlb","🏷️ Título"));
+  const tv=hrEl("div","hrchips");
+  if(!tt.length)tv.append(hrEl("span","sm muted","Ganhe títulos no baú do Fechar o dia e nas conquistas secretas."));
+  else{tv.append(hrBtn("avchip"+(!now?" on":""),"Nenhum",()=>hrEquip(null)));for(const t of tt){const b=hrBtn("avchip"+(t.n===now?" on":""),t.n,()=>hrEquip(t));b.setAttribute("aria-pressed",t.n===now?"true":"false");tv.append(b);}}
+  tr.append(tv);box.append(tr);
+  // 4. lema
+  const mr=hrEl("div","hrrow");mr.append(hrEl("label","hrlb","💬 Seu lema"));const inp=hrEl("input","hrin");inp.id="hrMottoIn";mr.querySelector("label").htmlFor="hrMottoIn";
+  inp.maxLength=40;inp.placeholder="Ex.: um dia de cada vez";inp.autocomplete="off";inp.value=hrSt().motto;
+  const sv=()=>{const v=inp.value.replace(/\s+/g," ").trim().slice(0,40);if(v===hrSt().motto)return;hrSt().motto=v;save();hrMotto();toast(v?"Lema salvo.":"Lema removido.");};
+  inp.addEventListener("change",sv);inp.addEventListener("keydown",e=>{if(e.key==="Enter"){e.preventDefault();inp.blur();}});mr.append(inp,hrEl("span","sm muted","Aparece no seu cartão. Fica só neste celular."));box.append(mr);
+  // 5. fundo do cartão
+  const br=hrEl("div","hrrow");br.append(hrEl("span","hrlb","🎴 Fundo do cartão"));const bc=hrEl("div","hrchips");const cur=hrSt().bg||"grade";
+  for(const [id,n,need2,bg] of HR_BG){const lock=lv<need2;const b=hrBtn("avchip hrbgc"+(lock?" lock":"")+(id===cur?" on":""),lock?"🔒 "+n+" · nv "+need2:n,()=>{
+      if(lock){toast(n+" destrava no nível "+need2+".");return;}hrSt().bg=id;save();render();try{haptic([8]);}catch(e){}});
+    b.style.setProperty("--hb",bg||"none");b.setAttribute("aria-pressed",id===cur?"true":"false");bc.append(b);}
+  br.append(bc);box.append(br);
+  // 6. atalhos
+  const ac=hrEl("div","row hracts");
+  ac.append(hrBtn("ghost","🧬 Avatar",()=>{try{avMaker(false);}catch(e){}}),hrBtn("ghost","⚔️ Classe",()=>{try{chgCls();}catch(e){}}),hrBtn("ghost","✨ Pose",hrPose),hrBtn("ghost","🪪 Meu card",()=>{try{tmCard();}catch(e){}}));
+  box.append(ac);}
+function hrUI(){const st=document.querySelector('.wrap>section[data-tab="hoje"] .status');if(!st)return;const sec=st.closest("section");
+  if(!cfg||cfg.blank){const t=$("hrTog");if(t)t.hidden=true;const b=$("hrBox");if(b)b.hidden=true;return;}
+  hrApplyBg(sec);hrMotto();const h=hrSt();const lv=hrLv();const nx=hrNext(lv);
+  let tog=$("hrTog"),box=$("hrBox");
+  if(!tog){tog=hrEl("button","hrtog");tog.type="button";tog.id="hrTog";tog.setAttribute("aria-controls","hrBox");st.after(tog);
+    tog.addEventListener("click",()=>{const s=hrSt();s.open=s.open?0:1;save();hrUI();try{haptic([8]);}catch(e){}if(s.open)setTimeout(()=>{const b=$("hrBox");if(b&&b.getBoundingClientRect().bottom>innerHeight)b.scrollIntoView({block:"nearest",behavior:"smooth"});},60);});}
+  if(!box){box=hrEl("div","hrbox");box.id="hrBox";tog.after(box);}
+  tog.hidden=false;tog.setAttribute("aria-expanded",h.open?"true":"false");tog.textContent="";
+  tog.append(hrEl("span","hrtl",h.open?"Fechar ficha":"Ficha do personagem"),hrEl("span","hrnx",h.open?"":nx?"nv "+nx.lv+": "+nx.what:"tudo destravado"),hrEl("span","hrch",h.open?"▴":"▾"));
+  box.hidden=!h.open;if(h.open){const ae=document.activeElement;const typing=ae&&ae.id==="hrMottoIn";if(!typing)hrBody(box);}}
+{const _r=render;render=function(){_r.apply(this,arguments);try{hrUI();}catch(e){}};}
+setTimeout(()=>{try{hrUI();}catch(e){}},0);
+// "Hoje: N concluída(s)" contava check-in, bônus e conquistas como tarefa (dava "4 concluídas" com 0/3 principais feitas).
+// Agora conta só as tarefas da lista de hoje; o XP continua sendo o do dia inteiro.
+function hrDayCount(){const el=$("dayxp");if(!el)return;const tk=todayKey();const done=prog.log[tk]||[];if(!done.length)return;
+  const ids=new Set(((cfg&&cfg.quests)||[]).map(q=>q.id).concat((prog.extra[tk]||[]).map(q=>q.id)));
+  const n=done.filter(e=>ids.has(e.q)).length;let xp=0;for(const e of done)xp+=(e.xp||0)+(e.bonus||0);
+  el.textContent=n?"Hoje: "+n+(n===1?" tarefa feita":" tarefas feitas")+" · +"+xp+" XP no dia":"Nenhuma tarefa ainda · +"+xp+" XP de bônus. Comece pela primeira.";}
+{const _r2=render;render=function(){_r2.apply(this,arguments);try{hrDayCount();}catch(e){}};}
+// Aba Hoje: as tarefas sobem. Os desafios relâmpago (extra de 30 s) passam para logo depois da lista de tarefas;
+// o "Comece por aqui" continua acima das tarefas enquanto não for escondido.
+function hrOrder(){const q=$("quests")&&$("quests").closest("section");const z=$("zapPanel");if(!q||!z)return;
+  if(q.nextElementSibling!==z)q.after(z);const g=$("gdPanel");if(g&&(q.compareDocumentPosition(g)&Node.DOCUMENT_POSITION_FOLLOWING)){const sb=$("smBar");(sb&&sb.nextElementSibling===q?sb:q).before(g);}}
+{const _r3=render;render=function(){_r3.apply(this,arguments);try{hrOrder();}catch(e){}};}
+setTimeout(()=>{try{hrOrder();}catch(e){}},50);
+// "Comece por aqui": depois do 1º passo feito, vira uma linha só (o passo da vez); toque no título mostra os 3 de novo.
+function hrGuide(){const p=$("gdPanel");if(!p)return;const ok=p.querySelectorAll(".gdl li.ok").length;const mini=ok>0&&!p.dataset.full;p.classList.toggle("gdmini",mini);
+  const h=p.querySelector(".qhead");if(h&&!h.dataset.hr){h.dataset.hr="1";h.setAttribute("role","button");h.tabIndex=0;h.addEventListener("click",()=>{if(p.dataset.full)delete p.dataset.full;else p.dataset.full="1";hrGuide();});}
+  if(h)h.setAttribute("aria-expanded",mini?"false":"true");}
+{const _r4=render;render=function(){_r4.apply(this,arguments);try{hrGuide();}catch(e){}};}
+setTimeout(()=>{try{hrGuide();}catch(e){}},80);
 
 let saveTimer=null, SYNC="";
 try{SYNC=localStorage.getItem("asc-u-sync")||"";}catch(e){}

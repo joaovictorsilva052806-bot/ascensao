@@ -1,0 +1,37 @@
+/* ---- Cartão do jogador: ficha expansível na aba Hoje (tools/heroi.js) ---- */
+.hrbg{position:absolute;inset:0;pointer-events:none;z-index:0;opacity:.95;background-size:cover}
+section[data-hbg]>:not(.hrbg){position:relative;z-index:1}
+.hrmotto{font-size:.82rem;font-style:italic;color:var(--muted);margin-top:2px;overflow-wrap:anywhere}
+.hrtog{display:flex;align-items:center;gap:8px;width:100%;min-height:44px;margin:-2px 0 -4px;padding:8px 10px;border:1px dashed var(--line);border-radius:8px;background:rgba(0,212,255,.04);color:var(--glow);font:inherit;font-size:.8rem;cursor:pointer;text-align:left}
+.hrtog:active{background:rgba(0,212,255,.1)}
+.hrtog .hrtl{font-family:var(--f-display);letter-spacing:.06em;text-transform:uppercase;font-weight:600;white-space:nowrap}
+.hrtog .hrnx{flex:1;min-width:0;color:var(--muted);font-family:var(--f-mono);font-size:.72rem;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.hrtog .hrch{margin-left:auto;font-size:1rem}
+.hrbox{display:flex;flex-direction:column;gap:12px;animation:hrIn .28s ease-out backwards}
+@keyframes hrIn{from{opacity:0;clip-path:inset(0 0 100% 0)}to{opacity:1;clip-path:inset(0 0 0 0)}}
+.hrup{display:flex;flex-direction:column;gap:2px;padding:10px 12px;border-left:3px solid var(--gold);background:rgba(242,193,78,.06);border-radius:4px}
+.hrup b{font-size:.9rem;color:var(--gold)}
+.hrat{display:grid;grid-template-columns:112px minmax(0,1fr);gap:10px;align-items:center;width:100%;padding:8px;border:1px solid var(--line);border-radius:8px;background:rgba(10,18,34,.6);color:var(--fg);font:inherit;text-align:left;cursor:pointer}
+.hrrd svg{display:block;max-width:100%;height:auto}
+.hrati{display:flex;flex-direction:column;gap:6px;min-width:0}
+.hrati>b{font-size:.86rem}
+.hrtop{display:flex;flex-wrap:wrap;gap:4px}
+.hrchip{font-size:.72rem;padding:3px 7px;border-radius:999px;border:1px solid var(--ac);color:var(--ac);white-space:nowrap}
+.hrgo{font-size:.75rem;color:var(--glow)}
+.hrrow{display:flex;flex-direction:column;gap:6px}
+.hrlb{font-family:var(--f-display);font-size:.74rem;letter-spacing:.1em;text-transform:uppercase;color:var(--glow)}
+.hrchips{display:flex;flex-wrap:wrap;gap:6px}
+.hrin{width:100%;box-sizing:border-box;min-height:44px;padding:10px 12px;border-radius:8px;border:1px solid var(--line);background:#0a1222;color:var(--fg);font:inherit;font-size:16px}
+.avchip.hrbgc{background:var(--hb),#0a1222;background-size:cover}
+.hracts{display:grid!important;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}
+.hracts button{min-height:44px}
+.heroav .hrsay{position:absolute;left:50%;top:-6px;translate:-50% -100%;padding:3px 8px;border-radius:8px;border:1px solid var(--glow);background:var(--panel2,#0b1626);color:var(--glow);font-family:var(--f-display);font-size:.8rem;white-space:nowrap;pointer-events:none;animation:hrSay 1.4s ease-out forwards;z-index:3}
+@keyframes hrSay{0%{opacity:0}15%{opacity:1}80%{opacity:1}100%{opacity:0}}
+.hav.hrhop{animation:hrHop .7s cubic-bezier(.3,1.6,.5,1)}
+@keyframes hrHop{0%{translate:0 0}30%{translate:0 -10px}60%{translate:0 0}75%{translate:0 -4px}100%{translate:0 0}}
+@media (prefers-reduced-motion:reduce){.hrbox,.hav.hrhop{animation:none}}
+@media (max-width:360px){.hrat{grid-template-columns:1fr;justify-items:center}.hrtog .hrnx{display:none}}
+/* Comece por aqui compacto: só o passo da vez */
+.gd.gdmini .gdl li:not(.now),.gd.gdmini .gdoff{display:none}
+.gd .qhead[role=button]{cursor:pointer}
+.gd.gdmini .qhead .xp::after{content:" ▾"}
