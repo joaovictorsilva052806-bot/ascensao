@@ -6159,6 +6159,25 @@ setTimeout(fjUI,0);
     // foco no chip escolhido (antes do foco automático das janelas do Sistema, que iria para o botão principal)
     const f=chips.find(b=>b.classList.contains("on"))||chips[0];try{f.focus({preventScroll:true});}catch(e){}}
   window.lembOffer=open;
+  // Momento da oferta (fase 1): sozinha, logo depois da 1ª tarefa do dia 1 e uma vez no dia 2 (dias com tarefa de verdade).
+  // Quem já disse "sim" não vê mais. Depois do dia 2 só pelo cartão ou por Mais > Lembretes. Espera as janelas do Sistema fecharem.
+  const SYSTIP=KEY.indexOf("ascensao")===0?"ascensao-systip":"ascensao-systip";
+  function real(k,e){if(!e||(e.kind!=="full"&&e.kind!=="min"))return false;if(e.q==="q_mit")return true;
+    return ((cfg&&cfg.quests)||[]).some(q=>q.id===e.q)||((prog.extra&&prog.extra[k])||[]).some(q=>q.id===e.q);}
+  function diaN(){const tk=todayKey();const log=(prog&&prog.log)||{};
+    const ds=Object.keys(log).filter(k=>k<=tk&&(log[k]||[]).some(e=>real(k,e))).sort();
+    return ds[ds.length-1]===tk?ds.length:0;}
+  const busy=()=>{let q=0;try{q=sysQ.length;}catch(e){}return q>0||!!document.getElementById("lembOffer")||[...document.querySelectorAll(".sysmodal:not([hidden]),#levelup:not([hidden])")].some(m=>m.getClientRects().length);};
+  let tries=0,tmr=0,calm=0; // calm: a tela precisa ficar livre por 2 checagens seguidas (o baú do dia abre logo depois da fila do Sistema)
+  function auto(){tmr=0;try{if(!cfg||cfg.blank)return;const s=rd();if(s.r==="sim")return;let st="";try{st=localStorage.getItem(SYSTIP)||"";}catch(e){}if(st==="1")return;
+    const n=diaN();if(n!==1&&n!==2)return;const a=s.a||{};if(a[n])return;if(n===2&&a[1]===todayKey())return;
+    if(busy()){calm=0;if(++tries<40)tmr=setTimeout(auto,1500);return;}
+    if(!calm){calm=1;tmr=setTimeout(auto,1200);return;}calm=0;tries=0;
+    a[n]=todayKey();wr({a});
+    open(ok=>{try{localStorage.setItem(SYSTIP,ok?"1":"0");}catch(e){}const t=document.getElementById("sysTip");if(t)t.hidden=true;});}catch(e){}}
+  const later=ms=>{if(!tmr)tmr=setTimeout(auto,ms);};
+  document.addEventListener("click",()=>{tries=0;later(1600);});
+  setTimeout(()=>later(0),2500);
   // Mais > Lembretes: sempre dá para (re)escolher o horário
   const cal=document.getElementById("calPanel");
   if(cal&&!document.getElementById("lembMais")){const b=document.createElement("button");b.type="button";b.className="ghost";b.id="lembMais";b.textContent="⏰ Aviso diário do Sistema (1 evento)";
