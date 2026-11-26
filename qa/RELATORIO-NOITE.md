@@ -112,3 +112,12 @@ Menções honrosas:
 - Suíte inteira do #89 com a main (Trens 4 a 8): 33 de 33 arquivos verdes (987 verificações).
 - Corrigi 2 testes instáveis da main: `alvo` falhava entre 0h e 5h, e `sequencia` falhava 2 de 3 vezes.
 - O cache do service worker não sobe no PR; ele sobe no trem.
+
+## 7. Atualização da tarde (26/11)
+
+- **A carência já está no ar.** Ela entrou no trem 1.0 (#104), e por isso fechei o #99. O mesmo trem publicou #81, #64 e #69. O JV confirmou que a EVA tinha permissão para levar os três.
+- **O #89 está atualizado com a main do 1.0** e ganhou mais uma correção:
+  12. **Galeria de classes depois da 1ª vitória.** Antes, "Quem é você neste jogo?" abria logo depois de "Criar meu jogo", e era mais uma janela entre a pessoa e a 1ª missão. Agora, no dia em que o jogo foi criado, a galeria espera a 1ª tarefa feita e os avisos da vitória fecharem, uma janela por vez. A pílula "Escolher classe" continua abrindo na hora.
+      - Do `/x/` até a 1ª tarefa marcada: **de 13 para 11 toques** desde ontem à noite.
+      - *Base:* Fogg (cada passo antes da 1ª ação derruba a Habilidade); engajamento gradual (Luke Wroblewski, "Gradual Engagement": pedir o perfil depois de a pessoa ver valor, como o Duolingo faz depois da 1ª lição).
+- **Teste:** `qa/dialogo.test.js` (#102) agora usa um perfil que começou antes de hoje. Ele testa a janela do check-in, que no 1º dia passou a não abrir. O que o teste verifica não mudou: 56/56.
