@@ -15,7 +15,7 @@ async function page(opts={},time){const ctx=await b.newContext({viewport:{width:
 let {ctx,p,errs}=await page({},new Date('2026-11-25T14:00:00'));
 await p.goto(U);await seed(p,base());
 ok('root: painel Segredos existe',await p.locator('#secPanel').count()===1);
-ok('root: 0 / 17',(await p.textContent('#secCount')).trim()==='0 / 17',await p.textContent('#secCount'));
+ok('root: 0 / 18',(await p.textContent('#secCount')).trim()==='0 / 18',await p.textContent('#secCount'));
 await p.click('#tabbar [data-go="mais"]');await abre(p,'#secCode');await p.fill('#secCode','  LÁRICA ');await p.press('#secCode','Enter');await p.waitForTimeout(400);
 ok('código "LÁRICA" (maiúscula/acento) revela',(await modal(p)).includes('Larica'),await p.textContent('#secOut'));
 await p.screenshot({path:SP+'reveal.png'});

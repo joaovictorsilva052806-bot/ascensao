@@ -1,5 +1,5 @@
 // Testa server/mural.gs fora do Google (simula planilha, Drive e cache). Rode: node qa/mural-servidor.test.js server/mural.gs
-const fs=require('fs'),crypto=require('crypto');const src=fs.readFileSync(process.argv[2],'utf8');
+const fs=require('fs'),crypto=require('crypto');const src=fs.readFileSync(process.argv[2]||require('path').join(__dirname,'..','server','mural.gs'),'utf8');
 const props={},cache={};let now=Date.now();const files={};let mails=0;
 class Sheet{constructor(n,rows){this.n=n;this.v=rows||[];}getDataRange(){const s=this;return{getValues:()=>s.v.map(r=>r.slice())};}appendRow(r){this.v.push(r.slice());}hideSheet(){}
  getRange(r,c,nr,nc){const s=this;return{setValue:x=>{s.v[r-1][c-1]=x;},getValues:()=>[s.v[r-1].slice(c-1,c-1+nc)]};}deleteRow(r){this.v.splice(r-1,1);}

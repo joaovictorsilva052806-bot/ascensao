@@ -51,6 +51,12 @@ Escolha de classe (`openCls` em `tools/rpg.js`): na 1ª vez o Sistema sugere uma
 
 Teste: `node qa/ranking-dia.test.js`.
 
+## Forja: treino em casa que evolui sozinho
+
+`tools/forja.js` e `tools/forja.css` (entram nos dois geradores pelo `gen.py`): treino sem equipamento, Treino A/B alternado 3x por semana (seg/qua/sex por padrão, editável em 1 toque no card "🔥 Forja" de Hoje). Cada movimento (empurrar, puxar, ombro, perna, ponte, core) tem uma escada de 5 níveis e dupla progressão: alvo = última vez +1 repetição (8 a 12; core 20 a 45 s); bateu o topo em todas as séries, o app sugere o próximo nível (+30 XP uma vez por nível). "Dia ruim" = 1 série de cada, ~10 min, +20 XP e conta para a sequência. 3 treinos na semana = "Semana forjada" (+25); 4 semanas seguidas = segredo "Aço". Aviso de segurança genérico antes do 1º treino e sempre no rodapé ("Quando parar"). Quests opcionais dos 4 pilares (nunca principais, não geram dívida). O ▶ da quest `s_treino` abre o Forja.
+
+Grava só `prog.forja` (`lv`, `last`, `ses`, `ok`, `dias`, `pil`, `pt`, `cur`); XP em `forja:<dia>` (1 por dia), `forja:lv:<mov>:<n>` e `forja:sem:<segunda>`. Nenhum dado de corpo, peso ou saúde é coletado. Teste: `node qa/forja.test.js`.
+
 ## Reinstalação do app pessoal
 
 Na 1ª ligação da planilha num aparelho (link `#s=` ou colar o endereço), a planilha vence e o progresso local vira backup em `ascensao-prog-prelink`. Teste: `node qa/religar.test.js`.

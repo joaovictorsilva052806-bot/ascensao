@@ -153,6 +153,9 @@ rep('\nlet saveTimer=null, SYNC="";','\n'+R('boss.js')+R('chest.js')+R('mural.js
 # celular de verdade: 📅 agenda e tarefas de apps (tools/apps.*)
 rep('</style></head>',R('apps.css')+'</style></head>')
 rep('\nlet saveTimer=null, SYNC="";','\n'+R('apps.js')+'\nlet saveTimer=null, SYNC="";')
+# Forja: treino em casa sem equipamento que evolui sozinho + 4 pilares (tools/forja.*)
+rep('</style></head>',R('forja.css')+'</style></head>')
+rep('\nlet saveTimer=null, SYNC="";','\n'+R('forja.js')+'\nlet saveTimer=null, SYNC="";')
 if not ROOT: open('comecar/index.html','w').write(s)
 pass
 
