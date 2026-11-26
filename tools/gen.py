@@ -189,6 +189,10 @@ if ROOT:
     rep('</style></head>',R('retencao.css')+'</style></head>')
     rep('\nlet saveTimer=null, SYNC="";','\n'+R('creator.js')+R('retencao.js')+R('painel.js')+'\n// planilha ligada e tarefas chegaram: fecha o cadastro de pessoa nova se estiver aberto\n{const _rr=render;render=function(){_rr.apply(this,arguments);try{if(cfg&&!cfg.blank&&cfg.quests&&cfg.quests.length&&document.body.classList.contains("onboarding")&&localStorage.getItem("ascensao-sync")){for(const id of ["onb","quick","intro"]){const e=$(id);if(e)e.hidden=true;}document.body.classList.remove("onboarding");}}catch(e){}};}\nlet saveTimer=null, SYNC="";')
     rep('setTimeout(dailyCheckin,600);','setTimeout(dailyCheckin,600);crApply();crRender();')
+    # Modo Criador: metas com prazo, plano de hoje e prioridade da semana (dados de cfg.goals/cfg.focus, vindos da planilha)
+    rep('</style></head>',R('metas.css')+'</style></head>')
+    rep('\nlet saveTimer=null, SYNC="";','\n'+R('metas.js')+'\nlet saveTimer=null, SYNC="";')
+    rep('setTimeout(dailyCheckin,600);crApply();crRender();','setTimeout(dailyCheckin,600);crApply();crRender();mtRender();')
     # com planilha ligada, as tarefas vêm dela: nunca abrir o cadastro de pessoa nova
     rep('if(!cfg||cfg.blank||!cfg.quests||!cfg.quests.length)openOnb();','if((!cfg||cfg.blank||!cfg.quests||!cfg.quests.length)&&!(()=>{try{return localStorage.getItem("ascensao-sync");}catch(e){return "";}})())openOnb();')
     open(SP+'../index.html','w').write(s)
