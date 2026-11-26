@@ -4,7 +4,7 @@ const R=[];const ok=(n,c,x)=>R.push((c?'PASS ':'FAIL ')+n+(x&&!c?' · '+x:''));
 const EXEC='https://script.google.com/macros/s/AKfycbTESTE123/exec';
 const CSV='nome,xp,nivel\nAna,240,5\nBia,180,4\nTeste,40,1\n';
 const mk=age=>({version:3,name:'Teste Silva',startDate:'2026-11-20',profile:{age},quests:[{id:'q1',title:'Treino de 20 min',xp:20,stat:'corpo',main:true},{id:'s_fech',title:'Antes de dormir: marcar o que fiz hoje',xp:15,stat:'foco',main:true}]});
-const base=(x={})=>Object.assign({log:{},extra:{},faith:{},energy:{'2026-11-25':'media'},mit:{},reviews:{},money:[],rest:{},ach:{},rpg:{cls:{id:'mago',style:'fant',name:'Mago'}},rank:{on:true,asked:true,uid:'abc12345',nick:'Teste'},friends:{l:['Ana'],pend:{},seen:{}}},x);
+const base=(x={})=>Object.assign({log:{},extra:{},faith:{},energy:{'2026-11-25':'media'},mit:{},reviews:{},money:[],rest:{},ach:{},rpg:{cls:{id:'mago',style:'fant',name:'Mago'}},rank:{on:true,asked:true,uid:'abc12345',nick:'Teste',par:'2026-11-20'},friends:{l:['Ana'],pend:{},seen:{}}},x);
 async function drain(p){for(let i=0;i<10;i++){const m=p.locator('.sysmodal:not(.mumodal):visible');if(!(await m.count()))return;const t=await m.first().textContent();const bt=m.first().locator('button.go, button.ghost, button').first();await bt.dispatchEvent('click');await p.waitForTimeout(250);}}
 (async()=>{const b=await chromium.launch();
 async function open(prog,age){const ctx=await b.newContext({viewport:{width:390,height:844},deviceScaleFactor:2});const p=await ctx.newPage();const errs=[];const calls=[];const posts=[];

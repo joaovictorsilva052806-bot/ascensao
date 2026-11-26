@@ -12,9 +12,9 @@ const base=(x={})=>Object.assign({log:{'2026-11-25':[{q:'q1',kind:'full',xp:40,s
   friends:{l:['Ana','Bia'],pend:{},seen:{},velhoF:1},turma:{inv:'legado01',view:'turma'},velho:'fica'},x);
 process.on('unhandledRejection',e=>{console.log(R.join('\n'));console.log('ERRO',String(e.message).split('\n')[0]);process.exit(1);});
 (async()=>{const b=await chromium.launch();
-async function open(route,pre,prog,{age='adult',csv=ROWS,vp={width:390,height:844},query=''}={}){const ctx=await b.newContext({viewport:vp,hasTouch:true});const p=await ctx.newPage();const errs=[];
+async function open(route,pre,prog,{age='adult',csv=ROWS,vp={width:390,height:844},query=''}={}){const ctx=await b.newContext({viewport:vp,hasTouch:true});const p=await ctx.newPage();const errs=[];const posts=[];p.posts=posts;
   p.on('pageerror',e=>errs.push(e.message));p.on('console',m=>{if(m.type()==='error'&&!/Failed to load resource|ERR_|navigator.vibrate/.test(m.text()))errs.push(m.text())});
-  await ctx.route('https://docs.google.com/**',r=>r.request().method()==='POST'?r.fulfill({status:200,body:''}):r.fulfill({status:200,contentType:'text/csv',body:csv}));
+  await ctx.route('https://docs.google.com/**',r=>{if(r.request().method()==='POST'){posts.push(decodeURIComponent(r.request().postData()||''));return r.fulfill({status:200,body:''});}return r.fulfill({status:200,contentType:'text/csv',body:csv});});
   await ctx.route(/^https?:\/\/(?!localhost|docs\.google\.com)/,r=>r.abort());
   await p.clock.install({time:new Date('2026-11-26T10:00:00')});await p.goto('http://localhost:8000/'+route);
   await p.evaluate(([c,o,pre])=>{localStorage.clear();localStorage.setItem(pre+'-cfg',JSON.stringify(c));localStorage.setItem(pre+'-prog',JSON.stringify(o));localStorage.setItem(pre+'-season','2');localStorage.setItem('asc-u-perm','1');localStorage.setItem('asc-u-intro','1');localStorage.setItem(pre+'-tele',JSON.stringify({asked:'2026-11-01'}));},[CFG(age),prog,pre]);
@@ -94,6 +94,21 @@ for(const [route,pre,dev,vp] of [['comecar/','asc-u','iPhone',{width:390,height:
   ({ctx,p,errs}=await open(route,pre,base({rank:{on:false,asked:true}}),{vp}));
   await p.locator('#gtHero .link',{hasText:'Agora não'}).click();await p.waitForTimeout(100);ok(tag+' agora não: some',!(await p.locator('#gtHero').isVisible()));
   await p.reload();await p.waitForTimeout(1500);ok(tag+' agora não: continua escondido depois de abrir de novo',!(await p.locator('#gtHero').isVisible()));await ctx.close();
+  // 12. 14-17 que já estava no ranking sem autorização: sai da lista (sem apagar nada) e vê o aviso
+  ({ctx,p,errs}=await open(route,pre,base({rank:{on:true,asked:true,uid:'teen1234',nick:'Raio',lastXp:5}}),{vp,age:'teen'}));await p.waitForTimeout(800);
+  st=await LS(p,pre);ok(tag+' 14-17 antigo: pausado sem apagar dados',st.rank.on===false&&st.rank.hold&&st.rank.nick==='Raio'&&st.rank.uid==='teen1234'&&st.friends.l.join()==='Ana,Bia'&&st.turmas.l[0].m.length===2,JSON.stringify(st.rank));
+  ok(tag+' 14-17 antigo: nada enviado ao ranking',!p.posts.some(x=>/R\|teen1234/.test(x)),p.posts.join(' / ').slice(0,200));
+  const h12=p.locator('#gtHero');ok(tag+' 14-17 antigo: aviso em Hoje',await h12.isVisible()&&(await h12.textContent()).includes('saiu do ranking'));
+  await h12.screenshot({path:SHOT+'hoje-autorizacao-'+dev+'.png'});
+  await h12.locator('button.go').click();await p.waitForTimeout(200);const g12=p.locator('#gtAge');
+  ok(tag+' 14-17 antigo: apelido já preenchido',await g12.locator('.gtname').inputValue()==='Raio');
+  await g12.locator('input[type=checkbox]').check();await g12.locator('button.go').click();await p.waitForTimeout(500);
+  st=await LS(p,pre);ok(tag+' 14-17 antigo: volta com autorização',st.rank.on===true&&st.rank.par&&!st.rank.hold&&st.rank.uid==='teen1234',JSON.stringify(st.rank));
+  ok(tag+' 14-17 antigo: volta a enviar',p.posts.some(x=>/R\|teen1234\|Raio/.test(x)));
+  await p.reload();await p.waitForTimeout(1500);st=await LS(p,pre);ok(tag+' 14-17 antigo: continua no ranking ao reabrir',st.rank.on===true);
+  ok(tag+' 14-17 antigo: console limpo',errs.length===0,errs.join(' | '));await ctx.close();
+  // 13. adulto no ranking não é afetado
+  ({ctx,p,errs}=await open(route,pre,base(),{vp}));st=await LS(p,pre);ok(tag+' adulto: segue no ranking',st.rank.on===true&&!st.rank.hold);await ctx.close();
   // 11. até 13: nada aparece
   ({ctx,p,errs}=await open(route,pre,base({rank:undefined}),{vp,age:'kid'}));
   ok(tag+' ≤13: sem destaque do ranking',!(await p.locator('#gtHero').isVisible()));ok(tag+' ≤13: console limpo',errs.length===0,errs.join(' | '));await ctx.close();}
