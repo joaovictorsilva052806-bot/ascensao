@@ -1503,6 +1503,7 @@ section[data-hbg]>:not(.hrbg){position:relative;z-index:1}
 .clpaste summary{min-height:44px;line-height:44px;cursor:pointer}
 .clpaste .row{display:flex;gap:8px;margin-top:8px}
 .clpaste input{flex:1;min-width:0;min-height:44px}
+.clpaste .row button.go{flex:none;padding-inline:14px}
 .clpaste .clmsg{margin-top:6px}
 .bpgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(96px,1fr));gap:6px;margin:6px 0}
 .bptile{border:1px solid var(--line);border-radius:8px;padding:8px;display:flex;flex-direction:column;gap:2px;background:rgba(0,0,0,.15);color:var(--fg)}
@@ -6848,11 +6849,17 @@ if(typeof gdUI==="function"){const _g=gdUI;gdUI=function(){_g.apply(this,argumen
 function clEl(t,c,x){const e=document.createElement(t);if(c)e.className=c;if(x!=null)e.textContent=x;return e;}
 function clStandalone(){try{return !!(navigator.standalone||matchMedia("(display-mode: standalone)").matches);}catch(e){return false;}}
 // lê amigo/c/t de um texto qualquer (link puro, ou a mensagem do WhatsApp com o link dentro)
+// pontuação colada no fim do link ("LINK.", "(LINK)", "entra aí LINK!") não entra no nome nem na turma
+const clTrim=v=>String(v||"").replace(/(?:[.,;:!?)\]}'"]|%2[129cC]|%3[aAbBfF]|%5[dD]|%7[dD])+$/,"");
 function clParse(txt){const s=String(txt||"");const m=/[?&]amigo=([^&\s#]+)/.exec(s);if(!m)return null;
-  const dec=v=>{try{return decodeURIComponent(v.replace(/\+/g," "));}catch(e){return v;}};
+  const dec=v=>{try{return decodeURIComponent(clTrim(v).replace(/\+/g," "));}catch(e){return clTrim(v);}};
   const a=typeof cleanNick==="function"?cleanNick(dec(m[1])):dec(m[1]).trim().slice(0,24);if(!a)return null;
   const c=((/[?&]c=([a-z0-9]+)/i.exec(s)||[])[1]||"").toLowerCase().replace(/[^a-z0-9]/g,"").slice(0,12);
-  const t=dec((/[?&]t=([^&\s#]+)/.exec(s)||[])[1]||"");return {a,c,t};}
+  const t=clTrim(dec((/[?&]t=([^&\s#]+)/.exec(s)||[])[1]||"")).trim();return {a,c,t};}
+// quem JÁ é amigo não passa pelo gtSync (ele só encaixa amigo sem turma): entra direto na turma do link
+function clTurma(inv){try{if(!inv||!inv.t||typeof gtSt!=="function")return "";const n=frSt().l.find(x=>gtN(x)===gtN(inv.a));if(!n)return "";
+  const g=gtSt();let t=gtByName(inv.t);if(!t){if(g.l.length>=GT_MAX)return "cheio";t={id:"t"+Date.now().toString(36),n:gtClean(inv.t),e:"⭐",c:"",m:[]};g.l.push(t);}
+  if(!t.m.some(x=>gtN(x)===gtN(n)))t.m.push(n);try{localStorage.removeItem("asc-amigo-t");}catch(e){}save();return t.n;}catch(e){return "";}}
 function clLink(a,c,t){return (typeof CD_URL==="string"?CD_URL:location.origin+location.pathname)+"?amigo="+encodeURIComponent(a)+(c?"&c="+c:"")+(t?"&t="+encodeURIComponent(t):"");}
 function clApply(inv){if(!inv)return false;try{localStorage.setItem("asc-amigo",inv.a);localStorage.setItem("asc-amigo-c",inv.c||"");
   if(inv.t&&typeof gtClean==="function"){const t=gtClean(inv.t);if(t)localStorage.setItem("asc-amigo-t",JSON.stringify({a:inv.a,t}));}}catch(e){return false;}return true;}
@@ -6881,7 +6888,10 @@ function clUI(){const p=$("tmPanel");if(!p||p.hidden)return;if(typeof tmKid==="f
   b.addEventListener("click",()=>{const inv=clParse(i.value);if(!inv){say("Não achei um convite nesse texto. Cole o link inteiro que começa com https://");return;}
     const me=typeof rankName==="function"?rankName():"";if(me&&typeof tmN==="function"&&tmN(me)===tmN(inv.a)){say("Esse convite é seu. Mande para um amigo.");return;}
     clApply(inv);i.value="";clVal="";
-    if(typeof tmOn==="function"&&tmOn()&&me){say("Pronto: convite de "+inv.a+" aceito"+(inv.t?" (turma "+inv.t+")":"")+".");try{cdInvDo();}catch(e){}}
+    if(typeof tmOn==="function"&&tmOn()&&me){const ja=clTurma(inv);
+      if(ja==="cheio")say(inv.a+" já é seu amigo. Você já está no limite de "+GT_MAX+" turmas, então ele ficou onde estava.");
+      else if(ja){say("Pronto: "+inv.a+" já era seu amigo e agora está na turma "+ja+".");try{tmUI();}catch(e){}}
+      else{say("Pronto: convite de "+inv.a+" aceito"+(inv.t?" (turma "+inv.t+")":"")+".");try{cdInvDo();}catch(e){}}}
     else{say("Convite guardado. Entre no ranking com um apelido e você vira amigo de "+inv.a+" na hora.");try{renderRankUI();}catch(e){}}});
   i.addEventListener("keydown",e=>{if(e.key==="Enter")b.click();});row.append(i,b);d.append(row,msg);p.append(d);}
 if(typeof tmUI==="function"){const _tu=tmUI;tmUI=function(){if(document.activeElement&&document.activeElement.id==="clIn")return;_tu.apply(this,arguments);try{clUI();}catch(e){}};}
