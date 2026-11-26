@@ -1502,8 +1502,8 @@ section[data-hbg]>:not(.hrbg){position:relative;z-index:1}
 .clpaste{margin-top:10px}
 .clpaste summary{min-height:44px;line-height:44px;cursor:pointer}
 .clpaste .row{display:flex;gap:8px;margin-top:8px}
-.clpaste input{flex:1;min-width:0;min-height:44px}
-.clpaste .row button.go{flex:none;padding-inline:14px}
+.clpaste input{flex:1 1 auto;min-width:0;min-height:44px;text-overflow:ellipsis}
+.clpaste .row .go{flex:none;padding:0 14px}
 .clpaste .clmsg{margin-top:6px}
 </style></head><body>
 
@@ -6693,7 +6693,8 @@ setTimeout(()=>{try{arUI();}catch(e){}},0);
 // Pedido de testador: "acrescenta meta de leitura". Alimenta 📘 Intelecto (70%) e 🦉 Sabedoria (30%).
 // XP: 1 a cada 2 páginas (até 15) + 5 ao bater a meta do dia, numa entrada só "ler:<dia>". Terminar um livro: +20 ("ler:livro:<n>").
 // Bater a meta do dia carrega +1 Arcano na Arena (arena.js).
-// Só ADICIONA prog.read = {goal, d:{dia:páginas}, book:{t,tot,pg}, books:[{t,d}], last:[dia,n]}.
+// Só ADICIONA prog.read = {goal, d:{dia:páginas}, book:{t,tot,pg}, books:[{t,d}], last:[dia,n], paused:[{t,tot,pg,d}]}.
+// "Trocar livro" pede 2 toques e guarda o livro largado em paused (sem XP de concluído); dá para voltar a ele.
 const LR_GOALS=[5,10,20,30],LR_MAXXP=15,LR_HIT=5,LR_BOOK=20;
 function lrSt(){if(!prog.read||typeof prog.read!=="object")prog.read={};const r=prog.read;r.d=r.d&&typeof r.d==="object"?r.d:{};r.books=Array.isArray(r.books)?r.books:[];r.goal=r.goal|0;return r;}
 function lrEl(t,cl,x){const e=document.createElement(t);if(cl)e.className=cl;if(x!=null)e.textContent=x;return e;}
@@ -6734,16 +6735,24 @@ function lrUI(){let p=$("lrPanel");const anchor=$("arPanel")||$("atPanel")||$("a
   const bk=lrEl("div","lrbook");
   if(r.book&&r.book.t){const t=lrEl("div","lrbt");t.append(lrEl("b",null,"📕 "+r.book.t),lrEl("span","sm mono",(r.book.pg||0)+(r.book.tot?"/"+r.book.tot:"")+" págs"));bk.append(t);
     if(r.book.tot){const b2=lrEl("div","lrbar thin");const j=lrEl("i");j.style.width=Math.min(100,(r.book.pg||0)/r.book.tot*100).toFixed(1)+"%";b2.append(j);bk.append(b2);}
-    const row=lrEl("div","row");const f=lrEl("button","ghost","Terminei o livro 🎉");f.type="button";f.onclick=lrFinish;const x=lrEl("button","link","Trocar livro");x.type="button";x.onclick=()=>{r.book=null;save();lrUI();lrBookForm();};row.append(f,x);bk.append(row);}
-  else{const b=lrEl("button","link","+ Livro que estou lendo (opcional)");b.type="button";b.onclick=lrBookForm;bk.append(b);}
+    const row=lrEl("div","row");const f=lrEl("button","ghost","Terminei o livro 🎉");f.type="button";f.onclick=lrFinish;const x=lrEl("button","link","Trocar livro");x.type="button";x.setAttribute("aria-label","Trocar livro");
+      x.onclick=()=>{if(x.dataset.sure){lrSwap();return;}x.dataset.sure="1";x.textContent="Trocar? Toque de novo";x.setAttribute("aria-label","Toque de novo para trocar de livro. "+r.book.t+" fica guardado");
+        setTimeout(()=>{if(x.isConnected){delete x.dataset.sure;x.textContent="Trocar livro";x.setAttribute("aria-label","Trocar livro");}},3000);};row.append(f,x);bk.append(row);}
+  else{const b=lrEl("button","link","+ Livro que estou lendo (opcional)");b.type="button";b.onclick=lrBookForm;bk.append(b);lrResumeBtn(bk);}
   p.append(bk);
   const ch=lrEl("button","link","Mudar meta");ch.type="button";ch.onclick=()=>{r.edit=1;lrUI();};p.append(ch);}
+function lrPaused(){const r=lrSt();if(!Array.isArray(r.paused))r.paused=[];return r.paused;}
+function lrSwap(){const r=lrSt();if(!r.book||!r.book.t)return;const b=r.book;lrPaused().push({t:b.t,tot:b.tot||0,pg:b.pg||0,d:todayKey()});r.book=null;save();
+  toast("📕 "+b.t+" guardado. Dá pra voltar a ele.");lrUI();lrBookForm();}
+function lrResumeBtn(bk){const ps=lrPaused();if(!ps.length)return;const last=ps[ps.length-1];
+  const b=lrEl("button","link","↩ Voltar a "+last.t+" ("+(last.pg||0)+(last.tot?"/"+last.tot:"")+" págs)");b.type="button";
+  b.onclick=()=>{const r=lrSt();const ps2=lrPaused();const o=ps2.pop();if(!o)return;if(r.book&&r.book.t)ps2.push({t:r.book.t,tot:r.book.tot||0,pg:r.book.pg||0,d:todayKey()});r.book={t:o.t,tot:o.tot||0,pg:o.pg||0};save();toast("📕 De volta a "+o.t);lrUI();};bk.append(b);}
 function lrBookForm(){const p=$("lrPanel");if(!p)return;const bk=p.querySelector(".lrbook");if(!bk)return;bk.textContent="";
   const f=lrEl("form","lrform");const t=lrEl("input");t.placeholder="Nome do livro";t.maxLength=60;t.setAttribute("aria-label","Nome do livro");
   const n=lrEl("input");n.type="number";n.inputMode="numeric";n.placeholder="Total de páginas";n.min="1";n.max="5000";n.setAttribute("aria-label","Total de páginas");
   const s=lrEl("button","go","Salvar");s.type="submit";f.append(t,n,s);
   f.onsubmit=e=>{e.preventDefault();const nm=t.value.trim();if(!nm){t.focus();return;}const r=lrSt();r.book={t:nm,tot:Math.max(0,Math.min(5000,Math.round(+n.value||0))),pg:0};save();lrUI();};
-  bk.append(f);setTimeout(()=>t.focus(),30);}
+  bk.append(f);lrResumeBtn(bk);setTimeout(()=>t.focus(),30);}
 {const _r=render;render=function(){_r.apply(this,arguments);try{if((document.body.dataset.tab==="prog"&&!document.querySelector("#lrPanel .lrform"))||!$("lrPanel"))lrUI();}catch(e){}};}
 document.addEventListener("click",e=>{const b=e.target.closest&&e.target.closest('#tabbar [data-go="prog"]');if(b)setTimeout(()=>{try{lrUI();}catch(x){}},0);},true);
 setTimeout(()=>{try{lrUI();}catch(e){}},0);
@@ -6804,20 +6813,23 @@ if(typeof gdUI==="function"){const _g=gdUI;gdUI=function(){_g.apply(this,argumen
 function clEl(t,c,x){const e=document.createElement(t);if(c)e.className=c;if(x!=null)e.textContent=x;return e;}
 function clStandalone(){try{return !!(navigator.standalone||matchMedia("(display-mode: standalone)").matches);}catch(e){return false;}}
 // lê amigo/c/t de um texto qualquer (link puro, ou a mensagem do WhatsApp com o link dentro)
-// pontuação colada no fim do link ("LINK.", "(LINK)", "entra aí LINK!") não entra no nome nem na turma
-const clTrim=v=>String(v||"").replace(/(?:[.,;:!?)\]}'"]|%2[129cC]|%3[aAbBfF]|%5[dD]|%7[dD])+$/,"");
 function clParse(txt){const s=String(txt||"");const m=/[?&]amigo=([^&\s#]+)/.exec(s);if(!m)return null;
-  const dec=v=>{try{return decodeURIComponent(clTrim(v).replace(/\+/g," "));}catch(e){return clTrim(v);}};
+  const tail=v=>v.replace(/(%2[0-9a-f]|%3[ab]|%5d|%7d|[.,;:!?)\]}'"”’»…])+$/i,"");
+  const dec=v=>{try{return decodeURIComponent(tail(v).replace(/\+/g," "));}catch(e){return tail(v);}};
   const a=typeof cleanNick==="function"?cleanNick(dec(m[1])):dec(m[1]).trim().slice(0,24);if(!a)return null;
   const c=((/[?&]c=([a-z0-9]+)/i.exec(s)||[])[1]||"").toLowerCase().replace(/[^a-z0-9]/g,"").slice(0,12);
-  const t=clTrim(dec((/[?&]t=([^&\s#]+)/.exec(s)||[])[1]||"")).trim();return {a,c,t};}
-// quem JÁ é amigo não passa pelo gtSync (ele só encaixa amigo sem turma): entra direto na turma do link
-function clTurma(inv){try{if(!inv||!inv.t||typeof gtSt!=="function")return "";const n=frSt().l.find(x=>gtN(x)===gtN(inv.a));if(!n)return "";
-  const g=gtSt();let t=gtByName(inv.t);if(!t){if(g.l.length>=GT_MAX)return "cheio";t={id:"t"+Date.now().toString(36),n:gtClean(inv.t),e:"⭐",c:"",m:[]};g.l.push(t);}
-  if(!t.m.some(x=>gtN(x)===gtN(n)))t.m.push(n);try{localStorage.removeItem("asc-amigo-t");}catch(e){}save();return t.n;}catch(e){return "";}}
+  const t=dec((/[?&]t=([^&\s#]+)/.exec(s)||[])[1]||"");return {a,c,t};}
 function clLink(a,c,t){return (typeof CD_URL==="string"?CD_URL:location.origin+location.pathname)+"?amigo="+encodeURIComponent(a)+(c?"&c="+c:"")+(t?"&t="+encodeURIComponent(t):"");}
 function clApply(inv){if(!inv)return false;try{localStorage.setItem("asc-amigo",inv.a);localStorage.setItem("asc-amigo-c",inv.c||"");
   if(inv.t&&typeof gtClean==="function"){const t=gtClean(inv.t);if(t)localStorage.setItem("asc-amigo-t",JSON.stringify({a:inv.a,t}));}}catch(e){return false;}return true;}
+// quem já é amigo não passa pelo gtSync (ele só encaixa amigo sem turma): põe direto na turma do link.
+// sem go: só diz o nome da turma em que a pessoa vai ficar (a existente, a nova, ou nenhuma se já tem 12).
+function clTurma(inv,go){if(!inv||!inv.t||typeof gtSt!=="function"||typeof gtClean!=="function")return "";const n=gtClean(inv.t);if(!n)return "";
+  let t=gtByName(n);const g=gtSt();if(!t&&g.l.length>=GT_MAX)return "";if(!go)return t?t.n:n;
+  if(typeof frHas!=="function"||!frHas(inv.a))return n;
+  if(!t){t={id:"t"+Date.now().toString(36),n,e:"⭐",c:"",m:[]};g.l.push(t);}
+  if(!t.m.some(x=>gtN(x)===gtN(inv.a)))t.m.push(inv.a);
+  try{localStorage.removeItem("asc-amigo-t");}catch(e){}save();try{tmUI();}catch(e){}return t.n;}
 // 1) aviso no link aberto fora do app instalado (o card.js já tirou os parâmetros da barra; a URL original fica no navigation entry)
 (function(){try{if(clStandalone())return;const nav=(performance.getEntriesByType&&performance.getEntriesByType("navigation")[0])||{};
   const inv=clParse(nav.name||"");if(!inv)return;const box=clEl("div","clbar");box.id="clBar";box.setAttribute("role","region");box.setAttribute("aria-label","Convite de "+inv.a);
@@ -6836,17 +6848,14 @@ function clUI(){const p=$("tmPanel");if(!p||p.hidden)return;if(typeof tmKid==="f
   let d=p.querySelector(".clpaste");if(d&&d.parentNode===p&&p.lastElementChild===d)return;if(d)d.remove();
   d=clEl("details","clpaste");d.open=clOpen;d.addEventListener("toggle",()=>{clOpen=d.open;});const sm=clEl("summary",null,"🔗 Recebeu um convite? Cole aqui");d.append(sm);
   d.append(clEl("div","sm muted","Cole o link que te mandaram (pode ser a mensagem inteira). Você vira amigo e entra na turma, sem perder nada do seu jogo."));
-  const row=clEl("div","row");const i=clEl("input");i.type="text";i.id="clIn";i.placeholder="Cole o link do convite";i.setAttribute("aria-label","Link do convite");i.autocomplete="off";i.value=clVal;
+  const row=clEl("div","row");const i=clEl("input");i.type="text";i.id="clIn";i.placeholder="Cole o link aqui";i.setAttribute("aria-label","Link do convite");i.autocomplete="off";i.value=clVal;
   i.addEventListener("input",()=>{clVal=i.value;});
   const b=clEl("button","go","Entrar");b.type="button";const msg=clEl("div","sm clmsg",clMsg);msg.setAttribute("role","status");
   const say=t=>{clMsg=t;msg.textContent=t;};
   b.addEventListener("click",()=>{const inv=clParse(i.value);if(!inv){say("Não achei um convite nesse texto. Cole o link inteiro que começa com https://");return;}
     const me=typeof rankName==="function"?rankName():"";if(me&&typeof tmN==="function"&&tmN(me)===tmN(inv.a)){say("Esse convite é seu. Mande para um amigo.");return;}
     clApply(inv);i.value="";clVal="";
-    if(typeof tmOn==="function"&&tmOn()&&me){const ja=clTurma(inv);
-      if(ja==="cheio")say(inv.a+" já é seu amigo. Você já está no limite de "+GT_MAX+" turmas, então ele ficou onde estava.");
-      else if(ja){say("Pronto: "+inv.a+" já era seu amigo e agora está na turma "+ja+".");try{tmUI();}catch(e){}}
-      else{say("Pronto: convite de "+inv.a+" aceito"+(inv.t?" (turma "+inv.t+")":"")+".");try{cdInvDo();}catch(e){}}}
+    if(typeof tmOn==="function"&&tmOn()&&me){const tn=clTurma(inv);say("Pronto: convite de "+inv.a+" aceito"+(tn?" (turma "+tn+")":"")+".");try{cdInvDo();}catch(e){}try{clTurma(inv,1);}catch(e){}}
     else{say("Convite guardado. Entre no ranking com um apelido e você vira amigo de "+inv.a+" na hora.");try{renderRankUI();}catch(e){}}});
   i.addEventListener("keydown",e=>{if(e.key==="Enter")b.click();});row.append(i,b);d.append(row,msg);p.append(d);}
 if(typeof tmUI==="function"){const _tu=tmUI;tmUI=function(){if(document.activeElement&&document.activeElement.id==="clIn")return;_tu.apply(this,arguments);try{clUI();}catch(e){}};}

@@ -67,6 +67,25 @@ for(const [route,pre,tag] of [['comecar/','asc-u','/comecar/'],['','ascensao','/
   else ok(tag+' C: sem ranking: guarda e pede o apelido',false,'sem caixa');
   ok(tag+' C: console limpo',!errs.length,errs.join(' | '));await ctx.close();
 }
+// G: pontuação colada no fim do link não cria turma "Família." (achado do QA, Trem 14)
+for(const txt of [LINK+'.','('+LINK+')','entra aí '+LINK+'!','"'+LINK+'"']){
+  const {ctx,p,errs}=await open('comecar/','asc-u',CFG('adult'),PROG({rank:{on:true,asked:true,uid:'lari1234',nick:'Lari'}}));await amigos(p);
+  await p.fill('#clIn',txt);await p.locator('.clpaste button.go').click();await p.waitForTimeout(1200);
+  const st=await p.evaluate(()=>JSON.parse(localStorage.getItem('asc-u-prog')));const ns=((st.turmas&&st.turmas.l)||[]).map(t=>t.n);
+  ok('G: '+JSON.stringify(txt.replace(LINK,'LINK'))+' cai em "Família" e não em turma nova',ns.includes('Família')&&!ns.some(n=>/Família./.test(n)),JSON.stringify(ns));
+  ok('G: '+JSON.stringify(txt.replace(LINK,'LINK'))+' console limpo',!errs.length,errs.join(' | '));await ctx.close();}
+// H: já é amiga de JV e já está numa turma: colar o link da Família põe JV na Família (a mensagem não mente)
+{const {ctx,p,errs}=await open('comecar/','asc-u',CFG('adult'),PROG({rank:{on:true,asked:true,uid:'lari1234',nick:'Lari'},friends:{l:['JV'],pend:{}},turmas:{cur:'t0',l:[{id:'t0',n:'Minha turma',e:'⭐',c:'',m:['JV']}]}}));await amigos(p);
+  await p.fill('#clIn',LINK);await p.locator('.clpaste button.go').click();await p.waitForTimeout(1200);
+  const st=await p.evaluate(()=>JSON.parse(localStorage.getItem('asc-u-prog')));
+  ok('H: amigo antigo entra na turma do link',((st.turmas&&st.turmas.l)||[]).some(t=>t.n==='Família'&&t.m.includes('JV')),JSON.stringify(st.turmas));
+  ok('H: continua na turma antiga e sem amigo duplicado',st.turmas.l.find(t=>t.id==='t0').m.includes('JV')&&st.friends.l.filter(x=>x==='JV').length===1,JSON.stringify(st.friends));
+  ok('H: mensagem cita a turma',/turma Família/.test(await p.textContent('.clmsg')),await p.textContent('.clmsg'));
+  ok('H: console limpo',!errs.length,errs.join(' | '));await ctx.close();}
+// I: 320 px: campo maior que o botão e botão inteiro
+{const {ctx,p,errs}=await open('comecar/','asc-u',CFG('adult'),PROG({rank:{on:true,asked:true,uid:'lari1234',nick:'Lari'}}),{viewport:{width:320,height:640}});await amigos(p);
+  const w=await p.evaluate(()=>({i:document.querySelector('#clIn').getBoundingClientRect().width,b:document.querySelector('.clpaste button.go').getBoundingClientRect().width,sw:document.documentElement.scrollWidth}));
+  ok('I: 320 px: campo largo e botão compacto',w.i>=150&&w.b<=110&&w.i>w.b,JSON.stringify(w));ok('I: 320 px: sem rolagem lateral',w.sw<=320,JSON.stringify(w));await ctx.close();}
 // D: menor de 14 não vê a caixa
 {const {ctx,p,errs}=await open('comecar/','asc-u',CFG('kid'),PROG());await amigos(p);ok('D: menor de 14 sem convite',await p.locator('.clpaste').count()===0);ok('D: console limpo',!errs.length,errs.join(' | '));await ctx.close();}
 // E: link aberto no Safari (fora do app instalado): aviso com Copiar convite
