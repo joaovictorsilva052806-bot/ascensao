@@ -18,6 +18,7 @@ for(const [nome,dev] of [['iPhone',devices['iPhone 13']],['Android',devices['Pix
   await p.goto(B+'/comecar/');await p.clock.runFor(3000);await tab(p,'foco');await p.waitForTimeout(200);
   // 1) missão do Sistema e tempos
   const mis=await p.$eval('#fzTop .fzmis',e=>e.textContent).catch(()=>'');ok(nome+': botão focar na missão do Sistema',/FOCAR NA MISSÃO/.test(mis)&&/estudo/i.test(mis),mis);
+  ok(nome+': seletor já na missão do Sistema',await p.$eval('#focusQuest',e=>e.value)==='m1');
   ok(nome+': tempos 15 e 50 min',(await p.$$eval('#fzBox .fzdur button',b=>b.map(x=>x.textContent).join(','))).includes('15 min,50 min'));
   // 5) mapa de calor com o histórico antigo
   const cells=await p.$$eval('#fzHeat .fzc[title]',c=>c.map(x=>x.title+'|'+x.className));ok(nome+': mapa com 28 dias',cells.length===28,String(cells.length));

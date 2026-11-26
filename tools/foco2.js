@@ -14,7 +14,7 @@ function fzUI(){const p=$("focusPanel");if(!p)return;const on=!!(prog.focus&&pro
   if(!t){t=fzEl("div","fzbox fztop");t.id="fzTop";const h=p.querySelector(".qhead");if(h)h.after(t);else p.prepend(t);}
   if(!w){w=fzEl("div","fzbox");w.id="fzBox";const note=$("focusNote");p.insertBefore(w,note);}
   t.hidden=on;w.hidden=on;if(on)return;t.textContent="";w.textContent="";
-  const q=fzTarget();
+  const q=fzTarget();{const sel=$("focusQuest");if(q&&sel&&!sel.value){try{fillFocusSelect();}catch(e){}if([...sel.options].some(o=>o.value===q.id))sel.value=q.id;}}
   if(q){const b=fzEl("button","go fzmis");b.type="button";b.append(fzEl("span","fzk","[ SISTEMA ] FOCAR NA MISSÃO"),fzEl("span","fzt",(typeof qtShort==="function"&&qtShort(q))||q.title));
     b.onclick=()=>{const sel=$("focusQuest");if(sel){fillFocusSelect();sel.value=q.id;}startFocus(25);};t.append(b);}
   const r=fzEl("div","fzdur");r.append(fzEl("span","sm muted","Outro tempo:"));

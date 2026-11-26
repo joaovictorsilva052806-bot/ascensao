@@ -57,7 +57,7 @@ function smMission(q,rec){const c=smShell(rec?"MISSÃO DE RECUPERAÇÃO":q.main?
   if(!e&&!rec&&document.querySelector("#energy button")){const r=smEl("div","smen");r.setAttribute("role","group");r.setAttribute("aria-label","Bateria de hoje");r.append(smEl("span","smenl","Bateria hoje?"));
     for(const [k,l] of [["baixa","🪫 Baixa"],["media","🔋 Média"],["alta","⚡ Cheia"]]){const b=smEl("button","ghost",l);b.type="button";b.dataset.e=k;
       b.onclick=()=>{const eb=document.querySelector('#energy button[data-e="'+k+'"]');if(eb)eb.click();else{prog.energy=prog.energy||{};prog.energy[smTk()]=k;save();}smIdx=0;setTimeout(smShow,60);};r.append(b);}c.append(r);}
-  c.append(smEl("p","sm muted",(e==="baixa"?"Bateria baixa: hoje o mínimo já vale o dia inteiro. ":e==="alta"?"Bateria cheia: terminou o mínimo, vá até o fim e ganhe bônus. ":"")+"Recompensa: +"+q.xp+" XP"+(q.minTitle?" (mínimo: +"+Math.ceil(q.xp/2)+")":"")+"."));
+  c.append(smEl("p","sm muted",(e==="baixa"?"Bateria baixa: hoje o mínimo já vale o dia inteiro. ":e==="alta"?"Bateria cheia: terminou o mínimo, vá até o fim e ganhe bônus. ":"")+(q.minTitle?"Mínimo feito: +"+Math.ceil(q.xp/2)+" XP. Completa: +"+q.xp+" XP.":"Começou: +"+SM_START+" XP. Completa: +"+q.xp+" XP.")));
   const go=smEl("button","go smgo","ACEITAR");go.type="button";go.onclick=()=>smTimer(q,rec);c.append(go);
   const r=smEl("div","smrow");const n=smCands().length;
   const tr=smEl("button","ghost","↻ Trocar");tr.type="button";tr.disabled=n<2;tr.onclick=()=>{smIdx++;smMission(smPick()||q,rec);};
@@ -98,7 +98,7 @@ function smBar(){const qs=$("quests");if(!qs||!cfg||cfg.blank)return;const sec=q
 // em navegador automatizado (testes) não abre sozinho, para não cobrir a tela dos outros testes; o teste do Sistema liga com asc-sm-qa
 function smAutoOk(){try{return !navigator.webdriver||localStorage.getItem("asc-sm-qa")==="1";}catch(e){return true;}}
 function smAuto(n){n=n||0;try{if(!cfg||cfg.blank||smSt().off||!smAutoOk())return;let last=0;try{last=+localStorage.getItem("asc-sm-last")||0;}catch(e){}if(Date.now()-last<SM_GAP)return;
-  const busy=($("onb")&&!$("onb").hidden)||document.querySelector(".sysmodal:not([hidden]),#clsModal:not([hidden]),.levelup:not([hidden])")||($("msSheet")&&!$("msSheet").hidden)||($("zapSheet")&&!$("zapSheet").hidden)||document.body.classList.contains("inmission");
+  const busy=($("onb")&&!$("onb").hidden)||document.querySelector(".sysmodal:not([hidden]),#clsModal:not([hidden]),.levelup:not([hidden])")||(typeof sysQ!=="undefined"&&sysQ.length)||($("msSheet")&&!$("msSheet").hidden)||($("zapSheet")&&!$("zapSheet").hidden)||document.body.classList.contains("inmission");
   if(busy){if(n<80)setTimeout(()=>smAuto(n+1),1500);return;}
   if(!smCands().length&&smEnergy())return;try{localStorage.setItem("asc-sm-last",String(Date.now()));}catch(e){}smIdx=0;smShow();}catch(e){}}
 document.addEventListener("keydown",e=>{if(e.key==="Escape"&&$("smSheet")&&!$("smSheet").hidden)smClose();});
