@@ -197,6 +197,8 @@ input:focus,select:focus,textarea:focus{outline:none;border-color:var(--accent)!
 .day{border-radius:2px!important}
 .day.today{outline:none;box-shadow:0 0 0 1px var(--glow);animation:blink 2s infinite}
 .toast{animation:toastIn .35s var(--ease)}
+/* o aviso é só texto: toque passa para o que está embaixo (menos o botão Desfazer) */
+.toast{pointer-events:none}.toast button,.toast a{pointer-events:auto}
 @keyframes toastIn{from{opacity:0;transform:translate(-50%,12px)}to{opacity:1;transform:translate(-50%,0)}}
 .xpfloat{position:fixed;z-index:70;pointer-events:none;font-family:var(--f-hud);font-weight:700;font-size:1rem;color:#eaffff;text-shadow:0 0 10px var(--accent),0 0 20px var(--accent);animation:xpUp 1.1s var(--ease) forwards}
 .xpfloat.gold{color:#fff3cf;text-shadow:0 0 10px var(--gold),0 0 22px var(--gold)}

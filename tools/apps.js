@@ -74,11 +74,11 @@ function apDecorate(){const box=$("quests");if(!box)return;
 {const _tg=toggle;toggle=function(q){const r=_tg.apply(this,arguments);try{const tk=todayKey(),L=prog.log[tk]||[];if(q&&!L.some(e=>e.q===q.id)&&L.some(e=>e.q==="app:"+q.id)){prog.log[tk]=L.filter(e=>e.q!=="app:"+q.id);save();render();}}catch(e){}return r;};}
 // atalho: adicionar uma tarefa de app pronta (só onde dá para editar tarefas)
 const AP_ADD=[{app:"duo",title:"Duolingo: 1 lição",minTitle:"1 lição curta",xp:15,stat:"mente"},{app:"ler",title:"Ler 10 páginas",minTitle:"2 páginas",xp:15,stat:"mente"},{app:"run",title:"Correr ou caminhar 20 min",minTitle:"10 min",xp:20,stat:"corpo"},{app:"med",title:"Meditar 5 min",minTitle:"1 min respirando",xp:10,stat:"foco"}];
-function apAdd(t){if(!cfg||typeof edSave!=="function"||apSynced())return;const Q=(cfg.quests||[]).slice();if(Q.some(x=>x.app===t.app)){toast("Você já tem essa tarefa.");return;}
+function apAdd(t){if(!cfg||typeof edSave!=="function")return;const Q=(cfg.quests||[]).slice();if(Q.some(x=>x.app===t.app)){toast("Você já tem essa tarefa.");return;}
   Q.push(Object.assign({id:"ap_"+t.app+Date.now().toString(36)},t));cfg=Object.assign({},cfg,{quests:Q,blank:false});edSave();save();render();toast(t.title+": adicionada às tarefas de hoje (extra).");apAddUI();}
-// tarefas vindas da planilha (app do JV sincronizado): a sincronização sobrescreve a cfg, então sem atalhos de criar
-function apSynced(){try{if(SYNC)return true;}catch(e){}try{return !!localStorage.getItem("ascensao-sync");}catch(e){return false;}}
-function apAddUI(){const ed=$("edNew");if(!ed||typeof edSave!=="function")return;if(apSynced()){const w=$("apAdd");if(w)w.remove();return;}let w=$("apAdd");
+function apAddUI(){const ed=$("edNew");if(!ed||typeof edSave!=="function")return;let w=$("apAdd");
+  // planilha ligada: as tarefas vêm dela (o que for criado aqui seria sobrescrito na próxima sincronização)
+  let sy="";try{sy=SYNC;}catch(e){}if(sy){if(w)w.remove();return;}
   if(!w){w=apEl("div","apadd");w.id="apAdd";w.append(apEl("div","sm muted","Tarefas com app e prova por print:"));const r=apEl("div","row");r.id="apAddRow";w.append(r);ed.parentNode.insertBefore(w,ed.nextSibling);}
   const r=$("apAddRow");r.textContent="";const Q=(cfg&&cfg.quests)||[];
   for(const t of AP_ADD){const a=AP_APPS.find(x=>x.k===t.app);const has=Q.some(x=>x.app===t.app);const b=apEl("button","ghost",a.ic+" "+(has?"✓ ":"")+t.title);b.type="button";b.disabled=has;b.onclick=()=>apAdd(t);r.append(b);}}
