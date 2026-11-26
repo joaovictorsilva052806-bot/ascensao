@@ -14,7 +14,7 @@ rep('<div class="toast" id="toast" hidden></div>',R('foco-room.html')+'<div clas
 rep('document.addEventListener("visibilitychange",()=>{if(!document.hidden)focusUI();});','document.addEventListener("visibilitychange",()=>{if(!document.hidden)focusUI();});\n'+R('foco.js'))
 rep('<title>Ascension</title>','<title>Ascension</title>')
 rep('<h2>Quests de hoje</h2>','<h2>Tarefas de hoje</h2>')
-if not ROOT: rep('href="icon-180.png"','href="../icon-180.png"');rep('<link rel="icon" href="icon-192.png">','<link rel="icon" href="../icon-192.png">')
+if not ROOT: rep('href="icon-180.png"','href="../icon-180.png"');s=s.replace('href="icons/splash/','href="../icons/splash/');rep('<link rel="icon" href="icon-192.png">','<link rel="icon" href="../icon-192.png">')
 if not ROOT: s=s.replace('"ascensao-prog"','"asc-u-prog"').replace('"ascensao-cfg"','"asc-u-cfg"').replace('"ascensao-sync"','"asc-u-sync"')
 rep('placeholder="Ex.: mandar a proposta pro cliente"','placeholder="Ex.: entregar a lista de Cálculo"')
 rep('placeholder="Ex.: mandar mensagem pro corretor que eu travo de chamar"','placeholder="Ex.: tirar minha dúvida com o professor"')

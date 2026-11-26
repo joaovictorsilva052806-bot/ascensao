@@ -71,13 +71,13 @@ Ascension 1.0 chegou! Classes, missões com XP, Rank de E a S, missão ativa com
 
 ## Screenshots
 
-`docs/lojas/screenshots/android/` (1080×1920) e `docs/lojas/screenshots/iphone/` (1290×2796), na ordem:
+`docs/lojas/screenshots/android/` (1080×1920), `docs/lojas/screenshots/iphone/` (1290×2796) e `docs/lojas/screenshots/iphone-65/` (1284×2778), na ordem:
 
 1. Sua rotina vira um RPG (Hoje)
 2. Missões curtas, XP na hora
 3. Foco de 25 minutos
-4. Derrote o chefão da semana
-5. Suba de liga com a turma
+4. Evolua o seu personagem
+5. Derrotem o chefão juntos
 
 Gerados com dados de exemplo (perfil "Lucas"). Para refazer depois de mudar o visual: rodar o app local e o script `docs/lojas/screenshots.js`.
 
