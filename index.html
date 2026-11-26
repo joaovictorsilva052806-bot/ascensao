@@ -1123,6 +1123,8 @@ body.insm{overflow:hidden}
 .smbar .smbn{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-size:.95rem}
 .smbar .smbg{flex:none;font-weight:700;color:var(--accent);font-size:.85rem}
 @media (prefers-reduced-motion:reduce){.smsheet{backdrop-filter:none}}
+/* recompensa (atributo, nível, conquista) sempre por cima do Sistema: o jogador vê o prêmio, toca em Aceitar e volta para a missão */
+body.insm .sysmodal:not([hidden]),body.insm .levelup:not([hidden]){z-index:90}
 /* ---- Foco com mais utilidade (tools/foco2.js) ---- */
 .fzbox{display:flex;flex-direction:column;gap:10px;margin:4px 0 8px}
 .fzmis{display:flex;flex-direction:column;align-items:flex-start;gap:2px;min-height:60px;padding:10px 14px;text-align:left;width:100%}
@@ -2449,15 +2451,7 @@ function statXP(){const st={foco:0,vendas:0,mente:0,corpo:0};for(const e of entr
 function coinsEarned(){let s=0;for(const e of entries())s+=Math.max(0,(e.xp||0)+(e.bonus||0));return Math.floor(s/10);}
 function rpgTip(){const d=new Date();const n=Math.floor((d-new Date(d.getFullYear(),0,0))/864e5);return TIPS[n%TIPS.length];}
 let sysQ=[];function sysPop(tag,title,text,cb,lbl){sysQ.push([tag,title,text,cb,lbl]);if(sysQ.length===1)sysNext();}
-// Uma janela por vez: espera o Modo Sistema (#smSheet), a galeria e outras janelas abertas. Na abertura do app (primeiros 20 s)
-// no máximo 2 janelas; as demais sem ação viram aviso curto.
-const SYS_T0=Date.now();let sysOpenN=0;
-function sysBlocked(){const sm=document.getElementById("smSheet");if(sm&&!sm.hidden&&sm.getClientRects().length)return true;
-  for(const x of document.querySelectorAll(".sysmodal,.levelup:not([hidden]),.smsheet"))if(x!==sysShown&&!x.hidden&&x.getClientRects().length)return true;return false;}
-let sysShown=null;function sysNext(){if(!sysQ.length||(sysShown&&sysShown.isConnected))return;
-  if(sysBlocked()){clearTimeout(sysNext._t);sysNext._t=setTimeout(sysNext,1200);return;}
-  if(Date.now()-SYS_T0<20000&&sysOpenN>=2&&!sysQ[0][3]){const q=sysQ.shift();try{toast(q[1]);}catch(e){}if(sysQ.length)setTimeout(sysNext,900);return;}
-  sysOpenN++;const [tag,title,text,cb,lbl]=sysQ[0];const m=document.createElement("div");m.className="sysmodal";m.setAttribute("role","dialog");sysShown=m;
+let sysShown=null;function sysNext(){if(!sysQ.length||(sysShown&&sysShown.isConnected))return;const [tag,title,text,cb,lbl]=sysQ[0];const m=document.createElement("div");m.className="sysmodal";m.setAttribute("role","dialog");sysShown=m;
   const c=document.createElement("div");c.className="card";const a=document.createElement("div");a.className="tag";a.textContent="[ SISTEMA ] "+tag;const h=document.createElement("h3");h.textContent=title;const p=document.createElement("p");p.className="sm";p.textContent=text;
   const b=document.createElement("button");b.className="go";b.type="button";b.textContent=lbl||"Aceitar";b.addEventListener("click",()=>{m.remove();sysQ.shift();if(cb)try{cb();}catch(e){}if(sysQ.length)sysNext();else setTimeout(render,50);});c.append(a,h,p,b);m.append(c);document.body.append(m);try{const ua=navigator.userActivation;if(navigator.vibrate&&(!ua||ua.hasBeenActive))navigator.vibrate([10,30,10]);}catch(e){}}
 function sparks(gold){if(matchMedia("(prefers-reduced-motion: reduce)").matches)return;const pt=lastPt||{x:innerWidth/2,y:innerHeight/2};
@@ -3792,7 +3786,7 @@ function avPost(force){if(typeof RK_POST==="undefined"||ageNow()==="kid"||!(prog
 if(typeof sendRank==="function"){const _sr=sendRank;sendRank=function(){_sr.apply(this,arguments);try{avPost();}catch(e){}};}
 // ---- LGPD: perfil antigo sem faixa de idade que estava no ranking: pede um apelido (o nome real não sai mais) ----
 function lgNickAsk(){try{if(typeof AGE_UNK_MINOR==="undefined"||!AGE_UNK_MINOR||navigator.webdriver)return;if(!cfg||cfg.blank||(cfg.profile&&cfg.profile.age))return;
-  if(!(prog.rank&&prog.rank.on)||cleanNick(prog.rank.nick))return;if(sessionStorage.getItem("asc-lgnick"))return;if(typeof sysBlocked==="function"&&sysBlocked()){setTimeout(lgNickAsk,3000);return;}sessionStorage.setItem("asc-lgnick","1");
+  if(!(prog.rank&&prog.rank.on)||cleanNick(prog.rank.nick))return;if(sessionStorage.getItem("asc-lgnick"))return;if([...document.querySelectorAll(".sysmodal,.smsheet,.levelup:not([hidden])")].some(x=>!x.hidden&&x.getClientRects().length)){setTimeout(lgNickAsk,3000);return;}sessionStorage.setItem("asc-lgnick","1");
   sysPop("RANKING","Escolha um apelido","Para proteger sua privacidade, o ranking agora mostra só apelidos para quem não informou a idade. Escolha o seu para voltar a aparecer.",()=>{setTimeout(()=>{try{const t=document.querySelector('#tabbar [data-go="amigos"]');if(t)t.click();else goTab("prog");
     setTimeout(()=>{const rp=$("rankPanel");if(rp&&rp.classList.contains("fold")&&!rp.classList.contains("open")){const h=rp.querySelector(":scope>.fhd");if(h)h.click();}
       const n=$("rkNick");if(n){n.scrollIntoView({block:"center"});setTimeout(()=>n.focus(),120);}},200);}catch(e){}},250);},"Escolher apelido");}catch(e){}}
@@ -4990,14 +4984,19 @@ function smTimer(q,rec){const c=smShell("2 MINUTOS");smEnd=Date.now()+SM_SECS*10
   const ok=smEl("button","go smgo",q.minTitle?"Fiz o mínimo ✓":"Comecei ✓");ok.type="button";ok.onclick=()=>smMinDone(q,rec);c.append(ok);
   const bk=smEl("button","link","Voltar");bk.type="button";bk.onclick=()=>smMission(q,rec);c.append(bk);
   smIv=setInterval(()=>{const left=(smEnd-Date.now())/1000;t.textContent=smFmt(left);if(left<=0){clearInterval(smIv);t.classList.add("end");tip.textContent="Tempo! Começou? Isso é o mais difícil.";smBuzz([30,60,30]);}},250);}
+// recompensa primeiro: se a marcação gerou aviso (nível, atributo, conquista), o Sistema sai da frente e volta quando ele fechar
+function smBusyRw(){return (typeof sysQ!=="undefined"&&sysQ.length)||[...document.querySelectorAll(".sysmodal:not([hidden]),.levelup:not([hidden])")].some(e=>e.getClientRects().length);}
+function smAfter(fn,n){n=n||0;if(n===0){clearInterval(smIv);}if(smBusyRw()&&n<400){if(n===0){const m=$("smSheet");if(m)m.hidden=true;document.body.classList.remove("insm");}setTimeout(()=>smAfter(fn,n+1),300);return;}fn();}
 function smMinDone(q,rec){clearInterval(smIv);const s=smSt(),tk=smTk();
   if(q.minTitle){if(!smDone(q))toggle(q,"min");}
   else if(!(prog.log[tk]||[]).some(e=>e.q==="sm:"+q.id)&&smCount("sm:")<SM_CAP)addXP({q:"sm:"+q.id,kind:"full",xp:SM_START,stat:q.stat||"foco"},"Começou. +"+SM_START+" XP");
   const mc=$("muChip");if(mc)mc.remove();
   if(rec||s.recArm===tk){s.recArm="";smRecClaim();}
+  setTimeout(()=>smAfter(()=>smEmb(q,s,tk)),400);}
+function smEmb(q,s,tk){
   const c=smShell("MÍNIMO CUMPRIDO");c.append(smEl("h3","smh","Embalou?"),smEl("p","sm","Vá até o fim de \""+smName(q)+"\" e ganhe +"+SM_BONUS+" XP de bônus."+(smEnergy()==="baixa"?" Ou pare aqui: hoje o mínimo basta.":"")));
   const go=smEl("button","go smgo","Continuar até o fim");go.type="button";go.onclick=()=>{(s.cont[tk]=s.cont[tk]||[]).includes(q.id)||s.cont[tk].push(q.id);save();smClose();if(typeof msOpen==="function"){const f=typeof msFind==="function"?msFind(q.id):q;if(f)msOpen(f);}else toast("Quando terminar, toque em Feito na tarefa.");};
-  const fu=smEl("button","ghost","Já fiz tudo ✓");fu.type="button";fu.onclick=()=>{(s.cont[tk]=s.cont[tk]||[]).includes(q.id)||s.cont[tk].push(q.id);save();toggle(q,"full");const mc=$("muChip");if(mc)mc.remove();smIdx=0;smShow();};
+  const fu=smEl("button","ghost","Já fiz tudo ✓");fu.type="button";fu.onclick=()=>{(s.cont[tk]=s.cont[tk]||[]).includes(q.id)||s.cont[tk].push(q.id);save();toggle(q,"full");const mc=$("muChip");if(mc)mc.remove();smIdx=0;setTimeout(()=>smAfter(smShow),400);};
   const st=smEl("button","link","Parar aqui, sem culpa");st.type="button";st.onclick=()=>{smIdx=0;smShow();};
   c.append(go,fu,st);go.focus();}
 // terminou a completa depois do mínimo do Sistema: bônus
@@ -5018,7 +5017,7 @@ function smBar(){const qs=$("quests");if(!qs||!cfg||cfg.blank)return;const sec=q
 // em navegador automatizado (testes) não abre sozinho, para não cobrir a tela dos outros testes; o teste do Sistema liga com asc-sm-qa
 function smAutoOk(){try{return !navigator.webdriver||localStorage.getItem("asc-sm-qa")==="1";}catch(e){return true;}}
 function smAuto(n){n=n||0;try{if(!cfg||cfg.blank||smSt().off||!smAutoOk())return;let last=0;try{last=+localStorage.getItem("asc-sm-last")||0;}catch(e){}if(Date.now()-last<SM_GAP)return;
-  const busy=($("onb")&&!$("onb").hidden)||document.querySelector(".sysmodal:not([hidden]),#clsModal:not([hidden]),.levelup:not([hidden])")||(typeof sysQ!=="undefined"&&sysQ.length)||($("msSheet")&&!$("msSheet").hidden)||($("zapSheet")&&!$("zapSheet").hidden)||document.body.classList.contains("inmission");
+  const busy=($("onb")&&!$("onb").hidden)||[...document.querySelectorAll(".sysmodal:not([hidden]),#clsModal:not([hidden]),.levelup:not([hidden])")].some(e=>e.getClientRects().length)||(typeof sysQ!=="undefined"&&sysQ.length)||($("msSheet")&&!$("msSheet").hidden)||($("zapSheet")&&!$("zapSheet").hidden)||document.body.classList.contains("inmission");
   if(busy){if(n<80)setTimeout(()=>smAuto(n+1),1500);return;}
   if(!smCands().length&&smEnergy())return;try{localStorage.setItem("asc-sm-last",String(Date.now()));}catch(e){}smIdx=0;smShow();}catch(e){}}
 document.addEventListener("keydown",e=>{if(e.key==="Escape"&&$("smSheet")&&!$("smSheet").hidden)smClose();});

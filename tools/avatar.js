@@ -425,7 +425,7 @@ function avPost(force){if(typeof RK_POST==="undefined"||ageNow()==="kid"||!(prog
 if(typeof sendRank==="function"){const _sr=sendRank;sendRank=function(){_sr.apply(this,arguments);try{avPost();}catch(e){}};}
 // ---- LGPD: perfil antigo sem faixa de idade que estava no ranking: pede um apelido (o nome real não sai mais) ----
 function lgNickAsk(){try{if(typeof AGE_UNK_MINOR==="undefined"||!AGE_UNK_MINOR||navigator.webdriver)return;if(!cfg||cfg.blank||(cfg.profile&&cfg.profile.age))return;
-  if(!(prog.rank&&prog.rank.on)||cleanNick(prog.rank.nick))return;if(sessionStorage.getItem("asc-lgnick"))return;if(typeof sysBlocked==="function"&&sysBlocked()){setTimeout(lgNickAsk,3000);return;}sessionStorage.setItem("asc-lgnick","1");
+  if(!(prog.rank&&prog.rank.on)||cleanNick(prog.rank.nick))return;if(sessionStorage.getItem("asc-lgnick"))return;if([...document.querySelectorAll(".sysmodal,.smsheet,.levelup:not([hidden])")].some(x=>!x.hidden&&x.getClientRects().length)){setTimeout(lgNickAsk,3000);return;}sessionStorage.setItem("asc-lgnick","1");
   sysPop("RANKING","Escolha um apelido","Para proteger sua privacidade, o ranking agora mostra só apelidos para quem não informou a idade. Escolha o seu para voltar a aparecer.",()=>{setTimeout(()=>{try{const t=document.querySelector('#tabbar [data-go="amigos"]');if(t)t.click();else goTab("prog");
     setTimeout(()=>{const rp=$("rankPanel");if(rp&&rp.classList.contains("fold")&&!rp.classList.contains("open")){const h=rp.querySelector(":scope>.fhd");if(h)h.click();}
       const n=$("rkNick");if(n){n.scrollIntoView({block:"center"});setTimeout(()=>n.focus(),120);}},200);}catch(e){}},250);},"Escolher apelido");}catch(e){}}
