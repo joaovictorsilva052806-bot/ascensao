@@ -34,6 +34,8 @@ function vsFoot(){if(document.getElementById("vsFoot"))return;const ms=[...docum
   const tick=()=>{tries++;if(vsGet()===APP_VERSION)return;const playing=vsPlaying();
     if(isNew===null)isNew=!playing;
     if(isNew){if(playing)vsSet();else if(tries<400)setTimeout(tick,3000);return;} // novo: marca como visto ao terminar o perfil
+    // 1 tela do Sistema por abertura: se o aceite do painel (tools/tele.js) ainda vai aparecer, a Novidades fica para a próxima vez
+    if(location.pathname.includes("/comecar/")&&typeof tlGet==="function"&&typeof tlKid==="function"&&!tlKid()&&!tlGet().asked)return;
     if(!vsBusy()){vsOpen();return;}
     if(tries<60)setTimeout(tick,3000);};
   const start=()=>{try{vsFoot();}catch(e){}setTimeout(tick,2500);};

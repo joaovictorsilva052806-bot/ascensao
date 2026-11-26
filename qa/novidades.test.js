@@ -21,7 +21,12 @@ for(const [route,pre] of [['comecar/','asc-u-'],['','ascensao-']]){
   const foot=await p.evaluate(()=>{const f=document.getElementById('vsFoot');return f?[...f.querySelectorAll('a')].map(a=>a.getAttribute('href')).join(','):'';});
   ok('/'+route+' rodapé com Privacidade e Termos',foot===(route?'../privacidade/,../termos/':'./privacidade/,./termos/'),foot);
   ok('/'+route+' rodapé só na aba Mais',await p.evaluate(()=>{document.body.dataset.tab='hoje';const h=document.getElementById('vsFoot').getClientRects().length===0;document.body.dataset.tab='mais';const m=document.getElementById('vsFoot').getClientRects().length>0;document.body.dataset.tab='hoje';return h&&m;}));
+  ok('/'+route+' rodapé com alvo de 44px',await p.evaluate(()=>{document.body.dataset.tab='mais';const r=[...document.querySelectorAll('#vsFoot a,#vsFoot button')].every(e=>e.getBoundingClientRect().height>=44);document.body.dataset.tab='hoje';return r;}));
   ok('/'+route+' sem erro de JS',errs.length===0,errs.join(' | '));await ctx.close();
+  // 1 tela do Sistema por abertura: aceite do painel pendente (só /comecar/) adia a Novidades
+  if(route){const c3=await b.newContext({viewport:{width:390,height:844}});const p3=await c3.newPage();await p3.goto('http://localhost:8000/'+route);await p3.evaluate(seed(pre),[CFG,P,pre]);await p3.evaluate(()=>localStorage.setItem('asc-u-tele','{}'));await p3.reload();await p3.waitForTimeout(8000);
+    ok('/'+route+' aceite pendente: Novidades fica para a próxima',!(await vis(p3))&&await p3.evaluate(()=>!localStorage.getItem('asc-u-ver')));await c3.close();}
+  // alvo de toque de 44px no rodapé
   // pessoa nova: perfil vazio, nunca vê a tela
   const c2=await b.newContext({viewport:{width:390,height:844}});const p2=await c2.newPage();await p2.goto('http://localhost:8000/'+route);await p2.waitForTimeout(7000);
   ok('/'+route+' novo: não aparece no onboarding',!(await vis(p2)));await c2.close();}

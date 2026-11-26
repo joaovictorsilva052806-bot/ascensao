@@ -4,6 +4,6 @@
 .vsnews .vsl li{display:flex;gap:10px;align-items:flex-start;font-size:.92rem;line-height:1.35}
 .vsnews .vsi{flex:none;width:1.5em;text-align:center}
 .vsnews .go{min-height:44px;margin-top:4px}
-.vsfoot{display:flex;flex-wrap:wrap;gap:6px 14px;align-items:center;justify-content:center;padding:14px 8px 4px;text-align:center}
-.vsfoot a{color:var(--muted)}
-.vsfoot .link{min-height:32px}
+.vsfoot{display:flex;flex-wrap:wrap;gap:4px 6px;align-items:center;justify-content:center;padding:14px 8px 4px;text-align:center}
+.vsfoot>span{padding:0 8px}
+.vsfoot a,.vsfoot .link{display:inline-flex;align-items:center;justify-content:center;min-height:44px;min-width:44px;padding:0 10px;color:var(--muted)}

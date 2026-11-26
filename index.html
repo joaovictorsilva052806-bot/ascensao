@@ -925,9 +925,9 @@ body[data-bxf] .tmlist li.me .tmav svg{width:38px;height:38px}
 .vsnews .vsl li{display:flex;gap:10px;align-items:flex-start;font-size:.92rem;line-height:1.35}
 .vsnews .vsi{flex:none;width:1.5em;text-align:center}
 .vsnews .go{min-height:44px;margin-top:4px}
-.vsfoot{display:flex;flex-wrap:wrap;gap:6px 14px;align-items:center;justify-content:center;padding:14px 8px 4px;text-align:center}
-.vsfoot a{color:var(--muted)}
-.vsfoot .link{min-height:32px}
+.vsfoot{display:flex;flex-wrap:wrap;gap:4px 6px;align-items:center;justify-content:center;padding:14px 8px 4px;text-align:center}
+.vsfoot>span{padding:0 8px}
+.vsfoot a,.vsfoot .link{display:inline-flex;align-items:center;justify-content:center;min-height:44px;min-width:44px;padding:0 10px;color:var(--muted)}
 </style></head><body>
 
 <div class="hudtop"><span>ASCENSION<i>//</i>SISTEMA ONLINE</span><span class="mono" id="clock">--:--</span></div>
@@ -4448,6 +4448,8 @@ function vsFoot(){if(document.getElementById("vsFoot"))return;const ms=[...docum
   const tick=()=>{tries++;if(vsGet()===APP_VERSION)return;const playing=vsPlaying();
     if(isNew===null)isNew=!playing;
     if(isNew){if(playing)vsSet();else if(tries<400)setTimeout(tick,3000);return;} // novo: marca como visto ao terminar o perfil
+    // 1 tela do Sistema por abertura: se o aceite do painel (tools/tele.js) ainda vai aparecer, a Novidades fica para a próxima vez
+    if(location.pathname.includes("/comecar/")&&typeof tlGet==="function"&&typeof tlKid==="function"&&!tlKid()&&!tlGet().asked)return;
     if(!vsBusy()){vsOpen();return;}
     if(tries<60)setTimeout(tick,3000);};
   const start=()=>{try{vsFoot();}catch(e){}setTimeout(tick,2500);};
