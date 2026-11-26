@@ -14,7 +14,8 @@ async function aiCopyText(t){try{await navigator.clipboard.writeText(t);return t
 const AI_URL={chatgpt:t=>"https://chatgpt.com/?q="+encodeURIComponent(t),claude:t=>"https://claude.ai/new?q="+encodeURIComponent(t),gemini:()=>"https://gemini.google.com/app"};
 for(const b of document.querySelectorAll("#aiPanel [data-ai]"))b.addEventListener("click",async()=>{const k=b.dataset.ai;const t=aiPrompt();
   // abre na hora (no iPhone o pop-up precisa sair do toque); depois copia como reserva
-  const w=window.open(AI_URL[k](t),"_blank","noopener");const ok=await aiCopyText(t);
+  // sem "noopener": com ele o navegador devolve null e o app achava que a janela foi bloqueada
+  const w=window.open(AI_URL[k](t),"_blank");if(w)try{w.opener=null;}catch(e){}const ok=await aiCopyText(t);
   $("aiMsg").textContent=(k==="gemini"?"O Gemini abriu: cole o pedido (já copiado) e envie. ":"A IA abriu com o pedido pronto: é só enviar. ")+"Quando ela responder, toque em Copiar na resposta e volte aqui em 📋 Colar resposta."+(ok?"":" (Se o pedido não veio, toque em Só copiar o pedido.)");
   if(!w)$("aiMsg").textContent="O celular bloqueou a janela. Toque em Só copiar o pedido e abra a IA você mesmo.";
   try{prog.aiUse=(prog.aiUse||0)+1;save();}catch(e){}});

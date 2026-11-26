@@ -1,0 +1,13 @@
+/* ---- Tarefas de app + 📅 agenda (tools/apps.js) ---- */
+.qapp{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
+.quest:not(.open) .qapp{display:none}
+.quest.qtlock .qapp .apf,.quest.qtlock .qapp .aph{display:none}
+.qapp button,.qapp .apf{min-height:44px;padding:0 14px;font-size:.9rem;display:inline-flex;align-items:center;gap:6px;border-radius:10px;cursor:pointer}
+.qapp .apf{position:relative;border:1px solid var(--line);color:var(--fg)}
+.qapp .apf input{position:absolute;inset:0;opacity:0;width:100%;height:100%;cursor:pointer}
+.qapp .aph{flex-basis:100%;margin:-2px 0 0;font-size:.76rem}
+.qapp .apok{display:flex;align-items:center;gap:8px}
+.qapp .apok img{width:44px;height:44px;object-fit:cover;border-radius:8px;border:1px solid var(--line)}
+.quest.apback{box-shadow:0 0 0 2px var(--gold)}
+.apadd{margin:8px 0 4px}.apadd .row{flex-wrap:wrap;gap:6px}.apadd button{min-height:40px;font-size:.88rem}
+@media (max-width:400px){.qapp button,.qapp .apf{flex:1 1 calc(50% - 4px);justify-content:center}}
