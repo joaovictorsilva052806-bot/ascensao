@@ -31,7 +31,11 @@ Pontos de entrada no JS: `render()` desenha tudo; `toggle(quest, "full"|"min")` 
 
 ## Segredos
 
-`tools/secret.js` e `tools/secret.css` (entram nos dois geradores): 17 conquistas ocultas com títulos raros, Terminal do Sistema (em Mais) para códigos e Modo Zen. Grava só `prog.sec` e `prog.secTitle`; o XP entra como `ach:<id>`. Teste: `node qa/segredos.test.js` com o servidor local ligado.
+`tools/secret.js` e `tools/secret.css` (entram nos dois geradores): 25 conquistas ocultas (8 delas são piscadelas de cultura pop: só a referência, com nomes e textos nossos, sem personagens, falas ou marcas) com títulos raros, Terminal do Sistema (em Mais) para códigos e Modo Zen. Grava só `prog.sec` e `prog.secTitle`; o XP entra como `ach:<id>`. Teste: `node qa/segredos.test.js` com o servidor local ligado.
+
+## Marcos da coleção
+
+`tools/colecao.js` e `tools/colecao.css` (entram nos dois geradores, depois do baú): cada segredo, moldura e título conta para a Coleção. Aos 3, 8, 15 e 25 itens sai uma moldura exclusiva que não cai no baú (barra com "faltam N" na Coleção do baú e no prêmio do baú). Grava só ids novos em `prog.chest.frames` (lista que já existe). Teste: `node qa/colecao.test.js`.
 
 ## Sequência (estilo Duolingo)
 
