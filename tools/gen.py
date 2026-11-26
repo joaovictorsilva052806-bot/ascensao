@@ -164,6 +164,8 @@ rep('\nlet saveTimer=null, SYNC="";','\n'+R('dialogo.js')+'\nlet saveTimer=null,
 # fim da cadeia: versão do app + tela Novidades 1x por versão + rodapé com Privacidade/Termos em Mais (tools/versao.*)
 rep('</style></head>',R('versao.css')+'</style></head>')
 rep('\nlet saveTimer=null, SYNC="";','\n'+R('versao.js')+'\nlet saveTimer=null, SYNC="";')
+rep('</style></head>',R('arena.css')+'</style></head>')
+rep('\nlet saveTimer=null, SYNC="";','\n'+R('arena.js')+R('leitura.js')+'\nlet saveTimer=null, SYNC="";')
 if not ROOT: open('comecar/index.html','w').write(s)
 pass
 
