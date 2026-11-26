@@ -1,0 +1,9 @@
+/* ---- Modo simples nos 3 primeiros dias (tools/simple3.*) ---- */
+.wrap>section.s3hide{display:none!important}
+body[data-s3="0"] #quests .quest:not(.next),body[data-s3="0"] #quests details{display:none!important}
+body[data-s3="0"] .swipehint,body[data-s3="0"] #addForm,body[data-s3="1"] #addForm{display:none!important}
+.s3bar{display:grid;gap:8px;justify-items:start;margin-top:4px}
+.s3bar .link{min-height:44px}
+.s3next{font-family:var(--f-mono);font-size:.75rem}
+.s3off{font-size:.8rem;opacity:.75}
+.s3done{color:var(--glow);font-weight:600}

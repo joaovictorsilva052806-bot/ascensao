@@ -16,6 +16,8 @@ for(const [nome,vp] of [['celular',{width:390,height:844}],['desktop',{width:128
   const c=await b.newContext({viewport:vp,timezoneId:'America/Sao_Paulo'});const p=await c.newPage();const errs=[];p.on('pageerror',e=>errs.push(e.message));
   p.on('console',m=>{if(m.type()==='error'&&!/ERR_TUNNEL|ERR_PROXY|Failed to load resource/.test(m.text()))errs.push(m.text());});
   await p.goto(B+'/comecar/');await p.waitForTimeout(800);await onboard(p);await p.waitForTimeout(500);
+  // jogador novo começa no modo simples (só a próxima missão); os painéis recolhíveis aparecem com o app completo
+  {const o=await p.$('.s3off:visible');if(o){await o.click();await p.waitForTimeout(3000);}const n=await p.$('#tlModal button.ghost:visible');if(n){await n.click();await p.waitForTimeout(300);}}
   const fs=(await medir(p)).filter(x=>!x.open);
   ok(nome+': há painéis recolhíveis',fs.length>0,String(fs.length));
   for(const f of fs){ok(nome+': cabeçalho "'+f.t+'" ≥ 44px',f.hh>=44,f.hh+'px');ok(nome+': painel "'+f.t+'" fechado não cresceu',f.ph<=60,f.ph+'px');}

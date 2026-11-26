@@ -1,5 +1,19 @@
 # Relatório de QA (ATENA)
 
+## 26/11/2026 · PR #67 atualizado com a main (trens 1 e 2) e QA completo de novo
+
+- Merge da main (#66 a #79). Como o app do JV agora é o mesmo dos testadores, missão v2, troca de tarefa e modo simples entram nos dois; troca só aparece em tarefa gerada pelo perfil e o modo simples só liga para perfil criado do zero.
+- Placar: todos os arquivos de qa/ verdes (alvo 24, apps 47, convite 69, feedback 60, foco 32 com offline, funil 16, ranking-dia 47, relâmpago 27, rótulos 17, segredos 38, toque 19, mural-servidor, e os demais sem FAIL). Migração: perfil e progresso antigos abrem sem modo simples e sem perder campo.
+- qa/apps.test.js: jogador novo começa no modo simples, então o teste toca "Já sei usar" antes de usar as tarefas extras (como o toque.test.js).
+- Caches ascensao-v55 / ascensao-u-v67.
+
+## 25/11/2026 · Feedback dos testadores, itens 1 a 3 (pedido da EVA na issue #22)
+
+- Missão ativa v2: leitura (páginas), treino (séries + descanso), dúvidas e passo a passo do gatilho. Onboarding v2: 4 perguntas de toque + "Trocar esta tarefa" na 1ª semana. Modo simples nos 3 primeiros dias.
+- Placar: qa/feedback.test.js 60/60 (390x844 e 1280x800, relógio simulado nos dias 1, 2, 3 e 5, reduce-motion, dados antigos intactos). Suíte inteira verde: avisos, classe, foco (offline), liga, movimento, relâmpago, religar, rotas (/, /comecar/, /convite/), rótulos, segredos, segurança, sequência, toque 19/19, vibrar.
+- qa/toque.test.js ajustado: jogador novo agora começa no modo simples, então o teste toca "Já sei usar" antes de medir os painéis recolhíveis (a checagem de 44px continua igual).
+- Caches ascensao-v48 / ascensao-u-v60.
+
 ## Revisões horárias
 
 - 25/11 15h36 · Achado: cabeçalho dos painéis recolhíveis ("Como você está", "Treino do Sistema", "Ligar à planilha") tinha só 28px de altura para o dedo. Mudou: alvo de toque de 44px sem mudar o visual (margem negativa); caches ascensao-v29 / ascensao-u-v38. Placar: 198/198 (novo qa/toque.test.js 19/19, falhava 12/19 no código antigo).

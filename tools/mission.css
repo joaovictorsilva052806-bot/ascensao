@@ -31,3 +31,18 @@
 body.inmission{overflow:hidden}
 /* pílulas do topo com área de toque melhor */
 .status .pill{min-height:30px;display:inline-flex;align-items:center}
+/* Missão ativa v2: contadores, descanso, dúvidas e passos */
+.msbar{height:8px;border-radius:99px;background:#0f1a30;border:1px solid var(--line);overflow:hidden}
+.msbar i{display:block;height:100%;background:linear-gradient(90deg,var(--accent),var(--glow));transition:width .25s}
+.mstool .row button{min-height:44px;min-width:56px}
+.msrest{align-items:center}.msrestc{flex:1;font-family:var(--f-mono);font-size:.85rem;color:var(--glow)}
+.msdl{list-style:none;margin:0;padding:0;display:grid;gap:6px}
+.msdl li{display:flex;gap:8px;align-items:center;justify-content:space-between;padding:6px 8px;border:1px solid var(--line);border-radius:8px}
+.msdl li span{flex:1;min-width:0;overflow-wrap:anywhere}.msdl li button{min-height:40px;flex:none}
+.mssteps{list-style:none;margin:0;padding:0;display:grid;gap:6px}
+.msstep{display:flex;gap:10px;align-items:center;width:100%;min-height:44px;padding:8px 10px;text-align:left;border-radius:8px;border:1px solid var(--line);background:transparent;color:var(--fg);font:inherit}
+.msstep .msck{flex:none;display:grid;place-items:center;width:26px;height:26px;border-radius:50%;border:1px solid var(--glow);color:var(--glow);font-family:var(--f-mono);font-size:.8rem}
+.msstep.on{border-color:var(--glow)}.msstep.on>span:last-child{opacity:.6;text-decoration:line-through}
+.msstep.on .msck{background:var(--glow);color:#06101f}
+@media (prefers-reduced-motion:reduce){.msbar i{transition:none}}
+.msswap{justify-self:stretch;min-height:44px}

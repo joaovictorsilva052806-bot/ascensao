@@ -116,7 +116,7 @@ rep('</style></head>',open(SP+'simple.css').read()+'</style></head>')
 rep('\nlet saveTimer=null, SYNC="";','\n'+open(SP+'simple.js').read()+'\nlet saveTimer=null, SYNC="";')
 # missão ativa: ▶ abre a tarefa com timer no canto e ferramenta (tools/mission.*)
 rep('</style></head>',open(SP+'mission.css').read()+'</style></head>')
-rep('\nlet saveTimer=null, SYNC="";','\n'+open(SP+'mission.js').read()+'\nlet saveTimer=null, SYNC="";')
+rep('\nlet saveTimer=null, SYNC="";','\n'+open(SP+'mission.js').read()+open(SP+'swap.js').read()+'\nlet saveTimer=null, SYNC="";')
 # sequência estilo Duolingo: escudo automático, marcos e aviso de risco (tools/streak.*)
 rep('</style></head>',open(SP+'streak.css').read()+'</style></head>')
 rep('\nlet saveTimer=null, SYNC="";','\n'+open(SP+'streak.js').read()+'\nlet saveTimer=null, SYNC="";')
@@ -153,6 +153,9 @@ rep('\nlet saveTimer=null, SYNC="";','\n'+R('boss.js')+R('chest.js')+R('mural.js
 # celular de verdade: 📅 agenda e tarefas de apps (tools/apps.*)
 rep('</style></head>',R('apps.css')+'</style></head>')
 rep('\nlet saveTimer=null, SYNC="";','\n'+R('apps.js')+'\nlet saveTimer=null, SYNC="";')
+# modo simples nos 3 primeiros dias: Hoje mostra só a próxima missão + XP; o resto desbloqueia aos poucos (tools/simple3.*)
+rep('</style></head>',open(SP+'simple3.css').read()+'</style></head>')
+rep('\nlet saveTimer=null, SYNC="";','\n'+open(SP+'simple3.js').read()+'\nlet saveTimer=null, SYNC="";')
 if not ROOT: open('comecar/index.html','w').write(s)
 pass
 

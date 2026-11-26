@@ -2,8 +2,8 @@
 const Q_ICON={kid:"🧒",teen:"🎮",young:"⚡",adult:"💼",senior:"🌳",escola:"🎒",estudante:"🎓",clt:"🏢",autonomo:"🚀",casa:"🏠",motorista:"🚚",aposentado:"☕",outro:"✨"};
 const Q_FOC_ICON={estudos:"📚",sono:"😴",corpo:"💪",carreira:"📈",dinheiro:"💰",relac:"❤️",casa:"🧹",remedio:"💊",agua:"💧",tela:"📵",leitura:"📖"};
 let qStep=0,qData={};
-function qGo(n){qStep=n;for(const s of document.querySelectorAll("#quick .qstep"))s.hidden=+s.dataset.s!==n;$("qBar").style.width=(n/4*100)+"%";$("qSync").textContent=n<4?"SINCRONIA "+Math.round(n/4*100)+"%":"SINCRONIA 100%";qHead();$("q_full").hidden=n>=4;
-  if(n===0)setTimeout(()=>$("q_name").focus(),120);if(n===3)qFocus();try{if(navigator.vibrate)navigator.vibrate(8);}catch(e){}}
+function qGo(n){qStep=n;for(const s of document.querySelectorAll("#quick .qstep"))s.hidden=+s.dataset.s!==n;$("qBar").style.width=(n/5*100)+"%";$("qSync").textContent=n<5?"SINCRONIA "+Math.round(n/5*100)+"%":"SINCRONIA 100%";qHead();$("q_full").hidden=n>=5;
+  if(n===0)setTimeout(()=>$("q_name").focus(),120);if(n===3)qX(0);if(n===4)qFocus();try{if(navigator.vibrate)navigator.vibrate(8);}catch(e){}}
 function qBtns(id,items,cb){const box=$(id);box.textContent="";for(const [v,l] of items){const b=document.createElement("button");b.type="button";b.textContent=(Q_ICON[v]||Q_FOC_ICON[v]||"")+" "+l;b.dataset.v=v;b.addEventListener("click",()=>cb(v,b));box.append(b);}}
 function qFocus(){const minor=qData.age==="kid"||qData.age==="teen";const pref=(OCC_SET[qData.occ]||{}).focus||[];
   const order=FOCI.map(x=>x[0]).sort((a,b)=>(pref.includes(b)-pref.includes(a)));const list=order.map(v=>FOCI.find(x=>x[0]===v)).filter(x=>!(minor&&(x[0]==="remedio"||x[0]==="carreira"))).slice(0,8);
@@ -34,13 +34,25 @@ function qNameNext(){const n=$("q_name").value.trim();if(!n){$("q_name").focus()
 $("q_n0").addEventListener("click",qNameNext);$("q_name").addEventListener("keydown",e=>{if(e.key==="Enter"){e.preventDefault();qNameNext();}});
 qBtns("q_age",AGE,v=>{qData.age=v;qGo(2);});
 qBtns("q_occ",OCC,v=>{qData.occ=v;qGo(3);});
+// Ajuste fino (onboarding v2): 3-4 perguntas de toque que deixam as tarefas com a sua cara. Ficam só no perfil, neste aparelho.
+const QX=[{k:"transport",h:"Como você se desloca no dia a dia?",o:[["onibus","🚌 Ônibus ou metrô"],["carro","🚗 Carro ou moto"],["ape","🚶 A pé ou bike"],["casa","Fico em casa"]],skip:d=>!!(OCC_SET[d.occ]||{}).transport&&d.occ!=="escola"},
+  {k:"train",h:"Você treina?",o:[["gym","🏋️ Academia"],["run","🏃 Corro ou caminho"],["sport","⚽ Faço esporte"],["no","🛋️ Ainda não"]]},
+  {k:"cards",h:"Já usa flashcards (Anki, Quizlet…)?",o:[["yes","✅ Uso"],["heard","🤔 Já ouvi falar"],["no","❌ Nunca usei"]],skip:d=>!["escola","estudante"].includes(d.occ)},
+  {k:"free",h:"Qual é o seu horário mais livre?",o:[["manha","🌅 Manhã"],["tarde","☀️ Tarde"],["noite","🌙 Noite"],["varia","🔀 Muda todo dia"]]}];
+let qXi=0;
+function qX(i){while(i<QX.length&&QX[i].skip&&QX[i].skip(qData))i++;if(i>=QX.length){qGo(4);return;}qXi=i;const x=QX[i];
+  $("q_xh").textContent=x.h;const left=QX.slice(i).filter(y=>!(y.skip&&y.skip(qData))).length;$("q_xtag").textContent="[ SISTEMA ] AJUSTE FINO · faltam "+left;
+  qBtns("q_x",x.o,v=>{qData[x.k]=v;try{if(navigator.vibrate)navigator.vibrate(8);}catch(e){}qX(i+1);});
+  for(const b of $("q_x").children)if(qData[x.k]===b.dataset.v)b.classList.add("on");}
+$("q_xskip").addEventListener("click",()=>qX(qXi+1));
+function qXApply(){for(const k of ["train","cards","free"])if(qData[k]&&$("o_"+k))$("o_"+k).value=qData[k];}
 $("q_done").addEventListener("click",()=>{qData.focus=[...$("q_focus").querySelectorAll(".on")].map(b=>b.dataset.v);qData.goal=$("q_goal").value.trim().replace(/[<>]/g,"").slice(0,60);
   if(!qData.focus.length&&!qData.goal){$("q_goal").focus();return;}
-  qGo(4);const msgs=["Lendo sua rotina…","Calibrando dificuldade…","Forjando suas missões…"];let i=0;const t=setInterval(()=>{i++;if(msgs[i])$("q_load").textContent=msgs[i];},450);
+  qGo(5);const msgs=["Lendo sua rotina…","Calibrando dificuldade…","Forjando suas missões…"];let i=0;const t=setInterval(()=>{i++;if(msgs[i])$("q_load").textContent=msgs[i];},450);
   setTimeout(()=>{clearInterval(t);
     $("o_name").value=qData.name;pickAge(qData.age,true);pickOcc(qData.occ,true);
     const foc=qData.focus.length?qData.focus:((OCC_SET[qData.occ]||{}).focus||["sono"]).slice(0,2);for(const b of $("o_focus").children)b.classList.toggle("on",foc.includes(b.dataset.v));
-    $("o_goal").value=qData.goal||"";if($("o_ping"))$("o_ping").checked=false;
+    $("o_goal").value=qData.goal||"";if(qData.transport)$("o_transport").value=qData.transport;qXApply();if($("o_ping"))$("o_ping").checked=false;
     $("quick").hidden=true;$("o_go").click();},1400);});
-$("q_full").addEventListener("click",()=>{$("quick").hidden=true;$("onb").hidden=false;if(qData.name)$("o_name").value=qData.name;if(qData.age)pickAge(qData.age,true);if(qData.occ)pickOcc(qData.occ,true);window.scrollTo(0,0);});
+$("q_full").addEventListener("click",()=>{$("quick").hidden=true;$("onb").hidden=false;if(qData.name)$("o_name").value=qData.name;if(qData.age)pickAge(qData.age,true);if(qData.occ)pickOcc(qData.occ,true);if(qData.transport)$("o_transport").value=qData.transport;qXApply();window.scrollTo(0,0);});
 $("q_bk").addEventListener("click",()=>{$("q_full").click();const d=$("o_bkBox");if(d){d.open=true;setTimeout(()=>d.scrollIntoView({block:"center"}),60);}});
