@@ -4414,6 +4414,10 @@ function gtHero(){let h=$("gtHero");const st=$("dayPill");const host=st&&st.clos
   h.hidden=false;h.textContent="";let tier="";try{tier=lgName(lgSt().t);}catch(e){}
   const hd=gtEl("div","gthd");hd.append(gtEl("h2",null,"🏆 Ranking da semana"),gtEl("span","gtclock","⏳ fecha em "+tmLeft()));h.append(hd);
   const n=(rankRows||[]).length;
+  const held=!on&&prog.rank&&prog.rank.hold&&!prog.rank.par;
+  if(held){h.append(gtEl("p","gtlead","Seu nome saiu do ranking por enquanto."),gtEl("p","sm muted","Para quem tem 14 a 17 anos, agora o responsável precisa autorizar. Seu apelido, seus amigos e seu XP continuam guardados."));
+    const row=gtEl("div","row");const b=gtEl("button","go","Confirmar autorização");b.type="button";b.addEventListener("click",()=>{joinRank("autorizou");setTimeout(gtHero,500);});
+    const x=gtEl("button","link","Agora não");x.type="button";x.addEventListener("click",()=>{const d=new Date();d.setDate(d.getDate()+3);g.hx=dkey(d);save();h.hidden=true;});row.append(b,x);h.append(row);return;}
   if(!on){h.append(gtEl("p","gtlead",n?n+" pessoa"+(n>1?"s estão":" está")+" disputando a semana. Falta você.":"A semana está aberta. Seja o primeiro a pontuar."));
     const peek=gtEl("div","gtpeek");(rankRows||[]).slice(0,5).forEach((r,i)=>{const d=gtEl("span","gtpk");d.innerHTML=tmAv((typeof sqPub!=="undefined"&&sqPub[gtN(r.n)]||{}).av,34);d.title=r.n;d.style.zIndex=String(9-i);peek.append(d);});if(peek.children.length)h.append(peek);
     h.append(gtEl("p","sm muted",isMinor()?"Só aparece um apelido e o XP da semana. Nenhuma tarefa sai do seu celular.":"Aparece só o apelido (ou 1º nome) e o XP da semana. Os 3 primeiros sobem de liga."));
@@ -4441,8 +4445,15 @@ function gtHero(){let h=$("gtHero");const st=$("dayPill");const host=st&&st.clos
   const msg=gtEl("div","sm gtmsg");msg.setAttribute("role","status");c.append(msg);
   const row=gtEl("div","row");const ok=gtEl("button","go","Entrar");ok.type="button";const no=gtEl("button","ghost","Agora não");no.type="button";row.append(ok,no);c.append(row);
   ok.addEventListener("click",()=>{const n=cleanNick(nk.value);if(!n){msg.textContent="Escolha um apelido.";nk.focus();return;}if(!par.checked){msg.textContent=teen?"Para quem tem 14 a 17 anos, o responsável precisa autorizar.":"Marque a confirmação para entrar.";return;}
-    prog.rank=Object.assign(prog.rank||{},{nick:n,par:new Date().toISOString().slice(0,10)});save();m.remove();_jr.apply(null,args);try{tmUI();gtHero();}catch(e){}});
+    prog.rank=Object.assign(prog.rank||{},{nick:n,par:new Date().toISOString().slice(0,10)});delete prog.rank.hold;save();m.remove();_jr.apply(null,args);try{tmUI();gtHero();}catch(e){}});
   no.addEventListener("click",()=>m.remove());m.append(c);document.body.append(m);setTimeout(()=>nk.focus(),60);};}
+
+// LGPD: quem tem 14-17 (ou idade não informada no /comecar/) e já estava no ranking sem a autorização gravada sai da lista
+// até confirmar. Nada se apaga: apelido, uid e amigos ficam; só para de enviar e mostra o aviso (prog.rank.hold = data).
+function gtNeedHold(){try{const r=prog.rank;return !!(r&&r.on&&!r.par&&cfg&&!cfg.blank&&isMinor()&&ageNow()!=="kid");}catch(e){return false;}}
+function gtHold(){if(!gtNeedHold())return false;prog.rank.on=false;prog.rank.hold=todayKey();save();return true;}
+{const _sr=sendRank;sendRank=function(){if(gtHold()){try{renderRankUI();}catch(e){}return;}return _sr.apply(this,arguments);};}
+{const _r=render;render=function(){try{gtHold();}catch(e){}return _r.apply(this,arguments);};}
 setTimeout(()=>{try{gtSync();gtHero();}catch(e){}},0);
 // ---------- Desafio em dupla: chame um amigo ou aliado do Esquadrão para o mesmo desafio relâmpago do dia ----------
 // Canal: o mesmo formulário do ranking, linha K (como parabéns/cutucar): K|de|para|d-<desafio> (convite), da-<desafio> (aceite), dk-<desafio> (feito).
