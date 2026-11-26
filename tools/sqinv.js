@@ -15,16 +15,16 @@ async function sqiLoad(){if(ageNow()==="kid"||!(prog.rank&&prog.rank.on))return;
     sqInvRows=all.filter(r=>/^[IJFGK]$/.test(String(r[4]||"").trim())).map(r=>({k:r[4].trim(),a:String(r[5]||"").trim(),b:String(r[6]||"").trim(),s:String(r[7]||"").trim(),d:String(r[8]||"").trim()}));}catch(e){return;}
   sqiCheck();try{if(typeof frCheck==="function")frCheck();}catch(e){}}
 // convite que o Esquadrão manda ao tocar no nome
-function sqiInvite(to){const s=sqSt();const me=rankName();if(!s||!me||!to)return;const st=sqiSt();st.sent=st.sent||{};st.sent[sqiN(to)]=1;save();sqiPost(["I",me,to,s.n,sqiDk()]);}
+function sqiInvite(to){const s=sqSt();const me=rankName();if(!s||!me||!to)return;const st=sqiSt();st.sent=st.sent||{};st.sent[sqiN(to)]=new Date().toISOString();save();sqiPost(["I",me,to,s.n,sqiDk()]);}
 // quem aceitou o meu convite entra sozinho no meu esquadrão
 function sqiMerge(){const s=sqSt();const me=sqiN(rankName());if(!s||!me)return false;let ch=false;
   for(const r of sqInvRows){if(r.k!=="J"||sqiN(r.b)!==me||sqiN(r.s)!==sqiN(s.n)||!r.a)continue;
     if(sqiN(r.a)===me||s.m.some(n=>sqiN(n)===sqiN(r.a))||s.m.length>=SQ_MAX)continue;
     if(!sqiOk(r.a))continue;
-    const key="j:"+sqiN(r.a)+":"+sqiN(r.s);const st=sqiSt();s.m.push(r.a);ch=true;if(!st.seen[key]){st.seen[key]=1;toast(r.a+" aceitou e entrou no esquadrão "+s.n+".");}}
+    const key="j:"+sqiN(r.a)+":"+sqiN(r.s);const st=sqiSt();s.m.push(r.a);if(s.inv)for(const k in s.inv)if(sqiN(k)===sqiN(r.a))delete s.inv[k];ch=true;if(!st.seen[key]){st.seen[key]=1;toast(r.a+" aceitou e entrou no esquadrão "+s.n+".");}}
   if(ch){save();try{sqUI();sqCheckWin();}catch(e){}}return ch;}
 // só entra sozinho quem é meu amigo ou aceitou um convite que eu mandei (ninguém se força no esquadrão alheio)
-function sqiOk(n){try{if(frHas(n))return true;}catch(e){}return !!sqiSt().sent&&!!sqiSt().sent[sqiN(n)];}
+function sqiOk(n){try{if(frHas(n))return true;}catch(e){}const v=sqiSt().sent&&sqiSt().sent[sqiN(n)];if(!v)return false;if(v===1)return true;return (Date.now()-new Date(v).getTime())/864e5<=7;}
 // aliados do mesmo esquadrão (quem já aceitou o mesmo líder)
 function sqiAllies(from,squad,me){const out=[from];for(const r of sqInvRows)if(r.k==="J"&&sqiN(r.b)===sqiN(from)&&sqiN(r.s)===sqiN(squad)&&sqiN(r.a)!==sqiN(me)&&!out.some(n=>sqiN(n)===sqiN(r.a)))out.push(r.a);return out.slice(0,SQ_MAX);}
 function sqiCheck(){sqiMerge();const me=rankName();if(!me||$("sqiModal")||[...document.querySelectorAll(".sysmodal")].some(x=>x.getClientRects().length)||document.body.classList.contains("inmission"))return;
@@ -46,8 +46,7 @@ function sqiAsk(r){const st=sqiSt();const key="i:"+sqiN(r.a)+":"+sqiN(r.s);const
     sqiPost(["J",me,r.a,r.s,sqiDk()]);try{haptic([15,40,15]);}catch(e){}toast("Você entrou no esquadrão "+r.s+".");close();try{goTab("prog");sqUI();sqCheckWin();}catch(e){}});
   no.addEventListener("click",close);m.append(c);document.body.append(m);setTimeout(()=>ok.focus(),60);}
 // tocar no nome do ranking também manda o convite (o amigo recebe o aviso no app dele)
-document.addEventListener("click",e=>{const b=e.target.closest&&e.target.closest("#sqPanel .sqchips .chip");if(!b)return;const n=b.textContent.replace(/^\+\s*/,"").trim();
-  setTimeout(()=>{const s=sqSt();if(s&&s.m.includes(n)){sqiInvite(n);toast("Convite enviado para "+n+". Aparece no app dele.");}},0);},true);
+// (o próprio botão do esquadrão já manda o convite e deixa a pessoa como "convidado" até aceitar)
 // dica no painel do Esquadrão
 {const _sq=sqUI;sqUI=function(){_sq();try{const p=$("sqPanel");if(p&&!p.hidden&&sqSt()&&!p.querySelector(".sqitip")){const d=document.createElement("div");d.className="sm muted sqitip";d.textContent="Tocou no nome, o amigo recebe o convite no app dele. Quando ele aceita, entra aqui sozinho.";const ch=p.querySelector(".sqchips");if(ch)ch.after(d);}}catch(e){}};}
 document.addEventListener("visibilitychange",()=>{if(!document.hidden)sqiLoad();});

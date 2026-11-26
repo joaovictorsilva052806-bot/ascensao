@@ -1193,6 +1193,13 @@ body.infz .sysmodal:not([hidden]),body.infz .levelup:not([hidden]){z-index:90}
 .rtbox{margin:6px 0 10px}.rtgrid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin:6px 0 10px}
 .rttile{border:1px solid var(--line);border-radius:10px;padding:8px;text-align:center;display:grid;gap:2px}.rttile b{font-size:1.25rem;color:var(--glow)}.rttile span{font-size:.72rem;color:var(--muted,#9ab)}
 .rtfun{display:grid;gap:6px;margin-bottom:6px}.rtrow{display:grid;grid-template-columns:1fr auto;gap:2px 8px;align-items:center}.rtrow i{grid-column:1/-1;display:block;height:6px;border-radius:3px;background:var(--glow)}
+.mtbox .mtgoal{border:1px solid rgba(120,220,255,.18);border-radius:12px;padding:10px 12px;margin:8px 0;background:rgba(10,30,45,.35)}
+.mtbox .mtgoal.hot{border-color:rgba(255,190,80,.55)}.mtbox .mtgoal.late{border-color:rgba(255,90,90,.6)}.mtbox .mtgoal.ok{border-color:rgba(80,220,150,.6)}
+.mtbox .mttop{display:flex;justify-content:space-between;gap:8px;align-items:baseline}.mtbox .mtdue{white-space:nowrap;opacity:.85}
+.mtbox .mtgoal.hot .mtdue{color:#ffc66b}.mtbox .mtgoal.late .mtdue{color:#ff8a8a}.mtbox .mtgoal.ok .mtdue{color:var(--good)}
+.mtbox .bar{margin:6px 0}.mtbox .mtft{display:flex;justify-content:space-between;align-items:center;gap:8px}
+.mtbox .mtbtns{display:flex;gap:6px}.mtbox .mtbtns button{min-width:44px;min-height:44px;padding:0 10px}
+.mtbox .mtlist{margin:4px 0 8px;padding-left:20px}.mtbox .mtlist li{margin:4px 0;line-height:1.35}.mtbox .mtall{color:var(--good)}
 </style></head><body>
 
 <div class="hudtop"><span>ASCENSION<i>//</i>SISTEMA ONLINE</span><span class="mono" id="clock">--:--</span></div>
@@ -2037,7 +2044,7 @@ let ACH=[];function achList(){return [
 function activeDays(){return new Set(entries().filter(e=>!/^(ach|checkin|tip|dun|sq|zap|ch|adm):/.test(String(e.q))).map(e=>e.date)).size;}
 function renderAch(){const box=$("achList");box.textContent="";prog.ach=prog.ach||{};let got=0;
   for(const [id,name,desc,xp] of (ACH=achList())){const on=!!prog.ach[id];if(on)got++;const d=document.createElement("div");d.className="badge"+(on?" on":"");const b=document.createElement("b");b.textContent=(on?"🏅 ":"🔒 ")+name;d.append(b,document.createTextNode(desc+" · +"+xp+" XP"));box.append(d);}
-  $("achCount").textContent=got+" / "+ACH.length;$("faithPanel").hidden=!(cfg&&cfg.faith);applyCopy();renderEd();renderAdj();renderRPG();betaUI();setTimeout(dailyCheckin,600);crApply();crRender();}
+  $("achCount").textContent=got+" / "+ACH.length;$("faithPanel").hidden=!(cfg&&cfg.faith);applyCopy();renderEd();renderAdj();renderRPG();betaUI();setTimeout(dailyCheckin,600);crApply();crRender();mtRender();}
 function checkAch(){prog.ach=prog.ach||{};for(const [id,name,,xp,test] of (ACH=achList())){if(!prog.ach[id]&&test()){prog.ach[id]=todayKey();pushEntry({q:"ach:"+id,kind:"full",xp,stat:"foco",bonus:0,t:new Date().toISOString()},"Conquista: "+name+"! +"+xp+" XP");return true;}}return false;}
 // ---------- Lembretes na agenda (sem servidor: arquivo .ics ou Google Agenda) ----------
 const BYD=["MO","TU","WE","TH","FR","SA","SU"];
@@ -2633,7 +2640,7 @@ function betaPost(parts){const v=["B"].concat(parts).map(x=>String(x==null?"":x)
   try{fetch(RK_POST,{method:"POST",mode:"no-cors",keepalive:true,body:new URLSearchParams({"entry.807978446":v})}).catch(()=>{});}catch(e){}}
 function betaTab(t){const b=betaGet();if(!b.on)return;const k=todayKey();b.tabs=b.tabs||{};b.tabs[k]=b.tabs[k]||{};b.tabs[k][t]=(b.tabs[k][t]||0)+1;
   for(const d in b.tabs)if(d<k&&Object.keys(b.tabs).length>3)delete b.tabs[d];betaSet(b);}
-function betaDaily(){const b=betaGet();if(!b.on||betaKid())return;const tk=todayKey();if(b.last===tk)return;
+function betaDaily(){const b=betaGet();if(!b.on||betaKid()||!betaAge()||(betaAge()==="teen"&&!b.parent))return;const tk=todayKey();if(b.last===tk)return;
   const y=new Date();y.setDate(y.getDate()-1);const yk=dkey(y);const L=(prog.log[yk]||[]).filter(e=>!/^(ach|checkin|tip|dun|sq|zap|ch|adm):/.test(String(e.q)));
   const ms=mainsFor(y);const mDone=ms.filter(q=>L.some(e=>e.q===q.id)).length;
   let act=0;const d=new Date();for(let i=1;i<=14;i++){d.setDate(d.getDate()-1);if((prog.log[dkey(d)]||[]).length)act++;}
@@ -2653,6 +2660,7 @@ $("betaTipYes").addEventListener("click",()=>{const b=betaGet();b.asked=true;bet
 $("betaTipNo").addEventListener("click",()=>{const b=betaGet();b.asked=true;betaSet(b);betaUI();});
 let betaRate=0;for(const x of $("betaRate").children)x.addEventListener("click",()=>{betaRate=+x.dataset.v;for(const y of $("betaRate").children)y.classList.toggle("on",y===x);});
 $("betaSend").addEventListener("click",()=>{if(betaKid()){toast("Para até 13 anos, mande pelo WhatsApp com ajuda de um adulto.");return;}if(!betaRate){toast("Escolha uma carinha primeiro.");return;}
+  {const b0=betaGet(),tp=(()=>{try{return JSON.parse(localStorage.getItem("ascensao-tele")||"{}")||{};}catch(e){return {};}})();if(!betaAge()||(betaAge()==="teen"&&!b0.parent&&!tp.parent)){toast("Para mandar a nota, ligue antes o envio anônimo (14 a 17 anos: com a autorização do responsável).");return;}}
   const t=$("betaText").value.trim().replace(/\S+@\S+/g,"[email]").replace(/\+?\d[\d\s().-]{7,}\d/g,"[número]").slice(0,280);
   const b=betaGet();const lr=b.rated||"";if(lr===todayKey()+":"+betaRate+":"+t){toast("Essa nota já foi enviada.");return;}
   betaPost([betaId(),"nota",todayKey().replace(/-/g,""),betaRate,betaAge(),t]);b.rated=todayKey()+":"+betaRate+":"+t;betaSet(b);$("betaText").value="";toast("Valeu! Nota enviada sem seu nome.");});
@@ -3092,9 +3100,12 @@ function sqUI(){let p=$("sqPanel");const rp=$("rankPanel");if(!rp)return;
     if(!r.me){const x=sqEl("button","link","✕");x.type="button";x.title="Remover";x.addEventListener("click",()=>{s.m=s.m.filter(n=>n!==r.n);save();sqUI();});li.append(x);}
     ol.append(li);}
   p.append(ol);
-  const cand=(rankRows||[]).map(r=>r.n).filter(n=>n&&n!==rankName()&&!s.m.includes(n));
-  if(s.m.length<SQ_MAX&&cand.length){p.append(sqEl("div","sm muted","Recrutar do ranking:"));const ch=sqEl("div","sqchips");
-    for(const n of cand.slice(0,24)){const c=sqEl("button","chip","+ "+n);c.type="button";c.addEventListener("click",()=>{if(s.m.length>=SQ_MAX)return;s.m.push(n);save();sqUI();toast(n+" entrou no esquadrão.");sqCheckWin();});ch.append(c);}
+  // convidados ficam de fora (sem XP nem dano) até aceitarem; convite some em 7 dias
+  s.inv=s.inv||{};for(const k in s.inv)if((Date.now()-new Date(s.inv[k]).getTime())/864e5>7)delete s.inv[k];const inv=Object.keys(s.inv).filter(n=>!s.m.includes(n));
+  if(inv.length){const ul=sqEl("ul","sqm sqinv");for(const n of inv){const li=sqEl("li");li.append(sqEl("span","n",n),sqEl("span","x","convidado · aguardando"));const x=sqEl("button","link","✕");x.type="button";x.title="Cancelar convite";x.addEventListener("click",()=>{delete s.inv[n];save();sqUI();});li.append(x);ul.append(li);}p.append(ul);}
+  const cand=(rankRows||[]).map(r=>r.n).filter(n=>n&&n!==rankName()&&!s.m.includes(n)&&!s.inv[n]);
+  if(s.m.length+inv.length<SQ_MAX&&cand.length){p.append(sqEl("div","sm muted","Recrutar do ranking:"));const ch=sqEl("div","sqchips");
+    for(const n of cand.slice(0,24)){const c=sqEl("button","chip","+ "+n);c.type="button";c.addEventListener("click",()=>{if(s.m.length+Object.keys(s.inv||{}).length>=SQ_MAX)return;s.inv=s.inv||{};s.inv[n]=new Date().toISOString();save();try{sqiInvite(n);}catch(e){}sqUI();toast("Convite enviado para "+n+". Entra no esquadrão quando aceitar.");});ch.append(c);}
     p.append(ch);}
   const row=sqEl("div","row");const sh=sqEl("button","ghost","📡 Chamar aliados");sh.type="button";sh.addEventListener("click",sqShare);
   const lv=sqEl("button","link","Desfazer esquadrão");lv.type="button";lv.addEventListener("click",()=>{if(!confirm("Desfazer o esquadrão "+s.n+"?"))return;prog.squad=null;save();sqUI();});
@@ -3116,7 +3127,10 @@ const tlClean=v=>String(v==null?"":v).replace(/[|\n\r]/g," ").slice(0,280);
 function tlPost(parts){const v=parts.map(tlClean).join("|");try{fetch(RK_POST,{method:"POST",mode:"no-cors",keepalive:true,body:new URLSearchParams({"entry.807978446":v})}).catch(()=>{});}catch(e){}}
 // contador anônimo: 1 vez por etapa por dia, id aleatório sem ligação com o nome.
 // Só com opt-in (aceite do painel ou "sim" do beta anônimo): sem consentimento, nada sai do celular.
-function anonOk(){if(tlKid())return false;if(tlGet().on)return true;try{return !!(JSON.parse(localStorage.getItem("ascensao-beta")||"{}")||{}).on;}catch(e){return false;}}
+// Folga na LGPD: idade desconhecida conta como "não pode"; 14-17 só com a autorização do responsável gravada no próprio aceite.
+function tlTeenOk(o){return ageNow()!=="teen"||!!(o&&o.parent);}
+function tlAgeOk(){const a=ageNow();return !!a&&a!=="kid";}
+function anonOk(){if(!tlAgeOk())return false;const t=tlGet();if(t.on&&tlTeenOk(t))return true;try{const b=JSON.parse(localStorage.getItem("ascensao-beta")||"{}")||{};return !!b.on&&tlTeenOk(b);}catch(e){return false;}}
 function anonId(){let id="";try{id=localStorage.getItem("asc-anon")||"";if(!id){id="a"+Math.random().toString(36).slice(2,10);localStorage.setItem("asc-anon",id);}}catch(e){id="a0";}return id;}
 function anon(step){if(!anonOk())return;const t=tlGet();t.an=t.an||{};const k=step+":"+tlDk();if(t.an[k])return;
   for(const x in t.an)if(!x.endsWith(tlDk()))delete t.an[x];t.an[k]=1;tlSet(t);
@@ -3126,11 +3140,11 @@ function tlStats(){const y=new Date();y.setDate(y.getDate()-1);const yk=dkey(y);
   const ms=mainsFor(y);const skip=ms.filter(q=>!L.some(e=>e.q===q.id)).length;
   let act=0;const d=new Date();for(let i=0;i<14;i++){if((prog.log[dkey(d)]||[]).length)act++;d.setDate(d.getDate()-1);}
   return {xp:totalXP(),lv:levelOf(totalXP()),act,done:L.filter(e=>e.kind!=="min").length,min:L.filter(e=>e.kind==="min").length,skip,streak:(typeof streakDays==="function"?streakDays():""),nq:((cfg&&cfg.quests)||[]).length,ms:+prog.msUsed||0,cards:(prog.cards||[]).length};}
-function tlSend(ev,extra){const t=tlGet();if(!t.on||tlKid()||!t.uid)return;const P=(cfg&&cfg.profile)||{};const s=tlStats();
+function tlSend(ev,extra){const t=tlGet();if(!t.on||!t.uid||(ev!=="sair"&&(!tlAgeOk()||!tlTeenOk(t))))return;const P=(cfg&&cfg.profile)||{};const s=tlStats();
   tlPost(["U",t.uid,t.nick||rankName()||"?",tlPlat(),ev,tlDk(),P.age||"",P.occ||"",s.xp,s.lv,s.act,ev==="dia"?s.done:"",ev==="dia"?s.min:"",ev==="dia"?s.skip:"",s.streak,s.nq,s.ms,s.cards,extra||("v"+(standalone()?"app":"web"))]);}
 function tlDaily(){const t=tlGet();if(!t.on||t.last===tlDk())return;tlSend("dia");t.last=tlDk();tlSet(t);}
 // aceite interativo no tema do Sistema
-function tlAsk(){return;if(document.body.classList.contains("insm")){setTimeout(tlAsk,5000);return;}if(!cfg||cfg.blank||!cfg.quests||!cfg.quests.length||tlKid())return;const t=tlGet();if(t.asked||(t.disp&&t.disp!==tlDk())||$("tlModal")||[...document.querySelectorAll(".sysmodal")].some(x=>x.getClientRects().length)||document.body.classList.contains("onboarding")||document.body.classList.contains("inmission")||!$("onb").hidden)return;
+function tlAsk(){return;if(document.body.classList.contains("insm")){setTimeout(tlAsk,5000);return;}if(!cfg||cfg.blank||!cfg.quests||!cfg.quests.length||!tlAgeOk())return;const t=tlGet();if(t.asked||(t.disp&&t.disp!==tlDk())||$("tlModal")||[...document.querySelectorAll(".sysmodal")].some(x=>x.getClientRects().length)||document.body.classList.contains("onboarding")||document.body.classList.contains("inmission")||!$("onb").hidden)return;
   const teen=ageNow()==="teen";const m=document.createElement("div");m.className="sysmodal";m.id="tlModal";m.setAttribute("role","dialog");m.setAttribute("aria-modal","true");
   const c=document.createElement("div");c.className="card tlc";const el=(tag,cls,txt)=>{const e=document.createElement(tag);if(cls)e.className=cls;if(txt!=null)e.textContent=txt;return e;};
   c.append(el("div","tag","[ SISTEMA ] PROTOCOLO DE ACESSO"),el("h3",null,"Liberar seu painel para o criador?"),
@@ -3155,7 +3169,7 @@ function tlUI(){let p=$("tlPanel");if(!p){const anchor=$("betaPanel");if(!anchor
   if(t.on){b.className="link";b.textContent="Sair e apagar meus dados";b.addEventListener("click",tlLeave);}else{b.className="go";b.textContent="Liberar meu painel";b.addEventListener("click",()=>{const t2=tlGet();t2.asked=false;tlSet(t2);tlAsk();});}
   r.append(b);bd.append(r);}
 // nota do "Teste do app" também vai identificada para quem aceitou
-{const bs=$("betaSend");if(bs)bs.addEventListener("click",()=>{try{const t=tlGet();if(!t.on||tlKid()||!betaRate)return;const tx=$("betaText").value.trim().replace(/\S+@\S+/g,"[email]").replace(/\+?\d[\d\s().-]{7,}\d/g,"[número]").slice(0,240);tlSend("nota",betaRate+": "+tx);}catch(e){}},true);}
+{const bs=$("betaSend");if(bs)bs.addEventListener("click",()=>{try{const t=tlGet();if(!t.on||!tlAgeOk()||!tlTeenOk(t)||!betaRate)return;const tx=$("betaText").value.trim().replace(/\S+@\S+/g,"[email]").replace(/\+?\d[\d\s().-]{7,}\d/g,"[número]").slice(0,240);tlSend("nota",betaRate+": "+tx);}catch(e){}},true);}
 // funil anônimo do dia (mesmo opt-in e mesmo formato A|id|etapa|data): fez 1 missão de verdade hoje; fechou o dia (baú liberado)
 function tlFunnel(){try{if(!anonOk()||!cfg||cfg.blank||!cfg.quests||!cfg.quests.length)return;const L=prog.log[todayKey()]||[];const ids=new Set(cfg.quests.map(q=>q.id));
   if(L.some(e=>ids.has(e.q)))anon("7-quest");if(typeof bxReady==="function"&&bxReady())anon("8-fechou-dia");}catch(e){}}
@@ -3404,16 +3418,16 @@ async function sqiLoad(){if(ageNow()==="kid"||!(prog.rank&&prog.rank.on))return;
     sqInvRows=all.filter(r=>/^[IJFGK]$/.test(String(r[4]||"").trim())).map(r=>({k:r[4].trim(),a:String(r[5]||"").trim(),b:String(r[6]||"").trim(),s:String(r[7]||"").trim(),d:String(r[8]||"").trim()}));}catch(e){return;}
   sqiCheck();try{if(typeof frCheck==="function")frCheck();}catch(e){}}
 // convite que o Esquadrão manda ao tocar no nome
-function sqiInvite(to){const s=sqSt();const me=rankName();if(!s||!me||!to)return;const st=sqiSt();st.sent=st.sent||{};st.sent[sqiN(to)]=1;save();sqiPost(["I",me,to,s.n,sqiDk()]);}
+function sqiInvite(to){const s=sqSt();const me=rankName();if(!s||!me||!to)return;const st=sqiSt();st.sent=st.sent||{};st.sent[sqiN(to)]=new Date().toISOString();save();sqiPost(["I",me,to,s.n,sqiDk()]);}
 // quem aceitou o meu convite entra sozinho no meu esquadrão
 function sqiMerge(){const s=sqSt();const me=sqiN(rankName());if(!s||!me)return false;let ch=false;
   for(const r of sqInvRows){if(r.k!=="J"||sqiN(r.b)!==me||sqiN(r.s)!==sqiN(s.n)||!r.a)continue;
     if(sqiN(r.a)===me||s.m.some(n=>sqiN(n)===sqiN(r.a))||s.m.length>=SQ_MAX)continue;
     if(!sqiOk(r.a))continue;
-    const key="j:"+sqiN(r.a)+":"+sqiN(r.s);const st=sqiSt();s.m.push(r.a);ch=true;if(!st.seen[key]){st.seen[key]=1;toast(r.a+" aceitou e entrou no esquadrão "+s.n+".");}}
+    const key="j:"+sqiN(r.a)+":"+sqiN(r.s);const st=sqiSt();s.m.push(r.a);if(s.inv)for(const k in s.inv)if(sqiN(k)===sqiN(r.a))delete s.inv[k];ch=true;if(!st.seen[key]){st.seen[key]=1;toast(r.a+" aceitou e entrou no esquadrão "+s.n+".");}}
   if(ch){save();try{sqUI();sqCheckWin();}catch(e){}}return ch;}
 // só entra sozinho quem é meu amigo ou aceitou um convite que eu mandei (ninguém se força no esquadrão alheio)
-function sqiOk(n){try{if(frHas(n))return true;}catch(e){}return !!sqiSt().sent&&!!sqiSt().sent[sqiN(n)];}
+function sqiOk(n){try{if(frHas(n))return true;}catch(e){}const v=sqiSt().sent&&sqiSt().sent[sqiN(n)];if(!v)return false;if(v===1)return true;return (Date.now()-new Date(v).getTime())/864e5<=7;}
 // aliados do mesmo esquadrão (quem já aceitou o mesmo líder)
 function sqiAllies(from,squad,me){const out=[from];for(const r of sqInvRows)if(r.k==="J"&&sqiN(r.b)===sqiN(from)&&sqiN(r.s)===sqiN(squad)&&sqiN(r.a)!==sqiN(me)&&!out.some(n=>sqiN(n)===sqiN(r.a)))out.push(r.a);return out.slice(0,SQ_MAX);}
 function sqiCheck(){sqiMerge();const me=rankName();if(!me||$("sqiModal")||[...document.querySelectorAll(".sysmodal")].some(x=>x.getClientRects().length)||document.body.classList.contains("inmission"))return;
@@ -3435,8 +3449,7 @@ function sqiAsk(r){const st=sqiSt();const key="i:"+sqiN(r.a)+":"+sqiN(r.s);const
     sqiPost(["J",me,r.a,r.s,sqiDk()]);try{haptic([15,40,15]);}catch(e){}toast("Você entrou no esquadrão "+r.s+".");close();try{goTab("prog");sqUI();sqCheckWin();}catch(e){}});
   no.addEventListener("click",close);m.append(c);document.body.append(m);setTimeout(()=>ok.focus(),60);}
 // tocar no nome do ranking também manda o convite (o amigo recebe o aviso no app dele)
-document.addEventListener("click",e=>{const b=e.target.closest&&e.target.closest("#sqPanel .sqchips .chip");if(!b)return;const n=b.textContent.replace(/^\+\s*/,"").trim();
-  setTimeout(()=>{const s=sqSt();if(s&&s.m.includes(n)){sqiInvite(n);toast("Convite enviado para "+n+". Aparece no app dele.");}},0);},true);
+// (o próprio botão do esquadrão já manda o convite e deixa a pessoa como "convidado" até aceitar)
 // dica no painel do Esquadrão
 {const _sq=sqUI;sqUI=function(){_sq();try{const p=$("sqPanel");if(p&&!p.hidden&&sqSt()&&!p.querySelector(".sqitip")){const d=document.createElement("div");d.className="sm muted sqitip";d.textContent="Tocou no nome, o amigo recebe o convite no app dele. Quando ele aceita, entra aqui sozinho.";const ch=p.querySelector(".sqchips");if(ch)ch.after(d);}}catch(e){}};}
 document.addEventListener("visibilitychange",()=>{if(!document.hidden)sqiLoad();});
@@ -5556,6 +5569,50 @@ function bpRender(j){const box=$("bpSum");if(!box)return;box.textContent="";
 
 // planilha ligada e tarefas chegaram: fecha o cadastro de pessoa nova se estiver aberto
 {const _rr=render;render=function(){_rr.apply(this,arguments);try{if(cfg&&!cfg.blank&&cfg.quests&&cfg.quests.length&&document.body.classList.contains("onboarding")&&localStorage.getItem("ascensao-sync")){for(const id of ["onb","quick","intro"]){const e=$(id);if(e)e.hidden=true;}document.body.classList.remove("onboarding");}}catch(e){}};}
+// ---------- Modo Criador: Metas, plano de hoje e prioridades da semana ----------
+// Tudo vem da planilha do criador (cfg.goals, cfg.focus). Nada pessoal fica no código.
+// cfg.goals = [{id,t,due:"AAAA-MM-DD",of,n,unit,quest}]  · n = progresso que a EVA já registrou
+// prog.gp[id] = ajuste feito no app com +1/−1 (sobe para a planilha no A2 junto com o resto)
+// quest = id de uma tarefa: conta quantas vezes ela foi feita nesta semana (seg a dom)
+function mtWeekCount(qid){const d=new Date();const dow=(d.getDay()+6)%7;let n=0;for(let i=0;i<=dow;i++){const x=new Date(d);x.setDate(d.getDate()-i);n+=((prog.log||{})[dkey(x)]||[]).filter(e=>e.q===qid).length?1:0;}return n;}
+function mtDays(due){if(!due)return null;const [y,m,d]=String(due).split("-").map(Number);if(!y)return null;const t=new Date();t.setHours(0,0,0,0);return Math.round((new Date(y,m-1,d)-t)/864e5);}
+function mtVal(g){if(g.quest)return mtWeekCount(g.quest);const gp=(prog.gp||{})[g.id]||0;return Math.max(0,(Number(g.n)||0)+gp);}
+function mtEl(tag,cls,txt){const e=document.createElement(tag);if(cls)e.className=cls;if(txt!=null)e.textContent=txt;return e;}
+function mtBox(){let box=$("mtBox");if(box)return box;const pn=$("crPanel");if(!pn)return null;
+  box=mtEl("div","mtbox");box.id="mtBox";const ref=pn.querySelector(".qhead+.sm.muted")||pn.querySelector(".qhead");ref.after(box);return box;}
+function mtRender(){if(typeof crOn==="function"&&!crOn())return;const box=mtBox();if(!box)return;box.textContent="";
+  const goals=(cfg&&Array.isArray(cfg.goals))?cfg.goals.filter(g=>g&&g.t):[];
+  // 1) metas
+  box.append(mtEl("h3","crh","🎯 Metas"));
+  if(!goals.length){box.append(mtEl("div","sm muted","Nenhuma meta na planilha ainda. A EVA coloca em goals."));}
+  const sorted=goals.slice().sort((a,b)=>{const da=mtDays(a.due),db=mtDays(b.due);return (da==null?9e9:da)-(db==null?9e9:db);});
+  for(const g of sorted){const v=mtVal(g),of=Math.max(1,Number(g.of)||1),done=v>=of,dd=mtDays(g.due);
+    const row=mtEl("div","mtgoal"+(done?" ok":dd!=null&&dd<0?" late":dd!=null&&dd<=3?" hot":""));row.dataset.id=g.id||"";
+    const top=mtEl("div","mttop");top.append(mtEl("b",null,g.t));
+    top.append(mtEl("span","mono sm mtdue",done?"✓ batida":dd==null?(g.quest?"esta semana":""):dd<0?"prazo passou":dd===0?"é hoje":dd===1?"amanhã":"faltam "+dd+" dias"));
+    row.append(top);
+    const bar=mtEl("div","bar");const i=mtEl("i");i.style.width=Math.min(100,v/of*100)+"%";bar.append(i);row.append(bar);
+    const ft=mtEl("div","mtft");ft.append(mtEl("span","sm mono",v+" de "+of+(g.unit?" "+g.unit:"")));
+    if(!g.quest&&g.id){const bx=mtEl("span","mtbtns");for(const [lab,d] of [["−1",-1],["+1",1]]){const b=mtEl("button",null,lab);b.type="button";b.setAttribute("aria-label",(d>0?"Somar 1 em ":"Tirar 1 de ")+g.t);
+        b.addEventListener("click",()=>{prog.gp=prog.gp||{};const nv=(prog.gp[g.id]||0)+d;if((Number(g.n)||0)+nv<0)return;prog.gp[g.id]=nv;save();mtRender();if(d>0&&mtVal(g)>=of)toast("Meta batida: "+g.t);});bx.append(b);}ft.append(bx);}
+    row.append(ft);box.append(row);}
+  // 2) plano de hoje
+  const qs=(typeof todaysQuests==="function"?todaysQuests():[]).filter(q=>q&&q.id&&!/^q_checkin$/.test(q.id));
+  const tk=todayKey(),log=(prog.log||{})[tk]||[],isD=q=>log.some(e=>e.q===q.id);
+  const fd=qs.filter(isD).length;
+  const h=mtEl("h3","crh","📋 Plano de hoje · "+fd+" de "+qs.length);box.append(h);
+  const pend=qs.filter(q=>!isD(q)).sort((a,b)=>(b.main?1:0)-(a.main?1:0)||(b.xp||0)-(a.xp||0));
+  if(!qs.length)box.append(mtEl("div","sm muted","Sem tarefas para hoje na planilha."));
+  else if(!pend.length)box.append(mtEl("div","sm mtall","Tudo feito hoje. Fecha o dia e descansa."));
+  else{const ul=mtEl("ul","mtlist");for(const q of pend.slice(0,8)){const li=mtEl("li");li.append(mtEl("span",null,(q.main?"★ ":"")+q.title));li.append(mtEl("span","sm mono muted"," +"+(q.xp||0)));ul.append(li);}box.append(ul);
+    if(pend.length>8)box.append(mtEl("div","sm muted","e mais "+(pend.length-8)+"."));
+    const go=mtEl("button","go","Ir para a próxima");go.type="button";go.addEventListener("click",()=>{const t=document.querySelector('#tabbar [data-go="hoje"]');if(t)t.click();});const r=mtEl("div","row");r.append(go);box.append(r);}
+  // 3) prioridades da semana
+  const fo=(cfg&&Array.isArray(cfg.focus))?cfg.focus.filter(x=>typeof x==="string"&&x.trim()):[];
+  if(fo.length){box.append(mtEl("h3","crh","🧭 Prioridade da semana"));const ol=mtEl("ol","mtlist");for(const x of fo.slice(0,5))ol.append(mtEl("li",null,x));box.append(ol);}}
+{const tb=document.querySelector('#tabbar [data-go="criador"]');if(tb)tb.addEventListener("click",mtRender);}
+{const _mr=render;render=function(){_mr.apply(this,arguments);try{if(typeof crOn==="function"&&crOn())mtRender();}catch(e){}};}
+
 let saveTimer=null, SYNC="";
 try{SYNC=localStorage.getItem("ascensao-sync")||"";}catch(e){}
 function save(){

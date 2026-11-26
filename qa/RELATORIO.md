@@ -201,6 +201,8 @@ Falhou e foi corrigido: `qa/mural-servidor.test.js` quebrava com `TypeError` qua
 
 - 26/11/2026 10h23 · Revisão horária · Main `4c31172` (#102); checklist da EVA (convite, idade, amigos/avatar) coberto. Achado em 390x844 com varredura de teclado (todo elemento com `role=button` que não é `<button>`, nas 5 abas): a pílula da classe no topo de Hoje ("⚔️ Mago ⇄") recebia foco, mas Enter e Espaço não faziam nada; só o toque abria a galeria. Sequência, escudo e títulos dos painéis já respondiam. Mudou: 1 linha em `tools/rpg.js` (Enter/Espaço chamam o mesmo `chgCls` do toque). Sem mudança de visual, texto, XP ou dados. Teste novo `qa/pilulas-teclado.test.js` 32/32 (8 falham no código antigo), raiz e /comecar/, com e sem reduce-motion. Cache `ascensao-v66` / `ascensao-u-v78`. Placar: suíte inteira 36/36 arquivos verdes.
 
+- 26/11/2026 11h23 · Revisão horária · Main `7ceea81` (#104, Ascension 1.0) com suíte inteira 41/41 verde; checklist da EVA (convite, idade, amigos/avatar) coberto. Achado nas páginas públicas novas da 1.0 em 390x844: o botão principal "Instalar no celular" de /lancamento/ era branco sobre #3d8bff (contraste 3,3:1) e os links do topo e do rodapé de /lancamento/, /privacidade/ e /termos/ ("Abrir o app →", "Privacidade", "Termos de uso", "Sobre o app") tinham ~17 px de altura. Mudou: botão em #2563eb (5,2:1, mesmo brilho) e links com 44 px de área de toque; só CSS, sem mudança de texto ou dados. Teste novo `qa/paginas-1-0.test.js` 33/33 (8 falham no código antigo; também confere rolagem lateral, console e links internos 200), celular e desktop com reduce-motion. Cache `ascensao-v70` / `ascensao-u-v82`. Placar: suíte inteira 43/43 na branch sobre o #107; depois do rebase no #108, 6 arquivos relevantes verdes (paginas-1-0, esquadrao-convite, rotas, seguranca, amigos-avatar, convite).
+
 ## 25/11/2026 · Resumo do beta no Modo Criador (PR rascunho, espera o ok do JV)
 
 **Placar: 34/34** em `qa/painel.test.js` (Playwright, 390x844 e 1280x800 com reduce-motion, relógio simulado, planilha simulada).
@@ -208,3 +210,11 @@ Falhou e foi corrigido: `qa/mural-servidor.test.js` quebrava com `TypeError` qua
 Passou: contagens agregadas (repetido não conta duas vezes, datas em 4 formatos), retenção dia 2 e dia 8, % das principais, funil sem prefixo de etapa, aba `diario` opcional, nenhum apelido no resumo, nada enviado, progresso antigo intacto, sem rolagem lateral, console limpo, mensagem clara sem chave.
 Suíte completa (26/11, já com a main unificada até o #98): 33/33 arquivos verdes. O teste do painel passou a gravar a semente antes da 1ª abertura (em carga, o salvamento atrasado do aparelho vazio sobrescrevia a semente; 6/6 rodadas paralelas verdes).
 Cache: `ascensao-v63` (raiz). /comecar/ não mudou.
+
+## 26/11/2026 · Coleta do beta publicada com folga na LGPD (ok do JV)
+
+O resumo do beta (#64) e a métrica dos desafios (#69) já estavam na main pelo lançamento 1.0 (#104). Auditoria da coleta achou 3 brechas, fechadas aqui:
+- Idade desconhecida (perfil sem faixa) com aceite gravado enviava funil, desafios e linha `U`. Agora nada sai sem idade conhecida, e o aceite nem aparece.
+- 14-17 que aceitou antes de mudar a idade (sem autorização gravada), ou com beta ligado sem autorização, enviava. Agora só com `parent` gravado no próprio aceite.
+- Nota do "Teste do app" saía de qualquer pessoa ≥ 14 sem opt-in. Agora pede o envio ligado (14-17 com autorização). O pedido de exclusão ("sair") continua saindo sempre.
+**Placar:** `qa/funil.test.js` 20/20 (3 casos novos falham na main). Suíte completa: 41 arquivos verdes; 5 (amigos-avatar, relâmpago, runa, ranking-dia, sequência) falharam só com 4 testes em paralelo e passaram sozinhos, mesmo padrão da semente sobrescrita já corrigido em `painel.test.js`. Cache `ascensao-v68` / `ascensao-u-v80`.

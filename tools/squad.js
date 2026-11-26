@@ -41,9 +41,12 @@ function sqUI(){let p=$("sqPanel");const rp=$("rankPanel");if(!rp)return;
     if(!r.me){const x=sqEl("button","link","✕");x.type="button";x.title="Remover";x.addEventListener("click",()=>{s.m=s.m.filter(n=>n!==r.n);save();sqUI();});li.append(x);}
     ol.append(li);}
   p.append(ol);
-  const cand=(rankRows||[]).map(r=>r.n).filter(n=>n&&n!==rankName()&&!s.m.includes(n));
-  if(s.m.length<SQ_MAX&&cand.length){p.append(sqEl("div","sm muted","Recrutar do ranking:"));const ch=sqEl("div","sqchips");
-    for(const n of cand.slice(0,24)){const c=sqEl("button","chip","+ "+n);c.type="button";c.addEventListener("click",()=>{if(s.m.length>=SQ_MAX)return;s.m.push(n);save();sqUI();toast(n+" entrou no esquadrão.");sqCheckWin();});ch.append(c);}
+  // convidados ficam de fora (sem XP nem dano) até aceitarem; convite some em 7 dias
+  s.inv=s.inv||{};for(const k in s.inv)if((Date.now()-new Date(s.inv[k]).getTime())/864e5>7)delete s.inv[k];const inv=Object.keys(s.inv).filter(n=>!s.m.includes(n));
+  if(inv.length){const ul=sqEl("ul","sqm sqinv");for(const n of inv){const li=sqEl("li");li.append(sqEl("span","n",n),sqEl("span","x","convidado · aguardando"));const x=sqEl("button","link","✕");x.type="button";x.title="Cancelar convite";x.addEventListener("click",()=>{delete s.inv[n];save();sqUI();});li.append(x);ul.append(li);}p.append(ul);}
+  const cand=(rankRows||[]).map(r=>r.n).filter(n=>n&&n!==rankName()&&!s.m.includes(n)&&!s.inv[n]);
+  if(s.m.length+inv.length<SQ_MAX&&cand.length){p.append(sqEl("div","sm muted","Recrutar do ranking:"));const ch=sqEl("div","sqchips");
+    for(const n of cand.slice(0,24)){const c=sqEl("button","chip","+ "+n);c.type="button";c.addEventListener("click",()=>{if(s.m.length+Object.keys(s.inv||{}).length>=SQ_MAX)return;s.inv=s.inv||{};s.inv[n]=new Date().toISOString();save();try{sqiInvite(n);}catch(e){}sqUI();toast("Convite enviado para "+n+". Entra no esquadrão quando aceitar.");});ch.append(c);}
     p.append(ch);}
   const row=sqEl("div","row");const sh=sqEl("button","ghost","📡 Chamar aliados");sh.type="button";sh.addEventListener("click",sqShare);
   const lv=sqEl("button","link","Desfazer esquadrão");lv.type="button";lv.addEventListener("click",()=>{if(!confirm("Desfazer o esquadrão "+s.n+"?"))return;prog.squad=null;save();sqUI();});

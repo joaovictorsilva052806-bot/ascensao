@@ -9,7 +9,7 @@ function betaPost(parts){const v=["B"].concat(parts).map(x=>String(x==null?"":x)
   try{fetch(RK_POST,{method:"POST",mode:"no-cors",keepalive:true,body:new URLSearchParams({"entry.807978446":v})}).catch(()=>{});}catch(e){}}
 function betaTab(t){const b=betaGet();if(!b.on)return;const k=todayKey();b.tabs=b.tabs||{};b.tabs[k]=b.tabs[k]||{};b.tabs[k][t]=(b.tabs[k][t]||0)+1;
   for(const d in b.tabs)if(d<k&&Object.keys(b.tabs).length>3)delete b.tabs[d];betaSet(b);}
-function betaDaily(){const b=betaGet();if(!b.on||betaKid())return;const tk=todayKey();if(b.last===tk)return;
+function betaDaily(){const b=betaGet();if(!b.on||betaKid()||!betaAge()||(betaAge()==="teen"&&!b.parent))return;const tk=todayKey();if(b.last===tk)return;
   const y=new Date();y.setDate(y.getDate()-1);const yk=dkey(y);const L=(prog.log[yk]||[]).filter(e=>!String(e.q).startsWith("ach:"));
   const ms=mainsFor(y);const mDone=ms.filter(q=>L.some(e=>e.q===q.id)).length;
   let act=0;const d=new Date();for(let i=1;i<=14;i++){d.setDate(d.getDate()-1);if((prog.log[dkey(d)]||[]).length)act++;}
@@ -29,6 +29,7 @@ $("betaTipYes").addEventListener("click",()=>{const b=betaGet();b.asked=true;bet
 $("betaTipNo").addEventListener("click",()=>{const b=betaGet();b.asked=true;betaSet(b);betaUI();});
 let betaRate=0;for(const x of $("betaRate").children)x.addEventListener("click",()=>{betaRate=+x.dataset.v;for(const y of $("betaRate").children)y.classList.toggle("on",y===x);});
 $("betaSend").addEventListener("click",()=>{if(betaKid()){toast("Para até 13 anos, mande pelo WhatsApp com ajuda de um adulto.");return;}if(!betaRate){toast("Escolha uma carinha primeiro.");return;}
+  {const b0=betaGet(),tp=(()=>{try{return JSON.parse(localStorage.getItem("asc-u-tele")||"{}")||{};}catch(e){return {};}})();if(!betaAge()||(betaAge()==="teen"&&!b0.parent&&!tp.parent)){toast("Para mandar a nota, ligue antes o envio anônimo (14 a 17 anos: com a autorização do responsável).");return;}}
   const t=$("betaText").value.trim().replace(/\S+@\S+/g,"[email]").replace(/\+?\d[\d\s().-]{7,}\d/g,"[número]").slice(0,280);
   const b=betaGet();const lr=b.rated||"";if(lr===todayKey()+":"+betaRate+":"+t){toast("Essa nota já foi enviada.");return;}
   betaPost([betaId(),"nota",todayKey().replace(/-/g,""),betaRate,betaAge(),t]);b.rated=todayKey()+":"+betaRate+":"+t;betaSet(b);$("betaText").value="";toast("Valeu! Nota enviada sem seu nome.");});
