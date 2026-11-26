@@ -423,3 +423,8 @@ function avPost(force){if(typeof RK_POST==="undefined"||ageNow()==="kid"||!(prog
   const v=["P",me,sq,avZapWeek(),avCode(),todayKey().replace(/-/g,""),at,(typeof rkTok==="function"?rkTok():"")].join("|");
   try{fetch(RK_POST,{method:"POST",mode:"no-cors",keepalive:true,body:new URLSearchParams({"entry.807978446":v})}).catch(()=>{});}catch(e){}}
 if(typeof sendRank==="function"){const _sr=sendRank;sendRank=function(){_sr.apply(this,arguments);try{avPost();}catch(e){}};}
+// ---- LGPD: perfil antigo sem faixa de idade que estava no ranking: pede um apelido (o nome real não sai mais) ----
+function lgNickAsk(){try{if(typeof AGE_UNK_MINOR==="undefined"||!AGE_UNK_MINOR||navigator.webdriver)return;if(!cfg||cfg.blank||(cfg.profile&&cfg.profile.age))return;
+  if(!(prog.rank&&prog.rank.on)||cleanNick(prog.rank.nick))return;if(sessionStorage.getItem("asc-lgnick"))return;sessionStorage.setItem("asc-lgnick","1");
+  sysPop("RANKING","Escolha um apelido","Para proteger sua privacidade, o ranking agora mostra só apelidos para quem não informou a idade. Escolha o seu para voltar a aparecer.",()=>{setTimeout(()=>{try{goTab("prog");const n=$("rkNick");if(n){n.scrollIntoView({block:"center"});n.focus();}}catch(e){}},250);},"Escolher apelido");}catch(e){}}
+setTimeout(lgNickAsk,4000);
