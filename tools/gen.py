@@ -159,6 +159,8 @@ rep('</style></head>',R('sistema.css')+'</style></head>')
 rep('\nlet saveTimer=null, SYNC="";','\n'+R('sistema.js')+'\nlet saveTimer=null, SYNC="";')
 rep('</style></head>',R('foco2.css')+'</style></head>')
 rep('\nlet saveTimer=null, SYNC="";','\n'+R('foco2.js')+R('foco-duo.js')+'\nlet saveTimer=null, SYNC="";')
+# janelas do Sistema acessíveis: nome, aria-modal, foco no botão principal e volta do foco (tools/dialogo.js)
+rep('\nlet saveTimer=null, SYNC="";','\n'+R('dialogo.js')+'\nlet saveTimer=null, SYNC="";')
 if not ROOT: open('comecar/index.html','w').write(s)
 pass
 
