@@ -47,7 +47,9 @@ function statXP(){const st={foco:0,vendas:0,mente:0,corpo:0};for(const e of entr
 function coinsEarned(){let s=0;for(const e of entries())s+=Math.max(0,(e.xp||0)+(e.bonus||0));return Math.floor(s/10);}
 function rpgTip(){const d=new Date();const n=Math.floor((d-new Date(d.getFullYear(),0,0))/864e5);return TIPS[n%TIPS.length];}
 let sysQ=[];function sysPop(tag,title,text,cb,lbl){sysQ.push([tag,title,text,cb,lbl]);if(sysQ.length===1)sysNext();}
-let sysShown=null;function sysNext(){if(!sysQ.length||(sysShown&&sysShown.isConnected))return;const [tag,title,text,cb,lbl]=sysQ[0];const m=document.createElement("div");m.className="sysmodal";m.setAttribute("role","dialog");sysShown=m;
+let sysShown=null;function sysNext(){if(!sysQ.length||(sysShown&&sysShown.isConnected))return;
+  // uma janela por vez: espera o criador de avatar fechar (ele abre sozinho no 1º acesso)
+  if(document.querySelector(".avmk")||(()=>{const r=document.getElementById("fzRef");return r&&!r.hidden&&r.getClientRects().length;})()){clearTimeout(sysNext._t);sysNext._t=setTimeout(sysNext,1000);return;}const [tag,title,text,cb,lbl]=sysQ[0];const m=document.createElement("div");m.className="sysmodal";m.setAttribute("role","dialog");sysShown=m;
   const c=document.createElement("div");c.className="card";const a=document.createElement("div");a.className="tag";a.textContent="[ SISTEMA ] "+tag;const h=document.createElement("h3");h.textContent=title;const p=document.createElement("p");p.className="sm";p.textContent=text;
   const b=document.createElement("button");b.className="go";b.type="button";b.textContent=lbl||"Aceitar";b.addEventListener("click",()=>{m.remove();sysQ.shift();if(cb)try{cb();}catch(e){}if(sysQ.length)sysNext();else setTimeout(render,50);});c.append(a,h,p,b);m.append(c);document.body.append(m);try{const ua=navigator.userActivation;if(navigator.vibrate&&(!ua||ua.hasBeenActive))navigator.vibrate([10,30,10]);}catch(e){}}
 function sparks(gold){if(matchMedia("(prefers-reduced-motion: reduce)").matches)return;const pt=lastPt||{x:innerWidth/2,y:innerHeight/2};

@@ -314,7 +314,7 @@ function avMaker(first){if(document.querySelector(".avmk"))return;const a=avSt()
   ft.append(rnd,cv,ok,sec);c.append(ft);m.append(c);document.body.append(m);document.body.classList.add("avmkon");show("rosto");sync();paint();}
 function avClsNameId(id){try{const x=CLS_REAL.concat(CLS_FANT).find(y=>y[0]===id);return x?x[1]:id;}catch(e){return id;}}
 // convite automático: quem nunca montou o avatar (inclusive quem já joga) vê o criador uma vez, sem perder nada
-function avBusy(){return [...document.querySelectorAll(".sysmodal,.mssheet")].some(m=>!m.hidden&&m.getClientRects().length)||($("levelup")&&!$("levelup").hidden)||(()=>{const o=$("onb");return !!(o&&!o.hidden&&o.offsetParent);})();}
+function avBusy(){return document.body.classList.contains("insm")||[...document.querySelectorAll(".sysmodal,.mssheet,.smsheet")].some(m=>!m.hidden&&m.getClientRects().length)||($("levelup")&&!$("levelup").hidden)||(()=>{const o=$("onb");return !!(o&&!o.hidden&&o.offsetParent);})();}
 let avAskT=null,avAsked=false;
 // automação (testes) não recebe os convites automáticos; gente de verdade recebe
 function avAskNow(){try{if(avAsked||!cfg||cfg.blank||navigator.webdriver)return;if(avSt().ok||prog.avAsk){avAsked=true;clsNotice();return;}if(avBusy()){avAskSoon(4000);return;}avAsked=true;avMaker(true);}catch(e){}}

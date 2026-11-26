@@ -174,3 +174,21 @@ Efeito no painel: o funil passa a contar só quem aceitou; a etapa "convite" par
 - 26/11/2026 21h23 · Revisão horária · Main vermelha depois do #76 (raiz unificada com /comecar/): `apps`, `foco` e `segredos` falhavam. Achados: (1) aviso (toast) agora fica sobre o rank do herói em Hoje e engolia o toque/segurar por 2,6 s; virou só texto para o toque (`pointer-events:none`, o botão Desfazer continua clicável); (2) com planilha ligada, o atalho "Tarefas com app" criava tarefa que a próxima sincronização apagava; agora some quando há planilha; (3) testes atualizados para a raiz nova: aparelho sem tarefas abre o cadastro (semeia `ascensao-cfg`), o SW só registra em https (registro manual no localhost para o teste offline) e o pedido do painel do criador abre depois do foco ("Agora não"). Cache `ascensao-v53` / `ascensao-u-v65`. Placar: 21/21 arquivos verdes (apps 47/47, foco 32/32, segredos 38/38). Observação para o JV/EVA: a raiz agora pergunta ao próprio JV "Liberar seu painel para o criador?" (coleta de dados: não mexi).
 - 25/11/2026 22h23 · Revisão horária · Checklist da EVA, item 3 (amigos e avatar): não havia teste. Achado ao escrever o teste: na aba Amigos, os painéis "👥 Amigos" e "Esquadrão" viravam caixas vazias depois de redesenhar (título perdia o botão de abrir). O #79 corrigiu o mesmo ponto em paralelo; fiquei com a versão da main. Falha que sobrou: na turma vazia, "+ Adicionar amigo" rolava até o painel de amigos mas ele continuava fechado; agora abre e põe o foco no campo do apelido. Teste novo `qa/amigos-avatar.test.js` (raiz e /comecar/, 390x844): avatar abre, salva, reabre e cancela sem perder nada; título dos painéis com role/aria-expanded e Enter; card do amigo, comparar, pedido salvo e reaberto; jogador antigo sem avatar/amigos intacto; console limpo. Falha no código antigo. Cache `ascensao-v55` / `ascensao-u-v67`. Placar: amigos-avatar 78/78; suíte completa verde. (A linha "26/11 21h23" acima é de 25/11, horário de Brasília.)
 - 25/11/2026 23h23 · Revisão horária · Correção de data: a linha do #77 acima saiu como "26/11 21h23", mas foi em 25/11/2026 21h23. Checklist da EVA: os 3 itens têm teste e estão verdes (convite 69/69, funil 16/16, amigos-avatar do #86). Varredura em 390x844 (nomes acessíveis, foco pelo teclado, reduce-motion sem animação rodando): só um achado. No convite (/convite/ e /x/), o "olho" (#stage) tinha `outline:none` sem substituto, então quem navega pelo Tab chegava nele sem ver nada (WCAG 2.4.7). Agora aparece um anel dourado só no foco pelo teclado (`:focus-visible`, contraste 17:1); no toque nada muda. Teste novo `qa/convite-foco.test.js` 36/36 (celular, desktop e reduce-motion, nas 2 rotas; 12 falham no código antigo). Cache `ascensao-v56` / `ascensao-u-v68`.
+
+## 26/11/2026 3h07 · Teste noturno (main `02bb36c`, Trem 7)
+
+**Placar: 31/31 arquivos de `qa/` verdes** depois da correção abaixo (antes: 30/31).
+
+| Item | Resultado |
+|---|---|
+| Suíte `qa/*.test.js` (celular 390x844, iPhone 13, Pixel 7 e desktop) | passou (30/31 → 31/31) |
+| Convite: /convite/ = /x/, olho, passos, redirecionamento sem loop (`convite` 69/69, `convite-foco` 36/36) | passou |
+| Aceites de idade em /comecar/: 18+, 14-17 só com responsável, ≤13 desligado e sem envio (`funil` 16/16) | passou |
+| Amigos e avatar: abre, salva, reabre, campos antigos intactos, console limpo (`amigos-avatar`) | passou |
+| Marcar e desmarcar quest, check-in, virar o dia (relógio simulado), raiz e /comecar/ | passou |
+| Reset com backup: copiar backup → apagar tudo (2 toques) → restaurar no onboarding traz log e campo desconhecido | passou (raiz e /comecar/, 390 e 1280) |
+| Migração: localStorage gerado por `4cd78ba` (#65) e `81230f8` (#86) aberto na main | passou: 0 chaves e 0 campos perdidos (40→67 e 57→67 campos); só `updatedAt` e `avPub` recalculados |
+| Offline (SW registrado à mão) e reduce-motion (`segredos`, `foco`, `movimento`, `rotas`, `toque`) | passou |
+| Site no ar: "pages build and deployment" da main `02bb36c` | sucesso (26/11 3h06) |
+
+Falhou e foi corrigido: `qa/mural-servidor.test.js` quebrava com `TypeError` quando rodado como os outros (`node qa/mural-servidor.test.js`, sem argumento), então o laço `for f in qa/*.test.js` sempre ficava vermelho. Agora usa `server/mural.gs` por padrão (29/29). Só teste: app e cache do SW sem mudança (`ascensao-v61` / `ascensao-u-v73`).
