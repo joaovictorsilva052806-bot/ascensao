@@ -63,7 +63,7 @@ for(const [nome,opt] of [['celular',{}],['desktop + reduce-motion',{viewport:{wi
   await p.evaluate(()=>{const s=[...document.querySelectorAll('.mssheet')].find(x=>!x.hidden);const m=s&&[...s.querySelectorAll('button')].find(x=>/Minimizar/.test(x.textContent));if(m)m.click();});await p.waitForTimeout(400);
   const st=await sysTxt(p);ok('Sistema: "Falta 1." no singular',/Falta 1\./.test(st)&&!/Faltam 1\./.test(st),st);
   const dx=await p.evaluate(()=>document.querySelector('#dayxp').textContent);const log=await p.evaluate(()=>{const g=JSON.parse(localStorage.getItem('asc-u-prog'));const k=Object.keys(g.log).pop();return g.log[k].map(e=>e.q);});
-  ok('placar do dia conta só a tarefa (check-in e conquista não)',/^Hoje: 1 (concluída|feita)/.test(dx)&&log.length>1,dx+' · log: '+log.join(','));
+  ok('placar do dia conta só a tarefa (check-in e conquista não)',/^Hoje: 1 (tarefa )?(concluída|feita)/.test(dx)&&log.length>1,dx+' · log: '+log.join(','));
   // dados antigos: tudo que existia continua lá depois de abrir a versão nova
   const before=await p.evaluate(()=>{const g=JSON.parse(localStorage.getItem('asc-u-prog'));g.campoAntigo={x:1};g.log['2026-11-20']=[{q:'velha',kind:'full',xp:10,stat:'foco',t:'2026-11-20T12:00:00Z'}];localStorage.setItem('asc-u-prog',JSON.stringify(g));return {g,c:localStorage.getItem('asc-u-cfg')};});
   await p.reload();await p.waitForTimeout(2000);
