@@ -7,6 +7,7 @@
 // 5) Barra de abas abaixo de 390px: "PROGRESSO" não passa mais da aba.
 // 6) Voltar do Android com missão/desafio aberto fecha só a folha (antes saía do app).
 // 7) "Desfazer" no aviso por 5 s depois de concluir; o aviso sobe quando o atalho da figurinha aparece.
+// 11) Dívida: "Recupere N XP hoje…" antes do valor em aberto; sem dia para recuperar, avisa que sai sozinha em até 3 dias.
 // 10) Galeria de classes: no dia em que o jogo foi criado, espera a 1ª tarefa (a pílula abre na hora).
 // 9) Volta depois de faltar 1 dia: cartão sem cobrança no topo da aba Hoje e 1 toque abre a 1ª missão.
 // 8) Dia 1: o check-in entra sozinho, sem a janela "Você apareceu" entre "Criar meu jogo" e a 1ª missão.
@@ -158,6 +159,14 @@ for(const w of [320,360,375,390]){const ctx=await b.newContext({viewport:{width:
     if(!depois)await p.evaluate(()=>{for(const m of document.querySelectorAll('.sysmodal')){if(m.id==='clsModal'||m.id==='secZen'||!m.getClientRects().length)continue;const g=m.id==='tlModal'?m.querySelector('button.ghost'):m.querySelector('button.go');if(g){g.click();return;}}});}
   ok('classe: a galeria abre depois da 1ª tarefa feita',depois);
   ok('classe: e sozinha (nenhum outro aviso aberto junto)',await p.evaluate(()=>[...document.querySelectorAll('.sysmodal,.levelup')].filter(m=>m.id!=='clsModal'&&m.id!=='secZen'&&m.getClientRects().length).length===0));ok('classe: console limpo (2)',errs.length===0,errs.join(' | '));await ctx.close();}
+// dívida: o que dá para recuperar hoje vem primeiro (antes: "Dívida… é perdoada"); a regra de XP não muda
+{const DC={version:3,name:'Ana',startDate:'2026-11-15',profile:{age:'adult'},quests:[{id:'q1',title:'Estudar',xp:20,stat:'mente',main:true},{id:'q2',title:'Ler',xp:10,stat:'mente',main:true}]};
+  for(const [nome,log,re] of [['ontem fez 1 de 2',{'2026-11-25':[{q:'q1',kind:'full',xp:20,stat:'mente',bonus:0,t:'x'}]},/^Recupere 10 XP hoje: faça todas as principais \(o mínimo vale\)\. Dívida em aberto: −\d+ XP\.$/],
+                              ['sem dia para recuperar',{'2026-11-25':[{q:'q1',kind:'full',xp:20,stat:'mente',bonus:0,t:'x'},{q:'q2',kind:'full',xp:10,stat:'mente',bonus:0,t:'x'}]},/^Dívida: −\d+ XP de dias sem as principais\. Ela sai sozinha em até 3 dias\.$/]]){
+    const errs=[];const ctx=await ctxOf(b);await ctx.addInitScript(([c,g])=>{if(!localStorage.getItem('asc-u-cfg')){localStorage.setItem('asc-u-cfg',c);localStorage.setItem('asc-u-prog',g);localStorage.setItem('asc-u-season','2');localStorage.setItem('asc-u-tele',JSON.stringify({asked:1}));}},[JSON.stringify(DC),JSON.stringify({log,rpg:{cls:{id:'mago',style:'fant',name:'Mago'}},gd:{off:1},simple:{off:'2026-11-01'}})]);
+    const p=await page(ctx,'2026-11-26T10:00:00-03:00',errs);await p.goto(U);await p.waitForTimeout(1800);await pops(p);
+    const t=await p.evaluate(()=>{const e=document.getElementById('debt');return e&&!e.hidden?e.textContent:'';});
+    ok('dívida em tom de recuperação ('+nome+')',re.test(t)&&!/perdoada/.test(t),t);ok('dívida: console limpo ('+nome+')',errs.length===0,errs.join(' | '));await ctx.close();}}
 // raiz (app do JV): abre com a planilha de exemplo e sem erro
 {const errs=[];const ctx=await ctxOf(b);await ctx.addInitScript(()=>{if(!localStorage.getItem('ascensao-cfg')){localStorage.setItem('ascensao-cfg',JSON.stringify({version:3,startDate:'2026-11-20',name:'JV',quests:[{id:'q1',title:'Estudar 20 min',xp:20,stat:'mente',main:true},{id:'q_fech',title:'Fechamento do dia',xp:10,stat:'foco',main:true}]}));localStorage.setItem('ascensao-prog',JSON.stringify({log:{},rpg:{cls:'mago'}}));}});
   const p=await page(ctx,'2026-11-27T02:00:00-03:00',errs);await p.goto(B+'/');await p.waitForTimeout(2500);

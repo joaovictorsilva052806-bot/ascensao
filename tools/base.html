@@ -457,7 +457,9 @@ function render(){
   const pens=penalties();const open=pens.filter(p=>!p.forgiven);const redeem=pens.find(p=>p.redeemable&&!p.forgiven);
   const debtEl=$("debt");
   if(open.length){debtEl.hidden=false;
-    debtEl.textContent="Dívida: −"+debtXP()+" XP por quests principais não feitas."+(redeem?" Faça todas as principais hoje (nem que seja o mínimo) e a dívida de ontem (−"+redeem.amount+") é perdoada.":"");}
+    // ganho na frente, sem culpa (revisão 26/11): o que dá para recuperar hoje vem antes do que está em aberto
+    debtEl.textContent=redeem?("Recupere "+redeem.amount+" XP hoje: faça todas as principais (o mínimo vale). Dívida em aberto: −"+debtXP()+" XP.")
+      :("Dívida: −"+debtXP()+" XP de dias sem as principais. Ela sai sozinha em até "+DEBT_DAYS+" dias.");}
   else debtEl.hidden=true;
   const gNow=document.createElement("div");gNow.className="qgroup";
   const dExtra=document.createElement("details");const sExtra=document.createElement("summary");dExtra.append(sExtra);
