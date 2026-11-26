@@ -153,6 +153,8 @@ rep('\nlet saveTimer=null, SYNC="";','\n'+R('boss.js')+R('chest.js')+R('mural.js
 # celular de verdade: 📅 agenda e tarefas de apps (tools/apps.*)
 rep('</style></head>',R('apps.css')+'</style></head>')
 rep('\nlet saveTimer=null, SYNC="";','\n'+R('apps.js')+'\nlet saveTimer=null, SYNC="";')
+rep('</style></head>',R('holo.css')+R('rune.css')+'</style></head>')
+rep('\nlet saveTimer=null, SYNC="";','\n'+R('holo.js')+R('rune.js')+'\nlet saveTimer=null, SYNC="";')
 rep('</style></head>',R('sistema.css')+'</style></head>')
 rep('\nlet saveTimer=null, SYNC="";','\n'+R('sistema.js')+'\nlet saveTimer=null, SYNC="";')
 rep('</style></head>',R('foco2.css')+'</style></head>')
