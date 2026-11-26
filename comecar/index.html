@@ -6672,7 +6672,8 @@ setTimeout(()=>{try{arUI();}catch(e){}},0);
 // Pedido de testador: "acrescenta meta de leitura". Alimenta 📘 Intelecto (70%) e 🦉 Sabedoria (30%).
 // XP: 1 a cada 2 páginas (até 15) + 5 ao bater a meta do dia, numa entrada só "ler:<dia>". Terminar um livro: +20 ("ler:livro:<n>").
 // Bater a meta do dia carrega +1 Arcano na Arena (arena.js).
-// Só ADICIONA prog.read = {goal, d:{dia:páginas}, book:{t,tot,pg}, books:[{t,d}], last:[dia,n]}.
+// Só ADICIONA prog.read = {goal, d:{dia:páginas}, book:{t,tot,pg}, books:[{t,d}], last:[dia,n], paused:[{t,tot,pg,d}]}.
+// "Trocar livro" pede 2 toques e guarda o livro largado em paused (sem XP de concluído); dá para voltar a ele.
 const LR_GOALS=[5,10,20,30],LR_MAXXP=15,LR_HIT=5,LR_BOOK=20;
 function lrSt(){if(!prog.read||typeof prog.read!=="object")prog.read={};const r=prog.read;r.d=r.d&&typeof r.d==="object"?r.d:{};r.books=Array.isArray(r.books)?r.books:[];r.goal=r.goal|0;return r;}
 function lrEl(t,cl,x){const e=document.createElement(t);if(cl)e.className=cl;if(x!=null)e.textContent=x;return e;}
@@ -6713,16 +6714,24 @@ function lrUI(){let p=$("lrPanel");const anchor=$("arPanel")||$("atPanel")||$("a
   const bk=lrEl("div","lrbook");
   if(r.book&&r.book.t){const t=lrEl("div","lrbt");t.append(lrEl("b",null,"📕 "+r.book.t),lrEl("span","sm mono",(r.book.pg||0)+(r.book.tot?"/"+r.book.tot:"")+" págs"));bk.append(t);
     if(r.book.tot){const b2=lrEl("div","lrbar thin");const j=lrEl("i");j.style.width=Math.min(100,(r.book.pg||0)/r.book.tot*100).toFixed(1)+"%";b2.append(j);bk.append(b2);}
-    const row=lrEl("div","row");const f=lrEl("button","ghost","Terminei o livro 🎉");f.type="button";f.onclick=lrFinish;const x=lrEl("button","link","Trocar livro");x.type="button";x.onclick=()=>{r.book=null;save();lrUI();lrBookForm();};row.append(f,x);bk.append(row);}
-  else{const b=lrEl("button","link","+ Livro que estou lendo (opcional)");b.type="button";b.onclick=lrBookForm;bk.append(b);}
+    const row=lrEl("div","row");const f=lrEl("button","ghost","Terminei o livro 🎉");f.type="button";f.onclick=lrFinish;const x=lrEl("button","link","Trocar livro");x.type="button";x.setAttribute("aria-label","Trocar livro");
+      x.onclick=()=>{if(x.dataset.sure){lrSwap();return;}x.dataset.sure="1";x.textContent="Trocar? Toque de novo";x.setAttribute("aria-label","Toque de novo para trocar de livro. "+r.book.t+" fica guardado");
+        setTimeout(()=>{if(x.isConnected){delete x.dataset.sure;x.textContent="Trocar livro";x.setAttribute("aria-label","Trocar livro");}},3000);};row.append(f,x);bk.append(row);}
+  else{const b=lrEl("button","link","+ Livro que estou lendo (opcional)");b.type="button";b.onclick=lrBookForm;bk.append(b);lrResumeBtn(bk);}
   p.append(bk);
   const ch=lrEl("button","link","Mudar meta");ch.type="button";ch.onclick=()=>{r.edit=1;lrUI();};p.append(ch);}
+function lrPaused(){const r=lrSt();if(!Array.isArray(r.paused))r.paused=[];return r.paused;}
+function lrSwap(){const r=lrSt();if(!r.book||!r.book.t)return;const b=r.book;lrPaused().push({t:b.t,tot:b.tot||0,pg:b.pg||0,d:todayKey()});r.book=null;save();
+  toast("📕 "+b.t+" guardado. Dá pra voltar a ele.");lrUI();lrBookForm();}
+function lrResumeBtn(bk){const ps=lrPaused();if(!ps.length)return;const last=ps[ps.length-1];
+  const b=lrEl("button","link","↩ Voltar a "+last.t+" ("+(last.pg||0)+(last.tot?"/"+last.tot:"")+" págs)");b.type="button";
+  b.onclick=()=>{const r=lrSt();const ps2=lrPaused();const o=ps2.pop();if(!o)return;if(r.book&&r.book.t)ps2.push({t:r.book.t,tot:r.book.tot||0,pg:r.book.pg||0,d:todayKey()});r.book={t:o.t,tot:o.tot||0,pg:o.pg||0};save();toast("📕 De volta a "+o.t);lrUI();};bk.append(b);}
 function lrBookForm(){const p=$("lrPanel");if(!p)return;const bk=p.querySelector(".lrbook");if(!bk)return;bk.textContent="";
   const f=lrEl("form","lrform");const t=lrEl("input");t.placeholder="Nome do livro";t.maxLength=60;t.setAttribute("aria-label","Nome do livro");
   const n=lrEl("input");n.type="number";n.inputMode="numeric";n.placeholder="Total de páginas";n.min="1";n.max="5000";n.setAttribute("aria-label","Total de páginas");
   const s=lrEl("button","go","Salvar");s.type="submit";f.append(t,n,s);
   f.onsubmit=e=>{e.preventDefault();const nm=t.value.trim();if(!nm){t.focus();return;}const r=lrSt();r.book={t:nm,tot:Math.max(0,Math.min(5000,Math.round(+n.value||0))),pg:0};save();lrUI();};
-  bk.append(f);setTimeout(()=>t.focus(),30);}
+  bk.append(f);lrResumeBtn(bk);setTimeout(()=>t.focus(),30);}
 {const _r=render;render=function(){_r.apply(this,arguments);try{if((document.body.dataset.tab==="prog"&&!document.querySelector("#lrPanel .lrform"))||!$("lrPanel"))lrUI();}catch(e){}};}
 document.addEventListener("click",e=>{const b=e.target.closest&&e.target.closest('#tabbar [data-go="prog"]');if(b)setTimeout(()=>{try{lrUI();}catch(x){}},0);},true);
 setTimeout(()=>{try{lrUI();}catch(e){}},0);
