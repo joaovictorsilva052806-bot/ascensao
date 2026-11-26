@@ -34,7 +34,8 @@ function rnLevel(){const l=$("levelup");if(!l||l.querySelector(".rnlv"))return;
 try{const l=$("levelup");if(l){rnLevel();}}catch(e){}
 
 // barra de XP: um brilho corre por ela quando o XP entra
-function rnShine(){if(RN_RM())return;const b=$("xpbar");if(!b)return;b.classList.remove("rn-gain");void b.offsetWidth;b.classList.add("rn-gain");clearTimeout(rnShine._t);rnShine._t=setTimeout(()=>b.classList.remove("rn-gain"),1500);}
+// reinicia no quadro seguinte em vez de forçar layout (void offsetWidth) no meio do toque, que travava o "Feito" em celular lento
+function rnShine(){if(RN_RM())return;const b=$("xpbar");if(!b)return;b.classList.remove("rn-gain");cancelAnimationFrame(rnShine._f);rnShine._f=requestAnimationFrame(()=>{rnShine._f=requestAnimationFrame(()=>b.classList.add("rn-gain"));});clearTimeout(rnShine._t);rnShine._t=setTimeout(()=>b.classList.remove("rn-gain"),1500);}
 // 3) Baú: rola um d20 antes do prêmio (o prêmio já está sorteado; o dado só mostra a raridade)
 function rnD20(n){return '<svg class="rnd20" viewBox="0 0 100 100" aria-hidden="true"><path class="f" d="M50 4L90 27V73L50 96L10 73V27Z"/><path class="l" d="M50 22L22 66H78Z M50 4L50 22M10 27L50 22M10 27L22 66M90 27L50 22M90 27L78 66M10 73L22 66M90 73L78 66M50 96L22 66M50 96L78 66"/><text x="50" y="52" text-anchor="middle" dominant-baseline="middle">'+n+'</text></svg>';}
 function rnRoll(out){if(!out||out.dataset.rn)return;out.dataset.rn="1";
