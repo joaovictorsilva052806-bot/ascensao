@@ -11,8 +11,7 @@ function qtFrom(q){if(!q)return null;if(Number.isFinite(+q.from)&&q.from!==""&&q
   if(/ao acordar|acordar|da manhã|primeira hora do dia/.test(t+" "+i))return 5;
   return null;}
 function qtLocked(q){const f=qtFrom(q);if(f==null)return null;const h=new Date().getHours();
-  if(f>=12)return (h<f&&h>=5)?f:null; // noite: libera de f até 4h59
-  return h<f?f:null;}
+  return h<f?f:null;} // o dia vira à meia-noite: 0h-4h59 já é o dia novo, então "Fechar o dia" fica trancado até a hora dele
 const QT_SHORT={s_fech:"🌙 Fechar o dia",q_fech:"🌙 Fechar o dia"};
 const QT_SHORT_RE=[[/^antes de dormir/i,"🌙 Fechar o dia"],[/^fechamento/i,"🌙 Fechar o dia"],[/trabalhar 90 min/i,"Bloco de foco: 90 min"],[/oferecer desenho/i,"Oferecer desenho técnico"],[/abordar 3 corretores/i,"Abordar 3 corretores"]];
 // título longo: corta o parêntese ou o que vem depois de ":" (o texto inteiro fica nos detalhes)

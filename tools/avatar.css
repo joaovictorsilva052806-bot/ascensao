@@ -93,3 +93,7 @@ body.avmkon{overflow:hidden}
 .levelup.lvfx .card{background-image:repeating-linear-gradient(0deg,rgba(255,255,255,.03) 0 1px,transparent 1px 3px)}
 @media (prefers-reduced-motion:reduce){svg.avbig *{animation:none!important}.avmkc,.levelup.lvfx::before,.levelup.lvfx .lvtag,.levelup.lvfx .lvav{animation:none}.avpt{opacity:.8}}
 .status .pills{row-gap:16px}
+/* apelido longo numa palavra só não pode alargar a página (iPhone) */
+.status .who,.status .who h1,#titleName,.sysmsg,.sysline,#sysTip,.hero .msg{min-width:0;max-width:100%;overflow-wrap:anywhere;word-break:break-word}
+.status{min-width:0}.wrap{max-width:100%}
+.avmkc{padding-left:max(14px,env(safe-area-inset-left));padding-right:max(14px,env(safe-area-inset-right));height:min(94dvh,calc(100dvh - env(safe-area-inset-top)))}

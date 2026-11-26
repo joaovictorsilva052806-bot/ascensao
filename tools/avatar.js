@@ -338,7 +338,7 @@ function clsApply(cl,dress){const r=rpgState();const st=clsCan();if(!st.ok){toas
   if(old){r.past=(r.past||[]).concat([{id:old.id,name:old.name,style:old.style,d:todayKey()}]).slice(-6);if(st.use==="tk")r.ctk=Math.max(0,(r.ctk||0)-1);r.clast=todayKey();}
   else{r.ct0=Date.now();}
   r.cls=cl;r.evo=lv>=20?2:lv>=10?1:0;r.seen=null;r.cg=1;if(dress){const a=avSt();a.o=0;a.hw=0;a.it=0;}save();render();try{avPost(true);}catch(e){}
-  sysPop(old?"CLASSE TROCADA":"CLASSE DEFINIDA",clsName(cl,lv),"Afinidade: "+STATS[cl.stat]+" sobe 1,5x mais rápido. Seu XP e nível continuam os mesmos."+(old?" Agora você é ex-"+old.name+".":""));return true;}
+  sysPop(old?"CLASSE TROCADA":"CLASSE DEFINIDA",clsName(cl,lv),"Afinidade: "+STATS[cl.stat]+" sobe 1,5x mais rápido."+(old?" Seu XP e nível continuam os mesmos. Agora você é ex-"+old.name+".":""));return true;}
 function clsPrev(id,sz){try{const o=avParse(avCode());o.cls=AV_CLS.includes(id)?id:"x";o.o=0;o.hw=0;o.it=0;return avSvg(o,sz);}catch(e){return "";}}
 let clsGalOpen=false;
 function openCls(){if(clsGalOpen||(rpgState().cls&&!openCls.force))return;const full=!!openCls.force;openCls.force=false;clsGalOpen=true;clsOpen=true;
@@ -401,7 +401,7 @@ function avHome(){const st=document.querySelector('.wrap>section[data-tab="hoje"
     w.addEventListener("click",e=>{if(e.target.closest("#rank"))return;if(typeof tmCard==="function")tmCard();else avMaker(false);});}
   const lv=avLv();w.querySelector(".hav").innerHTML=avMine(innerWidth<380?76:88);w.setAttribute("aria-label","Meu card: nível "+lv+". Toque para abrir");
   const pills=st.querySelector(".pills");if(!pills)return;let pp=$("heroPos");
-  let pos="";try{if(typeof cdPos==="function"&&typeof rankName==="function"&&rankName()){const ps=cdPos(rankName());pos=ps.t?"🏆 "+ps.t+"º na turma":ps.g?"🏆 "+ps.g+"º no geral":"";}}catch(e){}
+  let pos="";try{if(prog.rank&&prog.rank.on&&ageNow&&ageNow()!=="kid"&&typeof cdPos==="function"&&typeof rankName==="function"&&rankName()){const ps=cdPos(rankName());pos=ps.t?"🏆 "+ps.t+"º na turma":ps.g?"🏆 "+ps.g+"º no geral":"";}}catch(e){}
   if(!pp){pp=avEl("span","pill");pp.id="heroPos";pp.setAttribute("role","button");pp.tabIndex=0;pp.addEventListener("click",()=>{const t=document.querySelector('#tabbar [data-go="amigos"]');t&&t.click();});pills.append(pp);}
   pp.hidden=!pos;pp.textContent=pos;}
 {const _r=render;render=function(){_r.apply(this,arguments);try{avUI();}catch(e){}try{avHome();}catch(e){}try{clsTick();}catch(e){}try{avAskSoon();}catch(e){}};}

@@ -158,7 +158,12 @@ pass
 
 if ROOT:
     # chaves de dados do JV (nada muda no aparelho dele) e aba Criador
-    s=s.replace('"asc-u-intro"','"@@INTRO@@"').replace('"asc-u-','"ascensao-').replace("'asc-u-","'ascensao-").replace('"@@INTRO@@"','"asc-u-intro"')
+    s=s.replace('"asc-u-','"ascensao-').replace("'asc-u-","'ascensao-")
+    # app do criador: sem cartão "Conectar ao sistema" para visitante (liga por link #s=) e sem pedir para liberar o painel para ele mesmo
+    rep('$("syncCard").hidden=!!SYNC;','$("syncCard").hidden=true;')
+    rep('setTimeout(tlBoot,1200);','')
+    # raiz: service worker como era antes da unificação (offline também em teste local)
+    s=s.replace('"serviceWorker" in navigator&&location.protocol==="https:"','"serviceWorker" in navigator')
     rep('    </details>\n  </section>\n</div>','    </details>\n  </section>\n'+R('creator.html')+'</div>')
     rep('Mais</button>\n</nav>','Mais</button>\n  <button type="button" data-go="criador" hidden><svg viewBox="0 0 24 24"><path d="M12 2l2.6 6.3L21 9l-5 4.4L17.5 20 12 16.6 6.5 20 8 13.4 3 9l6.4-.7z"/></svg>Criador</button>\n</nav>')
     rep('let t0="hoje";try{t0=sessionStorage.getItem("asc-tab")||"hoje";}catch(e){}','let t0="hoje";try{t0=sessionStorage.getItem("asc-tab")||"hoje";}catch(e){}if(t0==="criador"&&!crOn())t0="hoje";')
