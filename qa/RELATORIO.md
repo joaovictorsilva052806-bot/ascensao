@@ -1,5 +1,12 @@
 # Relatório de QA (ATENA)
 
+## 25/11/2026 23h · Retenção D1/D3/D7 e funil no Modo Criador (PR rascunho, espera o "pode publicar")
+
+- Novo: painel "📈 Retenção (anônima)" na aba Criador (só no app do JV). Calcula D1/D3/D7 e o funil perfil → 1ª missão → fechou o dia a partir das linhas `A` que o painel já recebe. Não guarda nada.
+- Coleta: 2 etapas novas no mesmo formato anônimo e no mesmo opt-in (`7-quest`, `8-fechou-dia`), 1 vez por dia. Até 13 anos e sem aceite: nada sai.
+- Corrigido junto: o app do criador pedia "Liberar seu painel para o criador?" para o próprio JV (o intervalo do aceite não era desligado na raiz). Agora não pede e não envia nada.
+- Testes: qa/retencao.test.js 28/28 (390x844 e 1280x800); o teste do aceite falhava no código antigo. Suíte: alvo 24, apps 47, convite 69, foco 32, funil 16, ranking-dia 47, relampago 27, rotulos 17, segredos 38, toque 19 e os demais sem FAIL. qa/mural-servidor.test.js quebra no Node também na main (não é deste PR). Caches ascensao-v55 / ascensao-u-v67.
+
 ## Revisões horárias
 
 - 25/11 15h36 · Achado: cabeçalho dos painéis recolhíveis ("Como você está", "Treino do Sistema", "Ligar à planilha") tinha só 28px de altura para o dedo. Mudou: alvo de toque de 44px sem mudar o visual (margem negativa); caches ascensao-v29 / ascensao-u-v38. Placar: 198/198 (novo qa/toque.test.js 19/19, falhava 12/19 no código antigo).
@@ -186,6 +193,13 @@ Efeito no painel: o funil passa a contar só quem aceitou; a etapa "convite" par
 
 Falhou e foi corrigido: `qa/mural-servidor.test.js` quebrava com `TypeError` quando rodado como os outros (`node qa/mural-servidor.test.js`, sem argumento), então o laço `for f in qa/*.test.js` sempre ficava vermelho. Agora usa `server/mural.gs` por padrão (29/29). Só teste: app e cache do SW sem mudança (`ascensao-v61` / `ascensao-u-v73`).
 
+- 26/11/2026 7h23 · Revisão horária · Main `0f0c936` (Trem 8) verde; checklist da EVA (convite, idade, amigos/avatar) verde. Achado em 390x844: no "Comece por aqui", quem marcou "Até 13" (sem ranking) via "Veja seu lugar no ranking" e "te sobe no ranking". Mudou: para menor de 14 o passo 3 vira "Veja sua evolução", o desafio diz "Vale XP na hora" e o aviso final fala em evolução; 14+ igual. Teste novo `qa/guia-idade.test.js` 24/24 (4 falham no código antigo). Cache `ascensao-v63` / `ascensao-u-v75`. Placar: suíte inteira 33/33 arquivos verdes.
+
+- 26/11/2026 8h23 · Revisão horária · Main `9f65be3` (#100); checklist da EVA (convite, idade, amigos/avatar) coberto. Achado em 390x844 (aba Progresso): o número "300 / 300 HP" da barra do chefão era branco direto sobre o verde-limão (contraste 1,3:1; 1,4 no amarelo e 2,6 no vermelho). Mudou: o número ganhou um selo escuro atrás (13:1 a 15:1 em todas as cores), só CSS em `tools/boss.css`. Teste novo `qa/chefe-contraste.test.js` 14/14 (6 falham no código antigo). Cache `ascensao-v64` / `ascensao-u-v76`. Placar: suíte inteira 34/34 arquivos verdes (`sequencia` oscilou 1 vez na rodada longa, o caso conhecido da galeria de classes, e passou nas 2 repetições; na main também passa).
+
+- 26/11/2026 9h23 · Revisão horária · Main `6eec89c` (#101); checklist da EVA (convite, idade, amigos/avatar) coberto. Achado em 390x844: as janelas do Sistema (check-in do dia, avisos, subir de nível) abriam sem nome e sem `aria-modal`, e o foco ficava atrás delas: no teclado o Enter não confirmava e o Tab andava pela tela coberta; o leitor de tela dizia só "janela". Mudou: módulo `tools/dialogo.js` dá nome ("[ SISTEMA ] CHECK-IN DIÁRIO Dia 1"), `aria-modal`, foco no botão principal ao abrir, Tab preso na janela e foco de volta ao fechar. Sem mudança de visual, texto, XP ou dados. Teste novo `qa/dialogo.test.js` 56/56 (falha no código antigo), raiz e /comecar/, com e sem reduce-motion. Cache `ascensao-v65` / `ascensao-u-v77`. Placar: suíte inteira 35/35 arquivos verdes (`liga` oscilou 1 vez na rodada longa, caso conhecido, e passou nas 3 repetições).
+
+- 26/11/2026 10h23 · Revisão horária · Main `4c31172` (#102); checklist da EVA (convite, idade, amigos/avatar) coberto. Achado em 390x844 com varredura de teclado (todo elemento com `role=button` que não é `<button>`, nas 5 abas): a pílula da classe no topo de Hoje ("⚔️ Mago ⇄") recebia foco, mas Enter e Espaço não faziam nada; só o toque abria a galeria. Sequência, escudo e títulos dos painéis já respondiam. Mudou: 1 linha em `tools/rpg.js` (Enter/Espaço chamam o mesmo `chgCls` do toque). Sem mudança de visual, texto, XP ou dados. Teste novo `qa/pilulas-teclado.test.js` 32/32 (8 falham no código antigo), raiz e /comecar/, com e sem reduce-motion. Cache `ascensao-v66` / `ascensao-u-v78`. Placar: suíte inteira 36/36 arquivos verdes.
 
 ## 25/11/2026 · Resumo do beta no Modo Criador (PR rascunho, espera o ok do JV)
 

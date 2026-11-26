@@ -786,7 +786,7 @@ body[data-tab=amigos] #frPanel .frlist{display:none}
 .tbhp>i{position:absolute;inset:0 auto 0 0;background:linear-gradient(90deg,#3ddc97,#a6f36b);transition:width .8s cubic-bezier(.2,.9,.3,1)}
 .tbhp>i.hurt{background:linear-gradient(90deg,#ff9f43,#ffd166)}
 .tbhp>i.crit{background:linear-gradient(90deg,#ff3d6e,#ff7b54);animation:tbpulse .8s infinite}
-.tbhpn{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-family:var(--f-mono,monospace);font-size:.72rem;font-weight:700;color:#fff;text-shadow:0 1px 2px #000}
+.tbhpn{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);padding:0 8px;border-radius:999px;background:rgba(6,10,16,.82);line-height:14px;white-space:nowrap;font-family:var(--f-mono,monospace);font-size:.72rem;font-weight:700;color:#fff;text-shadow:none}
 .tbsay{margin:8px 0 4px;text-align:center;font-style:italic;color:var(--muted,#9fb0c8);font-size:.88rem}
 .tbrule{text-align:center}
 .tbm{list-style:none;margin:10px 0 0;padding:0;display:flex;flex-direction:column;gap:6px}
@@ -1156,6 +1156,15 @@ body.insm .sysmodal:not([hidden]),body.insm .levelup:not([hidden]){z-index:90}
 body[data-tab=foco] #focusPanel.panel{margin-top:0}
 /* aviso que chegar com o relatório aberto fica por cima dele */
 body.infz .sysmodal:not([hidden]),body.infz .levelup:not([hidden]){z-index:90}
+.vsnews .card{max-width:360px;text-align:left}
+.vsnews .tag,.vsnews h3{text-align:center}
+.vsnews .vsl{list-style:none;margin:2px 0;padding:0;display:grid;gap:8px}
+.vsnews .vsl li{display:flex;gap:10px;align-items:flex-start;font-size:.92rem;line-height:1.35}
+.vsnews .vsi{flex:none;width:1.5em;text-align:center}
+.vsnews .go{min-height:44px;margin-top:4px}
+.vsfoot{display:flex;flex-wrap:wrap;gap:4px 6px;align-items:center;justify-content:center;padding:14px 8px 4px;text-align:center}
+.vsfoot>span{padding:0 8px}
+.vsfoot a,.vsfoot .link{display:inline-flex;align-items:center;justify-content:center;min-height:44px;min-width:44px;padding:0 10px;color:var(--muted)}
 .bpgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(96px,1fr));gap:6px;margin:6px 0}
 .bptile{border:1px solid var(--line);border-radius:8px;padding:8px;display:flex;flex-direction:column;gap:2px;background:rgba(0,0,0,.15);color:var(--fg)}
 .bptile b{font-size:1.25rem;color:var(--glow);font-variant-numeric:tabular-nums}.bptile span{font-size:.7rem;line-height:1.2}
@@ -1165,6 +1174,9 @@ body.infz .sysmodal:not([hidden]),body.infz .levelup:not([hidden]){z-index:90}
 .bpfun{display:flex;flex-direction:column;gap:4px}.bpfrow{display:grid;grid-template-columns:1fr auto;gap:2px 8px;font-size:.72rem}
 .bpfrow i{grid-column:1/-1;display:block;height:5px;background:var(--glow);border-radius:3px;opacity:.7}
 .bpfb{margin:0;padding-left:18px;font-size:.74rem}.bpfb li{margin:2px 0}
+.rtbox{margin:6px 0 10px}.rtgrid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin:6px 0 10px}
+.rttile{border:1px solid var(--line);border-radius:10px;padding:8px;text-align:center;display:grid;gap:2px}.rttile b{font-size:1.25rem;color:var(--glow)}.rttile span{font-size:.72rem;color:var(--muted,#9ab)}
+.rtfun{display:grid;gap:6px;margin-bottom:6px}.rtrow{display:grid;grid-template-columns:1fr auto;gap:2px 8px;align-items:center}.rtrow i{grid-column:1/-1;display:block;height:6px;border-radius:3px;background:var(--glow)}
 </style></head><body>
 
 <div class="hudtop"><span>ASCENSION<i>//</i>SISTEMA ONLINE</span><span class="mono" id="clock">--:--</span></div>
@@ -1574,7 +1586,7 @@ body.infz .sysmodal:not([hidden]),body.infz .levelup:not([hidden]){z-index:90}
       <summary>Como o jogo funciona</summary>
       <ul>
         <li><b>Feito</b> dá o XP inteiro. <b>Mínimo</b> dá metade e já conta como dia ativo.</li>
-        <li><b>Dívida:</b> cada quest principal sem nem o mínimo custa 10 XP. Fez todas as principais no dia seguinte? A dívida de ontem é perdoada.</li>
+        <li><b>Dívida:</b> nos 3 primeiros dias não tem. Depois, cada quest principal sem nem o mínimo custa 10 XP. Fez todas as principais no dia seguinte? A dívida de ontem é perdoada.</li>
         <li><b>Baú surpresa:</b> 1 chance em 5 de XP extra ao concluir uma quest.</li>
         <li><b>Masmorra da semana:</b> cada dia com as tarefas principais feitas limpa um andar. 5 andares abrem o baú (+50 XP). Ela volta toda segunda.</li>
         <li><b>Dia de descanso:</b> 1 por semana. Nesse dia nenhuma quest gera dívida. Use em dia de doença ou cansaço de verdade.</li>
@@ -1652,14 +1664,14 @@ function entries(){const out=[];for(const k in prog.log){for(const e of (prog.lo
 function earnedXP(){return entries().reduce((s,e)=>s+(e.xp||0)+(e.bonus||0),0);}
 // Punição leve e recuperável: cada quest principal não feita (nem no mínimo) num dia passado = -10 XP.
 // Redenção: fazer todas as principais no dia seguinte perdoa a dívida do dia anterior.
-const PEN=10, DEBT_DAYS=3;
+const PEN=10, DEBT_DAYS=3, DEBT_GRACE=3; // carência: os 3 primeiros dias de jogo nunca geram dívida
 function mainsFor(dt){const dow=(dt.getDay()+6)%7;return ((cfg&&cfg.quests)||[]).filter(q=>q.main&&!q.once&&(!q.days||q.days.includes(dow)));}
 function onceDoneBefore(q,tk){if(!q.once)return false;for(const k in prog.log){if(k!==tk&&(prog.log[k]||[]).some(e=>e.q===q.id))return true;}return false;}
 function visibleToday(q,dow,tk){return (!q.days||q.days.includes(dow))&&!onceDoneBefore(q,tk);}
 function allMainsDone(dt){const k=dkey(dt);const done=prog.log[k]||[];const m=mainsFor(dt);return m.length>0&&m.every(q=>done.some(e=>e.q===q.id));}
 function penalties(){
   const out=[];if(!cfg||!cfg.startDate)return out;
-  const [y,m,d]=cfg.startDate.split("-").map(Number);const dt=new Date(y,m-1,d);const tk=todayKey();
+  const [y,m,d]=cfg.startDate.split("-").map(Number);const dt=new Date(y,m-1,d+DEBT_GRACE);const tk=todayKey();
   // Punição leve: só os últimos DEBT_DAYS dias contam. Quem some uma semana volta sem o XP zerado.
   const lim=new Date();lim.setHours(0,0,0,0);lim.setDate(lim.getDate()-DEBT_DAYS);if(dt<lim)dt.setTime(lim.getTime());
   while(dkey(dt)<tk){const k=dkey(dt);const done=prog.log[k]||[];if(isRest(k)){dt.setDate(dt.getDate()+1);continue;}
@@ -2567,7 +2579,7 @@ function clsSuggest(){const P=(cfg&&cfg.profile)||{};const occ=P.occ||"";const F
   return {cl:{style:"fant",id:f[0],name:f[1],stat:f[2]},why:why0};}
 function chgCls(){openCls.force=true;clsOpen=false;openCls();}
 $("clsChange").addEventListener("click",chgCls);
-if($("clsPill")){const cp=$("clsPill");cp.setAttribute("role","button");cp.tabIndex=0;cp.addEventListener("click",chgCls);}
+if($("clsPill")){const cp=$("clsPill");cp.setAttribute("role","button");cp.tabIndex=0;cp.addEventListener("click",chgCls);cp.addEventListener("keydown",e=>{if(e.key==="Enter"||e.key===" "){e.preventDefault();chgCls();}});}
 
 // ---------- Masmorra da semana: 7 andares (seg a dom). Andar limpo = todas as principais do dia (ou 1 tarefa, se não houver principal). 5 andares abrem o baú. ----------
 const DUN_NEED=5,DUN_XP=50;
@@ -3120,10 +3132,19 @@ function tlUI(){let p=$("tlPanel");if(!p){const anchor=$("betaPanel");if(!anchor
   r.append(b);bd.append(r);}
 // nota do "Teste do app" também vai identificada para quem aceitou
 {const bs=$("betaSend");if(bs)bs.addEventListener("click",()=>{try{const t=tlGet();if(!t.on||tlKid()||!betaRate)return;const tx=$("betaText").value.trim().replace(/\S+@\S+/g,"[email]").replace(/\+?\d[\d\s().-]{7,}\d/g,"[número]").slice(0,240);tlSend("nota",betaRate+": "+tx);}catch(e){}},true);}
-function tlBoot(){try{anon(standalone()?"3-abriu-app":"2-abriu-navegador");if(cfg&&!cfg.blank&&cfg.quests&&cfg.quests.length){anon("4-perfil");tlDaily();setTimeout(tlAsk,2500);}tlUI();}catch(e){}}
+// funil anônimo do dia (mesmo opt-in e mesmo formato A|id|etapa|data): fez 1 missão de verdade hoje; fechou o dia (baú liberado)
+function tlFunnel(){try{if(!anonOk()||!cfg||cfg.blank||!cfg.quests||!cfg.quests.length)return;const L=prog.log[todayKey()]||[];const ids=new Set(cfg.quests.map(q=>q.id));
+  if(L.some(e=>ids.has(e.q)))anon("7-quest");if(typeof bxReady==="function"&&bxReady())anon("8-fechou-dia");}catch(e){}}
+function tlBoot(){try{anon(standalone()?"3-abriu-app":"2-abriu-navegador");if(cfg&&!cfg.blank&&cfg.quests&&cfg.quests.length){anon("4-perfil");tlDaily();tlZap();setTimeout(tlAsk,2500);}tlUI();tlFunnel();setInterval(tlFunnel,15000);document.addEventListener("visibilitychange",()=>{if(document.hidden)tlFunnel();});}catch(e){}}
+// Métrica dos desafios relâmpago (só com opt-in, anônima: id aleatório, sem apelido): 1 linha por dia sobre ONTEM.
+// A|id|6-desafios|dia de ontem|aparelho|app/navegador|feitos de 3|dupla 0/1|sensor 0/1|usou o app ontem 0/1
+function tlZap(){if(!anonOk()||typeof zapToday!=="function")return;const t=tlGet();const y=new Date();y.setDate(y.getDate()-1);const yk=dkey(y),yd=yk.replace(/-/g,"");if(t.zd===yd)return;
+  const n=Object.keys(((prog.zap||{})[yk])||{}).length;const L=prog.log[yk]||[];const duo=L.some(e=>String(e.q).startsWith("zap:duo:"))?1:0;
+  let mo=0;try{mo=(JSON.parse(localStorage.getItem("ascensao-zapmo")||"{}")||{})[yk]?1:0;}catch(e){}
+  t.zd=yd;tlSet(t);tlPost(["A",anonId(),"6-desafios",yd,tlPlat(),standalone()?"app":"navegador",Math.min(3,n)+"/3",duo,mo,L.length?1:0]);}
 
 // quem acabou de criar o perfil vê o aceite depois de fechar os avisos de boas-vindas
-let tlTry=0;const tlIv=setInterval(()=>{if(tlGet().asked||tlKid()||++tlTry>120){clearInterval(tlIv);return;}try{if(cfg&&cfg.quests&&cfg.quests.length){anon("4-perfil");tlAsk();}}catch(e){}},5000);
+let tlTry=0;const tlIv=0&&setInterval(()=>{if(tlGet().asked||tlKid()||++tlTry>120){clearInterval(tlIv);return;}try{if(cfg&&cfg.quests&&cfg.quests.length){anon("4-perfil");tlAsk();}}catch(e){}},5000);
 // um aviso por vez: se outro aviso do Sistema abrir por cima, o pedido do painel sai de cena e volta depois (sem contar como resposta)
 if(window.MutationObserver)new MutationObserver(ms=>{const tm=$("tlModal");if(!tm)return;for(const m of ms)for(const n of m.addedNodes){if(n!==tm&&n.nodeType===1&&n.classList&&n.classList.contains("sysmodal")&&!n.hidden){tm.remove();const t=tlGet();if(!t.disp){t.disp=tlDk();tlSet(t);}setTimeout(tlAsk,20000);return;}}}).observe(document.body,{childList:true});
 
@@ -3192,7 +3213,7 @@ function zapFinish(z){if(zapDone(z.id))return;const tk=todayKey();prog.zap=prog.
   addXP({q:"zap:"+z.id+":"+tk,kind:"zap",xp,stat:"corpo",bonus:0,t:new Date().toISOString()},"Desafio relâmpago: +"+xp+" XP");
   try{if(typeof sendRank==="function")sendRank("desafio",true);}catch(e){}
   try{if(typeof duoDone==="function")duoDone(z);}catch(e){}
-  if(zapMo.used){try{const k="ascensao-zapmo";const o=JSON.parse(localStorage.getItem(k)||"{}");o[tk]=(o[tk]||0)+1;for(const d in o)if(d<tk)delete o[d];localStorage.setItem(k,JSON.stringify(o));}catch(e){}zapMo.used=false;}
+  if(zapMo.used){try{const k="ascensao-zapmo";const o=JSON.parse(localStorage.getItem(k)||"{}");o[tk]=(o[tk]||0)+1;for(const d in o)if(d<dkey(new Date(Date.now()-2*864e5)))delete o[d];localStorage.setItem(k,JSON.stringify(o));}catch(e){}zapMo.used=false;}
   zapClose();zapUI();
   const after=zapRankLine();const all=zapToday().every(q=>zapDone(q.id));
   if(before&&after&&after.pos<before.pos)sysPop("RANKING","Subiu para #"+after.pos,"Você passou alguém no ranking da semana. "+(after.pos>1?after.txt.replace(/^#\d+ na semana · /,"Agora "):"Topo conquistado."),null,"Bora");
@@ -3235,13 +3256,13 @@ setTimeout(()=>{try{zapUI();}catch(e){}},0);
 
 // ---------- Comece por aqui: 3 passos claros no primeiro uso (some quando termina) ----------
 function gdSteps(){const L=prog.log||{};let quest=false;for(const d in L)if((L[d]||[]).some(e=>!/^(ach|checkin|tip|dun|sq|zap|boss|foco):/.test(String(e.q)))){quest=true;break;}
-  const zap=Object.keys(prog.zap||{}).length>0;const rank=!!(prog.gd&&prog.gd.rank);
+  const zap=Object.keys(prog.zap||{}).length>0;const kid=ageNow()==="kid";const rank=!!(prog.gd&&prog.gd.rank);
   return [{k:"q",ok:quest||!!prog.msUsed,t:"Toque em ▶ na sua PRÓXIMA missão",s:"O app abre a missão com timer e ferramenta."},
-    {k:"z",ok:zap,t:"Faça 1 desafio relâmpago ⚡",s:"30 segundos. Vale XP e te sobe no ranking."},
-    {k:"r",ok:rank,t:"Veja seu lugar no ranking",s:ageNow()==="kid"?"Em Progresso: seus atributos e a masmorra.":"Em Progresso: quem está na sua frente."}];}
+    {k:"z",ok:zap,t:"Faça 1 desafio relâmpago ⚡",s:kid?"30 segundos. Vale XP na hora.":"30 segundos. Vale XP e te sobe no ranking."},
+    {k:"r",ok:rank,t:kid?"Veja sua evolução":"Veja seu lugar no ranking",s:kid?"Em Progresso: seus atributos e a masmorra.":"Em Progresso: quem está na sua frente."}];}
 function gdUI(){let p=$("gdPanel");const anchor=$("zapPanel")||($("quests")&&$("quests").closest("section"));if(!anchor)return;
   prog.gd=prog.gd||{};const st=gdSteps();const all=st.every(x=>x.ok);
-  if(all&&!prog.gd.paid){prog.gd.paid=1;save();addXP({q:"tip:guia",kind:"tip",xp:20,stat:"foco",bonus:0,t:new Date().toISOString()},"");sysPop("TUTORIAL","Sistema calibrado","Você já sabe jogar: missão, desafio e ranking. +20 XP.",null,"Bora");}
+  if(all&&!prog.gd.paid){prog.gd.paid=1;save();addXP({q:"tip:guia",kind:"tip",xp:20,stat:"foco",bonus:0,t:new Date().toISOString()},"");sysPop("TUTORIAL","Sistema calibrado","Você já sabe jogar: missão, desafio e "+(ageNow()==="kid"?"evolução":"ranking")+". +20 XP.",null,"Bora");}
   if(!cfg||cfg.blank||all||prog.gd.off){if(p)p.remove();return;}
   if(!p){p=document.createElement("section");p.className="panel gd";p.id="gdPanel";p.dataset.tab="hoje";anchor.before(p);}
   p.textContent="";const hd=document.createElement("div");hd.className="qhead";const h=document.createElement("h2");h.textContent="🧭 Comece por aqui";const n=document.createElement("span");n.className="xp";n.textContent=st.filter(x=>x.ok).length+"/3 · +20 XP";hd.append(h,n);p.append(hd);
@@ -5183,6 +5204,92 @@ if(typeof sqiCheck==="function"){const _ck=sqiCheck;sqiCheck=function(){_ck.appl
   const b=fdEl("button","ghost fdgo",o?"🤝 Dupla com "+o.w+(o.paid?" ✓":" · "+fdShow(o.hm)):"🤝 Focar em dupla com um amigo");b.type="button";b.onclick=fdStart;t.append(b);}}catch(e){}};}
 setInterval(fdTick,5000);setTimeout(()=>{fdTick();fdBadge();},1500);
 
+// Janelas do Sistema acessíveis (.sysmodal e .levelup): o leitor de tela anuncia "janela, <título>",
+// o foco vai para o botão principal quando a janela abre (Enter/Espaço já confirmam), o Tab não escapa
+// para a tela de trás e, ao fechar, o foco volta para onde estava. Não muda visual, texto, XP nem dados.
+(function(){
+  const SEL=".sysmodal,.levelup";let n=0;const back=new WeakMap();
+  const vis=m=>m.isConnected&&!m.hidden&&m.getClientRects().length>0;
+  const open=()=>[...document.querySelectorAll(SEL)].filter(vis);
+  const focaveis=m=>[...m.querySelectorAll('button,[href],input,select,textarea,[tabindex]:not([tabindex="-1"])')].filter(e=>!e.disabled&&!e.hidden&&e.getClientRects().length);
+  function arm(m){
+    if(!vis(m)||m.dataset.dlg)return;m.dataset.dlg="1";
+    m.setAttribute("role","dialog");if(!m.hasAttribute("aria-modal"))m.setAttribute("aria-modal","true");
+    if(!m.getAttribute("aria-label")&&!m.getAttribute("aria-labelledby")){
+      const ids=[m.querySelector(".card>.tag"),m.querySelector("h3,h2")||m.querySelector(".card>*")].filter((h,i,a)=>h&&h.textContent.trim()&&a.indexOf(h)===i).map(h=>h.id||(h.id="dlgT"+(++n)));
+      if(ids.length)m.setAttribute("aria-labelledby",ids.join(" "));}
+    const a=document.activeElement;if(a&&a!==document.body&&!m.contains(a))back.set(m,a);
+    setTimeout(()=>{if(!vis(m)||m.contains(document.activeElement))return;
+      const b=focaveis(m).find(e=>e.matches("button.go"))||focaveis(m)[0];if(b)try{b.focus({preventScroll:true});}catch(e){}},60);}
+  function disarm(m){if(!m.dataset.dlg)return;delete m.dataset.dlg;const a=back.get(m);back.delete(m);
+    setTimeout(()=>{const ae=document.activeElement;if(open().length||(ae&&ae!==document.body&&ae.isConnected))return;
+      if(a&&a.isConnected&&a.getClientRects().length)try{a.focus({preventScroll:true});}catch(e){}},0);}
+  function scan(){document.querySelectorAll(SEL).forEach(m=>vis(m)?arm(m):disarm(m));}
+  if(window.MutationObserver)new MutationObserver(ms=>{let go=false;for(const r of ms){
+      if(r.type==="attributes"){if(r.target.matches&&r.target.matches(SEL))go=true;continue;}
+      for(const x of r.addedNodes)if(x.nodeType===1&&(x.matches(SEL)||x.querySelector&&x.querySelector(SEL)))go=true;
+      for(const x of r.removedNodes)if(x.nodeType===1&&x.dataset&&x.dataset.dlg)disarm(x);}
+    if(go)scan();}).observe(document.body,{childList:true,subtree:true,attributes:true,attributeFilter:["hidden"]});
+  // Tab dá a volta dentro da janela de cima
+  document.addEventListener("keydown",e=>{if(e.key!=="Tab")return;const o=open();if(!o.length)return;const m=o[o.length-1];
+    const f=focaveis(m);if(!f.length)return;const i=f.indexOf(document.activeElement);
+    if(i<0||(!e.shiftKey&&i===f.length-1)||(e.shiftKey&&i===0)){e.preventDefault();f[e.shiftKey?f.length-1:0].focus();}},true);
+  setTimeout(scan,0);
+})();
+
+// ---------- Versão do app e tela "Novidades" (1x por versão, só para quem já jogava) ----------
+// Quem é novo não vê: o onboarding já apresenta o jogo, e a versão fica marcada como vista ao terminar.
+// Não abre para navegador automatizado (navigator.webdriver), para não travar os testes da qa/. Nunca abre em cima de outro modal, do onboarding ou de missão ativa. Grava só a chave *-ver, fora do progresso.
+const APP_VERSION="1.0.0";
+const VS_KEY=location.pathname.includes("/comecar/")?"ascensao-ver":"ascensao-ver";
+const VS_BASE=location.pathname.includes("/comecar/")?"../":"./";
+const VS_NEWS=[["⚔️","Classes","que evoluem com você nos níveis 10 e 20"],["▶️","Missão ativa","com timer e a ferramenta certa em 1 toque"],["🐉","Chefão, masmorra e baú","toda semana"],["⚡","Desafios relâmpago","e Quebrar correntes"],["👥","Esquadrão, liga da semana","e desafio em dupla com amigos"],["🔒","Política de Privacidade e Termos","novos, em Mais"]];
+function vsGet(){try{return localStorage.getItem(VS_KEY)||"";}catch(e){return "";}}
+function vsSet(){try{localStorage.setItem(VS_KEY,APP_VERSION);}catch(e){}}
+function vsPlaying(){return !!(typeof cfg!=="undefined"&&cfg&&!cfg.blank&&cfg.quests&&cfg.quests.length);}
+function vsBusy(){if(document.hidden)return true;const b=document.body.classList;if(b.contains("onboarding")||b.contains("inmission"))return true;
+  if([...document.querySelectorAll(".sysmodal,.mssheet,[role=dialog]")].some(m=>!m.hidden&&m.getClientRects().length))return true;
+  const lu=document.getElementById("levelup");if(lu&&!lu.hidden)return true;const o=document.getElementById("onb");return !!(o&&!o.hidden&&o.getClientRects().length);}
+function vsOpen(){if(document.getElementById("vsModal"))return;const prev=document.activeElement;
+  try{if(typeof newsDone==="function")newsDone();}catch(e){} // a tela 1.0 aposenta o cartão antigo de Novidades (NEWS_V)
+  const m=document.createElement("div");m.className="sysmodal vsnews";m.id="vsModal";m.setAttribute("role","dialog");m.setAttribute("aria-modal","true");m.setAttribute("aria-labelledby","vsTitle");
+  const c=document.createElement("div");c.className="card";const t=document.createElement("div");t.className="tag";t.textContent="[ SISTEMA ] ATUALIZAÇÃO "+APP_VERSION.replace(/\.0$/,"");
+  const h=document.createElement("h3");h.id="vsTitle";h.textContent="Ascension "+APP_VERSION.replace(/\.0$/,"");
+  const p=document.createElement("p");p.className="sm";p.textContent="O jogo saiu do beta. Obrigado por testar com a gente.";
+  const ul=document.createElement("ul");ul.className="vsl";for(const [i,b,r] of VS_NEWS){const li=document.createElement("li");const e=document.createElement("span");e.className="vsi";e.setAttribute("aria-hidden","true");e.textContent=i;const s=document.createElement("span");const bb=document.createElement("b");bb.textContent=b;s.append(bb," "+r);li.append(e,s);ul.append(li);}
+  const k=document.createElement("p");k.className="sm muted";k.textContent="Seu XP, sua sequência e seu histórico continuam iguais.";
+  const go=document.createElement("button");go.type="button";go.className="go";go.textContent="Continuar";
+  const close=()=>{vsSet();m.remove();document.removeEventListener("keydown",esc);try{prev&&prev.focus&&prev.focus();}catch(e){}};
+  const esc=e=>{if(e.key==="Escape")close();};
+  go.addEventListener("click",close);document.addEventListener("keydown",esc);
+  c.append(t,h,p,ul,k,go);m.append(c);document.body.append(m);setTimeout(()=>{try{go.focus();}catch(e){}},30);}
+// rodapé em Mais: versão, novidades e textos legais
+function vsFoot(){if(document.getElementById("vsFoot"))return;const ms=[...document.querySelectorAll('section[data-tab="mais"]')];if(!ms.length)return;
+  const d=document.createElement("section");d.id="vsFoot";d.className="vsfoot sm muted";d.dataset.tab="mais";d.setAttribute("aria-label","Sobre o app");
+  const v=document.createElement("span");v.textContent="Ascension "+APP_VERSION;
+  const nb=document.createElement("button");nb.type="button";nb.className="link";nb.textContent="Novidades";nb.addEventListener("click",vsOpen);
+  const mk=(href,txt)=>{const a=document.createElement("a");a.href=VS_BASE+href;a.textContent=txt;a.target="_blank";a.rel="noopener";return a;};
+  d.append(v,nb,mk("privacidade/","Privacidade"),mk("termos/","Termos"));ms[ms.length-1].after(d);}
+let vsTried=false;
+function vsPending(){try{
+  if(location.pathname.includes("/comecar/")&&typeof tlGet==="function"&&typeof tlKid==="function"&&!tlKid()&&!tlGet().asked)return true;
+  if(typeof avAskNow==="function"&&typeof prog!=="undefined"&&!(prog.avatar&&prog.avatar.ok)&&!prog.avAsk)return true;
+  if(typeof clsNotice==="function"&&typeof prog!=="undefined"&&!(prog.rpg&&prog.rpg.cg))return true;
+  if(typeof openCls==="function"&&typeof prog!=="undefined"&&!(prog.rpg&&prog.rpg.cls))return true;} /* sem classe: a galeria de classes abre primeiro */catch(e){}return false;}
+(function vsBoot(){let isNew=null,tries=0;
+  const tick=()=>{tries++;if(vsGet()===APP_VERSION||navigator.webdriver)return; // como os convites do avatar: robôs de teste não veem (os testes daqui forçam webdriver=false)
+    const playing=vsPlaying();
+    if(isNew===null)isNew=!playing;
+    if(isNew){if(playing)vsSet();else if(tries<400)setTimeout(tick,3000);return;} // novo: marca como visto ao terminar o perfil
+    // 1 tela do Sistema por abertura: se ainda falta o aceite do painel (só /comecar/), montar o avatar ou o aviso de classe,
+    // a Novidades fica para a próxima abertura (no máximo 3 vezes; depois entra na fila normal)
+    if(!vsTried){vsTried=true;let skip=0;try{skip=+localStorage.getItem(VS_KEY+"-adia")||0;}catch(e){}
+      if(skip<3&&vsPending()){try{localStorage.setItem(VS_KEY+"-adia",String(skip+1));}catch(e){}return;}}
+    if(!vsBusy()){vsOpen();return;}
+    if(tries<60)setTimeout(tick,3000);};
+  const start=()=>{try{vsFoot();}catch(e){}setTimeout(tick,2500);};
+  if(document.readyState==="loading")document.addEventListener("DOMContentLoaded",start);else start();})();
+
 // ---------- Modo Criador (só no app do JV): jogadores, XP manual, esconder módulos, atalhos ----------
 const CR_HIDE="ascensao-hide",CR_CSV="https://docs.google.com/spreadsheets/d/e/2PACX-1vTyr0ZbAqlFWbOWEZXpjcRPXPE04u9EfktPhrq5Mf_vnQ2YjeVEARfhqGrrpqVXxkIVsvnE_x8DMdpr/pub?gid=1002&single=true&output=csv";
 const crLS=(k,v)=>{try{if(v===undefined)return localStorage.getItem(k);localStorage.setItem(k,v);}catch(e){return null;}};
@@ -5226,6 +5333,49 @@ async function crData(force){const el=$("crData");if(!el)return;for(const b of d
   if(rows.length){const w=document.createElement("div");w.className="crscroll";w.append(crTable(rows));el.append(w);}}
 for(const b of document.querySelectorAll("#crDataTabs button"))b.addEventListener("click",()=>{crDataK=b.dataset.k;crData(false);});
 document.querySelector('#tabbar [data-go="criador"]')&&document.querySelector('#tabbar [data-go="criador"]').addEventListener("click",()=>crData(true));
+// ---------- Retenção do beta (só no Modo Criador do app do JV) ----------
+// Lê as linhas anônimas "A|id|etapa|AAAAMMDD|…" que o painel do criador já recebe (aba funil, ou "diario" se existir).
+// Não envia nada e não guarda nada: calcula na hora, no aparelho do criador. Só id aleatório + etapa + data; nenhum nome.
+// D1/D3/D7 = de quem apareceu pela 1ª vez há N dias ou mais, quantos abriram o app exatamente N dias depois.
+// Funil = ids distintos: perfil pronto → 1ª missão feita → fechou um dia.
+const rtNorm=s=>String(s==null?"":s).toLowerCase().normalize("NFD").replace(/[̀-ͯ]/g,"").trim();
+function rtDate(v){if(v==null||v==="")return null;const s=String(v).trim();let m;
+  if((m=s.match(/^(\d{4})(\d{2})(\d{2})$/)))return new Date(+m[1],m[2]-1,+m[3]);
+  if((m=s.match(/^(\d{4})-(\d{2})-(\d{2})/)))return new Date(+m[1],m[2]-1,+m[3]);
+  if((m=s.match(/^(\d{1,2})\/(\d{1,2})\/(\d{4})/)))return new Date(+m[3],m[2]-1,+m[1]);
+  return null;}
+const rtDiff=(a,b)=>Math.round((new Date(a.getFullYear(),a.getMonth(),a.getDate())-new Date(b.getFullYear(),b.getMonth(),b.getDate()))/864e5);
+// junta eventos {id,step,d} de qualquer aba: célula "A|…" (resposta crua do formulário) ou colunas id/etapa/data
+function rtEvents(j){const ev=[];if(!j||typeof j!=="object")return ev;
+  for(const key of ["funil","diario","anon"]){const T=Array.isArray(j[key])?j[key].filter(r=>Array.isArray(r)):[];if(!T.length)continue;
+    const h=T[0].map(rtNorm);const ci=h.findIndex(x=>/^(id|anon|id anonimo)$/.test(x)),cs=h.findIndex(x=>/etapa|step|evento/.test(x)),cd=h.findIndex(x=>/^(data|dia|date)$/.test(x));
+    for(const r of T){let hit=false;
+      for(const c of r){const s=String(c==null?"":c);if(/^A\|/.test(s)){const p=s.split("|");const d=rtDate(p[3]);if(p[1]&&p[2]&&d){ev.push({id:p[1],step:p[2],d});hit=true;}break;}}
+      if(!hit&&ci>=0&&cd>=0&&r!==T[0]){const d=rtDate(r[cd]);if(r[ci]&&d)ev.push({id:String(r[ci]),step:cs>=0?String(r[cs]||""):"abriu",d});}}}
+  return ev;}
+function rtCalc(j,now){now=now||new Date();const ev=rtEvents(j);const out={n:0,ev:ev.length,ret:{},fun:null};if(!ev.length)return out;
+  const first={},days={};for(const e of ev){if(!first[e.id]||e.d<first[e.id])first[e.id]=e.d;(days[e.id]=days[e.id]||new Set()).add(rtDiff(e.d,new Date(2000,0,1)));}
+  const ids=Object.keys(first);out.n=ids.length;
+  for(const N of [1,3,7]){let b=0,v=0;for(const id of ids){if(rtDiff(now,first[id])<N)continue;b++;if(days[id].has(rtDiff(first[id],new Date(2000,0,1))+N))v++;}out.ret[N]=b?{v,b}:null;}
+  const has=re=>new Set(ev.filter(e=>re.test(e.step)).map(e=>e.id)).size;
+  out.fun=[["Perfil pronto",has(/perfil/)],["1ª missão feita",has(/quest|missao/)],["Fechou um dia",has(/fechou/)]];
+  return out;}
+function rtRender(j){const p=$("crPanel");if(!p)return;let box=$("rtBox");
+  if(!box){const h=document.createElement("h3");h.className="crh";h.textContent="📈 Retenção (anônima)";box=document.createElement("div");box.id="rtBox";box.className="sm rtbox";
+    const anchor=[...p.querySelectorAll("h3.crh")].find(x=>/Usu/.test(x.textContent));if(anchor){anchor.before(h,box);}else p.append(h,box);}
+  box.textContent="";const el=(t,c,x)=>{const e=document.createElement(t);if(c)e.className=c;if(x!=null)e.textContent=x;return e;};
+  if(!j){box.append(el("div","muted","Liga quando o painel responder."));return;}
+  const o=rtCalc(j);
+  if(!o.n){box.append(el("div","muted","Ainda sem linhas anônimas com id e data. Só conta quem aceitou o painel ou o beta anônimo."));return;}
+  const g=el("div","rtgrid");
+  for(const N of [1,3,7]){const r=o.ret[N];const t=el("div","rttile");t.append(el("b",null,r?Math.round(100*r.v/r.b)+"%":"—"),el("span",null,"D"+N+(r?" · "+r.v+"/"+r.b:" · cedo")));
+    t.title=r?"Voltaram "+N+" dia(s) depois da 1ª vez":"Ninguém chegou ao dia "+N+" ainda";g.append(t);}
+  box.append(g);
+  const mx=Math.max(1,o.fun[0][1],...o.fun.map(f=>f[1]));const w=el("div","rtfun");let prev=null;
+  for(const [l,v] of o.fun){const r=el("div","rtrow");const bar=el("i");bar.style.width=Math.max(2,Math.round(100*v/mx))+"%";
+    r.append(el("span",null,l),el("b",null,String(v)+(prev?" · "+Math.round(100*v/prev)+"%":"")),bar);w.append(r);prev=v||null;}
+  box.append(w,el("div","muted",o.n+" id(s) anônimo(s). Só quem deu opt-in (14+). Nenhum nome."));}
+{const _cd=crData;crData=async function(){const r=await _cd.apply(this,arguments);try{rtRender(crDataC);}catch(e){}return r;};}
 // ---------- Resumo do beta (só no Modo Criador do app pessoal) ----------
 // Só LÊ o que o painel do criador já recebe (abas usuarios, funil, feedback; e "diario", se a planilha tiver).
 // Não envia nada novo e não coleta nada dos jogadores. Os números são agregados: nenhum nome aparece no resumo.
