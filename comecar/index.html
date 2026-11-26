@@ -1445,6 +1445,15 @@ section[data-hbg]>:not(.hrbg){position:relative;z-index:1}
 .lrbook{margin:10px 0 4px;padding:10px;border-radius:10px;border:1px dashed var(--line,#1f2e4d)}
 .lrbt{display:flex;justify-content:space-between;gap:8px;align-items:baseline}.lrbt b{min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .lrform{display:grid;grid-template-columns:minmax(0,1fr) 110px;gap:6px}.lrform button{grid-column:1/-1;min-height:48px}
+/* convite que não se perde (tools/colar.js) */
+.clbar{position:fixed;left:8px;right:8px;top:calc(8px + env(safe-area-inset-top,0px));z-index:120;display:flex;flex-direction:column;gap:6px;padding:12px 14px;border:1px solid var(--glow,#6fb1ff);border-radius:12px;background:rgba(7,12,23,.96);box-shadow:0 8px 30px rgba(0,0,0,.6);max-width:520px;margin:0 auto}
+.clbar .row{display:flex;gap:10px;align-items:center;flex-wrap:wrap}
+.clbar button{min-height:44px}
+.clpaste{margin-top:10px}
+.clpaste summary{min-height:44px;line-height:44px;cursor:pointer}
+.clpaste .row{display:flex;gap:8px;margin-top:8px}
+.clpaste input{flex:1;min-width:0;min-height:44px}
+.clpaste .clmsg{margin-top:6px}
 </style></head><body>
 
 <div class="hudtop"><span>ASCENSION<i>//</i>SISTEMA ONLINE</span><span class="mono" id="clock">--:--</span></div>
@@ -6297,6 +6306,55 @@ document.addEventListener("click",e=>{const b=e.target.closest&&e.target.closest
 setTimeout(()=>{try{lrUI();}catch(e){}},0);
 // gancho de teste (só leitura dos números; não muda nada)
 try{window.arQA={hero:()=>arHero(),foe:n=>arFoe(n),b:l=>arB(l),lv:()=>atLevels(),of:e=>atOfEntry(e,{}),battle:()=>arB_&&{hp:arB_.hp,max:arB_.h.hp,arc:arB_.arc,heal:arB_.heal}};}catch(e){}
+
+// ---------- Convite que não se perde (26/11) ----------
+// Problema: no iPhone, o app instalado na Tela de Início não enxerga o que foi aberto no Safari. Quem já tem o jogo
+// (ou instala depois de tocar no link) perdia o convite da turma. Agora:
+// 1) Link aberto fora do app instalado: um aviso no topo com "Copiar convite" e o passo a passo para colar no app.
+// 2) Aba Amigos: "Recebeu um convite? Cole aqui" aceita o link (ou a mensagem inteira do WhatsApp) e faz o mesmo que abrir o link:
+//    grava as 3 chaves que o convite já usa (asc-amigo, asc-amigo-c, asc-amigo-t) e chama o fluxo de sempre (cdInvDo).
+// Não grava nada novo nem manda nada além do que o link já mandava. Menor de 14: sem convite (mesma regra do ranking).
+function clEl(t,c,x){const e=document.createElement(t);if(c)e.className=c;if(x!=null)e.textContent=x;return e;}
+function clStandalone(){try{return !!(navigator.standalone||matchMedia("(display-mode: standalone)").matches);}catch(e){return false;}}
+// lê amigo/c/t de um texto qualquer (link puro, ou a mensagem do WhatsApp com o link dentro)
+function clParse(txt){const s=String(txt||"");const m=/[?&]amigo=([^&\s#]+)/.exec(s);if(!m)return null;
+  const dec=v=>{try{return decodeURIComponent(v.replace(/\+/g," "));}catch(e){return v;}};
+  const a=typeof cleanNick==="function"?cleanNick(dec(m[1])):dec(m[1]).trim().slice(0,24);if(!a)return null;
+  const c=((/[?&]c=([a-z0-9]+)/i.exec(s)||[])[1]||"").toLowerCase().replace(/[^a-z0-9]/g,"").slice(0,12);
+  const t=dec((/[?&]t=([^&\s#]+)/.exec(s)||[])[1]||"");return {a,c,t};}
+function clLink(a,c,t){return (typeof CD_URL==="string"?CD_URL:location.origin+location.pathname)+"?amigo="+encodeURIComponent(a)+(c?"&c="+c:"")+(t?"&t="+encodeURIComponent(t):"");}
+function clApply(inv){if(!inv)return false;try{localStorage.setItem("asc-amigo",inv.a);localStorage.setItem("asc-amigo-c",inv.c||"");
+  if(inv.t&&typeof gtClean==="function"){const t=gtClean(inv.t);if(t)localStorage.setItem("asc-amigo-t",JSON.stringify({a:inv.a,t}));}}catch(e){return false;}return true;}
+// 1) aviso no link aberto fora do app instalado (o card.js já tirou os parâmetros da barra; a URL original fica no navigation entry)
+(function(){try{if(clStandalone())return;const nav=(performance.getEntriesByType&&performance.getEntriesByType("navigation")[0])||{};
+  const inv=clParse(nav.name||"");if(!inv)return;const box=clEl("div","clbar");box.id="clBar";box.setAttribute("role","region");box.setAttribute("aria-label","Convite de "+inv.a);
+  box.append(clEl("b",null,"🤝 Convite de "+inv.a+(inv.t?" · turma "+inv.t:"")));
+  box.append(clEl("span","sm","Já tem o Ascension instalado? Copie o convite, abra o app e cole em Amigos → Recebeu um convite?"));
+  const row=clEl("div","row");const cp=clEl("button","go","Copiar convite");cp.type="button";
+  cp.addEventListener("click",async()=>{const u=clLink(inv.a,inv.c,inv.t);let ok=false;try{await navigator.clipboard.writeText(u);ok=true;}catch(e){}
+    if(!ok){try{const i=document.createElement("textarea");i.value=u;document.body.append(i);i.select();ok=document.execCommand("copy");i.remove();}catch(e){}}
+    cp.textContent=ok?"Copiado ✓":"Copie o link da conversa";toast(ok?"Convite copiado. Abra o app e cole em Amigos.":"Não deu para copiar. Copie o link na conversa e cole no app.");});
+  const x=clEl("button","link","Não tenho o app");x.type="button";x.addEventListener("click",()=>box.remove());row.append(cp,x);box.append(row);
+  document.body.append(box);}catch(e){}})();
+// 2) "Recebeu um convite?" na aba Amigos (fim do painel da Turma). O painel é redesenhado a cada sincronização:
+//    a caixa volta no mesmo estado (aberta, texto digitado, mensagem) e nada some enquanto a pessoa digita.
+let clOpen=false,clVal="",clMsg="";
+function clUI(){const p=$("tmPanel");if(!p||p.hidden)return;if(typeof tmKid==="function"&&tmKid())return;
+  let d=p.querySelector(".clpaste");if(d&&d.parentNode===p&&p.lastElementChild===d)return;if(d)d.remove();
+  d=clEl("details","clpaste");d.open=clOpen;d.addEventListener("toggle",()=>{clOpen=d.open;});const sm=clEl("summary",null,"🔗 Recebeu um convite? Cole aqui");d.append(sm);
+  d.append(clEl("div","sm muted","Cole o link que te mandaram (pode ser a mensagem inteira). Você vira amigo e entra na turma, sem perder nada do seu jogo."));
+  const row=clEl("div","row");const i=clEl("input");i.type="text";i.id="clIn";i.placeholder="Cole o link do convite";i.setAttribute("aria-label","Link do convite");i.autocomplete="off";i.value=clVal;
+  i.addEventListener("input",()=>{clVal=i.value;});
+  const b=clEl("button","go","Entrar");b.type="button";const msg=clEl("div","sm clmsg",clMsg);msg.setAttribute("role","status");
+  const say=t=>{clMsg=t;msg.textContent=t;};
+  b.addEventListener("click",()=>{const inv=clParse(i.value);if(!inv){say("Não achei um convite nesse texto. Cole o link inteiro que começa com https://");return;}
+    const me=typeof rankName==="function"?rankName():"";if(me&&typeof tmN==="function"&&tmN(me)===tmN(inv.a)){say("Esse convite é seu. Mande para um amigo.");return;}
+    clApply(inv);i.value="";clVal="";
+    if(typeof tmOn==="function"&&tmOn()&&me){say("Pronto: convite de "+inv.a+" aceito"+(inv.t?" (turma "+inv.t+")":"")+".");try{cdInvDo();}catch(e){}}
+    else{say("Convite guardado. Entre no ranking com um apelido e você vira amigo de "+inv.a+" na hora.");try{renderRankUI();}catch(e){}}});
+  i.addEventListener("keydown",e=>{if(e.key==="Enter")b.click();});row.append(i,b);d.append(row,msg);p.append(d);}
+if(typeof tmUI==="function"){const _tu=tmUI;tmUI=function(){if(document.activeElement&&document.activeElement.id==="clIn")return;_tu.apply(this,arguments);try{clUI();}catch(e){}};}
+setTimeout(()=>{try{clUI();}catch(e){}},0);
 
 let saveTimer=null, SYNC="";
 try{SYNC=localStorage.getItem("asc-u-sync")||"";}catch(e){}

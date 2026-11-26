@@ -178,6 +178,9 @@ rep('\nlet saveTimer=null, SYNC="";','\n'+R('heroi.js')+'\nlet saveTimer=null, S
 # Arena do Sistema + meta de leitura (tools/arena.*, tools/leitura.js)
 rep('</style></head>',R('arena.css')+'</style></head>')
 rep('\nlet saveTimer=null, SYNC="";','\n'+R('arena.js')+R('leitura.js')+'\nlet saveTimer=null, SYNC="";')
+# convite que não se perde: aviso no link aberto fora do app + "Recebeu um convite? Cole aqui" em Amigos (tools/colar.*)
+rep('</style></head>',R('colar.css')+'</style></head>')
+rep('\nlet saveTimer=null, SYNC="";','\n'+R('colar.js')+'\nlet saveTimer=null, SYNC="";')
 if not ROOT: open('comecar/index.html','w').write(s)
 pass
 
