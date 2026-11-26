@@ -20,10 +20,11 @@ for(const rm of ['no-preference','reduce']){const ctx=await b.newContext({viewpo
   await p.goto(U+'comecar/');await p.waitForTimeout(400);await p.click('#q_perm');await p.fill('#q_name','Teste');await p.click('#q_n0');await p.waitForTimeout(250);
   await p.click('#q_age button:nth-child(3)');await p.waitForTimeout(250);await p.click('#q_occ button:nth-child(3)');await p.waitForTimeout(300);await p.click('#q_done');await p.waitForTimeout(2600);
   await p.evaluate(()=>{for(const m of document.querySelectorAll('.sysmodal'))m.remove();const l=document.getElementById('levelup');if(l)l.hidden=true;});
-  const id=await p.evaluate(()=>{const q=document.querySelector('.quest:not(.done)');return q&&q.dataset.q;});
+  const id=await p.evaluate(()=>{const q=document.querySelector('.quest:not(.done):not(.qtlock)');return q&&q.dataset.q;});
   await p.locator(`.quest[data-q="${id}"] .btns .go`).dispatchEvent('click');await p.waitForTimeout(120);
   const c=await p.evaluate(()=>!!document.querySelector('.rncirc'));ok(`Feito ${rm}: círculo rúnico ${rm==='reduce'?'desligado':'aparece'}`,rm==='reduce'?!c:c);
   ok(`Feito ${rm}: quest concluída`,await p.evaluate(id=>{const k=Object.keys(localStorage).find(k=>/prog$/.test(k));const o=JSON.parse(localStorage.getItem(k)||'{}');return Object.values(o.log||{}).some(l=>l.some(e=>e.q===id));},id));
+  ok(`Feito ${rm}: missão cumprida ganha selo`,await p.evaluate(id=>{const q=document.querySelector(`.quest.done[data-q="${id}"]`);return !!q&&getComputedStyle(q,'::after').content.includes('✓');},id));
   ok(`Feito ${rm}: sem erro de JS`,!errs.length,errs.join(' | '));await ctx.close();}
 {const ctx=await b.newContext({viewport:{width:390,height:844}});const p=await ctx.newPage();const errs=[];p.on('pageerror',e=>errs.push(e.message));await p.goto(U);await p.waitForTimeout(800);ok('raiz: sem erro de JS',!errs.length,errs.join(' | '));await ctx.close();}
 await b.close();console.log(R.join('\n'));console.log(R.filter(x=>x.startsWith('PASS')).length+'/'+R.length);process.exit(R.some(x=>x.startsWith('FAIL'))?1:0);})();
