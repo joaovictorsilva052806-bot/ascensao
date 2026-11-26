@@ -168,6 +168,7 @@ if ROOT:
     # app do criador: sem cartão "Conectar ao sistema" para visitante (liga por link #s=) e sem pedir para liberar o painel para ele mesmo
     rep('$("syncCard").hidden=!!SYNC;','$("syncCard").hidden=true;')
     rep('setTimeout(tlBoot,1200);','')
+    rep('function tlAsk(){','function tlAsk(){return;')
     # app do criador (adulto): perfil vindo da planilha pode não ter faixa de idade
     rep('const AGE_UNK_MINOR=true;','const AGE_UNK_MINOR=false;')
     rep('const SYSTIP_KEY=document.getElementById("o_go")?"asc-"+"u-systip":"ascensao-systip";','const SYSTIP_KEY="ascensao-systip";')
