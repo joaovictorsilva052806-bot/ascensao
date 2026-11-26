@@ -23,3 +23,5 @@ body.insm{overflow:hidden}
 .smbar .smbn{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-size:.95rem}
 .smbar .smbg{flex:none;font-weight:700;color:var(--accent);font-size:.85rem}
 @media (prefers-reduced-motion:reduce){.smsheet{backdrop-filter:none}}
+/* recompensa (atributo, nível, conquista) sempre por cima do Sistema: o jogador vê o prêmio, toca em Aceitar e volta para a missão */
+body.insm .sysmodal:not([hidden]),body.insm .levelup:not([hidden]){z-index:90}

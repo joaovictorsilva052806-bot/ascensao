@@ -70,14 +70,19 @@ function smTimer(q,rec){const c=smShell("2 MINUTOS");smEnd=Date.now()+SM_SECS*10
   const ok=smEl("button","go smgo",q.minTitle?"Fiz o mínimo ✓":"Comecei ✓");ok.type="button";ok.onclick=()=>smMinDone(q,rec);c.append(ok);
   const bk=smEl("button","link","Voltar");bk.type="button";bk.onclick=()=>smMission(q,rec);c.append(bk);
   smIv=setInterval(()=>{const left=(smEnd-Date.now())/1000;t.textContent=smFmt(left);if(left<=0){clearInterval(smIv);t.classList.add("end");tip.textContent="Tempo! Começou? Isso é o mais difícil.";smBuzz([30,60,30]);}},250);}
+// recompensa primeiro: se a marcação gerou aviso (nível, atributo, conquista), o Sistema sai da frente e volta quando ele fechar
+function smBusyRw(){return (typeof sysQ!=="undefined"&&sysQ.length)||[...document.querySelectorAll(".sysmodal:not([hidden]),.levelup:not([hidden])")].some(e=>e.getClientRects().length);}
+function smAfter(fn,n){n=n||0;if(n===0){clearInterval(smIv);}if(smBusyRw()&&n<400){if(n===0){const m=$("smSheet");if(m)m.hidden=true;document.body.classList.remove("insm");}setTimeout(()=>smAfter(fn,n+1),300);return;}fn();}
 function smMinDone(q,rec){clearInterval(smIv);const s=smSt(),tk=smTk();
   if(q.minTitle){if(!smDone(q))toggle(q,"min");}
   else if(!(prog.log[tk]||[]).some(e=>e.q==="sm:"+q.id)&&smCount("sm:")<SM_CAP)addXP({q:"sm:"+q.id,kind:"full",xp:SM_START,stat:q.stat||"foco"},"Começou. +"+SM_START+" XP");
   const mc=$("muChip");if(mc)mc.remove();
   if(rec||s.recArm===tk){s.recArm="";smRecClaim();}
+  setTimeout(()=>smAfter(()=>smEmb(q,s,tk)),400);}
+function smEmb(q,s,tk){
   const c=smShell("MÍNIMO CUMPRIDO");c.append(smEl("h3","smh","Embalou?"),smEl("p","sm","Vá até o fim de \""+smName(q)+"\" e ganhe +"+SM_BONUS+" XP de bônus."+(smEnergy()==="baixa"?" Ou pare aqui: hoje o mínimo basta.":"")));
   const go=smEl("button","go smgo","Continuar até o fim");go.type="button";go.onclick=()=>{(s.cont[tk]=s.cont[tk]||[]).includes(q.id)||s.cont[tk].push(q.id);save();smClose();if(typeof msOpen==="function"){const f=typeof msFind==="function"?msFind(q.id):q;if(f)msOpen(f);}else toast("Quando terminar, toque em Feito na tarefa.");};
-  const fu=smEl("button","ghost","Já fiz tudo ✓");fu.type="button";fu.onclick=()=>{(s.cont[tk]=s.cont[tk]||[]).includes(q.id)||s.cont[tk].push(q.id);save();toggle(q,"full");const mc=$("muChip");if(mc)mc.remove();smIdx=0;smShow();};
+  const fu=smEl("button","ghost","Já fiz tudo ✓");fu.type="button";fu.onclick=()=>{(s.cont[tk]=s.cont[tk]||[]).includes(q.id)||s.cont[tk].push(q.id);save();toggle(q,"full");const mc=$("muChip");if(mc)mc.remove();smIdx=0;setTimeout(()=>smAfter(smShow),400);};
   const st=smEl("button","link","Parar aqui, sem culpa");st.type="button";st.onclick=()=>{smIdx=0;smShow();};
   c.append(go,fu,st);go.focus();}
 // terminou a completa depois do mínimo do Sistema: bônus
@@ -98,7 +103,7 @@ function smBar(){const qs=$("quests");if(!qs||!cfg||cfg.blank)return;const sec=q
 // em navegador automatizado (testes) não abre sozinho, para não cobrir a tela dos outros testes; o teste do Sistema liga com asc-sm-qa
 function smAutoOk(){try{return !navigator.webdriver||localStorage.getItem("asc-sm-qa")==="1";}catch(e){return true;}}
 function smAuto(n){n=n||0;try{if(!cfg||cfg.blank||smSt().off||!smAutoOk())return;let last=0;try{last=+localStorage.getItem("asc-sm-last")||0;}catch(e){}if(Date.now()-last<SM_GAP)return;
-  const busy=($("onb")&&!$("onb").hidden)||document.querySelector(".sysmodal:not([hidden]),#clsModal:not([hidden]),.levelup:not([hidden])")||(typeof sysQ!=="undefined"&&sysQ.length)||($("msSheet")&&!$("msSheet").hidden)||($("zapSheet")&&!$("zapSheet").hidden)||document.body.classList.contains("inmission");
+  const busy=($("onb")&&!$("onb").hidden)||[...document.querySelectorAll(".sysmodal:not([hidden]),#clsModal:not([hidden]),.levelup:not([hidden])")].some(e=>e.getClientRects().length)||(typeof sysQ!=="undefined"&&sysQ.length)||($("msSheet")&&!$("msSheet").hidden)||($("zapSheet")&&!$("zapSheet").hidden)||document.body.classList.contains("inmission");
   if(busy){if(n<80)setTimeout(()=>smAuto(n+1),1500);return;}
   if(!smCands().length&&smEnergy())return;try{localStorage.setItem("asc-sm-last",String(Date.now()));}catch(e){}smIdx=0;smShow();}catch(e){}}
 document.addEventListener("keydown",e=>{if(e.key==="Escape"&&$("smSheet")&&!$("smSheet").hidden)smClose();});
