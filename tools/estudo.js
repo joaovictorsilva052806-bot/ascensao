@@ -175,10 +175,13 @@ function stRender(){const p=stPanel();if(!p)return;const s=stS(),tk=todayKey();
     const bk=stSelect("stCb",[["2","2 blocos por dia"],["3","3 blocos"],["4","4 blocos"],["6","6 blocos"],["8","8 blocos"]],String(c.blocks||4));
     const th=stInput("stTh","number","Hora (0-23)");th.min="0";th.max="23";th.value=tr?tr.hour:"";
     const sl=stInput("stSl","number","Ex.: 23");sl.min="0";sl.max="23";sl.value=c.sleep!=null?c.sleep:"";
-    const dw=stEl("div","stdays");const DN=["S","T","Q","Q","S","S","D"],DL=["segunda","terça","quarta","quinta","sexta","sábado","domingo"];const sel=new Set(tr?tr.days:[]);
+    const dw=stEl("div","stdays");const DN=["S","T","Q","Q","S","S","D"],DL=["segunda","terça","quarta","quinta","sexta","sábado","domingo"];// quem usa o Forja já marcou os dias de treino lá: vêm pré-marcados, falta só a hora
+    const fj=!tr&&c.train!==false&&prog.forja&&Array.isArray(prog.forja.dias)&&Array.isArray(prog.forja.ses)&&prog.forja.ses.length?prog.forja.dias.filter(d=>d>=0&&d<7):null;
+    const sel=new Set(tr?tr.days:fj||[]);
     DN.forEach((x,i)=>{const b=stBtn(x,"ghost stday"+(sel.has(i)?" on":""),()=>{sel.has(i)?sel.delete(i):sel.add(i);b.classList.toggle("on");b.setAttribute("aria-pressed",sel.has(i));},"Treino na "+DL[i]);b.setAttribute("aria-pressed",sel.has(i));dw.append(b);});
     f.append(stField("Meta de blocos",bk),stEl("span","sm muted","Dias de treino"),dw,stField("Hora do treino",th),stField("Hora de dormir",sl));
     if(tr&&tr.auto)f.append(stEl("div","sm muted","Treino lido da sua rotina. Salve para ajustar."));
+    else if(fj&&fj.length)f.append(stEl("div","sm muted","Dias do Forja já marcados. Diga a hora e salve."));
     f.append(stEl("div","sm muted","Em dia de treino a meta cai 1 bloco, e nada de estudo 30 min antes e depois."));
     f.append(stBtn("Salvar","go",()=>{c.blocks=+bk.value;const h=th.value===""?null:Math.max(0,Math.min(23,+th.value));
       c.train=h==null||!sel.size?false:{days:[...sel].sort(),hour:h,dur:60};c.sleep=sl.value===""?null:Math.max(0,Math.min(23,+sl.value));save();stRender();toast("Ritmo salvo.");}));
@@ -191,7 +194,7 @@ function stAnswer(ok){if(!stRev)return;const c=stRev.q.shift();const real=stC().
 function stAlert(){const host=document.querySelector('section[data-tab="hoje"].panel');if(!host)return;let a=$("stAlert");
   const pend=stS().tasks.filter(t=>!t.done&&t.due&&stDays(t.due)<=7).sort(stOrder);
   if(!pend.length){if(a)a.remove();return;}
-  if(!a){a=stEl("button","stalert");a.type="button";a.id="stAlert";a.addEventListener("click",()=>{if(typeof goTab==="function")goTab("foco");setTimeout(()=>{const p=$("stPanel");if(p)p.scrollIntoView({block:"start"});},50);});host.append(a);}
+  if(!a){a=stEl("button","stalert");a.type="button";a.id="stAlert";a.addEventListener("click",()=>{if(typeof goTab==="function")goTab("foco");stRender();setTimeout(()=>{const p=$("stPanel");if(p)p.scrollIntoView({block:"start"});},50);});host.append(a);}
   const t=pend[0],dd=stDays(t.due);a.className="stalert"+(dd<0?" late":dd<=3?" hot":"");
   a.textContent=(dd<0?"⚠️ ":"📚 ")+t.t+": "+stWhen(dd)+(pend.length>1?" · +"+(pend.length-1)+" prazo"+(pend.length>2?"s":"")+" na semana":"");}
 // ---- ganchos no foco que já existe ----
@@ -199,4 +202,6 @@ function stAlert(){const host=document.querySelector('section[data-tab="hoje"].p
 {const fs=$("focusStop");if(fs)fs.addEventListener("click",()=>{if(prog.st&&prog.st.cur){prog.st.cur=null;prog.st.curEnd=null;save();stRender();}});}
 {const tb=document.querySelector('#tabbar [data-go="foco"]');if(tb)tb.addEventListener("click",()=>setTimeout(stRender,0));}
 // não refaz o painel com a pessoa digitando nele (o texto do formulário não se perde)
-{const _sr=render;render=function(){_sr.apply(this,arguments);try{const p=$("stPanel"),ae=document.activeElement;if(p&&ae&&p.contains(ae)&&/INPUT|TEXTAREA|SELECT/.test(ae.tagName)){stAlert();return;}stRender();}catch(e){}};}
+{const _sr=render;render=function(){_sr.apply(this,arguments);try{const p=$("stPanel"),ae=document.activeElement;
+  // fora da aba Foco só o alerta de prazo é atualizado (o painel é refeito ao abrir a aba)
+  if(document.body.dataset.tab!=="foco"||(p&&ae&&p.contains(ae)&&/INPUT|TEXTAREA|SELECT/.test(ae.tagName))){stS();stAlert();return;}stRender();}catch(e){}};}

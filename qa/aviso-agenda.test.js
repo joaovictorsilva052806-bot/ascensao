@@ -1,7 +1,8 @@
 // "Ativar aviso diário" (cartão #sysTip da aba Hoje) no Android.
 // Antes (até a main 3f9c96a) o toque baixava o arquivo .ics, que o Android não abre na agenda
 // (o próprio app já escondia o botão .ics no Android por isso): o toque não fazia nada útil.
-// Agora, no Android, abre o Google Agenda já preenchido com 1 evento diário do Sistema; iPhone/PC seguem com o .ics.
+// Depois (#128) o Android abre o Google Agenda; desde o lembrete de 1 toque (tools/lemb.js) o toque abre a oferta com
+// chips de horário e o "Adicionar à agenda" cria 1 evento diário: Google Agenda no Android, .ics de 1 evento no iPhone/PC.
 // Raiz e /comecar/, celular 390x844 com reduce-motion, console limpo, campo antigo intacto.
 // Rode com: python3 -m http.server 8000 --bind 127.0.0.1 & node qa/aviso-agenda.test.js
 const {chromium}=require('playwright');const U=process.env.QA_URL||'http://localhost:8000/';
@@ -30,19 +31,21 @@ for(const [route,pre,tip] of [['comecar/','asc-u','asc-u-systip'],['','ascensao'
   const tem=await p.evaluate(()=>!!document.getElementById('sysTip')&&!!document.getElementById('sysTipYes'));
   ok(tag+'cartão "Quer que o Sistema te chame?" existe',tem);
   let baixou=null;p.on('download',d=>{baixou=d.suggestedFilename();});
-  await p.evaluate(()=>document.getElementById('sysTipYes').click());await p.waitForTimeout(900);
+  await p.evaluate(()=>document.getElementById('sysTipYes').click());await p.waitForTimeout(400);
+  ok(tag+'toque abre a oferta com horário',await p.locator('#lembOffer').isVisible());
+  await p.locator('#lembAdd').click();await p.waitForTimeout(900);
   const r=await p.evaluate(k=>({abriu:window.__abriu,flag:localStorage.getItem(k),esc:document.getElementById('sysTip').hidden,toast:(document.querySelector('.toast,#toast')||{}).textContent||''}),tip);
   if(dev==='Android'){
     const u=r.abriu[0]||'';
     ok(tag+'abre o Google Agenda já preenchido',/^https:\/\/calendar\.google\.com\/calendar\/render\?action=TEMPLATE/.test(u),JSON.stringify(r.abriu));
-    ok(tag+'evento é o aviso diário do Sistema',/text=%5BSISTEMA%5D%20Miss%C3%A3o%20di%C3%A1ria/.test(u),u.slice(0,160));
-    ok(tag+'repete todo dia (7 dias)',decodeURIComponent((u.match(/recur=([^&]+)/)||[])[1]||'')==='RRULE:FREQ=WEEKLY;BYDAY=MO,TU,WE,TH,FR,SA,SU',u);
+    ok(tag+'evento é o aviso diário do Sistema',/text=%E2%9A%94%EF%B8%8F%20Ascension%3A%20sua%20miss%C3%A3o%20de%20hoje/.test(u),u.slice(0,160));
+    ok(tag+'repete todo dia (DAILY)',decodeURIComponent((u.match(/recur=([^&]+)/)||[])[1]||'')==='RRULE:FREQ=DAILY',u);
     ok(tag+'só 1 evento aberto',r.abriu.length===1,String(r.abriu.length));
     ok(tag+'link do app sem # na descrição',/details=[^&]*localhost/.test(u)&&!/%23/.test((u.match(/details=([^&]+)/)||[])[1]||''),u.slice(-120));
     ok(tag+'não baixa .ics (Android não abre)',baixou===null,String(baixou));
     ok(tag+'aviso fala em Salvar, não em "Adicionar tudo"',/Salvar/.test(r.toast)&&!/Adicionar tudo/.test(r.toast),r.toast);
   }else{
-    ok(tag+'baixa o .ics da agenda',baixou==='lembretes-ascensao.ics',String(baixou));
+    ok(tag+'baixa o .ics do aviso diário',baixou==='aviso-diario-ascension.ics',String(baixou));
     ok(tag+'não abre o Google Agenda',!r.abriu.length,JSON.stringify(r.abriu));
   }
   ok(tag+'cartão some e grava a resposta',r.esc&&r.flag==='1',JSON.stringify(r));
