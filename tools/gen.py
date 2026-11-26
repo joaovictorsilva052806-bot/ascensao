@@ -181,6 +181,8 @@ rep('\nlet saveTimer=null, SYNC="";','\n'+R('arena.js')+R('leitura.js')+'\nlet s
 # volta do dia 1 ao 3: teaser de amanhã, presente de volta e resgate da sequência (tools/hook.*)
 rep('</style></head>',R('hook.css')+'</style></head>')
 rep('\nlet saveTimer=null, SYNC="";','\n'+R('hook.js')+'\nlet saveTimer=null, SYNC="";')
+# textos da 1ª sessão mais curtos e com gancho (tools/textos1.js): só texto, nada de dados ou fluxo
+rep('\nlet saveTimer=null, SYNC="";','\n'+R('textos1.js')+'\nlet saveTimer=null, SYNC="";')
 if not ROOT: open('comecar/index.html','w').write(s)
 pass
 
