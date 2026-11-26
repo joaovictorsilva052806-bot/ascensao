@@ -30,13 +30,13 @@ for(const vp of [{width:390,height:844},{width:1280,height:800}]){const tag=vp.w
   const hojeVis=await p.evaluate(()=>[...document.querySelectorAll('.wrap>section[data-tab="hoje"]')].filter(e=>e.getClientRects().length).length);
   ok(tag+' dia 1: Hoje tem só o status e a missão',hojeVis===2,String(hojeVis));
   await p.screenshot({path:SP+'fb-dia1'+(vp.width<500?'':'-desk')+'.png'});
-  await p.click('#s3Bar .link:not(.s3off)');await p.waitForTimeout(150);
+  await drain(p);await p.locator('#s3Bar .link:not(.s3off)').dispatchEvent('click');await p.waitForTimeout(150);
   ok(tag+' "Ver todas" mostra as outras',(await p.evaluate(()=>[...document.querySelectorAll('#quests .quest')].filter(e=>e.getClientRects().length).length))>1);
   // trocar esta tarefa
   await p.locator('#quests .quest.next .msgo').dispatchEvent('click');await p.waitForTimeout(300);
   ok(tag+' missão: botão "Trocar esta tarefa"',await p.isVisible('.msswap'));
   const id=await p.evaluate(()=>document.querySelector('#quests .quest.next').dataset.q);const c0=(await LS(p,'asc-u-cfg')).quests.find(q=>q.id===id);
-  await p.click('.msswap');await p.waitForTimeout(200);const c1=(await LS(p,'asc-u-cfg')).quests.find(q=>q.id===id);
+  await p.locator('.msswap').dispatchEvent('click');await p.waitForTimeout(200);const c1=(await LS(p,'asc-u-cfg')).quests.find(q=>q.id===id);
   ok(tag+' trocar: título muda, XP/principal/dias iguais, original guardada',c1.title!==c0.title&&c1.xp===c0.xp&&c1.main===c0.main&&JSON.stringify(c1.days)===JSON.stringify(c0.days)&&c1.orig&&c1.orig.t===c0.title,c0.title+' -> '+c1.title);
   ok(tag+' trocar: a tela mostra a nova',(await p.textContent('#msSheet h3'))===c1.title);
   await p.locator('#toast button').dispatchEvent('click');await p.waitForTimeout(150);
