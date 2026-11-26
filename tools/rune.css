@@ -1,0 +1,43 @@
+/* ---------- Runa: RPG de mesa dentro do HUD (tools/rune.js) ---------- */
+@keyframes rnSpin{to{transform:rotate(360deg)}}
+@keyframes rnCirc{0%{opacity:0;transform:translate(-50%,-50%) scale(.25) rotate(-40deg)}25%{opacity:1}100%{opacity:0;transform:translate(-50%,-50%) scale(1.25) rotate(30deg)}}
+@keyframes rnCrit{0%{opacity:0;transform:translate(-50%,0) scale(.4) rotate(-20deg)}20%{opacity:1;transform:translate(-50%,-6px) scale(1.15) rotate(6deg)}35%{transform:translate(-50%,-8px) scale(1) rotate(0)}80%{opacity:1}100%{opacity:0;transform:translate(-50%,-40px) scale(1)}}
+@keyframes rnTumble{0%{transform:translateY(-60px) rotate(0) scale(.6)}35%{transform:translateY(0) rotate(400deg) scale(1)}50%{transform:translateY(-18px) rotate(560deg)}65%{transform:translateY(0) rotate(680deg)}80%{transform:translateY(-6px) rotate(710deg)}100%{transform:translateY(0) rotate(720deg)}}
+@keyframes rnLand{0%{transform:scale(1.25)}100%{transform:scale(1)}}
+@keyframes rnGlow{50%{filter:drop-shadow(0 0 16px var(--gold,#f2c14e))}}
+
+/* etiqueta das janelas do Sistema ganha uma faixa de runas embaixo */
+.sysmodal .card>.tag::after{content:"";display:block;height:10px;margin:6px auto 0;width:120px;max-width:100%;background:var(--rn-strip) center/120px 10px no-repeat;opacity:.5}
+
+/* Despertar: anel de runas */
+.hxorb .rn{transform-origin:95px 95px;transform-box:view-box;animation:rnSpin 40s linear infinite reverse}
+.hxorb .rn path,.rncirc path,.rncirc circle{fill:none;stroke:var(--accent);stroke-width:1.3;stroke-linecap:round;stroke-linejoin:round;vector-effect:non-scaling-stroke}
+.hxorb .rn path{opacity:.6}
+
+/* "Feito": círculo rúnico */
+.rncirc{position:fixed;width:120px;height:120px;pointer-events:none;z-index:69;animation:rnCirc .85s cubic-bezier(.2,.8,.2,1) forwards;filter:drop-shadow(0 0 6px var(--accent))}
+.rncirc circle:first-child{stroke-dasharray:3 5}
+.rncirc.gold path,.rncirc.gold circle{stroke:var(--gold,#f2c14e)}.rncirc.gold{filter:drop-shadow(0 0 8px var(--gold,#f2c14e))}
+.rncrit{position:fixed;z-index:71;pointer-events:none;display:flex;align-items:center;gap:6px;animation:rnCrit 1.4s cubic-bezier(.2,.8,.2,1) forwards;font-family:var(--f-hud,inherit);font-weight:700;letter-spacing:.12em;color:#fff3cf;text-shadow:0 0 10px var(--gold,#f2c14e),0 0 22px var(--gold,#f2c14e)}
+.rncrit .rnd20{width:34px;height:34px}
+
+/* d20 */
+.rnd20{display:block;overflow:visible}
+.rnd20 .f{fill:rgba(0,212,255,.1);stroke:var(--accent);stroke-width:3;stroke-linejoin:round}
+.rnd20 .l{fill:none;stroke:var(--accent);stroke-width:1.5;opacity:.55;stroke-linejoin:round}
+.rnd20 text{font-family:var(--f-hud,inherit);font-weight:700;font-size:21px;fill:#eaffff;stroke:#02121a;stroke-width:4px;paint-order:stroke;stroke-linejoin:round}
+.rncrit .rnd20 .f,.rnroll.nat .rnd20 .f{fill:rgba(242,193,78,.18);stroke:var(--gold,#f2c14e)}.rncrit .rnd20 .l,.rnroll.nat .rnd20 .l{stroke:var(--gold,#f2c14e)}
+.rnroll{display:flex;flex-direction:column;align-items:center;gap:4px;margin:-4px 0 2px}
+.rnroll .rnd20{width:72px;height:72px;animation:rnTumble .85s cubic-bezier(.3,.7,.3,1) both;filter:drop-shadow(0 0 8px var(--accent))}
+.rnroll.land .rnd20{animation:rnLand .3s cubic-bezier(.3,1.6,.5,1)}
+.rnroll.nat.land .rnd20{animation:rnLand .3s cubic-bezier(.3,1.6,.5,1),rnGlow 1.4s ease-in-out .3s infinite}
+.rnlbl{font-family:var(--f-mono,ui-monospace,monospace);font-size:.72rem;letter-spacing:.2em;color:var(--accent);text-transform:uppercase;opacity:0;transition:opacity .25s}
+.rnroll.nat .rnlbl{color:var(--gold,#f2c14e)}
+.rnroll.land .rnlbl{opacity:1}
+.bxout.rnwait{opacity:0;animation:none}
+
+@media (prefers-reduced-motion:reduce){
+  .hxorb .rn,.rnroll .rnd20,.rnroll.land .rnd20,.rnroll.nat.land .rnd20{animation:none!important}
+  .rncirc,.rncrit{display:none!important}
+  .rnlbl{transition:none}
+}

@@ -12,12 +12,15 @@
 @keyframes hxBurst{0%{opacity:.9;transform:scale(.3)}100%{opacity:0;transform:scale(3.2)}}
 @keyframes hxFlash{0%{opacity:0}20%{opacity:.14}100%{opacity:0}}
 @keyframes hxGlitch{0%{opacity:0}20%{opacity:.8;transform:translateX(-3px)}30%{opacity:.3}45%{opacity:1;transform:translateX(2px)}60%{transform:none}70%{opacity:.6}100%{opacity:1;transform:none}}
+@keyframes hxFlick{0%{opacity:.35}12%{opacity:1}20%{opacity:.6}30%{opacity:1}100%{opacity:1}}
 @keyframes hxBlink{50%{opacity:.25}}
 
 .sysmodal:not([hidden]) .card,.levelup:not([hidden]) .card{animation:hxUnfold .52s cubic-bezier(.2,.9,.25,1) both;transform-origin:50% 50%}
 .sysmodal:not([hidden]) .card .tag{animation:hxWipe .45s linear .28s both}
 .sysmodal:not([hidden]) .card h3{animation:hxGlitch .5s linear .3s both}
 .levelup:not([hidden]) .card .big{animation:hxGlitch .5s linear .3s both,lvPulse 1.6s ease-in-out .8s infinite}
+/* Modo Sistema e Foco: sem mudar tamanho (o ACEITAR responde e mede certo na hora), só tremulação de holograma e a varredura */
+.smsheet:not([hidden]) .smcard{animation:hxFlick .45s linear both}
 .hx-rel{position:relative}
 /* película holográfica por cima do card: scanlines, cantos e uma varredura de luz (não recebe toque) */
 .hxfx{position:absolute;inset:0;pointer-events:none;overflow:hidden;border-radius:inherit;z-index:3;
@@ -66,7 +69,7 @@
 .go:active,.qgrid button:active{transform:scale(.97);transition:transform .08s}
 
 @media (prefers-reduced-motion:reduce){
-  .sysmodal:not([hidden]) .card,.levelup:not([hidden]) .card,.sysmodal .card h3,.levelup .card .big,.sysmodal .card .tag,#quick .qstep,#quick .qstep .tag,.qgrid button,.qtype.hx-frame,.hxbeam,.hxorb g,.hxhud .dot{animation:none!important}
+  .sysmodal:not([hidden]) .card,.levelup:not([hidden]) .card,.smsheet:not([hidden]) .smcard,.sysmodal .card h3,.levelup .card .big,.sysmodal .card .tag,#quick .qstep,#quick .qstep .tag,.qgrid button,.qtype.hx-frame,.hxbeam,.hxorb g,.hxhud .dot{animation:none!important}
   .hxfx b,.hxtap,.hxburst,.hxflash{display:none!important}
   .go:active,.qgrid button:active{transform:none}
 }

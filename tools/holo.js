@@ -6,11 +6,11 @@ function hxFilm(card){if(!card||card.querySelector(":scope>.hxfx"))return;
   if(getComputedStyle(card).position==="static")card.classList.add("hx-rel");
   const f=document.createElement("i");f.className="hxfx";f.setAttribute("aria-hidden","true");f.append(document.createElement("b"));card.append(f);}
 function hxReplay(card){const b=card&&card.querySelector(":scope>.hxfx>b");if(!b)return;b.style.animation="none";void b.offsetWidth;b.style.animation="";}
-function hxScanAll(root){for(const m of (root||document).querySelectorAll(".sysmodal,.levelup")){const c=m.querySelector(".card");if(c)hxFilm(c);}}
+function hxScanAll(root){for(const m of (root||document).querySelectorAll(".sysmodal,.levelup,.smsheet")){const c=m.querySelector(".card,.smcard");if(c)hxFilm(c);}}
 // janelas criadas na hora (append) e janelas fixas que só trocam o hidden (level up)
 try{new MutationObserver(ms=>{for(const m of ms){
-    if(m.type==="childList"){for(const n of m.addedNodes){if(n.nodeType!==1)continue;if(n.matches&&n.matches(".sysmodal,.levelup"))hxScanAll(n.parentNode||document);else if(n.querySelector&&n.querySelector(".sysmodal .card"))hxScanAll(n);}}
-    else if(m.type==="attributes"&&m.target.matches&&m.target.matches(".sysmodal,.levelup")&&!m.target.hidden){const c=m.target.querySelector(".card");if(c){hxFilm(c);hxReplay(c);}}
+    if(m.type==="childList"){for(const n of m.addedNodes){if(n.nodeType!==1)continue;if(n.matches&&n.matches(".sysmodal,.levelup,.smsheet"))hxScanAll(n.parentNode||document);else if(n.querySelector&&n.querySelector(".sysmodal .card,.smsheet .smcard"))hxScanAll(n);}}
+    else if(m.type==="attributes"&&m.target.matches&&m.target.matches(".sysmodal,.levelup,.smsheet")&&!m.target.hidden){const c=m.target.querySelector(".card,.smcard");if(c){hxFilm(c);hxReplay(c);}}
   }}).observe(document.body,{childList:true,subtree:true,attributes:true,attributeFilter:["hidden"]});}catch(e){}
 hxScanAll();
 
