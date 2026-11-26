@@ -10,3 +10,7 @@ body.inmission .much{display:none}
 body:has(#muChip) .toast{bottom:calc(146px + env(safe-area-inset-bottom,0px))}
 .toast .ntrow{display:block;margin-top:2px;font-size:.92em;opacity:.95}
 .toast .ntundo{min-height:44px;padding:0 6px;margin-left:4px;color:var(--glow,#6fb1ff);font:inherit;text-decoration:underline}
+.ntvolta{border-color:var(--glow,#6fb1ff)}
+.ntvolta h2{margin:0 0 4px}
+.ntvolta .row{display:flex;gap:12px;align-items:center;flex-wrap:wrap;margin-top:8px}
+.ntvolta .row button{min-height:44px}

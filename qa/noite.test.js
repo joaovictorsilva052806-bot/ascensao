@@ -7,6 +7,7 @@
 // 5) Barra de abas abaixo de 390px: "PROGRESSO" não passa mais da aba.
 // 6) Voltar do Android com missão/desafio aberto fecha só a folha (antes saía do app).
 // 7) "Desfazer" no aviso por 5 s depois de concluir; o aviso sobe quando o atalho da figurinha aparece.
+// 9) Volta depois de faltar 1 dia: cartão sem cobrança no topo da aba Hoje e 1 toque abre a 1ª missão.
 // 8) Dia 1: o check-in entra sozinho, sem a janela "Você apareceu" entre "Criar meu jogo" e a 1ª missão.
 // Mais: celular 390x844 e desktop, reduce-motion, dados antigos intactos, raiz abre, console limpo.
 // Rode com: python3 -m http.server 8000 --bind 127.0.0.1 & node qa/noite.test.js
@@ -121,6 +122,19 @@ for(const w of [320,360,375,390]){const ctx=await b.newContext({viewport:{width:
   const r=await p.evaluate(()=>({ck:window.__ck,log:Object.entries(JSON.parse(localStorage.getItem('asc-u-prog')).log).map(([k,v])=>k+'='+v.map(e=>e.q))}));
   ok('dia 1: sem janela de check-in antes da 1ª missão',!r.ck.length,r.ck.join(' | '));ok('dia 1: check-in registrado do mesmo jeito (+10 XP) e a 1ª missão também',r.log.some(x=>x.startsWith('2026-11-26=')&&x.includes('checkin:2026-11-26')&&x.split(',').length>=2),r.log.join(','));
   ok('dia 1: console limpo (check-in automático)',errs.length===0,errs.join(' | '));await ctx.close();}
+// volta depois de faltar 1 dia: cartão sem cobrança no topo e 1 toque abre a 1ª missão; não aparece para quem fez ontem
+{const VC={version:3,name:'Ana',startDate:'2026-11-20',profile:{age:'adult'},quests:[{id:'q1',title:'Estudar 20 min',minTitle:'Abrir o caderno',xp:20,stat:'mente',main:true},{id:'q2',title:'Ler 10 páginas',xp:10,stat:'mente',main:true}]};
+  const lg=d=>({['2026-11-'+d]:[{q:'q1',kind:'full',xp:20,stat:'mente',bonus:0,t:'2026-11-'+d+'T22:05:00Z'}]});
+  for(const [nome,log,want] of [['faltou ontem',lg(24),true],['fez ontem',lg(25),false],['1º dia sem histórico',{},false]]){
+    const errs=[];const ctx=await ctxOf(b);await ctx.addInitScript(([c,g])=>{if(!localStorage.getItem('asc-u-cfg')){localStorage.setItem('asc-u-cfg',c);localStorage.setItem('asc-u-prog',g);localStorage.setItem('asc-u-season','2');localStorage.setItem('asc-u-tele',JSON.stringify({asked:1}));}},[JSON.stringify(VC),JSON.stringify({log,rpg:{cls:{id:'mago',style:'fant',name:'Mago'}},gd:{off:1}})]);
+    const p=await page(ctx,'2026-11-26T09:00:00-03:00',errs);await p.goto(U);await p.waitForTimeout(1500);for(let i=0;i<5;i++){await pops(p);await p.waitForTimeout(500);}
+    const v=await p.evaluate(()=>{const c=document.getElementById('ntVolta');if(!c||c.hidden||!c.getClientRects().length)return null;return {top:Math.round(c.getBoundingClientRect().top+scrollY),txt:c.innerText};});
+    if(!want){ok('volta: sem cartão quando '+nome,!v,v&&v.txt);await ctx.close();continue;}
+    ok('volta: cartão no topo da 1ª tela, sem culpa ('+nome+')',!!v&&v.top<400&&/Sem cobrança/.test(v.txt)&&/Abrir o caderno/.test(v.txt)&&!/Dívida|perdeu|falhou/i.test(v.txt),v&&(v.top+' · '+v.txt.replace(/\s+/g,' ')));
+    await p.click('#ntVolta button.go');await p.waitForTimeout(1200);const sh=await sheet(p);ok('volta: 1 toque abre a 1ª missão',!!sh,String(sh));
+    await p.evaluate(()=>{const s=[...document.querySelectorAll('.mssheet')].find(x=>!x.hidden);[...s.querySelectorAll('button')].find(x=>/Concluir miss/.test(x.textContent)).click();});for(let i=0;i<4;i++){await p.waitForTimeout(700);await pops(p);}
+    ok('volta: cartão some depois da 1ª tarefa',await p.evaluate(()=>{const c=document.getElementById('ntVolta');return !c||c.hidden;}));
+    ok('volta: console limpo',errs.length===0,errs.join(' | '));await ctx.close();}}
 // raiz (app do JV): abre com a planilha de exemplo e sem erro
 {const errs=[];const ctx=await ctxOf(b);await ctx.addInitScript(()=>{if(!localStorage.getItem('ascensao-cfg')){localStorage.setItem('ascensao-cfg',JSON.stringify({version:3,startDate:'2026-11-20',name:'JV',quests:[{id:'q1',title:'Estudar 20 min',xp:20,stat:'mente',main:true},{id:'q_fech',title:'Fechamento do dia',xp:10,stat:'foco',main:true}]}));localStorage.setItem('ascensao-prog',JSON.stringify({log:{},rpg:{cls:'mago'}}));}});
   const p=await page(ctx,'2026-11-27T02:00:00-03:00',errs);await p.goto(B+'/');await p.waitForTimeout(2500);
