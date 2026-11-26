@@ -145,8 +145,8 @@ rep('\nlet saveTimer=null, SYNC="";','\n'+open(SP+'avatar.js').read()+open(SP+'f
 rep('</style></head>',open(SP+'qtidy.css').read()+'</style></head>')
 rep('\nlet saveTimer=null, SYNC="";','\n'+open(SP+'qtidy.js').read()+'\nlet saveTimer=null, SYNC="";')
 # aba Amigos: liga, turma, novidades, parabéns e cutucar (tools/turma.*)
-rep('</style></head>',open(SP+'turma.css').read()+open(SP+'card.css').read()+'</style></head>')
-rep('\nlet saveTimer=null, SYNC="";','\n'+open(SP+'daily.js').read()+open(SP+'turma.js').read()+open(SP+'card.js').read()+open(SP+'duo.js').read()+'\nlet saveTimer=null, SYNC="";')
+rep('</style></head>',open(SP+'turma.css').read()+open(SP+'card.css').read()+open(SP+'grupos.css').read()+'</style></head>')
+rep('\nlet saveTimer=null, SYNC="";','\n'+open(SP+'daily.js').read()+open(SP+'turma.js').read()+open(SP+'card.js').read()+open(SP+'grupos.js').read()+open(SP+'duo.js').read()+'\nlet saveTimer=null, SYNC="";')
 # chefão da turma, baú do dia e mural/figurinhas (tools/boss.*, tools/chest.*, tools/mural.*)
 rep('</style></head>',R('boss.css')+R('chest.css')+R('mural.css')+R('attr.css')+'</style></head>')
 rep('\nlet saveTimer=null, SYNC="";','\n'+R('boss.js')+R('chest.js')+R('mural.js')+R('attr.js')+'\nlet saveTimer=null, SYNC="";')
@@ -164,6 +164,9 @@ rep('\nlet saveTimer=null, SYNC="";','\n'+R('dialogo.js')+'\nlet saveTimer=null,
 # fim da cadeia: versão do app + tela Novidades 1x por versão + rodapé com Privacidade/Termos em Mais (tools/versao.*)
 rep('</style></head>',R('versao.css')+'</style></head>')
 rep('\nlet saveTimer=null, SYNC="";','\n'+R('versao.js')+'\nlet saveTimer=null, SYNC="";')
+# cartão do jogador: ficha expansível na aba Hoje (tools/heroi.*)
+rep('</style></head>',R('heroi.css')+'</style></head>')
+rep('\nlet saveTimer=null, SYNC="";','\n'+R('heroi.js')+'\nlet saveTimer=null, SYNC="";')
 if not ROOT: open('comecar/index.html','w').write(s)
 pass
 
