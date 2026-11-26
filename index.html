@@ -262,6 +262,8 @@ input,select,textarea{font-size:16px!important}
 .stpanel .stday.on{background:rgba(0,212,255,.25);border-color:var(--accent)}
 .stalert{display:block;width:100%;margin-top:10px;text-align:left;min-height:44px;padding:10px 12px;border-radius:12px;border:1px solid rgba(120,220,255,.35);background:rgba(10,30,45,.5);color:var(--fg);font:inherit}
 .stalert.hot{border-color:rgba(255,190,80,.7)}.stalert.late{border-color:rgba(255,90,90,.75)}
+.stpanel input:not([type=checkbox]):not([type=radio]){font:inherit;width:100%;box-sizing:border-box;min-height:44px;padding:10px 12px;background:rgba(0,212,255,.04);border:1px solid var(--line);color:var(--fg);border-radius:3px;color-scheme:dark}
+.stpanel input::placeholder{color:var(--muted,#8aa0b4);opacity:1}
 .onboarding .wrap>section:not(#onb){display:none!important}
 .onb label{display:flex;flex-direction:column;gap:4px;font-size:.86rem;color:var(--muted);margin-top:10px}
 .onb label.chk{flex-direction:row;align-items:center;gap:8px;color:var(--fg)}
@@ -1375,6 +1377,14 @@ body.infz .sysmodal:not([hidden]),body.infz .levelup:not([hidden]){z-index:90}
 .fjback,.fjgoal{color:var(--gold)}
 .fjhr{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
 .fjhr input{min-height:40px;padding:6px 10px;border-radius:8px;border:1px solid var(--line);background:#0a1222;color:var(--fg);font:inherit}
+.lemb .lembchips{display:flex;flex-wrap:wrap;gap:8px;justify-content:center}
+.lemb .lembchip{min-width:56px;min-height:44px;padding:8px 14px;border-radius:999px;border:1px solid var(--line);background:#0a1222;color:var(--fg);font:inherit;font-weight:600;cursor:pointer}
+.lemb .lembchip.on{border-color:var(--accent);background:rgba(0,212,255,.16);color:var(--glow);box-shadow:0 0 0 1px var(--accent)}
+.lemb .lembchip:focus-visible{outline:2px solid var(--glow);outline-offset:2px}
+.lemb .lembtime{min-height:44px;padding:8px 12px;border-radius:8px;border:1px solid var(--line);background:#0a1222;color:var(--fg);font:inherit;align-self:center}
+.lemb .lembbt{justify-content:center;gap:10px;flex-wrap:wrap}
+.lemb .lembbt button{min-height:44px}
+#lembMais{min-height:44px;margin:6px 0}
 .vsnews .card{max-width:360px;text-align:left}
 .vsnews .tag,.vsnews h3{text-align:center}
 .vsnews .vsl{list-style:none;margin:2px 0;padding:0;display:grid;gap:8px}
@@ -1485,6 +1495,15 @@ section[data-hbg]>:not(.hrbg){position:relative;z-index:1}
 .lrbook{margin:10px 0 4px;padding:10px;border-radius:10px;border:1px dashed var(--line,#1f2e4d)}
 .lrbt{display:flex;justify-content:space-between;gap:8px;align-items:baseline}.lrbt b{min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .lrform{display:grid;grid-template-columns:minmax(0,1fr) 110px;gap:6px}.lrform button{grid-column:1/-1;min-height:48px}
+/* convite que não se perde (tools/colar.js) */
+.clbar{position:fixed;left:8px;right:8px;top:calc(8px + env(safe-area-inset-top,0px));z-index:120;display:flex;flex-direction:column;gap:6px;padding:12px 14px;border:1px solid var(--glow,#6fb1ff);border-radius:12px;background:rgba(7,12,23,.96);box-shadow:0 8px 30px rgba(0,0,0,.6);max-width:520px;margin:0 auto}
+.clbar .row{display:flex;gap:10px;align-items:center;flex-wrap:wrap}
+.clbar button{min-height:44px}
+.clpaste{margin-top:10px}
+.clpaste summary{min-height:44px;line-height:44px;cursor:pointer}
+.clpaste .row{display:flex;gap:8px;margin-top:8px}
+.clpaste input{flex:1;min-width:0;min-height:44px}
+.clpaste .clmsg{margin-top:6px}
 .bpgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(96px,1fr));gap:6px;margin:6px 0}
 .bptile{border:1px solid var(--line);border-radius:8px;padding:8px;display:flex;flex-direction:column;gap:2px;background:rgba(0,0,0,.15);color:var(--fg)}
 .bptile b{font-size:1.25rem;color:var(--glow);font-variant-numeric:tabular-nums}.bptile span{font-size:.7rem;line-height:1.2}
@@ -2559,10 +2578,13 @@ function stRender(){const p=stPanel();if(!p)return;const s=stS(),tk=todayKey();
     const bk=stSelect("stCb",[["2","2 blocos por dia"],["3","3 blocos"],["4","4 blocos"],["6","6 blocos"],["8","8 blocos"]],String(c.blocks||4));
     const th=stInput("stTh","number","Hora (0-23)");th.min="0";th.max="23";th.value=tr?tr.hour:"";
     const sl=stInput("stSl","number","Ex.: 23");sl.min="0";sl.max="23";sl.value=c.sleep!=null?c.sleep:"";
-    const dw=stEl("div","stdays");const DN=["S","T","Q","Q","S","S","D"],DL=["segunda","terça","quarta","quinta","sexta","sábado","domingo"];const sel=new Set(tr?tr.days:[]);
+    const dw=stEl("div","stdays");const DN=["S","T","Q","Q","S","S","D"],DL=["segunda","terça","quarta","quinta","sexta","sábado","domingo"];// quem usa o Forja já marcou os dias de treino lá: vêm pré-marcados, falta só a hora
+    const fj=!tr&&c.train!==false&&prog.forja&&Array.isArray(prog.forja.dias)&&Array.isArray(prog.forja.ses)&&prog.forja.ses.length?prog.forja.dias.filter(d=>d>=0&&d<7):null;
+    const sel=new Set(tr?tr.days:fj||[]);
     DN.forEach((x,i)=>{const b=stBtn(x,"ghost stday"+(sel.has(i)?" on":""),()=>{sel.has(i)?sel.delete(i):sel.add(i);b.classList.toggle("on");b.setAttribute("aria-pressed",sel.has(i));},"Treino na "+DL[i]);b.setAttribute("aria-pressed",sel.has(i));dw.append(b);});
     f.append(stField("Meta de blocos",bk),stEl("span","sm muted","Dias de treino"),dw,stField("Hora do treino",th),stField("Hora de dormir",sl));
     if(tr&&tr.auto)f.append(stEl("div","sm muted","Treino lido da sua rotina. Salve para ajustar."));
+    else if(fj&&fj.length)f.append(stEl("div","sm muted","Dias do Forja já marcados. Diga a hora e salve."));
     f.append(stEl("div","sm muted","Em dia de treino a meta cai 1 bloco, e nada de estudo 30 min antes e depois."));
     f.append(stBtn("Salvar","go",()=>{c.blocks=+bk.value;const h=th.value===""?null:Math.max(0,Math.min(23,+th.value));
       c.train=h==null||!sel.size?false:{days:[...sel].sort(),hour:h,dur:60};c.sleep=sl.value===""?null:Math.max(0,Math.min(23,+sl.value));save();stRender();toast("Ritmo salvo.");}));
@@ -2575,7 +2597,7 @@ function stAnswer(ok){if(!stRev)return;const c=stRev.q.shift();const real=stC().
 function stAlert(){const host=document.querySelector('section[data-tab="hoje"].panel');if(!host)return;let a=$("stAlert");
   const pend=stS().tasks.filter(t=>!t.done&&t.due&&stDays(t.due)<=7).sort(stOrder);
   if(!pend.length){if(a)a.remove();return;}
-  if(!a){a=stEl("button","stalert");a.type="button";a.id="stAlert";a.addEventListener("click",()=>{if(typeof goTab==="function")goTab("foco");setTimeout(()=>{const p=$("stPanel");if(p)p.scrollIntoView({block:"start"});},50);});host.append(a);}
+  if(!a){a=stEl("button","stalert");a.type="button";a.id="stAlert";a.addEventListener("click",()=>{if(typeof goTab==="function")goTab("foco");stRender();setTimeout(()=>{const p=$("stPanel");if(p)p.scrollIntoView({block:"start"});},50);});host.append(a);}
   const t=pend[0],dd=stDays(t.due);a.className="stalert"+(dd<0?" late":dd<=3?" hot":"");
   a.textContent=(dd<0?"⚠️ ":"📚 ")+t.t+": "+stWhen(dd)+(pend.length>1?" · +"+(pend.length-1)+" prazo"+(pend.length>2?"s":"")+" na semana":"");}
 // ---- ganchos no foco que já existe ----
@@ -2583,7 +2605,9 @@ function stAlert(){const host=document.querySelector('section[data-tab="hoje"].p
 {const fs=$("focusStop");if(fs)fs.addEventListener("click",()=>{if(prog.st&&prog.st.cur){prog.st.cur=null;prog.st.curEnd=null;save();stRender();}});}
 {const tb=document.querySelector('#tabbar [data-go="foco"]');if(tb)tb.addEventListener("click",()=>setTimeout(stRender,0));}
 // não refaz o painel com a pessoa digitando nele (o texto do formulário não se perde)
-{const _sr=render;render=function(){_sr.apply(this,arguments);try{const p=$("stPanel"),ae=document.activeElement;if(p&&ae&&p.contains(ae)&&/INPUT|TEXTAREA|SELECT/.test(ae.tagName)){stAlert();return;}stRender();}catch(e){}};}
+{const _sr=render;render=function(){_sr.apply(this,arguments);try{const p=$("stPanel"),ae=document.activeElement;
+  // fora da aba Foco só o alerta de prazo é atualizado (o painel é refeito ao abrir a aba)
+  if(document.body.dataset.tab!=="foco"||(p&&ae&&p.contains(ae)&&/INPUT|TEXTAREA|SELECT/.test(ae.tagName))){stS();stAlert();return;}stRender();}catch(e){}};}
 // ---------- Perfil e geração de quests (onboarding) ----------
 const DN=["seg","ter","qua","qui","sex","sáb","dom"];
 const FOCI=[["estudos","Estudos"],["sono","Dormir melhor"],["corpo","Saúde e corpo"],["carreira","Carreira"],["dinheiro","Dinheiro"],["relac","Pessoas que amo"],["casa","Casa em ordem"],["remedio","Remédios no horário"],["agua","Beber água"],["tela","Menos tempo de tela"],["leitura","Ler mais"]];
@@ -3133,10 +3157,10 @@ $("dunOpen").addEventListener("click",()=>{const wk=dkey(dunWeek());if(Object.ke
 const SYSTIP_KEY="ascensao-systip";
 function sysTipUI(){let d="";try{d=localStorage.getItem(SYSTIP_KEY)||"";}catch(e){}const el=$("sysTip");if(!el)return;
   const days=1;el.hidden=!!d||!cfg||cfg.blank||[...document.querySelectorAll(".sysmodal:not([hidden])")].some(m=>m.getClientRects().length)||days<1;}
-// Android não abre o arquivo .ics: lá o "Ativar" abre o Google Agenda já preenchido com o aviso diário (1 evento, todo dia)
-$("sysTipYes").addEventListener("click",()=>{try{localStorage.setItem(SYSTIP_KEY,"1");}catch(e){}$("sysTip").hidden=true;
-  if(/android/i.test(navigator.userAgent)){const r=remPlan()[0];if(r)window.open(gcalLink(r),"_blank","noopener");toast("Abriu o Google Agenda? Toque em Salvar. O aviso do Sistema vem todo dia.");return;}
-  if($("calIcs"))$("calIcs").click();toast("Abriu a agenda? Toque em Adicionar tudo. O aviso do Sistema vem junto.");});
+// "Ativar" abre a oferta de 1 evento diário com chips de horário (tools/lemb.js): .ics no iPhone/PC, Google Agenda no Android
+$("sysTipYes").addEventListener("click",()=>{$("sysTip").hidden=true;
+  if(typeof window.lembOffer==="function"){window.lembOffer(ok=>{try{localStorage.setItem(SYSTIP_KEY,ok?"1":"0");}catch(e){}});return;}
+  try{localStorage.setItem(SYSTIP_KEY,"1");}catch(e){}if($("calIcs"))$("calIcs").click();});
 $("sysTipNo").addEventListener("click",()=>{try{localStorage.setItem(SYSTIP_KEY,"0");}catch(e){}$("sysTip").hidden=true;});
 
 // ---------- Beta: números anônimos com consentimento (LGPD). Nada sai sem o "sim". ----------
@@ -6338,6 +6362,73 @@ document.addEventListener("keydown",e=>{const m=$("fjSheet");if(!m||m.hidden)ret
     const i=f.indexOf(document.activeElement);if(e.shiftKey&&i<=0){e.preventDefault();f[f.length-1].focus();}else if(!e.shiftKey&&(i<0||i===f.length-1)){e.preventDefault();f[0].focus();}}});
 setTimeout(fjUI,0);
 
+// Lembrete diário de 1 toque (recado da EVA 7200114707, fase 1): "Quer que o Sistema te chame todo dia?"
+// Chips de horário (7h, 12h, 19h, 21h, outro). iPhone/PC: .ics com 1 evento DAILY e UID fixo (trocar o horário substitui).
+// Android: Google Agenda já preenchido (recur DAILY). Grava só o horário e a resposta numa chave própria, fora do progresso.
+// Nada sai do aparelho. Abre pelo "Ativar aviso diário" (#sysTip) e por Mais > Lembretes.
+(function(){
+  const KEY="ascensao-lemb"; // na raiz o gen.py --root troca para "ascensao-lemb"
+  const CH=["07:00","12:00","19:00","21:00"];
+  const ANDROID=/android/i.test(navigator.userAgent);
+  const rd=()=>{try{return JSON.parse(localStorage.getItem(KEY)||"null")||{};}catch(e){return {};}};
+  const wr=o=>{try{localStorage.setItem(KEY,JSON.stringify(Object.assign(rd(),o)));}catch(e){}};
+  const f2=m=>{m=((m%1440)+1440)%1440;return String(Math.floor(m/60)).padStart(2,"0")+":"+String(m%60).padStart(2,"0");};
+  const okH=h=>/^([01]\d|2[0-3]):[0-5]\d$/.test(h||"");
+  function pre(){const s=rd();if(okH(s.h))return s.h;
+    const w=(typeof cfg!=="undefined"&&cfg&&cfg.profile&&cfg.profile.wake)||"";
+    if(okH(w)){const [h,m]=w.split(":").map(Number);return f2(h*60+m+30);}return "19:00";}
+  const link=()=>location.href.split("#")[0];
+  const TIT="⚔️ Ascension: sua missão de hoje",TXT="O Sistema te chama: abra o Ascension e faça a próxima missão.";
+  function nextAt(h){const [hh,mm]=h.split(":").map(Number);const d=new Date();const x=new Date(d);x.setHours(hh,mm,0,0);if(x<=d)x.setDate(x.getDate()+1);return x;}
+  const dt=x=>x.getFullYear()+String(x.getMonth()+1).padStart(2,"0")+String(x.getDate()).padStart(2,"0")+"T"+String(x.getHours()).padStart(2,"0")+String(x.getMinutes()).padStart(2,"0")+"00";
+  const esc=s=>String(s).replace(/[\\;,]/g,m=>"\\"+m).replace(/\n/g,"\\n");
+  function ics(h){const s=nextAt(h),e=new Date(s.getTime()+10*60000);
+    return ["BEGIN:VCALENDAR","VERSION:2.0","PRODID:-//Ascensao//PT-BR","CALSCALE:GREGORIAN","METHOD:PUBLISH","BEGIN:VEVENT","UID:asc-diario@ascensao","DTSTAMP:"+dt(new Date()),
+      "DTSTART:"+dt(s),"DTEND:"+dt(e),"RRULE:FREQ=DAILY","SUMMARY:"+esc(TIT),"DESCRIPTION:"+esc(TXT+"\n"+link()),
+      "BEGIN:VALARM","ACTION:DISPLAY","DESCRIPTION:"+esc(TIT),"TRIGGER:PT0M","END:VALARM","END:VEVENT","END:VCALENDAR"].join("\r\n");}
+  function gcal(h){const s=nextAt(h),e=new Date(s.getTime()+10*60000);
+    return "https://calendar.google.com/calendar/render?action=TEMPLATE&text="+encodeURIComponent(TIT)+"&dates="+dt(s)+"/"+dt(e)+"&ctz=America/Sao_Paulo&recur="+encodeURIComponent("RRULE:FREQ=DAILY")+"&details="+encodeURIComponent(TXT+"\n"+link());}
+  const say=t=>{if(typeof toast==="function")toast(t);};
+  function close(m,back){m.remove();document.removeEventListener("keydown",m._k,true);if(back&&back.isConnected)try{back.focus({preventScroll:true});}catch(e){}}
+  function open(from){if(document.getElementById("lembOffer"))return;const back=document.activeElement;let pick=pre();
+    const m=document.createElement("div");m.className="sysmodal lemb";m.id="lembOffer";m.setAttribute("role","dialog");m.setAttribute("aria-modal","true");m.setAttribute("aria-labelledby","lembT");
+    const c=document.createElement("div");c.className="card";
+    const tg=document.createElement("div");tg.className="tag";tg.textContent="[ SISTEMA ] AVISO DIÁRIO";
+    const h=document.createElement("h3");h.id="lembT";h.textContent="⏰ Quer que o Sistema te chame todo dia?";
+    const p=document.createElement("p");p.className="sm";p.textContent="Escolha a hora. Vai pela agenda do celular, com o app fechado.";
+    const row=document.createElement("div");row.className="lembchips";row.setAttribute("role","radiogroup");row.setAttribute("aria-label","Horário do aviso");
+    const inp=document.createElement("input");inp.type="time";inp.id="lembOutro";inp.className="lembtime";inp.setAttribute("aria-label","Outro horário");inp.hidden=true;
+    const chips=[];const mk=(v,lbl)=>{const b=document.createElement("button");b.type="button";b.className="lembchip";b.dataset.v=v;b.textContent=lbl;b.setAttribute("role","radio");chips.push(b);row.append(b);return b;};
+    CH.forEach(v=>mk(v,String(+v.slice(0,2))+"h"));mk("outro","outro");
+    function sel(v){const out=!CH.includes(v);chips.forEach(b=>{const on=out?b.dataset.v==="outro":b.dataset.v===v;b.classList.toggle("on",on);b.setAttribute("aria-checked",on?"true":"false");b.tabIndex=on?0:-1;});
+      inp.hidden=!out;if(out&&okH(v))inp.value=v;pick=out?(okH(inp.value)?inp.value:""):v;}
+    chips.forEach(b=>b.addEventListener("click",()=>{if(b.dataset.v==="outro"){sel(okH(inp.value)?inp.value:"outro");inp.focus();}else sel(b.dataset.v);}));
+    inp.addEventListener("input",()=>{if(okH(inp.value))pick=inp.value;});
+    const add=document.createElement("button");add.type="button";add.className="go";add.id="lembAdd";add.textContent="Adicionar à agenda";
+    const no=document.createElement("button");no.type="button";no.className="link";no.id="lembNo";no.textContent="Agora não";
+    add.addEventListener("click",()=>{if(!okH(pick)){inp.hidden=false;inp.focus();say("Escolha a hora do aviso.");return;}
+      wr({h:pick,r:"sim",t:new Date().toISOString().slice(0,10)});
+      if(ANDROID){window.open(gcal(pick),"_blank","noopener");say("Abriu o Google Agenda? Toque em Salvar. O Sistema te chama às "+pick.replace(":","h")+".");}
+      else{const u=URL.createObjectURL(new Blob([ics(pick)],{type:"text/calendar;charset=utf-8"}));const a=document.createElement("a");a.href=u;a.download="aviso-diario-ascension.ics";document.body.append(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(u),4000);
+        say("Abriu a agenda? Toque em Adicionar. O Sistema te chama às "+pick.replace(":","h")+".");}
+      close(m,back);if(typeof from==="function")from(true);});
+    no.addEventListener("click",()=>{wr({r:"nao",t:new Date().toISOString().slice(0,10)});close(m,back);if(typeof from==="function")from(false);});
+    const bt=document.createElement("div");bt.className="row lembbt";bt.append(add,no);
+    c.append(tg,h,p,row,inp,bt);m.append(c);
+    m.addEventListener("click",e=>{if(e.target===m)no.click();});
+    m._k=e=>{if(e.key==="Escape"){e.preventDefault();e.stopPropagation();no.click();}
+      else if((e.key==="ArrowRight"||e.key==="ArrowLeft")&&chips.includes(document.activeElement)){e.preventDefault();const i=chips.indexOf(document.activeElement);const n=chips[(i+(e.key==="ArrowRight"?1:chips.length-1))%chips.length];n.click();n.focus();}};
+    document.addEventListener("keydown",m._k,true);
+    document.body.append(m);sel(pick);
+    // foco no chip escolhido (antes do foco automático das janelas do Sistema, que iria para o botão principal)
+    const f=chips.find(b=>b.classList.contains("on"))||chips[0];try{f.focus({preventScroll:true});}catch(e){}}
+  window.lembOffer=open;
+  // Mais > Lembretes: sempre dá para (re)escolher o horário
+  const cal=document.getElementById("calPanel");
+  if(cal&&!document.getElementById("lembMais")){const b=document.createElement("button");b.type="button";b.className="ghost";b.id="lembMais";b.textContent="⏰ Aviso diário do Sistema (1 evento)";
+    b.addEventListener("click",()=>open());const ref=document.getElementById("calIcs");if(ref)ref.before(b);else cal.append(b);}
+})();
+
 // ---------- Versão do app e tela "Novidades" (1x por versão, só para quem já jogava) ----------
 // Quem é novo não vê: o onboarding já apresenta o jogo, e a versão fica marcada como vista ao terminar.
 // Não abre para navegador automatizado (navigator.webdriver), para não travar os testes da qa/. Nunca abre em cima de outro modal, do onboarding ou de missão ativa. Grava só a chave *-ver, fora do progresso.
@@ -6725,6 +6816,55 @@ function txFix(){const d=$("dayxp");if(d){const m=/^Hoje: (\d+) concluída\(s\) 
 {const _r=render;render=function(){_r.apply(this,arguments);try{txFix();}catch(e){}};}
 setTimeout(()=>{try{txFix();}catch(e){}},80);
 if(typeof gdUI==="function"){const _g=gdUI;gdUI=function(){_g.apply(this,arguments);try{txFix();}catch(e){}};}
+
+// ---------- Convite que não se perde (26/11) ----------
+// Problema: no iPhone, o app instalado na Tela de Início não enxerga o que foi aberto no Safari. Quem já tem o jogo
+// (ou instala depois de tocar no link) perdia o convite da turma. Agora:
+// 1) Link aberto fora do app instalado: um aviso no topo com "Copiar convite" e o passo a passo para colar no app.
+// 2) Aba Amigos: "Recebeu um convite? Cole aqui" aceita o link (ou a mensagem inteira do WhatsApp) e faz o mesmo que abrir o link:
+//    grava as 3 chaves que o convite já usa (asc-amigo, asc-amigo-c, asc-amigo-t) e chama o fluxo de sempre (cdInvDo).
+// Não grava nada novo nem manda nada além do que o link já mandava. Menor de 14: sem convite (mesma regra do ranking).
+function clEl(t,c,x){const e=document.createElement(t);if(c)e.className=c;if(x!=null)e.textContent=x;return e;}
+function clStandalone(){try{return !!(navigator.standalone||matchMedia("(display-mode: standalone)").matches);}catch(e){return false;}}
+// lê amigo/c/t de um texto qualquer (link puro, ou a mensagem do WhatsApp com o link dentro)
+function clParse(txt){const s=String(txt||"");const m=/[?&]amigo=([^&\s#]+)/.exec(s);if(!m)return null;
+  const dec=v=>{try{return decodeURIComponent(v.replace(/\+/g," "));}catch(e){return v;}};
+  const a=typeof cleanNick==="function"?cleanNick(dec(m[1])):dec(m[1]).trim().slice(0,24);if(!a)return null;
+  const c=((/[?&]c=([a-z0-9]+)/i.exec(s)||[])[1]||"").toLowerCase().replace(/[^a-z0-9]/g,"").slice(0,12);
+  const t=dec((/[?&]t=([^&\s#]+)/.exec(s)||[])[1]||"");return {a,c,t};}
+function clLink(a,c,t){return (typeof CD_URL==="string"?CD_URL:location.origin+location.pathname)+"?amigo="+encodeURIComponent(a)+(c?"&c="+c:"")+(t?"&t="+encodeURIComponent(t):"");}
+function clApply(inv){if(!inv)return false;try{localStorage.setItem("asc-amigo",inv.a);localStorage.setItem("asc-amigo-c",inv.c||"");
+  if(inv.t&&typeof gtClean==="function"){const t=gtClean(inv.t);if(t)localStorage.setItem("asc-amigo-t",JSON.stringify({a:inv.a,t}));}}catch(e){return false;}return true;}
+// 1) aviso no link aberto fora do app instalado (o card.js já tirou os parâmetros da barra; a URL original fica no navigation entry)
+(function(){try{if(clStandalone())return;const nav=(performance.getEntriesByType&&performance.getEntriesByType("navigation")[0])||{};
+  const inv=clParse(nav.name||"");if(!inv)return;const box=clEl("div","clbar");box.id="clBar";box.setAttribute("role","region");box.setAttribute("aria-label","Convite de "+inv.a);
+  box.append(clEl("b",null,"🤝 Convite de "+inv.a+(inv.t?" · turma "+inv.t:"")));
+  box.append(clEl("span","sm","Já tem o Ascension instalado? Copie o convite, abra o app e cole em Amigos → Recebeu um convite?"));
+  const row=clEl("div","row");const cp=clEl("button","go","Copiar convite");cp.type="button";
+  cp.addEventListener("click",async()=>{const u=clLink(inv.a,inv.c,inv.t);let ok=false;try{await navigator.clipboard.writeText(u);ok=true;}catch(e){}
+    if(!ok){try{const i=document.createElement("textarea");i.value=u;document.body.append(i);i.select();ok=document.execCommand("copy");i.remove();}catch(e){}}
+    cp.textContent=ok?"Copiado ✓":"Copie o link da conversa";toast(ok?"Convite copiado. Abra o app e cole em Amigos.":"Não deu para copiar. Copie o link na conversa e cole no app.");});
+  const x=clEl("button","link","Não tenho o app");x.type="button";x.addEventListener("click",()=>box.remove());row.append(cp,x);box.append(row);
+  document.body.append(box);}catch(e){}})();
+// 2) "Recebeu um convite?" na aba Amigos (fim do painel da Turma). O painel é redesenhado a cada sincronização:
+//    a caixa volta no mesmo estado (aberta, texto digitado, mensagem) e nada some enquanto a pessoa digita.
+let clOpen=false,clVal="",clMsg="";
+function clUI(){const p=$("tmPanel");if(!p||p.hidden)return;if(typeof tmKid==="function"&&tmKid())return;
+  let d=p.querySelector(".clpaste");if(d&&d.parentNode===p&&p.lastElementChild===d)return;if(d)d.remove();
+  d=clEl("details","clpaste");d.open=clOpen;d.addEventListener("toggle",()=>{clOpen=d.open;});const sm=clEl("summary",null,"🔗 Recebeu um convite? Cole aqui");d.append(sm);
+  d.append(clEl("div","sm muted","Cole o link que te mandaram (pode ser a mensagem inteira). Você vira amigo e entra na turma, sem perder nada do seu jogo."));
+  const row=clEl("div","row");const i=clEl("input");i.type="text";i.id="clIn";i.placeholder="Cole o link do convite";i.setAttribute("aria-label","Link do convite");i.autocomplete="off";i.value=clVal;
+  i.addEventListener("input",()=>{clVal=i.value;});
+  const b=clEl("button","go","Entrar");b.type="button";const msg=clEl("div","sm clmsg",clMsg);msg.setAttribute("role","status");
+  const say=t=>{clMsg=t;msg.textContent=t;};
+  b.addEventListener("click",()=>{const inv=clParse(i.value);if(!inv){say("Não achei um convite nesse texto. Cole o link inteiro que começa com https://");return;}
+    const me=typeof rankName==="function"?rankName():"";if(me&&typeof tmN==="function"&&tmN(me)===tmN(inv.a)){say("Esse convite é seu. Mande para um amigo.");return;}
+    clApply(inv);i.value="";clVal="";
+    if(typeof tmOn==="function"&&tmOn()&&me){say("Pronto: convite de "+inv.a+" aceito"+(inv.t?" (turma "+inv.t+")":"")+".");try{cdInvDo();}catch(e){}}
+    else{say("Convite guardado. Entre no ranking com um apelido e você vira amigo de "+inv.a+" na hora.");try{renderRankUI();}catch(e){}}});
+  i.addEventListener("keydown",e=>{if(e.key==="Enter")b.click();});row.append(i,b);d.append(row,msg);p.append(d);}
+if(typeof tmUI==="function"){const _tu=tmUI;tmUI=function(){if(document.activeElement&&document.activeElement.id==="clIn")return;_tu.apply(this,arguments);try{clUI();}catch(e){}};}
+setTimeout(()=>{try{clUI();}catch(e){}},0);
 
 // ---------- Modo Criador (só no app do JV): jogadores, XP manual, esconder módulos, atalhos ----------
 const CR_HIDE="ascensao-hide",CR_CSV="https://docs.google.com/spreadsheets/d/e/2PACX-1vTyr0ZbAqlFWbOWEZXpjcRPXPE04u9EfktPhrq5Mf_vnQ2YjeVEARfhqGrrpqVXxkIVsvnE_x8DMdpr/pub?gid=1002&single=true&output=csv";
