@@ -6167,7 +6167,9 @@ setTimeout(fjUI,0);
   function diaN(){const tk=todayKey();const log=(prog&&prog.log)||{};
     const ds=Object.keys(log).filter(k=>k<=tk&&(log[k]||[]).some(e=>real(k,e))).sort();
     return ds[ds.length-1]===tk?ds.length:0;}
-  const busy=()=>{let q=0;try{q=sysQ.length;}catch(e){}return q>0||!!document.getElementById("lembOffer")||[...document.querySelectorAll(".sysmodal:not([hidden]),#levelup:not([hidden])")].some(m=>m.getClientRects().length);};
+  const busy=()=>{let q=0;try{q=sysQ.length;}catch(e){}const b=document.body.classList;if(q>0||b.contains("inmission")||b.contains("inroom")||b.contains("infz")||document.getElementById("lembOffer"))return true;
+    // qualquer janela aberta (Sistema, level-up, relatório do foco, folhas): espera
+    return [...document.querySelectorAll(".sysmodal:not([hidden]),#levelup:not([hidden]),[aria-modal='true']:not([hidden]),#fzRef:not([hidden])")].some(m=>m.getClientRects().length);};
   let tries=0,tmr=0,calm=0; // calm: a tela precisa ficar livre por 2 checagens seguidas (o baú do dia abre logo depois da fila do Sistema)
   function auto(){tmr=0;try{if(!cfg||cfg.blank)return;const s=rd();if(s.r==="sim")return;let st="";try{st=localStorage.getItem(SYSTIP)||"";}catch(e){}if(st==="1")return;
     const n=diaN();if(n!==1&&n!==2)return;const a=s.a||{};if(a[n])return;if(n===2&&a[1]===todayKey())return;
