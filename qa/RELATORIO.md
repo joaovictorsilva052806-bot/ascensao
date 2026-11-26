@@ -1,5 +1,12 @@
 # Relatório de QA (ATENA)
 
+## 25/11/2026 23h · Retenção D1/D3/D7 e funil no Modo Criador (PR rascunho, espera o "pode publicar")
+
+- Novo: painel "📈 Retenção (anônima)" na aba Criador (só no app do JV). Calcula D1/D3/D7 e o funil perfil → 1ª missão → fechou o dia a partir das linhas `A` que o painel já recebe. Não guarda nada.
+- Coleta: 2 etapas novas no mesmo formato anônimo e no mesmo opt-in (`7-quest`, `8-fechou-dia`), 1 vez por dia. Até 13 anos e sem aceite: nada sai.
+- Corrigido junto: o app do criador pedia "Liberar seu painel para o criador?" para o próprio JV (o intervalo do aceite não era desligado na raiz). Agora não pede e não envia nada.
+- Testes: qa/retencao.test.js 28/28 (390x844 e 1280x800); o teste do aceite falhava no código antigo. Suíte: alvo 24, apps 47, convite 69, foco 32, funil 16, ranking-dia 47, relampago 27, rotulos 17, segredos 38, toque 19 e os demais sem FAIL. qa/mural-servidor.test.js quebra no Node também na main (não é deste PR). Caches ascensao-v55 / ascensao-u-v67.
+
 ## Revisões horárias
 
 - 25/11 15h36 · Achado: cabeçalho dos painéis recolhíveis ("Como você está", "Treino do Sistema", "Ligar à planilha") tinha só 28px de altura para o dedo. Mudou: alvo de toque de 44px sem mudar o visual (margem negativa); caches ascensao-v29 / ascensao-u-v38. Placar: 198/198 (novo qa/toque.test.js 19/19, falhava 12/19 no código antigo).
