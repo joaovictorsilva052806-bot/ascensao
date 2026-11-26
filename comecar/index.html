@@ -6481,8 +6481,9 @@ if(typeof qHead==="function"){const _qh=qHead;qHead=function(){_qh.apply(this,ar
 // Guia "Comece por aqui": passos curtos que dizem o que fazer e o que ganha
 if(typeof gdSteps==="function"){const _gs=gdSteps;gdSteps=function(){const st=_gs();const T={
     q:["Comece a 1ª missão (toque ▶)","Abre com timer. O mínimo também vale."],
-    z:["Faça 1 desafio relâmpago ⚡","30 segundos. +10 XP na hora."],
-    r:["Veja seu lugar no ranking",ageNow()==="kid"?"Em Progresso: seus atributos e a masmorra.":"Em Progresso. Só entra se você quiser."]};
+    // menor de 14 não tem ranking (LGPD): o guia não fala dele (mesma regra do tools/guide.js)
+    z:["Faça 1 desafio relâmpago ⚡",ageNow()==="kid"?"30 segundos. +10 XP na hora.":"30 segundos. +10 XP e sobe no ranking."],
+    r:ageNow()==="kid"?["Veja sua evolução","Em Progresso: seus atributos e a masmorra."]:["Veja seu lugar no ranking","Em Progresso. Só entra se você quiser."]};
   for(const x of st)if(T[x.k]){x.t=T[x.k][0];x.s=T[x.k][1];}return st;};}
 function txFix(){const d=$("dayxp");if(d){const m=/^Hoje: (\d+) concluída\(s\) · (.+)$/.exec(d.textContent);if(m)d.textContent="Hoje: "+m[1]+(m[1]==="1"?" feita":" feitas")+" · "+m[2];}
   for(const h of document.querySelectorAll(".mshint"))if(h.textContent!=="Toque ▶ e comece. O timer guia você.")h.textContent="Toque ▶ e comece. O timer guia você.";

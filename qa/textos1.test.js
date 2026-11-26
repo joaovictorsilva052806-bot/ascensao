@@ -26,13 +26,14 @@ for(const vp of [{width:390,height:844},{width:1280,height:800}]){const tag=vp.w
   // classe (inalterada) e check-in
   const sug=p.locator('#clsSug');if(await sug.count())await sug.click();await p.waitForTimeout(500);
   let ci='';for(let i=0;i<6;i++){const g=p.locator('.sysmodal button.go:visible');if(!(await g.count()))break;const t=await p.locator('.sysmodal:visible').first().innerText();if(/CHECK-IN/.test(t))ci=t;await g.first().dispatchEvent('click');await p.waitForTimeout(400);}
-  ok(tag+': check-in diz o ganho',/Dia 1 · você chegou/.test(ci)&&/Pegar \+10 XP/.test(ci),ci);
+  // dia 1 de quem acabou de criar o jogo: o check-in entra sem janela (revisão noturna, #89); a janela volta do 2º dia em diante
+  ok(tag+': check-in do dia 1 sem janela',!/CHECK-IN/.test(ci),ci);
   const st=await p.evaluate(()=>JSON.parse(localStorage.getItem('asc-u-prog')));const cfg=await p.evaluate(()=>JSON.parse(localStorage.getItem('asc-u-cfg')));
   ok(tag+': check-in ainda grava +10 XP',Object.values(st.log).flat().some(e=>String(e.q).startsWith('checkin:')&&e.xp===10));
   ok(tag+': perfil gravado igual (nome, idade, rotina)',cfg.name==='Lia Souza'&&cfg.profile.age==='young'&&cfg.profile.occ==='estudante',JSON.stringify(cfg.profile));
-  const gd=await p.textContent('#gdPanel');ok(tag+': guia com passos curtos',gd.includes('Comece a 1ª missão')&&gd.includes('+10 XP na hora')&&gd.includes('Já sei jogar, esconder'),gd);
+  const gd=await p.textContent('#gdPanel');ok(tag+': guia com passos curtos',gd.includes('Comece a 1ª missão')&&/\+10 XP/.test(gd)&&gd.includes('Já sei jogar, esconder'),gd);
   await p.locator('#quests .msgo:not([disabled])').first().click();await p.waitForTimeout(300);await p.locator('#msSheet .msend button.go').first().click();await p.waitForTimeout(600);
-  ok(tag+': placar do dia sem "(s)"',/^Hoje: \d+ feitas? · \+\d+ XP$/.test(await p.textContent('#dayxp')),await p.textContent('#dayxp'));
+  ok(tag+': placar do dia sem "(s)"',/^Hoje: \d+ (tarefas? )?feitas? · \+\d+ XP( no dia)?$/.test(await p.textContent('#dayxp')),await p.textContent('#dayxp'));
   ok(tag+': console limpo',errs.length===0,errs.join(' | '));await ctx.close();}
 // reduce-motion: Despertar aparece inteiro, sem digitação, com o texto novo
 {const ctx=await b.newContext({viewport:{width:390,height:844},reducedMotion:'reduce'});const p=await ctx.newPage();const errs=[];p.on('pageerror',e=>errs.push(e.message));
