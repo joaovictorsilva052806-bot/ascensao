@@ -1,11 +1,27 @@
 # Relatório de QA (ATENA)
 
+## 26/11/2026 · Marcos da coleção (mesmo PR dos segredos)
+
+- Novo: barra "Coleção: N itens · faltam X para « moldura »" na Coleção do baú e no prêmio do baú. Segredos, molduras e títulos contam; aos 3, 8, 15 e 25 itens sai uma moldura exclusiva (Faísca do Colecionador, Prisma, Constelação, Coroa do Arquivista) que o baú nunca sorteia. Vários marcos de uma vez = 1 janela só, sempre depois da janela do item.
+- Dados: só ids novos em `prog.chest.frames`. Save antigo com 15 itens ganha 3 molduras ao abrir; molduras, títulos, `dry` e título em uso intactos.
+- Testes: novo qa/colecao.test.js 22/22 duas vezes (390x844, 1280x800, reduce-motion, raiz e /comecar/, onboarding). Regressão: segredos 56/56, chefe-bau, sequencia, cartao, rotas, seguranca, movimento, sistema-recompensa 18/18, novidades, toque 19/19 sem FAIL. Caches ascensao-v75 / ascensao-u-v87.
+
+## 26/11/2026 · Segredos: 8 piscadelas de cultura pop (25 no total)
+
+- Novo: Plataforma Escondida (9h45/21h45), A Carta Chegou (11 dias jogados), A Resposta (42 quests; código 42 mostra quanto falta), Medidor Estourou (>9000 XP; código 9000 mostra o medidor), Galáxia Distante (04/05), Código Clássico (setas + B A no teclado, ou código), Hora do Pi (3:14/15:14 e 14/03) e Toca do Coelho (código). Só a referência: nomes, títulos e textos nossos.
+- Dados: só `prog.sec`/`prog.secTitle`, como antes. Save antigo com segredos e título: nada some, contador vira N / 25.
+- Testes: qa/segredos.test.js 56/56 três vezes seguidas (390x844, 1280x800, reduce-motion, offline, /comecar/). O seed dos blocos novos grava a temporada antes de abrir o app (sem isso o "Novo despertar" zerava o save do teste). chefe-bau, rotas e segurança sem FAIL. Caches ascensao-v74 / ascensao-u-v86.
+
 ## 25/11/2026 23h · Retenção D1/D3/D7 e funil no Modo Criador (PR rascunho, espera o "pode publicar")
 
 - Novo: painel "📈 Retenção (anônima)" na aba Criador (só no app do JV). Calcula D1/D3/D7 e o funil perfil → 1ª missão → fechou o dia a partir das linhas `A` que o painel já recebe. Não guarda nada.
 - Coleta: 2 etapas novas no mesmo formato anônimo e no mesmo opt-in (`7-quest`, `8-fechou-dia`), 1 vez por dia. Até 13 anos e sem aceite: nada sai.
 - Corrigido junto: o app do criador pedia "Liberar seu painel para o criador?" para o próprio JV (o intervalo do aceite não era desligado na raiz). Agora não pede e não envia nada.
 - Testes: qa/retencao.test.js 28/28 (390x844 e 1280x800); o teste do aceite falhava no código antigo. Suíte: alvo 24, apps 47, convite 69, foco 32, funil 16, ranking-dia 47, relampago 27, rotulos 17, segredos 38, toque 19 e os demais sem FAIL. qa/mural-servidor.test.js quebra no Node também na main (não é deste PR). Caches ascensao-v55 / ascensao-u-v67.
+
+## 26/11/2026 11h40 · Retenção: teste de 14 a 17 anos
+
+- A folga para 14 a 17 anos (só envia com "responsável autorizou" gravado) entrou no #106. Este PR só cobre a regra no teste da retenção: 3 casos novos (sem autorização, com autorização, beta sem autorização). qa/retencao.test.js 31/31 contra a main.
 
 ## Revisões horárias
 
@@ -227,3 +243,4 @@ O resumo do beta (#64) e a métrica dos desafios (#69) já estavam na main pelo 
 - 14-17 que aceitou antes de mudar a idade (sem autorização gravada), ou com beta ligado sem autorização, enviava. Agora só com `parent` gravado no próprio aceite.
 - Nota do "Teste do app" saía de qualquer pessoa ≥ 14 sem opt-in. Agora pede o envio ligado (14-17 com autorização). O pedido de exclusão ("sair") continua saindo sempre.
 **Placar:** `qa/funil.test.js` 20/20 (3 casos novos falham na main). Suíte completa: 41 arquivos verdes; 5 (amigos-avatar, relâmpago, runa, ranking-dia, sequência) falharam só com 4 testes em paralelo e passaram sozinhos, mesmo padrão da semente sobrescrita já corrigido em `painel.test.js`. Cache `ascensao-v68` / `ascensao-u-v80`.
+- 26/11/2026 · Textos da 1ª sessão (pedido do JV; liberado pela ordem da noite para o trem de publicação) · Mudou só texto, por um módulo novo `tools/textos1.js` (Despertar, nome, idade, rotina, foco, aviso de jogo pronto, check-in, guia "Comece por aqui", dica da tarefa, placar do dia). Dados, XP e fluxo iguais; classes, atributos, consentimento e Modo Sistema não foram tocados. Teste novo `qa/textos1.test.js` 35/35 (390x844 e desktop, reduce-motion, dado antigo nas 2 rotas, perfil e check-in gravam igual). Achado no QA: quem já jogava e quebrou a sequência via "Seu primeiro XP"; agora vê "Bem-vindo de volta". Suíte: 22/22 arquivos verdes. Cache do SW fica para o trem de publicação.

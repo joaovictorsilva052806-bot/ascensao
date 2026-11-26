@@ -33,6 +33,10 @@ for(const [route,pre] of [['comecar/','asc-u'],['','ascensao']]){const tag=route
   await tap(p,'[data-pt="push"]');await tap(p,'#fjPilYes');await tap(p,'#fjGo');
   ok(tag+' A: "Sim" no teste pula para o nível 3',(await p.textContent('#fjEx')).trim()==='Flexão de joelhos',await p.textContent('#fjEx'));
   ok(tag+' A: rodapé "Quando parar" no treino',(await p.locator('#fjSheet .fjstop summary').textContent()).includes('Quando parar'));
+  ok(tag+' A: como fazer + aquecimento no 1º exercício',(await p.textContent('#fjHow')).includes('Joelhos no chão')&&(await p.locator('.fjwarm').count())===1);
+  await p.focus('#fjPlus');await p.keyboard.press('Enter');await p.waitForTimeout(100);
+  ok(tag+' A: Enter no + mantém o foco no + (não registra série)',await p.evaluate(()=>document.activeElement&&document.activeElement.id)==='fjPlus'&&(await p.textContent('#fjVal')).trim()==='9');
+  await tap(p,'#fjMinus');
   ok(tag+' A: alvo inicial 8 repetições',(await p.textContent('#fjVal')).trim()==='8');
   await tap(p,'#fjPlus');ok(tag+' A: + ajusta o número',(await p.textContent('#fjVal')).trim()==='9');
   await tap(p,'#fjSet');ok(tag+' A: descanso automático após a série',/Descanso 01:[23]\d/.test(await p.textContent('#fjRest')),await p.textContent('#fjRest'));
@@ -55,6 +59,7 @@ for(const [route,pre] of [['comecar/','asc-u'],['','ascensao']]){const tag=route
   ok(tag+' B: alvo = última +1',(await p.textContent('#fjVal')).trim()==='12');
   await sets(p,15);taps++; // Fechar
   ok(tag+' B: Treino A completo com '+taps+' toques além das repetições',taps<15);
+  ok(tag+' B: mostra a melhora vs. a última vez',(await p.textContent('#fjSheet')).includes('↑ +3'),await p.textContent('#fjSheet'));
   ok(tag+' B: sugere subir só Empurrar',await p.locator('.fjoffer').count()===1&&await p.locator('.fjoffer[data-mov="push"]').count()===1);
   await p.locator('.fjoffer[data-mov="push"] button.go').dispatchEvent('click');await p.waitForTimeout(400);await drain(p);
   st=await LS(p,pre);ok(tag+' B: aceitar grava lv.push=3 e +30',st.forja.lv.push===3&&day(st,'2026-11-25').filter(e=>e.q==='forja:lv:push:3'&&e.xp===30).length===1&&!st.forja.last.push,JSON.stringify(st.forja.lv));
@@ -67,13 +72,15 @@ for(const [route,pre] of [['comecar/','asc-u'],['','ascensao']]){const tag=route
   st=await LS(p,pre);ok(tag+' B2: +30 só uma vez por nível',st.forja.lv.push===3&&Object.values(st.log).flat().filter(e=>e.q==='forja:lv:push:3').length===1);
   ok(tag+' B2: console limpo',errs.length===0,errs.join(' | '));await ctx.close();
   // C: dia ruim = 1 série de cada, +20, conta para a sequência; 3º treino da semana = Semana forjada +25
-  ({ctx,p,errs}=await open(route,pre,P({forja:FJ({ses:[{d:'2026-11-23',tipo:'A',min:30,r:0},{d:'2026-11-24',tipo:'B',min:30,r:0}]})}),'2026-11-25T10:00:00',{rm:'reduce'}));
+  ({ctx,p,errs}=await open(route,pre,P({forja:FJ({last:{push:[10,10,10]},ses:[{d:'2026-11-23',tipo:'A',min:30,r:0},{d:'2026-11-24',tipo:'B',min:30,r:0}]})}),'2026-11-25T10:00:00',{rm:'reduce'}));
+  ok(tag+' C: falta 1 para a Semana forjada',(await p.textContent('#fjCard')).includes('Falta 1 para a Semana forjada'),await p.textContent('#fjCard'));
   await tap(p,'#fjRuim');ok(tag+' C: dia ruim tem 1 série',(await p.textContent('#fjSheet')).includes('1 série')&&(await p.textContent('#fjSheet')).includes('DIA RUIM'));
   ok(tag+' C: reduce-motion sem animação',(await p.evaluate(()=>getComputedStyle(document.querySelector('.fjcard')).animationName))==='none');
   await sets(p,5);st=await LS(p,pre);const lc=day(st,'2026-11-25');
   ok(tag+' C: dia ruim dá +20',lc.some(e=>e.q==='forja:2026-11-25'&&e.xp===20&&e.kind==='min'));
   ok(tag+' C: Semana forjada +25',lc.some(e=>e.q==='forja:sem:2026-11-23'&&e.xp===25));
   ok(tag+' C: dia ruim conta como treino',st.forja.ses.length===3&&st.forja.ses[2].r===1&&lc.some(e=>e.q==='s_treino'&&e.kind==='min'));
+  ok(tag+' C: dia ruim não rebaixa o alvo',st.forja.last.push.join()==='10,10,10',JSON.stringify(st.forja.last.push));
   ok(tag+' C: sem sugestão de nível no dia ruim',await p.locator('.fjoffer').count()===0);
   await tap(p,'#fjClose');ok(tag+' C: sequência acesa pelo dia ruim',(await p.textContent('#streak')).includes('1'));
   ok(tag+' C: console limpo',errs.length===0,errs.join(' | '));await ctx.close();
@@ -81,16 +88,25 @@ for(const [route,pre] of [['comecar/','asc-u'],['','ascensao']]){const tag=route
   const cfgP=JSON.parse(JSON.stringify(CFG));cfgP.quests.push({id:'fj_prot',title:'Proteína',xp:15,stat:'corpo',fj:1});
   ({ctx,p,errs}=await open(route,pre,P({forja:FJ({pil:true})}),'2026-11-26T10:00:00',{vp:{width:1280,height:800},cfg:cfgP}));
   ok(tag+' D: quinta é descanso',(await p.textContent('#fjCard')).includes('Hoje é descanso'),await p.textContent('#fjCard'));
+  ok(tag+' D: no descanso o card vai para depois das tarefas',await p.evaluate(()=>{const c=document.getElementById('fjCard'),q=document.getElementById('quests').closest('section');return !!(q.compareDocumentPosition(c)&Node.DOCUMENT_POSITION_FOLLOWING);}));
   ok(tag+' D: sem rolagem lateral no desktop',await p.evaluate(()=>document.documentElement.scrollWidth<=innerWidth));
   await tap(p,'#fjDaysBtn');await tap(p,'#fjCard .fjday[data-d="3"]');
   ok(tag+' D: quinta virou dia de treino',(await p.textContent('#fjCard')).includes('~30 min')&&(await LS(p,pre)).forja.dias.join()==='0,2,3,4');
-  const cfD=await CF(p,pre);ok(tag+' D: pilares completados sem duplicar',cfD.quests.filter(q=>q.id==='fj_prot').length===1&&cfD.quests.find(q=>q.id==='fj_hora').days.join()==='0,2,3,4');
+  await p.fill('#fjHoraC','18:30');await p.dispatchEvent('#fjHoraC','change');await p.waitForTimeout(200);
+  ok(tag+' D: horário fixo no card',(await LS(p,pre)).forja.hora==='18:30'&&(await p.textContent('#fjDaysBtn')).includes('18:30'));
+  const cfD=await CF(p,pre);ok(tag+' D: pilares completados sem duplicar',cfD.quests.filter(q=>q.id==='fj_prot').length===1&&cfD.quests.find(q=>q.id==='fj_hora').days.join()==='0,2,3,4'&&cfD.quests.find(q=>q.id==='fj_hora').title.includes('às 18:30'));
   const play=p.locator('#quests .quest[data-q="s_treino"] .msgo');
   ok(tag+' D: ▶ na quest de treino',await play.count()===1);
   if(await play.count()){await play.dispatchEvent('click');await p.waitForTimeout(300);ok(tag+' D: ▶ abre o Forja, não o timer genérico',await p.locator('#fjSheet').isVisible()&&!(await p.locator('#msSheet').isVisible().catch(()=>false)));await tap(p,'#fjMin');}
   ok(tag+' D: Mais > Forja: meus níveis',(await p.textContent('#fjPanel')).includes('Forja: meus níveis')&&(await p.textContent('#fjPanel')).includes('Empurrar · nível 1/5'));
   await tap(p,'#fjPilT');ok(tag+' D: tirar os pilares',!(await CF(p,pre)).quests.some(q=>/^fj_/.test(q.id))&&(await LS(p,pre)).forja.pil===false);
   ok(tag+' D: console limpo',errs.length===0,errs.join(' | '));await ctx.close();
+  // F: faltou na quarta (sexta-feira, último treino na segunda): recaída sem culpa
+  // quem já treina não está no 1º uso: guia escondido (no 1º uso a Forja desce de propósito, #111/#131)
+  ({ctx,p,errs}=await open(route,pre,P({gd:{off:1},forja:FJ({ses:[{d:'2026-11-23',tipo:'A',min:30,r:0}]})}),'2026-11-27T10:00:00'));
+  ok(tag+' F: faltou 1 dia, mensagem sem culpa',(await p.textContent('#fjCard')).includes('Faltou na qua? Normal'),await p.textContent('#fjCard'));
+  ok(tag+' F: card antes das tarefas no dia de treino',await p.evaluate(()=>{const c=document.getElementById('fjCard');return !!(c.nextElementSibling&&c.nextElementSibling.querySelector('#quests'));}));
+  ok(tag+' F: console limpo',errs.length===0,errs.join(' | '));await ctx.close();
   // E: celular sem rolagem lateral com o treino aberto + prog.forja quebrado não derruba o app
   ({ctx,p,errs}=await open(route,pre,P({forja:{lv:'x',last:null,ses:{},cur:{d:'2020-01-01',tipo:'Z'}}}),'2026-11-25T10:00:00'));
   ok(tag+' E: dado estranho em prog.forja não quebra',await p.locator('#fjCard').isVisible());

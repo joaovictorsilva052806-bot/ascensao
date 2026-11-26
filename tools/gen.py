@@ -154,8 +154,8 @@ rep('\nlet saveTimer=null, SYNC="";','\n'+open(SP+'qtidy.js').read()+'\nlet save
 rep('</style></head>',open(SP+'turma.css').read()+open(SP+'card.css').read()+open(SP+'grupos.css').read()+'</style></head>')
 rep('\nlet saveTimer=null, SYNC="";','\n'+open(SP+'daily.js').read()+open(SP+'turma.js').read()+open(SP+'card.js').read()+open(SP+'grupos.js').read()+open(SP+'duo.js').read()+'\nlet saveTimer=null, SYNC="";')
 # chefão da turma, baú do dia e mural/figurinhas (tools/boss.*, tools/chest.*, tools/mural.*)
-rep('</style></head>',R('boss.css')+R('chest.css')+R('mural.css')+R('attr.css')+'</style></head>')
-rep('\nlet saveTimer=null, SYNC="";','\n'+R('boss.js')+R('chest.js')+R('mural.js')+R('attr.js')+'\nlet saveTimer=null, SYNC="";')
+rep('</style></head>',R('boss.css')+R('chest.css')+R('colecao.css')+R('mural.css')+R('attr.css')+'</style></head>')
+rep('\nlet saveTimer=null, SYNC="";','\n'+R('boss.js')+R('chest.js')+R('colecao.js')+R('mural.js')+R('attr.js')+'\nlet saveTimer=null, SYNC="";')
 # celular de verdade: 📅 agenda e tarefas de apps (tools/apps.*)
 rep('</style></head>',R('apps.css')+'</style></head>')
 rep('\nlet saveTimer=null, SYNC="";','\n'+R('apps.js')+'\nlet saveTimer=null, SYNC="";')
@@ -184,6 +184,11 @@ rep('\nlet saveTimer=null, SYNC="";','\n'+R('heroi.js')+'\nlet saveTimer=null, S
 # Arena do Sistema + meta de leitura (tools/arena.*, tools/leitura.js)
 rep('</style></head>',R('arena.css')+'</style></head>')
 rep('\nlet saveTimer=null, SYNC="";','\n'+R('arena.js')+R('leitura.js')+'\nlet saveTimer=null, SYNC="";')
+# textos da 1ª sessão mais curtos e com gancho (tools/textos1.js): só texto, nada de dados ou fluxo
+rep('\nlet saveTimer=null, SYNC="";','\n'+R('textos1.js')+'\nlet saveTimer=null, SYNC="";')
+# convite que não se perde: aviso no link aberto fora do app + "Recebeu um convite? Cole aqui" em Amigos (tools/colar.*)
+rep('</style></head>',R('colar.css')+'</style></head>')
+rep('\nlet saveTimer=null, SYNC="";','\n'+R('colar.js')+'\nlet saveTimer=null, SYNC="";')
 if not ROOT: open('comecar/index.html','w').write(s)
 pass
 

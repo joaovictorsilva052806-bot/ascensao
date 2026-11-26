@@ -6,6 +6,8 @@ const base=()=>({log:{"2026-11-20":[{q:"q1",kind:"full",xp:10,stat:"foco",bonus:
 const LS=(p,k='ascensao-prog')=>p.evaluate(k=>JSON.parse(localStorage.getItem(k)||'{}'),k);
 const sec=async(p,k)=>((await LS(p,k)).sec)||{};
 async function seed(p,o,pre='ascensao'){const back=p.url();await p.goto(new URL('/privacidade/',back).href); /* semeia fora do app: o save() da página viva não regrava por cima */await p.evaluate(([c,o,pre])=>{localStorage.setItem(pre+'-cfg',JSON.stringify(c));localStorage.setItem(pre+'-prog',JSON.stringify(o));},[CFG,o,pre]);await p.goto(back);await p.waitForTimeout(1000);await clear(p);}
+// grava o save numa página sem o app (lista de qa/) e só então abre o app: o app não salva por cima (temporada já marcada)
+async function seedFirst(p,o,pre='ascensao'){await p.goto(U+'qa/');await p.evaluate(([c,o,pre])=>{localStorage.setItem(pre==='ascensao'?'ascensao-season':'asc-u-season','2');localStorage.setItem(pre+'-cfg',JSON.stringify(c));localStorage.setItem(pre+'-prog',JSON.stringify(o));},[CFG,o,pre]);await p.goto(U);await p.waitForTimeout(1000);await clear(p);}
 async function clear(p){for(let i=0;i<8;i++){const m=p.locator('.sysmodal:not(.seczen) button.go');if(await m.count()){await m.first().dispatchEvent('click');await p.waitForTimeout(80);continue;}if(await p.locator('#levelup').isVisible()){await p.locator('#luClose').dispatchEvent('click');continue;}break;}}
 const abre=async(p,sel)=>{await p.evaluate(sel=>{const s=document.querySelector(sel);const f=s&&s.closest('.panel.fold');if(f&&!f.classList.contains('open')){const h=f.querySelector('.fhd');h&&h.click();}},sel);await p.waitForTimeout(80);};
 const modal=async p=>{const h=p.locator('.sysmodal:not(.seczen) h3').last();return (await h.count())?await h.textContent():'';};
@@ -15,7 +17,7 @@ async function page(opts={},time){const ctx=await b.newContext({viewport:{width:
 let {ctx,p,errs}=await page({},new Date('2026-11-25T14:00:00'));
 await p.goto(U);await seed(p,base());
 ok('root: painel Segredos existe',await p.locator('#secPanel').count()===1);
-ok('root: 0 / 18',(await p.textContent('#secCount')).trim()==='0 / 18',await p.textContent('#secCount'));
+ok('root: 0 / 26',(await p.textContent('#secCount')).trim()==='0 / 26',await p.textContent('#secCount'));
 await p.click('#tabbar [data-go="mais"]');await abre(p,'#secCode');await p.fill('#secCode','  LÁRICA ');await p.press('#secCode','Enter');await p.waitForTimeout(400);
 ok('código "LÁRICA" (maiúscula/acento) revela',(await modal(p)).includes('Larica'),await p.textContent('#secOut'));
 await p.screenshot({path:SP+'reveal.png'});
@@ -61,6 +63,35 @@ await tap(p,'q1');await tap(p,'q2');await tap(p,'q3');await p.waitForTimeout(200
 ({ctx,p,errs}=await page({},new Date('2026-11-13T10:00:00')));await p.goto(U);await seed(p,b2);ok('sexta 13 libera',!!(await sec(p)).s_sexta13);await ctx.close();
 ({ctx,p,errs}=await page({},new Date('2026-11-25T23:11:10')));await p.goto(U);await seed(p,b2);ok('23:11 libera 11:11',!!(await sec(p)).s_1111);await ctx.close();
 ({ctx,p,errs}=await page({},new Date('2026-11-26T00:02:00')));await p.goto(U);await seed(p,b2);ok('meia-noite libera Ficha Limpa',!!(await sec(p)).s_meia);await ctx.close();
+// piscadelas de cultura pop (8 novos)
+({ctx,p,errs}=await page({},new Date('2026-11-25T09:45:05')));await seedFirst(p,b2);ok('9h45 libera Plataforma Escondida',!!(await sec(p)).s_plat);ok('9h45: XP como ach:s_plat',Object.values(await LS(p).then(s=>s.log)).flat().some(e=>e.q==='ach:s_plat'));await ctx.close();
+({ctx,p,errs}=await page({},new Date('2026-11-25T15:14:02')));await seedFirst(p,b2);ok('15:14 libera Hora do Pi',!!(await sec(p)).s_pi);await ctx.close();
+({ctx,p,errs}=await page({},new Date('2027-05-04T10:00:00')));await seedFirst(p,b2);ok('04/05 libera Galáxia Distante',!!(await sec(p)).s_maio4);await ctx.close();
+({ctx,p,errs}=await page({},new Date('2026-11-25T10:00:00')));
+{const o=base();o.log={};for(let i=1;i<=11;i++)o.log['2026-11-'+String(i).padStart(2,'0')]=[{q:'q1',kind:'full',xp:10,bonus:0,t:'x'}];o.log['2026-11-24']=[{q:'q1',kind:'full',xp:10,bonus:0,t:'x'}];await seedFirst(p,o);}
+ok('11 dias jogados liberam A Carta Chegou',!!(await sec(p)).s_carta);ok('carta: título raro certo',(await p.textContent('#secList')).includes('Sobrevivente do 11º Dia'));await ctx.close();
+({ctx,p,errs}=await page({},new Date('2026-11-25T10:00:00')));
+{const o=base();o.log['2026-11-24']=Array.from({length:40},()=>({q:'q1',kind:'min',xp:5,bonus:0,t:'x'}));await seedFirst(p,o);}
+ok('41 quests: ainda não',!(await sec(p)).s_42);
+await p.click('#tabbar [data-go="mais"]');await abre(p,'#secCode');await p.fill('#secCode','42');await p.press('#secCode','Enter');ok('código 42 mostra quanto falta',(await p.textContent('#secOut')).includes('Faltam 1'),await p.textContent('#secOut'));
+await p.fill('#secCode','9000');await p.press('#secCode','Enter');ok('código 9000 mostra o medidor',(await p.textContent('#secOut')).includes('Medidor:'));
+await p.fill('#secCode','Coelho Branco');await p.press('#secCode','Enter');await p.waitForTimeout(300);ok('código "Coelho Branco" revela Toca do Coelho',(await modal(p)).includes('Toca do Coelho'));await clear(p);
+await p.click('#tabbar [data-go="hoje"]');await tap(p,'q1');await p.waitForTimeout(300);ok('42ª quest libera A Resposta',!!(await sec(p)).s_42);await clear(p);
+ok('pop: console sem erros',errs.length===0,errs.join(' | '));await ctx.close();
+({ctx,p,errs}=await page({viewport:{width:1280,height:800}},new Date('2026-11-25T10:00:00')));
+{const o=base();o.log['2026-11-19']=[{q:'q1',kind:'full',xp:9500,bonus:0,t:'x'}];o.log['2026-11-24']=[{q:'q1',kind:'full',xp:10,bonus:0,t:'x'}];await seedFirst(p,o);}
+ok('mais de 9000 XP libera Medidor Estourou',!!(await sec(p)).s_9000);await clear(p);
+for(const k of ['ArrowUp','ArrowUp','ArrowDown','ArrowDown','ArrowLeft','ArrowRight','ArrowLeft','ArrowRight','b','a'])await p.keyboard.press(k);await p.waitForTimeout(300);
+ok('desktop: sequência clássica no teclado libera',!!(await sec(p)).s_classico);await clear(p);
+await p.click('#tabbar [data-go="prog"]');await abre(p,'#secList');await p.locator('#secPanel').screenshot({path:SP+'pop-desktop.png'});
+ok('teclado: console sem erros',errs.length===0,errs.join(' | '));await ctx.close();
+// save antigo com os 17 de antes: nada some
+({ctx,p,errs}=await page({},new Date('2026-11-25T10:00:00')));
+{const o=base();o.log['2026-11-24']=[{q:'q1',kind:'full',xp:10,bonus:0,t:'x'}];o.sec={s_larica:'2026-11-01',s_zen:'2026-11-02'};o.secTitle='s_zen';await seedFirst(p,o);}
+st=await LS(p);ok('migração: segredos e título antigos intactos',st.sec.s_larica==='2026-11-01'&&st.sec.s_zen==='2026-11-02'&&st.secTitle==='s_zen'&&st.foo==='campo-antigo');
+ok('migração: contador 2 / 26',(await p.textContent('#secCount')).trim()==='2 / 26',await p.textContent('#secCount'));
+await p.click('#tabbar [data-go="prog"]');await abre(p,'#secList');await p.locator('#secPanel').screenshot({path:SP+'pop-celular.png'});
+ok('migração: console sem erros',errs.length===0,errs.join(' | '));await ctx.close();
 // reduce-motion
 ({ctx,p,errs}=await page({reducedMotion:'reduce'}));await p.goto(U);await seed(p,b2);
 await p.click('#tabbar [data-go="mais"]');await abre(p,'#secCode');await p.fill('#secCode','deboa');await p.press('#secCode','Enter');await p.waitForTimeout(200);

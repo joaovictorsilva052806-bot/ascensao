@@ -50,3 +50,8 @@
 .fjlad li{color:var(--muted)}
 .fjsub{display:grid;gap:6px}
 @media (prefers-reduced-motion:reduce){.fjcard,.fjup{animation:none}}
+.fjhow{line-height:1.4}
+.fjwarm{border-left:2px solid var(--glow);padding-left:8px}
+.fjback,.fjgoal{color:var(--gold)}
+.fjhr{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.fjhr input{min-height:40px;padding:6px 10px;border-radius:8px;border:1px solid var(--line);background:#0a1222;color:var(--fg);font:inherit}
