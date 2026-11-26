@@ -2844,7 +2844,7 @@ $("dunOpen").addEventListener("click",()=>{const wk=dkey(dunWeek());if(Object.ke
 // ---------- Aviso diário do Sistema: vai pela agenda do celular (arquivo .ics com todos os lembretes) ----------
 const SYSTIP_KEY=document.getElementById("o_go")?"asc-"+"u-systip":"ascensao-systip";
 function sysTipUI(){let d="";try{d=localStorage.getItem(SYSTIP_KEY)||"";}catch(e){}const el=$("sysTip");if(!el)return;
-  const days=1;el.hidden=!!d||!cfg||cfg.blank||!!document.querySelector(".sysmodal")||days<1;}
+  const days=1;el.hidden=!!d||!cfg||cfg.blank||[...document.querySelectorAll(".sysmodal:not([hidden])")].some(m=>m.getClientRects().length)||days<1;}
 // Android não abre o arquivo .ics: lá o "Ativar" abre o Google Agenda já preenchido com o aviso diário (1 evento, todo dia)
 $("sysTipYes").addEventListener("click",()=>{try{localStorage.setItem(SYSTIP_KEY,"1");}catch(e){}$("sysTip").hidden=true;
   if(/android/i.test(navigator.userAgent)){const r=remPlan()[0];if(r)window.open(gcalLink(r),"_blank","noopener");toast("Abriu o Google Agenda? Toque em Salvar. O aviso do Sistema vem todo dia.");return;}
