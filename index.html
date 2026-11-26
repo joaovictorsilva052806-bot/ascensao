@@ -645,6 +645,10 @@ body.avmkon{overflow:hidden}
 .levelup.lvfx .card{background-image:repeating-linear-gradient(0deg,rgba(255,255,255,.03) 0 1px,transparent 1px 3px)}
 @media (prefers-reduced-motion:reduce){svg.avbig *{animation:none!important}.avmkc,.levelup.lvfx::before,.levelup.lvfx .lvtag,.levelup.lvfx .lvav{animation:none}.avpt{opacity:.8}}
 .status .pills{row-gap:16px}
+/* apelido longo numa palavra só não pode alargar a página (iPhone) */
+.status .who,.status .who h1,#titleName,.sysmsg,.sysline,#sysTip,.hero .msg{min-width:0;max-width:100%;overflow-wrap:anywhere;word-break:break-word}
+.status{min-width:0}.wrap{max-width:100%}
+.avmkc{padding-left:max(14px,env(safe-area-inset-left));padding-right:max(14px,env(safe-area-inset-right));height:min(94dvh,calc(100dvh - env(safe-area-inset-top)))}
 /* ---- Tarefas limpas + horário (tools/qtidy.js) ---- */
 .quest:not(.open) .tag,.quest:not(.open) .if,.quest:not(.open) .qlink,.quest:not(.open) .qtmin,.quest:not(.open) .mshint{display:none!important}
 .quest:not(.open) .btns .ghost{display:none}
@@ -1699,12 +1703,17 @@ $("revSave").addEventListener("click",()=>{const ws=weekStart(todayKey());const 
 // ---------- Backup ----------
 $("bkCopy").addEventListener("click",()=>{const txt=JSON.stringify({ascensao:2,cfg:(cfg&&!cfg.blank)?cfg:null,prog});const done=()=>toast("Backup copiado. Cole numa nota do iPhone.");
   if(navigator.clipboard&&navigator.clipboard.writeText)navigator.clipboard.writeText(txt).then(done,()=>{$("bkText").value=txt;$("bkText").select();toast("Selecionei o backup: toque em Copiar.");});else{$("bkText").value=txt;$("bkText").select();}});
-function restoreBackup(raw){let d=JSON.parse(String(raw||"").trim());let c=null;if(d&&d.ascensao&&d.prog){c=d.cfg;d=d.prog;}if(!d||!d.log)throw 0;
+function restoreBackup(raw){let d=JSON.parse(String(raw||"").trim());let c=null;if(d&&d.ascensao&&d.prog){c=d.cfg;d=d.prog;}if(!d||!d.log||typeof d.log!=="object")throw 0;
+  // nunca apaga o progresso sem querer: backup sem nenhum dia é recusado, pede confirmação e guarda uma reserva do atual
+  const nb=Object.keys(d.log).filter(k=>Array.isArray(d.log[k])&&d.log[k].length).length,na=Object.keys((prog&&prog.log)||{}).filter(k=>(prog.log[k]||[]).length).length;
+  if(!nb)throw 0;
+  if(!confirm("Restaurar este backup ("+nb+" dia"+(nb>1?"s":"")+" de progresso)? Ele substitui o progresso atual ("+na+" dia"+(na!==1?"s":"")+"). Uma cópia do atual fica guardada neste aparelho."))return null;
+  try{localStorage.setItem("ascensao-prog"+"-prebackup",JSON.stringify(prog));}catch(e){}
   prog=Object.assign({log:{},extra:{},faith:{},energy:{},mit:{},reviews:{}},d);
   if(c&&c.quests&&c.quests.length){cfg=c;try{localStorage.setItem(CFG_KEY,JSON.stringify(cfg));}catch(e){}if(cfg.name)$("titleName").textContent=cfg.name;}
   save();render();return !!c;}
 const CFG_KEY="ascensao-cfg";
-$("bkRestore").addEventListener("click",()=>{try{const withCfg=restoreBackup($("bkText").value);toast(withCfg?"Backup restaurado, com suas tarefas.":"Backup restaurado.");$("bkText").value="";}catch(e){toast("Esse texto não é um backup válido.");}});
+$("bkRestore").addEventListener("click",()=>{try{const withCfg=restoreBackup($("bkText").value);if(withCfg===null)return;toast(withCfg?"Backup restaurado, com suas tarefas.":"Backup restaurado.");$("bkText").value="";}catch(e){toast("Esse texto não é um backup válido.");}});
 
 
 // ---------- Placar de dinheiro (Pix até a meta) ----------
@@ -1899,7 +1908,7 @@ let introOnly=false;
 function showIntro(only){introOnly=!!only;$("intro").hidden=false;$("onb").hidden=true;document.body.classList.add("onboarding");$("slides").scrollTo({left:0});introDots();window.scrollTo(0,0);}
 function introIdx(){const s=$("slides");return Math.round(s.scrollLeft/Math.max(1,s.clientWidth));}
 function introDots(){const i=introIdx();[...$("dots").children].forEach((d,k)=>d.classList.toggle("on",k===i));$("introNext").textContent=i>=2?"Começar":"Próximo";}
-function endIntro(){try{localStorage.setItem("asc-u-intro","1");}catch(e){}
+function endIntro(){try{localStorage.setItem("ascensao-intro","1");}catch(e){}
   if(introOnly){introOnly=false;$("intro").hidden=true;document.body.classList.remove("onboarding");window.scrollTo(0,0);return;}$("intro").hidden=true;if(!(cfg&&!cfg.blank)&&typeof openQuick==="function"){openQuick();return;}$("onb").hidden=false;window.scrollTo(0,0);}
 $("slides").addEventListener("scroll",()=>{clearTimeout(introDots._t);introDots._t=setTimeout(introDots,60);});
 $("introNext").addEventListener("click",()=>{const i=introIdx();if(i>=2)endIntro();else{const s=$("slides");s.scrollTo({left:(i+1)*s.clientWidth,behavior:"smooth"});}});
@@ -1907,9 +1916,10 @@ $("introSkip").addEventListener("click",endIntro);
 $("introAgain").addEventListener("click",()=>showIntro(false));
 function openOnb(){let a=(cfg&&cfg.profile)||null;
   if(!a){try{const m=location.hash.match(/p=([^&]+)/);if(m){$("o_pre").hidden=false;}if(m)a=JSON.parse(decodeURIComponent(escape(atob(m[1].replace(/-/g,"+").replace(/_/g,"/")))));}catch(e){a=null;}}
-  fillOnb(a);$("onb").hidden=false;document.body.classList.add("onboarding");let seen=false;try{seen=localStorage.getItem("asc-u-intro")==="1";}catch(e){}if(!(cfg&&!cfg.blank)){showIntro(false);return;}$("o_cancel").hidden=!(cfg&&!cfg.blank);window.scrollTo(0,0);}
+  fillOnb(a);$("onb").hidden=false;document.body.classList.add("onboarding");let seen=false;try{seen=localStorage.getItem("ascensao-intro")==="1";}catch(e){}if(!(cfg&&!cfg.blank)){showIntro(false);return;}$("o_cancel").hidden=!(cfg&&!cfg.blank);window.scrollTo(0,0);}
 function closeOnb(){$("onb").hidden=true;document.body.classList.remove("onboarding");}
 $("o_go").addEventListener("click",()=>{const a=readOnb();if(!a.name){$("o_msg").textContent="Coloque seu nome.";return;}
+  if(!a.age){$("o_msg").textContent="Escolha sua faixa de idade (é ela que define ranking e privacidade).";try{$("o_age").scrollIntoView({block:"center"});}catch(e){}return;}
   cfg=buildCfg(a);
   try{localStorage.setItem("ascensao-cfg",JSON.stringify(cfg));}catch(e){}
   if(location.hash)history.replaceState(null,"",location.pathname);
@@ -1933,7 +1943,7 @@ $("wipe").addEventListener("click",()=>{const b=$("wipe");
   try{Object.keys(localStorage).filter(k=>k.startsWith("ascensao-")).forEach(k=>localStorage.removeItem(k));}catch(e){}
   location.replace(location.pathname);});
 setTimeout(showNews,0);
-$("o_bkGo").addEventListener("click",()=>{let withCfg=false;try{withCfg=restoreBackup($("o_bk").value);}catch(e){$("o_msg").textContent="Esse texto não é um backup válido.";return;}
+$("o_bkGo").addEventListener("click",()=>{let withCfg=false;try{withCfg=restoreBackup($("o_bk").value);}catch(e){$("o_msg").textContent="Esse texto não é um backup válido.";return;}if(withCfg===null)return;
   $("o_bk").value="";if(withCfg){try{localStorage.setItem("ascensao-news",NEWS_V);}catch(e){}closeOnb();render();goTab("hoje");toast("Tudo de volta: tarefas, pontos e histórico.");}
   else{$("o_bkBox").open=false;$("o_msg").textContent="Pontos e histórico de volta. Esse backup é antigo e não tem as tarefas: confira o perfil e toque em Criar meu jogo.";}});
 
@@ -1961,6 +1971,8 @@ setTimeout(showTip,0);
 // ---------- Ranking semanal (opcional): só 1º nome, tipo de celular, nível e XP da semana ----------
 const RK_POST="https://docs.google.com/forms/d/e/1FAIpQLSeupI0e9q5NvzLgusfgD1CNKN7hGBx91xGD1jkEl1z2uxPUuw/formResponse";
 const RK_CSV="https://docs.google.com/spreadsheets/d/e/2PACX-1vTyr0ZbAqlFWbOWEZXpjcRPXPE04u9EfktPhrq5Mf_vnQ2YjeVEARfhqGrrpqVXxkIVsvnE_x8DMdpr/pub?gid=1002&single=true&output=csv";
+// lê o CSV do ranking; erro do Google (500, página de login) nunca vira "jogador": mantém a última lista boa
+async function rkGet(){const r=await fetch(RK_CSV+"&t="+Date.now(),{credentials:"omit"});const t=await r.text();if(!r.ok||!/^\uFEFF?nome,xp,nivel/.test(t))throw new Error("csv");return t;}
 const firstName=()=>String((cfg&&cfg.name)||"").trim().split(/\s+/)[0].replace(/[|,;"<>]/g,"").slice(0,20)||"Anônimo";
 const ageNow=()=>(cfg&&cfg.profile&&cfg.profile.age)||"";
 const isMinor=()=>ageNow()==="kid"||ageNow()==="teen";
@@ -1977,11 +1989,14 @@ function sendRank(ev,force){const r=prog.rank;if(!r||!r.on)return;const xp=weekX
   const v=["R",r.uid,rankName(),dev,ws,xp,levelOf(totalXP()),ev,rkTok()].join("|");
   try{fetch(RK_POST,{method:"POST",mode:"no-cors",keepalive:true,body:new URLSearchParams({"entry.807978446":v})}).catch(()=>{});}catch(e){}
   r.lastXp=xp;r.lastWk=ws;r.last=new Date().toISOString();save();}
+// adulto sem apelido: nome + inicial do sobrenome, e número se já existir no ranking (dois "Ana" não viram a mesma pessoa)
+function rkAutoNick(){const w=String((cfg&&cfg.name)||"").trim().split(/\s+/).map(x=>x.replace(/[|,;"<>.]/g,"")).filter(Boolean);let b=cleanNick((w[0]||"Jogador").slice(0,12)+(w.length>1?" "+w[w.length-1][0].toUpperCase()+".":""));
+  const taken=new Set((rankRows||[]).map(r=>String(r.n).trim().toLowerCase()));let n=b,i=2;if(!rankRows&&w.length<2)n=b+" "+(10+Math.floor(Math.random()*90));while(taken.has(n.toLowerCase())&&i<100)n=b+i++;return n;}
 function joinRank(ev){if(ageNow()==="kid"){toast("O ranking é a partir de 14 anos.");return;}
-  if(isMinor()&&!cleanNick(prog.rank&&prog.rank.nick)){const n=cleanNick($("rkNick").value);if(!n){goTab("prog");$("rkNote").textContent="Escolha um apelido primeiro (não use seu nome real).";setTimeout(()=>$("rkNick").focus(),60);return;}prog.rank=Object.assign(prog.rank||{},{nick:n});}prog.rank=Object.assign({uid:Math.random().toString(36).slice(2,10)},prog.rank||{},{on:true,asked:true});sendRank(ev||"entrou",true);loadRank();renderRankUI();}
+  if(isMinor()&&!cleanNick(prog.rank&&prog.rank.nick)){const n=cleanNick($("rkNick").value);if(!n){goTab("prog");$("rkNote").textContent="Escolha um apelido primeiro (não use seu nome real).";setTimeout(()=>$("rkNick").focus(),60);return;}prog.rank=Object.assign(prog.rank||{},{nick:n});}if(!isMinor()&&!cleanNick(prog.rank&&prog.rank.nick)){const n=rkAutoNick();prog.rank=Object.assign(prog.rank||{},{nick:n});setTimeout(()=>toast("No ranking você aparece como "+n+"."),1200);}prog.rank=Object.assign({uid:Math.random().toString(36).slice(2,10)},prog.rank||{},{on:true,asked:true});sendRank(ev||"entrou",true);loadRank();renderRankUI();}
 function leaveRank(){prog.rank=Object.assign(prog.rank||{},{on:false,asked:true});save();renderRankUI();toast("Você saiu do ranking. Seu nome some na próxima semana.");}
 let rankRows=null;
-async function loadRank(){try{const t=await (await fetch(RK_CSV+"&t="+Date.now(),{credentials:"omit"})).text();
+async function loadRank(){try{const t=await rkGet();
   rankRows=t.trim().split(/\r?\n/).slice(1).map(l=>l.split(",")).filter(r=>r[0]&&r[0]!=="nome").map(r=>({n:r[0],xp:+r[1]||0,lv:+r[2]||1}));}catch(e){rankRows=rankRows||null;}renderRankUI();}
 function renderRankUI(){const on=!!(prog.rank&&prog.rank.on);const asked=!!(prog.rank&&prog.rank.asked)||!!(prog.ping&&prog.ping.asked&&prog.rank);
   $("pingCard").hidden=!(cfg&&!cfg.blank&&!prog.rank)||isMinor();
@@ -2382,7 +2397,7 @@ function openQuick(){qData={};$("q_name").value="";$("q_goal").value="";$("quick
 // pular a digitação com um toque na tela
 $("qPerm").addEventListener("click",e=>{if(e.target.closest("button"))return;const b=$("qType");b.innerHTML="<p>Sinal confirmado.</p><p>Jogador detectado.</p><p>Pronto para despertar?</p>";$("qWake").classList.add("on");});
 $("q_perm").addEventListener("click",async()=>{let ok=false;try{if(navigator.storage&&navigator.storage.persist)ok=await navigator.storage.persist();}catch(e){}
-  try{localStorage.setItem("ascensao-perm",ok?"granted":"asked");localStorage.setItem("asc-u-intro","1");}catch(e){}
+  try{localStorage.setItem("ascensao-perm",ok?"granted":"asked");localStorage.setItem("ascensao-intro","1");}catch(e){}
   try{if(navigator.vibrate)navigator.vibrate([12,60,24]);}catch(e){}
   $("qPerm").hidden=true;$("quick").classList.remove("waking");qGo(0);});
 // 1ª abertura: sem slides de apresentação, direto para o jogo (a apresentação continua em Mais).
@@ -2512,29 +2527,30 @@ setTimeout(secMount,0);
   const KEEP=new Set(["focusPanel","dunPanel","invPanel","onb","quick","syncCard","zapPanel","gdPanel","chPanel"]);
   const openKey="asc-ui-open";let opened={};try{opened=JSON.parse(sessionStorage.getItem(openKey)||"{}")||{};}catch(e){}
   const saveOpen=()=>{try{sessionStorage.setItem(openKey,JSON.stringify(opened));}catch(e){}};
-  // título que abre/fecha: se o painel foi redesenhado e o título é novo, ele volta a ser o botão (antes sumia e o painel virava caixa vazia)
-  function deco(sec){const hd=sec.firstElementChild;if(!hd)return;const isH=hd.matches(".qhead")||hd.matches("h2");
-    if(!isH){sec.classList.remove("fold");return;}sec.classList.add("fold");
-    hd.classList.add("fhd");hd.setAttribute("role","button");hd.tabIndex=0;hd.setAttribute("aria-expanded",sec.classList.contains("open")?"true":"false");}
   function foldAll(){for(const sec of document.querySelectorAll(".wrap>section.panel[data-tab]:not([data-sf])")){
-    sec.dataset.sf="1";const tab=sec.dataset.tab;
-    if(KEEP.has(sec.id)||sec.classList.contains("tip")||sec.classList.contains("onb")||tab==="criador")continue;
-    const hd=sec.firstElementChild;if(!hd||!(hd.matches(".qhead")||hd.matches("h2")))continue;
+    const tab=sec.dataset.tab;
+    if(KEEP.has(sec.id)||sec.classList.contains("tip")||sec.classList.contains("onb")||tab==="criador"){sec.dataset.sf="1";continue;}
+    const hd=sec.firstElementChild;if(!hd)continue; // ainda vazia: tenta de novo quando o conteúdo chegar
+    sec.dataset.sf="1";if(!(hd.matches(".qhead")||hd.matches("h2")))continue;
     // Hoje: perfil e tarefas ficam abertos. Progresso: a masmorra fica aberta. Mais: tudo vira menu.
     if(tab==="hoje"&&sec.querySelector("#quests"))continue;
     const key=sec.id||(tab+":"+(hd.textContent||"").trim().slice(0,40));
-    sec.classList.add("fold");sec.classList.toggle("open",!!opened[key]);deco(sec);
+    sec.classList.add("fold");sec._fkey=key;
+    const set=(o)=>{sec.classList.toggle("open",o);const h=sec.firstElementChild;if(h)h.setAttribute("aria-expanded",o?"true":"false");};
+    sec._fset=set;markHd(sec);set(!!opened[key]);
     const flip=()=>{const o=!sec.classList.contains("open");
       if(o)for(const other of document.querySelectorAll('.panel.fold.open[data-tab="'+tab+'"]'))if(other!==sec){other.classList.remove("open");if(other.firstElementChild)other.firstElementChild.setAttribute("aria-expanded","false");for(const k in opened)if(opened[k]===tab)delete opened[k];}
-      sec.classList.toggle("open",o);deco(sec);if(o)opened[key]=tab;else delete opened[key];saveOpen();
+      set(o);if(o)opened[key]=tab;else delete opened[key];saveOpen();
       if(o){const r=sec.getBoundingClientRect();if(r.top<0||r.top>innerHeight*.6)sec.scrollIntoView({block:"start",behavior:matchMedia("(prefers-reduced-motion: reduce)").matches?"auto":"smooth"});}};
-    // ouvintes no painel (não no título): quem redesenha o painel inteiro (amigos, esquadrão) não perde o abrir/fechar
-    const isHd=e=>{const h=e.target.closest(".fhd");return h&&h===sec.firstElementChild;};
-    sec.addEventListener("click",e=>{if(!isHd(e)||e.target.closest("a,input,select,textarea")||(e.target.closest("button")&&!e.target.closest("button").classList.contains("fhd")))return;flip();});
-    sec.addEventListener("keydown",e=>{if(isHd(e)&&e.target===sec.firstElementChild&&(e.key==="Enter"||e.key===" ")){e.preventDefault();flip();}});
-    if(window.MutationObserver)new MutationObserver(()=>deco(sec)).observe(sec,{childList:true});
+    // delegado na seção: o cabeçalho pode ser recriado (Amigos, Esquadrão, Álbum) e continua abrindo
+    const onHd=e=>{const h=sec.firstElementChild;return h&&e.target.closest(".fhd")===h;};
+    sec.addEventListener("click",e=>{if(!onHd(e))return;if(e.target.closest("a,input,select,textarea")||(e.target.closest("button")&&e.target.closest("button")!==sec.firstElementChild))return;flip();});
+    sec.addEventListener("keydown",e=>{if(!onHd(e))return;if(e.key==="Enter"||e.key===" "){e.preventDefault();flip();}});
     }}
-  foldAll();const w=document.querySelector(".wrap");if(w&&window.MutationObserver)new MutationObserver(foldAll).observe(w,{childList:true});
+  function markHd(sec){const h=sec.firstElementChild;if(!h||h.classList.contains("fhd"))return;if(!(h.matches(".qhead")||h.matches("h2")))return;
+    h.classList.add("fhd");h.setAttribute("role","button");h.tabIndex=0;h.setAttribute("aria-expanded",sec.classList.contains("open")?"true":"false");}
+  let rq=0;const refold=()=>{if(rq)return;rq=1;Promise.resolve().then(()=>{rq=0;foldAll();for(const sec of document.querySelectorAll(".wrap>section.panel.fold"))markHd(sec);});};
+  foldAll();const w=document.querySelector(".wrap");if(w&&window.MutationObserver)new MutationObserver(refold).observe(w,{childList:true,subtree:true});
   // Foco: explicação longa vira uma linha
   const fn=document.getElementById("focusNote");if(fn&&/^Escolha a quest, aperte começar/.test(fn.textContent))fn.textContent="Celular virado para baixo. No fim, o XP entra sozinho.";
 })();
@@ -2839,7 +2855,7 @@ function tlUI(){let p=$("tlPanel");if(!p){const anchor=$("betaPanel");if(!anchor
 // nota do "Teste do app" também vai identificada para quem aceitou
 {const bs=$("betaSend");if(bs)bs.addEventListener("click",()=>{try{const t=tlGet();if(!t.on||tlKid()||!betaRate)return;const tx=$("betaText").value.trim().replace(/\S+@\S+/g,"[email]").replace(/\+?\d[\d\s().-]{7,}\d/g,"[número]").slice(0,240);tlSend("nota",betaRate+": "+tx);}catch(e){}},true);}
 function tlBoot(){try{anon(standalone()?"3-abriu-app":"2-abriu-navegador");if(cfg&&!cfg.blank&&cfg.quests&&cfg.quests.length){anon("4-perfil");tlDaily();setTimeout(tlAsk,2500);}tlUI();}catch(e){}}
-setTimeout(tlBoot,1200);
+
 // quem acabou de criar o perfil vê o aceite depois de fechar os avisos de boas-vindas
 let tlTry=0;const tlIv=setInterval(()=>{if(tlGet().asked||tlKid()||++tlTry>120){clearInterval(tlIv);return;}try{if(cfg&&cfg.quests&&cfg.quests.length){anon("4-perfil");tlAsk();}}catch(e){}},5000);
 
@@ -2982,11 +2998,11 @@ let sqInvRows=[],sqiAt=0,sqPub={};
 function sqiSt(){if(!prog.sqInv||typeof prog.sqInv!=="object")prog.sqInv={seen:{}};prog.sqInv.seen=prog.sqInv.seen||{};return prog.sqInv;}
 const sqiN=v=>String(v||"").trim().toLowerCase();
 const sqiDk=()=>todayKey().replace(/-/g,"");
-function sqiFresh(d){const s=String(d||"").replace(/\D/g,"");if(s.length!==8)return true;const t=new Date(+s.slice(0,4),+s.slice(4,6)-1,+s.slice(6,8));return (Date.now()-t)/864e5<8;}
+function sqiFresh(d){const s=String(d||"").replace(/\D/g,"");if(s.length!==8)return false;/* data inválida nunca é recente */const t=new Date(+s.slice(0,4),+s.slice(4,6)-1,+s.slice(6,8));return (Date.now()-t)/864e5<8;}
 function sqiPost(parts){let v=parts.map(x=>String(x==null?"":x).replace(/[|,\n\r]/g," ").slice(0,40)).join("|");const tk=typeof rkTok==="function"?rkTok():"";if(tk)v+="|"+tk;
   try{fetch(RK_POST,{method:"POST",mode:"no-cors",keepalive:true,body:new URLSearchParams({"entry.807978446":v})}).catch(()=>{});}catch(e){}}
 async function sqiLoad(){if(ageNow()==="kid"||!(prog.rank&&prog.rank.on))return;sqiAt=Date.now();
-  try{const t=await (await fetch(RK_CSV+"&t="+Date.now(),{credentials:"omit"})).text();
+  try{const t=await rkGet();
     const all=t.trim().split(/\r?\n/).slice(1).map(l=>l.split(","));sqPub={};for(const r of all){const n=String(r[10]||"").trim();if(n&&n!=="pnick"&&/\./.test(r[13]||""))sqPub[n.toLowerCase()]={seq:+r[11]||0,dz:+r[12]||0,av:String(r[13]).trim(),at:/^\d+(-\d+){3}$/.test(String(r[14]||"").trim())?String(r[14]).trim():""};}
     sqInvRows=all.filter(r=>/^[IJFGK]$/.test(String(r[4]||"").trim())).map(r=>({k:r[4].trim(),a:String(r[5]||"").trim(),b:String(r[6]||"").trim(),s:String(r[7]||"").trim(),d:String(r[8]||"").trim()}));}catch(e){return;}
   sqiCheck();try{if(typeof frCheck==="function")frCheck();}catch(e){}}
@@ -3430,7 +3446,7 @@ function clsApply(cl,dress){const r=rpgState();const st=clsCan();if(!st.ok){toas
   if(old){r.past=(r.past||[]).concat([{id:old.id,name:old.name,style:old.style,d:todayKey()}]).slice(-6);if(st.use==="tk")r.ctk=Math.max(0,(r.ctk||0)-1);r.clast=todayKey();}
   else{r.ct0=Date.now();}
   r.cls=cl;r.evo=lv>=20?2:lv>=10?1:0;r.seen=null;r.cg=1;if(dress){const a=avSt();a.o=0;a.hw=0;a.it=0;}save();render();try{avPost(true);}catch(e){}
-  sysPop(old?"CLASSE TROCADA":"CLASSE DEFINIDA",clsName(cl,lv),"Afinidade: "+STATS[cl.stat]+" sobe 1,5x mais rápido. Seu XP e nível continuam os mesmos."+(old?" Agora você é ex-"+old.name+".":""));return true;}
+  sysPop(old?"CLASSE TROCADA":"CLASSE DEFINIDA",clsName(cl,lv),"Afinidade: "+STATS[cl.stat]+" sobe 1,5x mais rápido."+(old?" Seu XP e nível continuam os mesmos. Agora você é ex-"+old.name+".":""));return true;}
 function clsPrev(id,sz){try{const o=avParse(avCode());o.cls=AV_CLS.includes(id)?id:"x";o.o=0;o.hw=0;o.it=0;return avSvg(o,sz);}catch(e){return "";}}
 let clsGalOpen=false;
 function openCls(){if(clsGalOpen||(rpgState().cls&&!openCls.force))return;const full=!!openCls.force;openCls.force=false;clsGalOpen=true;clsOpen=true;
@@ -3493,7 +3509,7 @@ function avHome(){const st=document.querySelector('.wrap>section[data-tab="hoje"
     w.addEventListener("click",e=>{if(e.target.closest("#rank"))return;if(typeof tmCard==="function")tmCard();else avMaker(false);});}
   const lv=avLv();w.querySelector(".hav").innerHTML=avMine(innerWidth<380?76:88);w.setAttribute("aria-label","Meu card: nível "+lv+". Toque para abrir");
   const pills=st.querySelector(".pills");if(!pills)return;let pp=$("heroPos");
-  let pos="";try{if(typeof cdPos==="function"&&typeof rankName==="function"&&rankName()){const ps=cdPos(rankName());pos=ps.t?"🏆 "+ps.t+"º na turma":ps.g?"🏆 "+ps.g+"º no geral":"";}}catch(e){}
+  let pos="";try{if(prog.rank&&prog.rank.on&&ageNow&&ageNow()!=="kid"&&typeof cdPos==="function"&&typeof rankName==="function"&&rankName()){const ps=cdPos(rankName());pos=ps.t?"🏆 "+ps.t+"º na turma":ps.g?"🏆 "+ps.g+"º no geral":"";}}catch(e){}
   if(!pp){pp=avEl("span","pill");pp.id="heroPos";pp.setAttribute("role","button");pp.tabIndex=0;pp.addEventListener("click",()=>{const t=document.querySelector('#tabbar [data-go="amigos"]');t&&t.click();});pills.append(pp);}
   pp.hidden=!pos;pp.textContent=pos;}
 {const _r=render;render=function(){_r.apply(this,arguments);try{avUI();}catch(e){}try{avHome();}catch(e){}try{clsTick();}catch(e){}try{avAskSoon();}catch(e){}};}
@@ -3592,8 +3608,7 @@ function qtFrom(q){if(!q)return null;if(Number.isFinite(+q.from)&&q.from!==""&&q
   if(/ao acordar|acordar|da manhã|primeira hora do dia/.test(t+" "+i))return 5;
   return null;}
 function qtLocked(q){const f=qtFrom(q);if(f==null)return null;const h=new Date().getHours();
-  if(f>=12)return (h<f&&h>=5)?f:null; // noite: libera de f até 4h59
-  return h<f?f:null;}
+  return h<f?f:null;} // o dia vira à meia-noite: 0h-4h59 já é o dia novo, então "Fechar o dia" fica trancado até a hora dele
 const QT_SHORT={s_fech:"🌙 Fechar o dia",q_fech:"🌙 Fechar o dia"};
 const QT_SHORT_RE=[[/^antes de dormir/i,"🌙 Fechar o dia"],[/^fechamento/i,"🌙 Fechar o dia"],[/trabalhar 90 min/i,"Bloco de foco: 90 min"],[/oferecer desenho/i,"Oferecer desenho técnico"],[/abordar 3 corretores/i,"Abordar 3 corretores"]];
 // título longo: corta o parêntese ou o que vem depois de ":" (o texto inteiro fica nos detalhes)
@@ -3850,8 +3865,7 @@ let cdBusy=false;async function cdInvDo(){if(cdBusy)return;const a=cdInvBy();con
 // lado de quem convidou: aceita sozinho quem veio pelo link
 async function cdInbox(){const me=rankName();if(!me||typeof sqInvRows==="undefined")return;const f=frSt();let ch=false;
   const tk=tmSt().inv;if(!tk)return;for(const r of sqInvRows){if(r.k!=="F"||tmN(r.b)!==tmN(me)||!r.a||frHas(r.a))continue;
-    // formato antigo (código aberto na planilha) só vale para linhas até 25/11/2026
-    const old=r.s==="conv"+tk&&String(r.d).replace(/\D/g,"")<="20261125";let ok=old;if(!ok&&/^cv[0-9a-f]{12}$/.test(r.s)){try{ok=r.s===await cdSig(tk,r.a);}catch(e){}}if(!ok||frHas(r.a))continue;f.l.push(r.a);delete f.pend[r.a];sqiPost(["G",me,r.a,"",sqiDk()]);ch=true;
+    let ok=false;/* formato antigo (código aberto na planilha) não vale mais: a data vinha do cliente e dava para forjar */if(!ok&&/^cv[0-9a-f]{12}$/.test(r.s)){try{ok=r.s===await cdSig(tk,r.a);}catch(e){}}if(!ok||frHas(r.a))continue;f.l.push(r.a);delete f.pend[r.a];sqiPost(["G",me,r.a,"",sqiDk()]);ch=true;
     tmFeedAdd("conv",r.a,"🤝 "+r.a+" entrou pelo seu convite e agora é seu amigo");cdBadge(1);toast("🤝 "+r.a+" entrou pelo seu convite. Agora são amigos!");}
   if(ch){save();try{frUI();tmUI();}catch(e){}}}
 // cartão "Fulano te chamou" para quem chegou pelo link
@@ -4474,7 +4488,7 @@ async function pull(force){
   }catch(e){$("sync").textContent="Não consegui falar com a planilha. Confira o endereço; o app segue funcionando offline.";}
 }
 const SYNC_RE=/^https:\/\/script\.google\.com\/macros\/s\/[\w-]{20,}\/exec$/;
-function syncUI(){$("syncUrl").value=SYNC;$("syncCard").hidden=!!SYNC;}
+function syncUI(){$("syncUrl").value=SYNC;$("syncCard").hidden=true;}
 function setSync(v){v=(v||"").trim();const m=v.match(/https:\/\/script\.google\.com\/macros\/s\/[\w-]{20,}\/exec/);if(m)v=m[0];
   if(v&&!SYNC_RE.test(v)){$("sync").textContent="Esse não parece o endereço da planilha. Ele começa com https://script.google.com/macros/s/ e termina em /exec.";toast("Endereço inválido. Copie de novo a mensagem da Eva.");return false;}
   if(v&&v!==SYNC)markSyncFirst();
@@ -4486,14 +4500,14 @@ async function pasteSync(){let t="";
 $("syncSave").addEventListener("click",()=>setSync($("syncUrl").value));
 $("syncPaste1").addEventListener("click",pasteSync);$("syncPaste2").addEventListener("click",pasteSync);
 // Link de um toque: ...#s=<código da implantação>. O endereço fica só no aparelho, nunca no código.
-try{const m=location.hash.match(/[#&]s=([\w-]{20,})/);if(m){const v="https://script.google.com/macros/s/"+m[1]+"/exec";history.replaceState(null,"",location.pathname);if(!SYNC||v===SYNC||confirm("Este link troca a planilha ligada a este app. Só aceite se foi você quem pediu. Trocar?")){if(v!==SYNC)markSyncFirst();SYNC=v;localStorage.setItem("ascensao-sync",v);}}}catch(e){}
+try{const m=location.hash.match(/[#&]s=([\w-]{20,})/);if(m){const v="https://script.google.com/macros/s/"+m[1]+"/exec";history.replaceState(null,"",location.pathname);if(v===SYNC||confirm(SYNC?"Este link troca a planilha ligada a este app. Só aceite se foi você quem pediu. Trocar?":"Este link liga este app a uma planilha do Google, que passa a receber seu progresso e pode trocar suas tarefas. Só aceite se a planilha é SUA (foi você quem criou o link). Ligar?")){if(v!==SYNC)markSyncFirst();SYNC=v;localStorage.setItem("ascensao-sync",v);}}}catch(e){}
 syncUI();
 
 const DEFAULT_CFG={"version":3,"blank":true,"name":"","quests":[]};
 // Config pessoal nunca fica no código: vem do aparelho (link pessoal #c=...) ou da planilha do usuário.
 try{const m=location.hash.match(/[#&]c=([^&]+)/);if(m){const c=JSON.parse(decodeURIComponent(escape(atob(m[1].replace(/-/g,"+").replace(/_/g,"/")))));
   history.replaceState(null,"",location.pathname);let had=null;try{had=JSON.parse(localStorage.getItem("ascensao-cfg")||"null");}catch(e){}
-  if(c&&c.quests&&c.quests.length&&(!had||!had.quests||!had.quests.length||confirm("Este link substitui as tarefas deste app. Trocar?"))){delete c.painel;localStorage.setItem("ascensao-cfg",JSON.stringify(c));}}}catch(e){}
+  if(c&&c.quests&&c.quests.length&&confirm((had&&had.quests&&had.quests.length?"Este link substitui as tarefas deste app":"Este link configura este app")+" com "+c.quests.length+" tarefa"+(c.quests.length>1?"s":"")+(c.name?" de "+String(c.name).slice(0,30):"")+". Só aceite se foi você quem pediu. Continuar?")){delete c.painel;localStorage.setItem("ascensao-cfg",JSON.stringify(c));}}}catch(e){}
 addEventListener("hashchange",()=>{if(/[#&][csk]=/.test(location.hash))location.reload();});
 try{const c=JSON.parse(localStorage.getItem("ascensao-cfg")||"null");cfg=(c&&(c.version||1)>=DEFAULT_CFG.version)?c:DEFAULT_CFG;}catch(e){cfg=DEFAULT_CFG;}
 if(cfg.name)$("titleName").textContent=cfg.name;
@@ -4530,7 +4544,7 @@ try{const u=new URLSearchParams(location.search),fm=+u.get("foco"),tb=u.get("tab
 const tickClock=()=>{const d=new Date();$("clock").textContent=d.toLocaleTimeString("pt-BR",{hour:"2-digit",minute:"2-digit"})+" · "+d.toLocaleDateString("pt-BR",{weekday:"short"}).replace(".","").toUpperCase();};tickClock();setInterval(tickClock,15000);
 pull();
 document.addEventListener("visibilitychange",()=>{if(!document.hidden)pull();});
-if("serviceWorker" in navigator&&location.protocol==="https:")navigator.serviceWorker.register("sw.js").catch(()=>{});
+if("serviceWorker" in navigator)navigator.serviceWorker.register("sw.js").catch(()=>{});
 })();
 </script>
 </body></html>
