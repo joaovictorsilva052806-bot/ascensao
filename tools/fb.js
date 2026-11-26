@@ -23,7 +23,9 @@ const RK_CSV="https://docs.google.com/spreadsheets/d/e/2PACX-1vTyr0ZbAqlFWbOWEZX
 async function rkGet(){const r=await fetch(RK_CSV+"&t="+Date.now(),{credentials:"omit"});const t=await r.text();if(!r.ok||!/^\uFEFF?nome,xp,nivel/.test(t))throw new Error("csv");return t;}
 const firstName=()=>String((cfg&&cfg.name)||"").trim().split(/\s+/)[0].replace(/[|,;"<>]/g,"").slice(0,20)||"Anônimo";
 const ageNow=()=>(cfg&&cfg.profile&&cfg.profile.age)||"";
-const isMinor=()=>ageNow()==="kid"||ageNow()==="teen";
+// LGPD: perfil antigo sem faixa de idade conta como menor (só apelido, nada de nome real) até a pessoa informar a idade
+const AGE_UNK_MINOR=true;
+const isMinor=()=>ageNow()==="kid"||ageNow()==="teen"||(AGE_UNK_MINOR&&!ageNow());
 const cleanNick=v=>String(v||"").trim().replace(/[|,;"<>]/g,"").replace(/\s+/g," ").slice(0,16);
 // Nome que vai para o ranking: o apelido, se houver; senão o 1º nome (só para maiores de 18)
 const rankName=()=>cleanNick(prog.rank&&prog.rank.nick)||(isMinor()?"":firstName());

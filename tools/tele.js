@@ -56,3 +56,5 @@ function tlBoot(){try{anon(standalone()?"3-abriu-app":"2-abriu-navegador");if(cf
 setTimeout(tlBoot,1200);
 // quem acabou de criar o perfil vê o aceite depois de fechar os avisos de boas-vindas
 let tlTry=0;const tlIv=setInterval(()=>{if(tlGet().asked||tlKid()||++tlTry>120){clearInterval(tlIv);return;}try{if(cfg&&cfg.quests&&cfg.quests.length){anon("4-perfil");tlAsk();}}catch(e){}},5000);
+// um aviso por vez: se outro aviso do Sistema abrir por cima, o pedido do painel sai de cena e volta depois (sem contar como resposta)
+if(window.MutationObserver)new MutationObserver(ms=>{const tm=$("tlModal");if(!tm)return;for(const m of ms)for(const n of m.addedNodes){if(n!==tm&&n.nodeType===1&&n.classList&&n.classList.contains("sysmodal")&&!n.hidden){tm.remove();setTimeout(tlAsk,20000);return;}}}).observe(document.body,{childList:true});
