@@ -121,3 +121,8 @@ Menções honrosas:
       - Do `/x/` até a 1ª tarefa marcada: **de 13 para 11 toques** desde ontem à noite.
       - *Base:* Fogg (cada passo antes da 1ª ação derruba a Habilidade); engajamento gradual (Luke Wroblewski, "Gradual Engagement": pedir o perfil depois de a pessoa ver valor, como o Duolingo faz depois da 1ª lição).
 - **Teste:** `qa/dialogo.test.js` (#102) agora usa um perfil que começou antes de hoje. Ele testa a janela do check-in, que no 1º dia passou a não abrir. O que o teste verifica não mudou: 56/56.
+- **Mais 2 correções na tarde (#89):**
+  13. **Dívida falando de recuperação, sem culpa.** Antes: "Dívida: −30 XP por quests principais não feitas. Faça todas… e a dívida de ontem é perdoada". Agora: "**Recupere 10 XP hoje**: faça todas as principais (o mínimo vale). Dívida em aberto: −30 XP." Quando não há o que recuperar hoje: "Ela sai sozinha em até 3 dias", que é exatamente o que a regra já fazia. Só o texto mudou; a regra de XP é a mesma. *Base:* efeito de enquadramento (Tversky e Kahneman, 1981): a mesma informação, dita como ganho, motiva mais do que dita como perda.
+  14. **Teste instável da main corrigido de verdade.** O `qa/relampago.test.js` falhava 2 vezes em 6 também na main: o painel de desafios é refeito a cada render, e o foco que voltava para o cartão (Esc fecha o desafio) caía no fundo da página. Agora o foco é devolvido ao cartão novo. Ganha quem usa teclado ou leitor de tela, e o teste caiu para 1 falha em 16. *Base:* WCAG 2.4.3 (ordem do foco).
+- **A volta depois de faltar, na área de atributos (#75):** registrei para o dono na #22, sem mexer.
+- **Suíte com a main atual (#110):** 45 de 45 arquivos verdes (1.316 verificações).
