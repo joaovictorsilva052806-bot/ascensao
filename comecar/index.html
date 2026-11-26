@@ -556,10 +556,10 @@ svg.av{display:block;flex:none}
 .avtop h2{margin:0 0 4px}.avtop .sm{margin-bottom:8px}
 .avpv{filter:drop-shadow(0 0 10px rgba(111,177,255,.35))}
 .avrow{margin-top:12px}.avchips{display:flex;flex-wrap:wrap;gap:6px;margin-top:6px}
-.avchip{font:inherit;font-size:.8rem;min-height:40px;padding:6px 10px;border:1px solid var(--line);border-radius:8px;background:transparent;color:var(--fg);cursor:pointer}
+.avchip{font:inherit;font-size:.8rem;min-height:44px;padding:6px 10px;border:1px solid var(--line);border-radius:8px;background:transparent;color:var(--fg);cursor:pointer}
 .avchip.on{border-color:var(--glow);box-shadow:0 0 0 1px var(--glow) inset;color:var(--glow)}
 .avchip.lock{opacity:.55}
-.avchip.sw{width:40px;padding:0;background:var(--sw)}.avchip.sw.on{box-shadow:0 0 0 3px var(--glow)}
+.avchip.sw{width:44px;padding:0;background:var(--sw)}.avchip.sw.on{box-shadow:0 0 0 3px var(--glow)}
 .frlist{list-style:none;padding:0;margin:8px 0;display:grid;gap:8px}
 .frlist li{display:grid;grid-template-columns:auto 1fr auto auto;gap:10px;align-items:center;padding:8px;border:1px solid var(--line);border-radius:10px}
 .frlist li.me{border-color:var(--glow)}
@@ -1148,6 +1148,9 @@ body.insm{overflow:hidden}
 .fdbadge{font-size:.9rem;color:var(--gold)}
 .fzrate button{white-space:nowrap;padding:0 8px}
 .fztop{margin:0 0 10px}.fdgo{width:100%}
+#fzRef .link{min-height:44px}
+/* a aba Foco agora começa pela missão: sem o respiro de 8vh que existia quando era só o relógio */
+body[data-tab=foco] #focusPanel.panel{margin-top:0}
 </style></head><body>
 
 <div class="hudtop"><span>ASCENSION<i>//</i>SISTEMA ONLINE</span><span class="mono" id="clock">--:--</span></div>
@@ -1984,7 +1987,7 @@ const icsDT=x=>x.getFullYear()+String(x.getMonth()+1).padStart(2,"0")+String(x.g
 const icsEsc=s=>String(s).replace(/[\;,]/g,m=>"\\"+m).replace(/\n/g,"\\n");
 function buildICS(){const L=["BEGIN:VCALENDAR","VERSION:2.0","PRODID:-//Ascensao//PT-BR","CALSCALE:GREGORIAN","METHOD:PUBLISH"];const st=icsDT(new Date());
   remPlan().forEach((r,i)=>{const s=nextDate(r.h,r.d),e=new Date(s.getTime()+10*60000);
-    L.push("BEGIN:VEVENT","UID:asc-r-"+String(r.t).normalize("NFD").replace(/[^\w]+/g,"-").toLowerCase().slice(0,40)+"@ascensao","DTSTAMP:"+st,"DTSTART:"+icsDT(s),"DTEND:"+icsDT(e),"RRULE:FREQ=WEEKLY;BYDAY="+r.d.map(x=>BYD[x]).join(","),"SUMMARY:"+icsEsc(r.t),"DESCRIPTION:"+icsEsc(r.n+"\n"+location.href.split("#")[0]),
+    L.push("BEGIN:VEVENT","UID:asc-r-"+String(r.t).normalize("NFD").replace(/[\u0300-\u036f]/g,"").replace(/[^\w]+/g,"-").toLowerCase().slice(0,40)+"@ascensao","DTSTAMP:"+st,"DTSTART:"+icsDT(s),"DTEND:"+icsDT(e),"RRULE:FREQ=WEEKLY;BYDAY="+r.d.map(x=>BYD[x]).join(","),"SUMMARY:"+icsEsc(r.t),"DESCRIPTION:"+icsEsc(r.n+"\n"+location.href.split("#")[0]),
       "BEGIN:VALARM","ACTION:DISPLAY","DESCRIPTION:"+icsEsc(r.t),"TRIGGER:PT0M","END:VALARM","END:VEVENT");});
   L.push("END:VCALENDAR");return L.join("\r\n");}
 function gcalLink(r){const s=nextDate(r.h,r.d),e=new Date(s.getTime()+10*60000);
@@ -3754,6 +3757,11 @@ function avPost(force){if(typeof RK_POST==="undefined"||ageNow()==="kid"||!(prog
   const v=["P",me,sq,avZapWeek(),avCode(),todayKey().replace(/-/g,""),at,(typeof rkTok==="function"?rkTok():"")].join("|");
   try{fetch(RK_POST,{method:"POST",mode:"no-cors",keepalive:true,body:new URLSearchParams({"entry.807978446":v})}).catch(()=>{});}catch(e){}}
 if(typeof sendRank==="function"){const _sr=sendRank;sendRank=function(){_sr.apply(this,arguments);try{avPost();}catch(e){}};}
+// ---- LGPD: perfil antigo sem faixa de idade que estava no ranking: pede um apelido (o nome real não sai mais) ----
+function lgNickAsk(){try{if(typeof AGE_UNK_MINOR==="undefined"||!AGE_UNK_MINOR||navigator.webdriver)return;if(!cfg||cfg.blank||(cfg.profile&&cfg.profile.age))return;
+  if(!(prog.rank&&prog.rank.on)||cleanNick(prog.rank.nick))return;if(sessionStorage.getItem("asc-lgnick"))return;sessionStorage.setItem("asc-lgnick","1");
+  sysPop("RANKING","Escolha um apelido","Para proteger sua privacidade, o ranking agora mostra só apelidos para quem não informou a idade. Escolha o seu para voltar a aparecer.",()=>{setTimeout(()=>{try{goTab("prog");const n=$("rkNick");if(n){n.scrollIntoView({block:"center"});n.focus();}}catch(e){}},250);},"Escolher apelido");}catch(e){}}
+setTimeout(lgNickAsk,4000);
 // ---------- Amigos: adicionar, aceitar no app do outro e comparar lado a lado ----------
 // Canal: F|de|para||data (pedido) e G|quem|de||data (aceite), no mesmo formulário do ranking. Só apelidos do ranking (14+).
 // Só ADICIONA prog.friends = {l:[nomes], pend:{nome:data}, seen:{chave:1}}.
@@ -3836,7 +3844,7 @@ function qtLocked(q){const f=qtFrom(q);if(f==null)return null;const h=new Date()
 const QT_SHORT={s_fech:"🌙 Fechar o dia",q_fech:"🌙 Fechar o dia"};
 const QT_SHORT_RE=[[/^antes de dormir/i,"🌙 Fechar o dia"],[/^fechamento/i,"🌙 Fechar o dia"],[/trabalhar 90 min/i,"Bloco de foco: 90 min"],[/oferecer desenho/i,"Oferecer desenho técnico"],[/abordar 3 corretores/i,"Abordar 3 corretores"]];
 // título longo: corta o parêntese ou o que vem depois de ":" (o texto inteiro fica nos detalhes)
-function qtAuto(t){t=String(t||"");if(t.length<=34)return null;let s=t.replace(/\s*\([^)]*\)/g,"").trim();if(s.length>40&&t.indexOf(": ")>8)s=t.slice(0,t.indexOf(": "));return s&&s!==t&&s.length<t.length?s:null;}
+function qtAuto(t){t=String(t||"");if(t.length<=34)return null;let s=t.replace(/\s*\([^)]*\)/g,"").trim();if(s.length>40&&t.indexOf(": ")>8){const c=t.slice(0,t.indexOf(": "));if(!/\s(para|de|do|da|dos|das|com|em|no|na|a|o|e|ou|pra|por|sobre)$/i.test(c))s=c;}return s&&s!==t&&s.length<t.length?s:null;}
 function qtShort(q){return q.short||QT_SHORT[q.id]||(String(q.title).length>46&&QT_SHORT_RE.find(r=>r[0].test(q.title))||[])[1]||qtAuto(q.title);}
 function qtTidy(){const box=$("quests");if(!box)return;let nextMoved=false;
   for(const c of box.querySelectorAll(".quest[data-q]")){const q=((cfg&&cfg.quests)||[]).find(x=>x.id===c.dataset.q);if(!q)continue;
@@ -4013,6 +4021,7 @@ function tmUI(){const p=tmPlace();if(!p)return;if(tmKid()||!cfg||cfg.blank){p.hi
     const nt=dyNote();if(nt)box.append(tmEl("div","sm muted",nt));box.append(dyNtfBtn());p.append(box);}
   if(s.view==="turma"&&!fr.length){const e=tmEl("div","tmempty");e.append(tmEl("p",null,"Sua turma ainda está vazia. Chame alguém para jogar com você."));
     const b=tmEl("button","go","+ Adicionar amigo");b.type="button";b.addEventListener("click",()=>{try{frAdd=true;frUI();}catch(e){}setTimeout(()=>{const f=$("frPanel");if(!f)return;if(f.classList.contains("fold")&&!f.classList.contains("open")){const h=f.querySelector(":scope>.fhd");if(h)h.click();}f.scrollIntoView({block:"start",behavior:matchMedia("(prefers-reduced-motion: reduce)").matches?"auto":"smooth"});const i=f.querySelector("input");if(i)setTimeout(()=>i.focus(),80);},0);});e.append(b);p.append(e);}
+  if(rankRows&&typeof rankErr!=="undefined"&&rankErr){const w=tmEl("div","sm muted tmoff","Sem conexão · mostrando a última lista. Toque para tentar de novo.");w.setAttribute("role","button");w.tabIndex=0;w.style.cursor="pointer";w.addEventListener("click",()=>{rankErr=false;try{tmUI();}catch(e){}loadRank();});p.append(w);}
   if(!rankRows){const w=tmEl("div","sm muted",(typeof rankErr!=="undefined"&&rankErr)?"Sem conexão com o ranking. Toque aqui para tentar de novo.":"Carregando a turma…");if(typeof rankErr!=="undefined"&&rankErr){w.style.cursor="pointer";w.addEventListener("click",()=>{rankErr=false;try{tmUI();}catch(e){}loadRank();});}p.append(w);}
   const ol=tmEl("ol","tmlist");L.slice(0,30).forEach((r,i)=>{const li=tmEl("li",(r.me?"me ":"")+(i<3&&L.length>=2?"up":""));
     li.append(tmEl("span","tmpos",i<3?["🥇","🥈","🥉"][i]:String(i+1)));const av=tmEl("span","tmav");av.innerHTML=tmAv(r.av,44);li.append(av);
@@ -4933,7 +4942,7 @@ function smMission(q,rec){const c=smShell(rec?"MISSÃO DE RECUPERAÇÃO":q.main?
   if(!e&&!rec&&document.querySelector("#energy button")){const r=smEl("div","smen");r.setAttribute("role","group");r.setAttribute("aria-label","Bateria de hoje");r.append(smEl("span","smenl","Bateria hoje?"));
     for(const [k,l] of [["baixa","🪫 Baixa"],["media","🔋 Média"],["alta","⚡ Cheia"]]){const b=smEl("button","ghost",l);b.type="button";b.dataset.e=k;
       b.onclick=()=>{const eb=document.querySelector('#energy button[data-e="'+k+'"]');if(eb)eb.click();else{prog.energy=prog.energy||{};prog.energy[smTk()]=k;save();}smIdx=0;setTimeout(smShow,60);};r.append(b);}c.append(r);}
-  c.append(smEl("p","sm muted",(e==="baixa"?"Bateria baixa: hoje o mínimo já vale o dia inteiro. ":e==="alta"?"Bateria cheia: terminou o mínimo, vá até o fim e ganhe bônus. ":"")+"Recompensa: +"+q.xp+" XP"+(q.minTitle?" (mínimo: +"+Math.ceil(q.xp/2)+")":"")+"."));
+  c.append(smEl("p","sm muted",(e==="baixa"?"Bateria baixa: hoje o mínimo já vale o dia inteiro. ":e==="alta"?"Bateria cheia: terminou o mínimo, vá até o fim e ganhe bônus. ":"")+(q.minTitle?"Mínimo feito: +"+Math.ceil(q.xp/2)+" XP. Completa: +"+q.xp+" XP.":"Começou: +"+SM_START+" XP. Completa: +"+q.xp+" XP.")));
   const go=smEl("button","go smgo","ACEITAR");go.type="button";go.onclick=()=>smTimer(q,rec);c.append(go);
   const r=smEl("div","smrow");const n=smCands().length;
   const tr=smEl("button","ghost","↻ Trocar");tr.type="button";tr.disabled=n<2;tr.onclick=()=>{smIdx++;smMission(smPick()||q,rec);};
@@ -4974,7 +4983,7 @@ function smBar(){const qs=$("quests");if(!qs||!cfg||cfg.blank)return;const sec=q
 // em navegador automatizado (testes) não abre sozinho, para não cobrir a tela dos outros testes; o teste do Sistema liga com asc-sm-qa
 function smAutoOk(){try{return !navigator.webdriver||localStorage.getItem("asc-sm-qa")==="1";}catch(e){return true;}}
 function smAuto(n){n=n||0;try{if(!cfg||cfg.blank||smSt().off||!smAutoOk())return;let last=0;try{last=+localStorage.getItem("asc-sm-last")||0;}catch(e){}if(Date.now()-last<SM_GAP)return;
-  const busy=($("onb")&&!$("onb").hidden)||document.querySelector(".sysmodal:not([hidden]),#clsModal:not([hidden]),.levelup:not([hidden])")||($("msSheet")&&!$("msSheet").hidden)||($("zapSheet")&&!$("zapSheet").hidden)||document.body.classList.contains("inmission");
+  const busy=($("onb")&&!$("onb").hidden)||document.querySelector(".sysmodal:not([hidden]),#clsModal:not([hidden]),.levelup:not([hidden])")||(typeof sysQ!=="undefined"&&sysQ.length)||($("msSheet")&&!$("msSheet").hidden)||($("zapSheet")&&!$("zapSheet").hidden)||document.body.classList.contains("inmission");
   if(busy){if(n<80)setTimeout(()=>smAuto(n+1),1500);return;}
   if(!smCands().length&&smEnergy())return;try{localStorage.setItem("asc-sm-last",String(Date.now()));}catch(e){}smIdx=0;smShow();}catch(e){}}
 document.addEventListener("keydown",e=>{if(e.key==="Escape"&&$("smSheet")&&!$("smSheet").hidden)smClose();});
@@ -4997,7 +5006,7 @@ function fzUI(){const p=$("focusPanel");if(!p)return;const on=!!(prog.focus&&pro
   if(!t){t=fzEl("div","fzbox fztop");t.id="fzTop";const h=p.querySelector(".qhead");if(h)h.after(t);else p.prepend(t);}
   if(!w){w=fzEl("div","fzbox");w.id="fzBox";const note=$("focusNote");p.insertBefore(w,note);}
   t.hidden=on;w.hidden=on;if(on)return;t.textContent="";w.textContent="";
-  const q=fzTarget();
+  const q=fzTarget();{const sel=$("focusQuest");if(q&&sel&&!sel.value){try{fillFocusSelect();}catch(e){}if([...sel.options].some(o=>o.value===q.id))sel.value=q.id;}}
   if(q){const b=fzEl("button","go fzmis");b.type="button";b.append(fzEl("span","fzk","[ SISTEMA ] FOCAR NA MISSÃO"),fzEl("span","fzt",(typeof qtShort==="function"&&qtShort(q))||q.title));
     b.onclick=()=>{const sel=$("focusQuest");if(sel){fillFocusSelect();sel.value=q.id;}startFocus(25);};t.append(b);}
   const r=fzEl("div","fzdur");r.append(fzEl("span","sm muted","Outro tempo:"));
@@ -5096,7 +5105,7 @@ function fdCheck(){if(!fdOn()||typeof sqInvRows==="undefined")return;const me=du
       o.seen[key]=1;o.ask++;ch=true;fdAsk(r.a,hm);break;}}
   if(ch){save();fdPay();fdBadge();}}
 // na hora combinada o bloco começa sozinho (até 5 min de atraso)
-function fdTick(){try{const o=prog.fd;if(!o||o.d!==todayKey()||!o.w||o.go||o.s!=="on")return;const at=fdAt(o.hm),now=Date.now();if(now<at)return fdBadge();
+function fdTick(){try{const o=prog.fd;if(o&&o.d===todayKey()&&o.w)fdBadge();if(!o||o.d!==todayKey()||!o.w||o.go||o.s!=="on")return;const at=fdAt(o.hm),now=Date.now();if(now<at)return fdBadge();
   o.go=1;save();if(now>at+5*60000){toast("🤝 O foco em dupla das "+fdShow(o.hm)+" já começou. Comece um bloco quando der.");return;}
   if(!(prog.focus&&prog.focus.end)){if(typeof goTab==="function")try{goTab("foco");}catch(e){}startFocus(25);prog.focus.fd=1;save();toast("🤝 Foco em dupla com "+o.w+": valendo!");}}catch(e){}}
 function fdPay(){const o=fdSt();if(!(o.me&&o.pa)||o.paid)return;const td=todayKey();if((prog.log[td]||[]).some(e=>e.q==="fd:"+td)){o.paid=1;save();return;}o.paid=1;

@@ -170,6 +170,7 @@ if ROOT:
     rep('setTimeout(tlBoot,1200);','')
     # app do criador (adulto): perfil vindo da planilha pode não ter faixa de idade
     rep('const AGE_UNK_MINOR=true;','const AGE_UNK_MINOR=false;')
+    rep('const SYSTIP_KEY=document.getElementById("o_go")?"asc-"+"u-systip":"ascensao-systip";','const SYSTIP_KEY="ascensao-systip";')
     # raiz: service worker como era antes da unificação (offline também em teste local)
     s=s.replace('"serviceWorker" in navigator&&location.protocol==="https:"','"serviceWorker" in navigator')
     rep('    </details>\n  </section>\n</div>','    </details>\n  </section>\n'+R('creator.html')+'</div>')

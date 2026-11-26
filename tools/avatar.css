@@ -4,10 +4,10 @@ svg.av{display:block;flex:none}
 .avtop h2{margin:0 0 4px}.avtop .sm{margin-bottom:8px}
 .avpv{filter:drop-shadow(0 0 10px rgba(111,177,255,.35))}
 .avrow{margin-top:12px}.avchips{display:flex;flex-wrap:wrap;gap:6px;margin-top:6px}
-.avchip{font:inherit;font-size:.8rem;min-height:40px;padding:6px 10px;border:1px solid var(--line);border-radius:8px;background:transparent;color:var(--fg);cursor:pointer}
+.avchip{font:inherit;font-size:.8rem;min-height:44px;padding:6px 10px;border:1px solid var(--line);border-radius:8px;background:transparent;color:var(--fg);cursor:pointer}
 .avchip.on{border-color:var(--glow);box-shadow:0 0 0 1px var(--glow) inset;color:var(--glow)}
 .avchip.lock{opacity:.55}
-.avchip.sw{width:40px;padding:0;background:var(--sw)}.avchip.sw.on{box-shadow:0 0 0 3px var(--glow)}
+.avchip.sw{width:44px;padding:0;background:var(--sw)}.avchip.sw.on{box-shadow:0 0 0 3px var(--glow)}
 .frlist{list-style:none;padding:0;margin:8px 0;display:grid;gap:8px}
 .frlist li{display:grid;grid-template-columns:auto 1fr auto auto;gap:10px;align-items:center;padding:8px;border:1px solid var(--line);border-radius:10px}
 .frlist li.me{border-color:var(--glow)}

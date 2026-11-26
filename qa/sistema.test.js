@@ -33,6 +33,7 @@ for(const [nome,dev] of [['iPhone',devices['iPhone 13']],['Android',devices['Pix
   await btn(p,'Baixa');await p.waitForTimeout(200);s=await sheet(p);
   ok(nome+': missão principal em tela cheia',s&&/MISSÃO PRINCIPAL/.test(s.tag),s&&s.tag);
   ok(nome+': abre no mínimo (2 min)',s&&/COMECE POR AQUI/.test(s.txt)&&/Abrir o caderno|10 polichinelos/.test(s.txt),s&&s.txt);
+  ok(nome+': recompensa diz o que paga',s&&/Mínimo feito: \+\d+ XP\. Completa: \+\d+ XP/.test(s.txt),s&&s.txt);
   ok(nome+': bateria baixa sem culpa',s&&/o mínimo já vale/.test(s.txt)&&!/Bateria hoje/.test(s.txt));
   ok(nome+': bateria gravada',(await P(p)).energy[TK]==='baixa');
   ok(nome+': lista escondida atrás',await p.evaluate(()=>document.body.classList.contains('insm')));
