@@ -1,5 +1,11 @@
 # Relatório de QA (ATENA)
 
+## 26/11/2026 · Marcos da coleção (mesmo PR dos segredos)
+
+- Novo: barra "Coleção: N itens · faltam X para « moldura »" na Coleção do baú e no prêmio do baú. Segredos, molduras e títulos contam; aos 3, 8, 15 e 25 itens sai uma moldura exclusiva (Faísca do Colecionador, Prisma, Constelação, Coroa do Arquivista) que o baú nunca sorteia. Vários marcos de uma vez = 1 janela só, sempre depois da janela do item.
+- Dados: só ids novos em `prog.chest.frames`. Save antigo com 15 itens ganha 3 molduras ao abrir; molduras, títulos, `dry` e título em uso intactos.
+- Testes: novo qa/colecao.test.js 22/22 duas vezes (390x844, 1280x800, reduce-motion, raiz e /comecar/, onboarding). Regressão: segredos 56/56, chefe-bau, sequencia, cartao, rotas, seguranca, movimento, sistema-recompensa 18/18, novidades, toque 19/19 sem FAIL. Caches ascensao-v75 / ascensao-u-v87.
+
 ## 26/11/2026 · Segredos: 8 piscadelas de cultura pop (25 no total)
 
 - Novo: Plataforma Escondida (9h45/21h45), A Carta Chegou (11 dias jogados), A Resposta (42 quests; código 42 mostra quanto falta), Medidor Estourou (>9000 XP; código 9000 mostra o medidor), Galáxia Distante (04/05), Código Clássico (setas + B A no teclado, ou código), Hora do Pi (3:14/15:14 e 14/03) e Toca do Coelho (código). Só a referência: nomes, títulos e textos nossos.
