@@ -76,15 +76,6 @@ Grava só `prog.st`. XP novo: `st:t:<id>` (+10, entregue no prazo) e `st:c:<dia>
 ## Resumo do beta (Modo Criador)
 
 `tools/painel.js` e `tools/painel.css` (só na aba Criador do app do JV, via `gen.py --root`): números agregados em cima das abas privadas que o painel já lê (testadores, ativos hoje e em 7 dias, volta no dia 2 e no dia 8, missões feitas, feedbacks, funil e ativos por dia). Colunas achadas pelo nome do cabeçalho. Não envia nada; guarda no aparelho do criador só a contagem diária em `ascensao-painel-hist`. Teste: `node qa/painel.test.js`. Integração com a EVA: `docs/integracao-eva.md`.
-## Volta do dia 1 ao 3
-
-`tools/hook.js`/`hook.css` (nos dois apps): nos 7 primeiros dias de jogo, um cartão logo abaixo das tarefas de Hoje puxa a volta no dia seguinte.
-
-- **Fez a 1ª tarefa do dia:** "🌙 Amanhã no Sistema" mostra o que vem (presente do dia 2/3, sequência que vira N+1, quanto falta para o escudo) e a versão mínima da 1ª tarefa de amanhã.
-- **Dia 2 e dia 3:** "🎁 Presente do dia N" abre com a 1ª tarefa: +15 e +25 XP, uma vez só (`ach:volta:<n>`, não conta sequência). Vale mesmo depois de uma pausa, sem culpa.
-- **Depois das 18h sem tarefa:** "🔥 Dá tempo de salvar o dia" com a versão mínima da próxima tarefa. Com os avisos do Ranking do dia já ligados, um lembrete às 19h com o app em 2º plano (sem permissão nova).
-
-Dia de jornada = dias diferentes com pelo menos 1 tarefa de verdade. Grava só `prog.hook.got`. Teste: `node qa/volta.test.js`.
 
 ## Reinstalação do app pessoal
 
