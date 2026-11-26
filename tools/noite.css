@@ -3,3 +3,6 @@
 .msadd summary{min-height:44px;line-height:44px}
 /* atalho "⭐ Colar figurinha" (8 s depois de concluir) ficava em cima do "✓ Concluir missão" da próxima missão */
 body.inmission .much{display:none}
+/* barra de abas: em telas abaixo de 390px (Android 360, iPhone SE/mini 375) "PROGRESSO" passava da aba e encostava em "AMIGOS" */
+@media (max-width:389px){.tabbar button{letter-spacing:.02em}}
+@media (max-width:340px){.tabbar button{letter-spacing:0;font-size:.5rem}}

@@ -4,6 +4,7 @@
 // 2) Textos: "Falta 1." (não "Faltam 1."), "Sequência salva: 1 dia", "Ontem ficou sem tarefa" e "2 dias de check-in".
 // 3) "Hoje: N concluída(s)" conta só o que a pessoa fez (check-in e conquista não contam como tarefa).
 // 4) Criar card: campos e "+ Criar cards" com 44px de altura.
+// 5) Barra de abas abaixo de 390px: "PROGRESSO" não passa mais da aba.
 // Mais: celular 390x844 e desktop, reduce-motion, dados antigos intactos, raiz abre, console limpo.
 // Rode com: python3 -m http.server 8000 --bind 127.0.0.1 & node qa/noite.test.js
 const {chromium}=require('playwright');const B='http://127.0.0.1:8000';const U=B+'/comecar/';const R=[];
@@ -74,6 +75,11 @@ for(const [nome,opt] of [['celular',{}],['desktop + reduce-motion',{viewport:{wi
   ok('escudo: "Sequência salva: 1 dia" e "Ontem ficou sem tarefa"',/Sequência salva: 1 dia\b/.test(sh)&&!/1 dias/.test(sh)&&/Ontem ficou sem tarefa/.test(sh),sh.replace(/\s+/g,' ').slice(0,160));
   await ctx.close();}
 
+// barra de abas: nenhum rótulo passa da própria aba em 320, 360 e 375px
+for(const w of [320,360,375,390]){const ctx=await b.newContext({viewport:{width:w,height:700}});await ctx.addInitScript(()=>{localStorage.setItem('asc-u-cfg',JSON.stringify({version:1,name:'T',startDate:'2026-11-20',quests:[{id:'a',title:'Estudar',xp:20,stat:'mente',main:true}]}));localStorage.setItem('asc-u-prog',JSON.stringify({log:{},rpg:{cls:'mago'},gd:{off:1}}));});
+  const p=await ctx.newPage();await p.goto(U);await p.waitForTimeout(1200);
+  const bad=await p.evaluate(()=>[...document.querySelectorAll('#tabbar button')].filter(x=>x.getClientRects().length).filter(x=>{const r=document.createRange();r.selectNodeContents(x);return r.getBoundingClientRect().width>x.getBoundingClientRect().width+1;}).map(x=>x.textContent.trim()));
+  ok('abas em '+w+'px: rótulos cabem',bad.length===0,bad.join(','));await ctx.close();}
 // raiz (app do JV): abre com a planilha de exemplo e sem erro
 {const errs=[];const ctx=await ctxOf(b);await ctx.addInitScript(()=>{if(!localStorage.getItem('ascensao-cfg')){localStorage.setItem('ascensao-cfg',JSON.stringify({version:3,startDate:'2026-11-20',name:'JV',quests:[{id:'q1',title:'Estudar 20 min',xp:20,stat:'mente',main:true},{id:'q_fech',title:'Fechamento do dia',xp:10,stat:'foco',main:true}]}));localStorage.setItem('ascensao-prog',JSON.stringify({log:{},rpg:{cls:'mago'}}));}});
   const p=await page(ctx,'2026-11-27T02:00:00-03:00',errs);await p.goto(B+'/');await p.waitForTimeout(2500);

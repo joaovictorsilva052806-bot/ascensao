@@ -543,6 +543,9 @@ body.inmission{overflow:hidden}
 .msadd summary{min-height:44px;line-height:44px}
 /* atalho "⭐ Colar figurinha" (8 s depois de concluir) ficava em cima do "✓ Concluir missão" da próxima missão */
 body.inmission .much{display:none}
+/* barra de abas: em telas abaixo de 390px (Android 360, iPhone SE/mini 375) "PROGRESSO" passava da aba e encostava em "AMIGOS" */
+@media (max-width:389px){.tabbar button{letter-spacing:.02em}}
+@media (max-width:340px){.tabbar button{letter-spacing:0;font-size:.5rem}}
 /* ---- Quebrar correntes (tools/chain.*) ---- */
 .chc{display:grid;gap:8px;padding:12px;border:1px solid var(--line);border-radius:12px;background:linear-gradient(160deg,#0f1d38,#0a1222);margin-bottom:10px}
 .chc.done{border-color:var(--good)}
