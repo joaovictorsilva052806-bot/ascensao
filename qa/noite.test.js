@@ -6,6 +6,7 @@
 // 4) Criar card: campos e "+ Criar cards" com 44px de altura.
 // 5) Barra de abas abaixo de 390px: "PROGRESSO" não passa mais da aba.
 // 6) Voltar do Android com missão/desafio aberto fecha só a folha (antes saía do app).
+// 7) "Desfazer" no aviso por 5 s depois de concluir; o aviso sobe quando o atalho da figurinha aparece.
 // Mais: celular 390x844 e desktop, reduce-motion, dados antigos intactos, raiz abre, console limpo.
 // Rode com: python3 -m http.server 8000 --bind 127.0.0.1 & node qa/noite.test.js
 const {chromium}=require('playwright');const B='http://127.0.0.1:8000';const U=B+'/comecar/';const R=[];
@@ -92,6 +93,20 @@ for(const [nome,opt] of [['celular',{}],['desktop + reduce-motion',{viewport:{wi
   await p.evaluate(()=>document.querySelector('.zapc:not(.done)').click());await p.waitForTimeout(600);await p.goBack({timeout:3000}).catch(()=>{});await p.waitForTimeout(600);
   ok('Voltar fecha o desafio relâmpago',await p.evaluate(()=>{const z=document.querySelector('#zapSheet');return !!z&&z.hidden&&!document.body.classList.contains('inmission');})&&/\/comecar\//.test(p.url()));
   ok('console limpo (Voltar)',errs.length===0,errs.join(' | '));await ctx.close();}
+// marcou sem querer: "Desfazer" no aviso; aviso não fica embaixo do atalho da figurinha
+{const errs=[];const ctx=await ctxOf(b);await ctx.addInitScript(()=>{if(!localStorage.getItem('asc-u-cfg')){localStorage.setItem('asc-u-cfg',JSON.stringify({version:1,name:'T',startDate:'2026-11-20',quests:[{id:'a',title:'Estudar 20 min',xp:20,stat:'mente',main:true},{id:'b',title:'Ler 10 páginas',xp:10,stat:'mente'}]}));
+  localStorage.setItem('asc-u-prog',JSON.stringify({log:{'2026-11-25':[{q:'a',kind:'full',xp:20,stat:'mente',bonus:0,t:'2026-11-25T15:00:00Z'}]},rpg:{cls:'mago'},gd:{off:1},ach:{a_first:1}}));localStorage.setItem('asc-u-tele',JSON.stringify({asked:1}));localStorage.setItem('asc-u-season','2');}});
+  const p=await page(ctx,'2026-11-26T15:00:00-03:00',errs);await p.goto(U);await p.waitForTimeout(1800);for(let i=0;i<3;i++){await pops(p);await p.waitForTimeout(300);}
+  await p.evaluate(()=>document.querySelector('#quests .quest[data-q="a"] .btns button.go').click());await p.waitForTimeout(400);await pops(p);
+  let has=false;for(let i=0;i<8&&!has;i++){has=await p.evaluate(()=>{const u=document.querySelector('#toast .ntundo');return !!u&&!document.querySelector('#toast').hidden;});if(!has)await p.waitForTimeout(200);}
+  ok('depois de "Feito", o aviso traz "Desfazer"',has);
+  const lap=await p.evaluate(()=>{const c=document.querySelector('#muChip'),t=document.querySelector('#toast');if(!c||!t||t.hidden)return 'sem chip';const a=c.getBoundingClientRect(),b=t.getBoundingClientRect();return b.bottom<=a.top+1?'ok':'sobrepõe';});
+  ok('aviso não fica embaixo do "⭐ Colar figurinha"',lap!=='sobrepõe',lap);
+  await p.evaluate(()=>document.querySelector('#toast .ntundo').click());await p.waitForTimeout(600);
+  const st=await p.evaluate(()=>{const g=JSON.parse(localStorage.getItem('asc-u-prog'));const k=Object.keys(g.log).sort().pop();return {k,a:(g.log['2026-11-26']||[]).some(e=>e.q==='a'),old:(g.log['2026-11-25']||[]).length};});
+  ok('"Desfazer" desmarca a tarefa (e não mexe em outros dias)',!st.a&&st.old===1,JSON.stringify(st));
+  ok('desmarcar pelo "Desfazer" não oferece outro "Desfazer"',await p.evaluate(()=>!document.querySelector('#toast .ntundo')));
+  ok('console limpo (Desfazer)',errs.length===0,errs.join(' | '));await ctx.close();}
 // barra de abas: nenhum rótulo passa da própria aba em 320, 360 e 375px
 for(const w of [320,360,375,390]){const ctx=await b.newContext({viewport:{width:w,height:700}});await ctx.addInitScript(()=>{localStorage.setItem('asc-u-cfg',JSON.stringify({version:1,name:'T',startDate:'2026-11-20',quests:[{id:'a',title:'Estudar',xp:20,stat:'mente',main:true}]}));localStorage.setItem('asc-u-prog',JSON.stringify({log:{},rpg:{cls:'mago'},gd:{off:1}}));});
   const p=await ctx.newPage();await p.goto(U);await p.waitForTimeout(1200);

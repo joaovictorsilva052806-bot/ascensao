@@ -27,3 +27,18 @@ new MutationObserver(()=>{const on=document.body.classList.contains("inmission")
   try{if(on)history.pushState({ntSheet:1},"");else if(history.state&&history.state.ntSheet){ntSkip=true;history.back();}}catch(e){}}).observe(document.body,{attributes:true,attributeFilter:["class"]});
 addEventListener("popstate",()=>{if(ntSkip){ntSkip=false;return;}if(!document.body.classList.contains("inmission"))return;ntIn=false;
   try{if($("msSheet")&&!$("msSheet").hidden)msClose();else if($("zapSheet")&&!$("zapSheet").hidden)zapClose();else document.body.classList.remove("inmission");}catch(e){}});
+// 4) Marcou sem querer? "Desfazer" no aviso por 5 s depois de concluir uma tarefa (antes: abrir "Concluídas" e achar o botão).
+//    Desfazer = o mesmo que desmarcar pela lista (toggle de novo). Nada novo é salvo.
+let ntPend=null;
+function ntAttach(){const t=$("toast");if(!t||!ntPend||Date.now()>ntPend.until||t.querySelector(".ntundo"))return;const {q,kind}=ntPend;
+  // linha própria com o nome da tarefa: junto de "Check-in feito" o "Desfazer" parecia desfazer o check-in
+  const row=document.createElement("span");row.className="ntrow";row.textContent="✓ "+(((typeof qtShort==="function"&&qtShort(q))||q.title)+"").slice(0,32);
+  const u=document.createElement("button");u.type="button";u.className="link ntundo";u.textContent="Desfazer";row.append(" ",u);
+  u.addEventListener("click",()=>{ntPend=null;const on=(prog.log[todayKey()]||[]).find(e=>e.q===q.id&&e.kind===kind);if(on)toggle(q,kind);const c=$("muChip");if(c)c.remove();toast("Desfeito.");});
+  t.append(row);clearTimeout(toast._t);toast._t=setTimeout(()=>{t.hidden=true;},Math.max(1500,ntPend.until-Date.now()));}
+function ntUndo(q,kind){ntPend={q,kind,until:Date.now()+5000};setTimeout(()=>{try{const t=$("toast");if(!t)return;
+  if(t.hidden||!t.textContent.trim())toast("Feito!");else ntAttach();}catch(e){}},120);}
+// outro aviso no meio dos 5 s (conquista, baú, check-in) não some com o "Desfazer"
+setTimeout(()=>{if(typeof toast!=="function")return;const _to=toast;toast=function(){const r=_to.apply(this,arguments);try{ntAttach();}catch(e){}return r;};},0);
+setTimeout(()=>{if(typeof toggle!=="function")return;const _t=toggle;toggle=function(q,kind){let had=true;try{had=(prog.log[todayKey()]||[]).some(e=>e.q===q.id);}catch(e){}
+  const r=_t.apply(this,arguments);try{const now=(prog.log[todayKey()]||[]).find(e=>e.q===q.id);if(!had&&now)ntUndo(q,now.kind);}catch(e){}return r;};},0);
