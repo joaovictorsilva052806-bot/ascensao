@@ -1,12 +1,12 @@
 // ---------- Comece por aqui: 3 passos claros no primeiro uso (some quando termina) ----------
 function gdSteps(){const L=prog.log||{};let quest=false;for(const d in L)if((L[d]||[]).some(e=>!/^(ach|checkin|tip|dun|sq|zap|boss|foco):/.test(String(e.q)))){quest=true;break;}
-  const zap=Object.keys(prog.zap||{}).length>0;const rank=!!(prog.gd&&prog.gd.rank);
+  const zap=Object.keys(prog.zap||{}).length>0;const kid=ageNow()==="kid";const rank=!!(prog.gd&&prog.gd.rank);
   return [{k:"q",ok:quest||!!prog.msUsed,t:"Toque em ▶ na sua PRÓXIMA missão",s:"O app abre a missão com timer e ferramenta."},
-    {k:"z",ok:zap,t:"Faça 1 desafio relâmpago ⚡",s:"30 segundos. Vale XP e te sobe no ranking."},
-    {k:"r",ok:rank,t:"Veja seu lugar no ranking",s:ageNow()==="kid"?"Em Progresso: seus atributos e a masmorra.":"Em Progresso: quem está na sua frente."}];}
+    {k:"z",ok:zap,t:"Faça 1 desafio relâmpago ⚡",s:kid?"30 segundos. Vale XP na hora.":"30 segundos. Vale XP e te sobe no ranking."},
+    {k:"r",ok:rank,t:kid?"Veja sua evolução":"Veja seu lugar no ranking",s:kid?"Em Progresso: seus atributos e a masmorra.":"Em Progresso: quem está na sua frente."}];}
 function gdUI(){let p=$("gdPanel");const anchor=$("zapPanel")||($("quests")&&$("quests").closest("section"));if(!anchor)return;
   prog.gd=prog.gd||{};const st=gdSteps();const all=st.every(x=>x.ok);
-  if(all&&!prog.gd.paid){prog.gd.paid=1;save();addXP({q:"tip:guia",kind:"tip",xp:20,stat:"foco",bonus:0,t:new Date().toISOString()},"");sysPop("TUTORIAL","Sistema calibrado","Você já sabe jogar: missão, desafio e ranking. +20 XP.",null,"Bora");}
+  if(all&&!prog.gd.paid){prog.gd.paid=1;save();addXP({q:"tip:guia",kind:"tip",xp:20,stat:"foco",bonus:0,t:new Date().toISOString()},"");sysPop("TUTORIAL","Sistema calibrado","Você já sabe jogar: missão, desafio e "+(ageNow()==="kid"?"evolução":"ranking")+". +20 XP.",null,"Bora");}
   if(!cfg||cfg.blank||all||prog.gd.off){if(p)p.remove();return;}
   if(!p){p=document.createElement("section");p.className="panel gd";p.id="gdPanel";p.dataset.tab="hoje";anchor.before(p);}
   p.textContent="";const hd=document.createElement("div");hd.className="qhead";const h=document.createElement("h2");h.textContent="🧭 Comece por aqui";const n=document.createElement("span");n.className="xp";n.textContent=st.filter(x=>x.ok).length+"/3 · +20 XP";hd.append(h,n);p.append(hd);

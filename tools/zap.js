@@ -63,7 +63,7 @@ function zapFinish(z){if(zapDone(z.id))return;const tk=todayKey();prog.zap=prog.
   addXP({q:"zap:"+z.id+":"+tk,kind:"zap",xp,stat:"corpo",bonus:0,t:new Date().toISOString()},"Desafio relâmpago: +"+xp+" XP");
   try{if(typeof sendRank==="function")sendRank("desafio",true);}catch(e){}
   try{if(typeof duoDone==="function")duoDone(z);}catch(e){}
-  if(zapMo.used){try{const k="asc-u-zapmo";const o=JSON.parse(localStorage.getItem(k)||"{}");o[tk]=(o[tk]||0)+1;for(const d in o)if(d<tk)delete o[d];localStorage.setItem(k,JSON.stringify(o));}catch(e){}zapMo.used=false;}
+  if(zapMo.used){try{const k="asc-u-zapmo";const o=JSON.parse(localStorage.getItem(k)||"{}");o[tk]=(o[tk]||0)+1;for(const d in o)if(d<dkey(new Date(Date.now()-2*864e5)))delete o[d];localStorage.setItem(k,JSON.stringify(o));}catch(e){}zapMo.used=false;}
   zapClose();zapUI();
   const after=zapRankLine();const all=zapToday().every(q=>zapDone(q.id));
   if(before&&after&&after.pos<before.pos)sysPop("RANKING","Subiu para #"+after.pos,"Você passou alguém no ranking da semana. "+(after.pos>1?after.txt.replace(/^#\d+ na semana · /,"Agora "):"Topo conquistado."),null,"Bora");
