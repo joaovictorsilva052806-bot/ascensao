@@ -12,7 +12,7 @@ Nenhum dado salvo foi apagado ou renomeado.
 
 | PR | O que muda | Testes | Situação |
 |---|---|---|---|
-| #89 Revisão noturna | 11 atritos (lista abaixo) e 2 testes instáveis | `qa/noite.test.js` 45/45; suíte inteira 33 de 33 arquivos verdes (987 verificações) | entregue ao trem na #22, já atualizado com a main (Trens 4 a 8) |
+| #89 Revisão noturna | 11 atritos (lista abaixo) e 2 testes instáveis | `qa/noite.test.js` 45/45; suíte inteira 33 de 33 arquivos verdes (987 verificações); na tarde, com a main do 1.0: 42 de 42 (1.221) | entregue ao trem na #22, já atualizado com a main (Trens 4 a 8) |
 | #82 Textos da 1ª sessão (outra thread) | textos mais curtos | 35/35 | na fila do trem |
 | #83 Volta do dia 1 ao 3 (outra thread) | presente do dia 2 e do dia 3, teaser e resgate | 44/44 | na fila do trem |
 | #67 Feedback dos testadores (outra thread) | Missão ativa v2, onboarding de toque, modo simples | 60/60 | na fila do trem |
@@ -109,7 +109,7 @@ Menções honrosas:
 
 - `qa/noite.test.js` 45/45. Cobre celular e desktop (com reduce-motion), madrugada, noite, dia 1, dia 2, dia 3, a volta depois de faltar, as abas de 320 a 390px, o Voltar, o Desfazer, os dados antigos e a raiz, com console limpo.
 - `qa/carencia.test.js` 9/9, no #99.
-- Suíte inteira do #89 com a main (Trens 4 a 8): 33 de 33 arquivos verdes (987 verificações).
+- Suíte inteira do #89 com a main (Trens 4 a 8): 33 de 33 arquivos verdes (987 verificações); na tarde, com a main do 1.0: 42 de 42 (1.221).
 - Corrigi 2 testes instáveis da main: `alvo` falhava entre 0h e 5h, e `sequencia` falhava 2 de 3 vezes.
 - O cache do service worker não sobe no PR; ele sobe no trem.
 
