@@ -70,8 +70,8 @@ function bxOpen(){if($("bxModal"))return;const c=bxSt();const tk=todayKey();if(c
     if(taps<need){btn.classList.remove("shake");void btn.offsetWidth;btn.classList.add("shake");tap.textContent=need-taps===1?"Mais uma vez!":"Mais "+(need-taps)+"…";return;}
     btn.dataset.open="1";btn.classList.add("open");tap.hidden=true;hint.hidden=true;setTimeout(reveal,bxMotion()?650:0);});
   function reveal(){if(c.got[tk])return;c.got[tk]=1;for(const k in c.got)if(k<dkeyBack(30))delete c.got[k];
-    if(rw.k==="s"){try{clsGrantScroll(1,"baú");}catch(e){}c.dry=0;}else if(rw.k==="f"){if(!c.frames.includes(rw.id))c.frames.push(rw.id);c.dry=0;}else if(rw.k==="t"){bxGiveTitle(rw.id,rw.n,"baú");c.dry=0;}else c.dry++;
-    save();
+    if(!c.paid||c.paid.d!==tk){c.paid={d:tk};if(rw.k==="s"){try{clsGrantScroll(1,"baú");}catch(e){}c.dry=0;}else if(rw.k==="f"){if(!c.frames.includes(rw.id))c.frames.push(rw.id);c.dry=0;}else if(rw.k==="t"){bxGiveTitle(rw.id,rw.n,"baú");c.dry=0;}else c.dry++;
+    }save();
     if(!entries().some(e=>e.q==="ach:bau:"+tk))addXP({q:"ach:bau:"+tk,kind:"full",xp:rw.xp,stat:"mente",bonus:0,t:new Date().toISOString()},"");
     out.hidden=false;out.textContent="";out.style.setProperty("--rc",BX_RCOL[rw.r||0]);
     out.append(bxEl("div","bxrar",rw.r?BX_RAR[rw.r]:"Comum"));
@@ -86,16 +86,22 @@ function bxOpen(){if($("bxModal"))return;const c=bxSt();const tk=todayKey();if(c
     bxColUI();bxPill();}
   function close(){m.remove();bxPill();try{render();}catch(e){}}
   m.addEventListener("click",e=>{if(e.target===m&&btn.dataset.open)close();});}
+// desfez o "Fechar o dia": o XP do baú sai; ao fechar de novo, o mesmo prêmio volta (item não duplica)
+function bxUndo(){const c=bxSt();const tk=todayKey();if(!c.got[tk]||bxReady())return;delete c.got[tk];
+  prog.log[tk]=(prog.log[tk]||[]).filter(e=>e.q!=="ach:bau:"+tk);save();try{render();}catch(e){}toast("Baú do dia guardado: volta quando você fechar o dia.");}
 function dkeyBack(n){const d=new Date();d.setDate(d.getDate()-n);try{return dkey(d);}catch(e){return "";}}
 // --- pílula na tela Hoje quando o baú está esperando ---
 function bxPill(){let p=$("bxPill");const hoje=document.querySelector('.wrap>section[data-tab="hoje"] .status');if(!hoje)return;
   const on=bxPending();if(!p){if(!on)return;p=bxEl("button","bxpill");p.type="button";p.id="bxPill";p.addEventListener("click",bxOpen);hoje.closest("section").before(p);}
   p.hidden=!on;if(on){p.textContent="";const i=bxEl("span","bxpi");i.innerHTML=bxArt(bxTier());p.append(i,bxEl("b",null,"🎁 Baú do dia pronto"),bxEl("span","sm","Toque para abrir"));}}
 // --- coleção (aba Progresso): molduras e títulos para equipar ---
+// mantém o cabeçalho (as telas enxutas transformam ele no botão de abrir/fechar) e troca só o resto
+function bxHead(p,t,meta){const h=p.firstElementChild;if(h&&h.classList.contains("qhead")){const h2=h.querySelector("h2"),sp=h.querySelector("span");if(h2)h2.textContent=t;if(sp)sp.textContent=meta;while(h.nextSibling)h.nextSibling.remove();return h;}
+  p.textContent="";const hd=bxEl("div","qhead");hd.append(bxEl("h2",null,t),bxEl("span","sm mono",meta));p.append(hd);return hd;}
 function bxColUI(){let p=$("bxCol");const first=$("avPanel")||document.querySelector('.wrap>section[data-tab="prog"]');if(!first)return;
   if(!p){p=bxEl("section","panel bxcol");p.id="bxCol";p.dataset.tab="prog";first.after(p);}
-  if(!cfg||cfg.blank){p.hidden=true;return;}p.hidden=false;const c=bxSt();p.textContent="";
-  const hd=bxEl("div","qhead");hd.append(bxEl("h2",null,"🎁 Coleção do baú"),bxEl("span","sm mono",(c.frames.length+c.titles.length)+((c.frames.length+c.titles.length)===1?" item":" itens")));p.append(hd);
+  if(!cfg||cfg.blank){p.hidden=true;return;}p.hidden=false;const c=bxSt();
+  bxHead(p,"🎁 Coleção do baú",(c.frames.length+c.titles.length)+((c.frames.length+c.titles.length)===1?" item":" itens"));
   p.append(bxEl("div","sm muted","Feche o dia para abrir 1 baú. Toque num item para usar; toque de novo para tirar."));
   p.append(bxEl("h3","bxh","Molduras"));const g=bxEl("div","bxgrid");
   for(const f of BX_FR){const own=c.frames.includes(f[0]);const b=bxEl("button","bxf"+(own?"":" lock")+(c.frame===f[0]?" eq":""));b.type="button";b.style.cssText=bxFrameCss(f[0]);
@@ -108,6 +114,6 @@ function bxColUI(){let p=$("bxCol");const first=$("avPanel")||document.querySele
     b.append(bxEl("b",null,"« "+t.n+" »"),bxEl("span","sm muted",(t.src==="chefão"?"do chefão":BX_RAR[r])+(c.title===t.id?" · em uso":"")));b.addEventListener("click",()=>bxEquipTitle(c.title===t.id?"":t.id));tl.append(b);}
   p.append(tl);}
 // quando a tarefa de fechar o dia sai, o baú aparece
-{const _tg=toggle;toggle=function(q,kind){const before=bxPending();_tg.apply(this,arguments);try{bxPill();if(!before&&bxPending())setTimeout(()=>{if(sysQ&&sysQ.length){const w=setInterval(()=>{if(!sysQ.length){clearInterval(w);bxOpen();}},400);setTimeout(()=>clearInterval(w),20000);}else bxOpen();},900);}catch(e){}};}
+{const _tg=toggle;toggle=function(q,kind){const before=bxPending();_tg.apply(this,arguments);try{bxUndo();bxPill();if(!before&&bxPending())setTimeout(()=>{if(sysQ&&sysQ.length){const w=setInterval(()=>{if(!sysQ.length){clearInterval(w);bxOpen();}},400);setTimeout(()=>clearInterval(w),20000);}else bxOpen();},900);}catch(e){}};}
 {const _r=render;render=function(){_r.apply(this,arguments);try{bxPill();bxTitleUI();}catch(e){}};}
 setTimeout(()=>{try{bxApplyFrame();bxTitleUI();bxColUI();bxPill();}catch(e){}},0);

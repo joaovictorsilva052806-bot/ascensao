@@ -6,8 +6,8 @@
 //   - O servidor (server/mural.gs) confere token, idade, amizade, tamanho e tipo; o app só mostra.
 //   - MURAL_URL vazio = mural de fotos escondido. O Álbum de figurinhas funciona sempre, sem sair do aparelho.
 // Só ADICIONA prog.mural = {ok:1, par:1, reg:"faixa", stk:{dia:[{q,e}]}}. Nada novo no formulário público.
-// Teste antes de lançar: localStorage "asc-mural-url" com um endereço /exec do Apps Script (só no próprio aparelho).
-const MURAL_URL=(()=>{const fixo="";try{const t=localStorage.getItem("asc-mural-url")||"";if(/^https:\/\/script\.google\.com\/macros\/s\/[\w-]+\/exec$/.test(t))return t;}catch(e){}return fixo;})();
+// Servidor publicado em 26/11 (thread de segurança, PR #70). Teste com outro servidor: localStorage "asc-mural-url" com um endereço /exec do Apps Script (só no próprio aparelho).
+const MURAL_URL=(()=>{const fixo="https://script.google.com/macros/s/AKfycbwI3tDbLa7qYH2_oLn8kQAHuLrn-NXrtOjLEMXEcjdn_NsjW3UM7QAJE9hvQg_47isJbA/exec";try{const t=localStorage.getItem("asc-mural-url")||"";if(/^https:\/\/script\.google\.com\/macros\/s\/[\w-]+\/exec$/.test(t))return t;}catch(e){}return fixo;})();
 const MU_REACT=["🔥","💪","👏"];
 const MU_CAPS=["","Feito ✅","Mínimo cumprido","Dia difícil, fiz mesmo assim","Novo recorde","Primeira vez!"];
 const MU_STK=["⭐","🏆","🔥","💪","📚","🧠","🏃","🎯","🌙","✨","🦸","🐉","🎨","🎵","🥇","💧"];
@@ -48,9 +48,9 @@ function muSticker(q){const m=muEl("div","sysmodal mumodal");m.setAttribute("rol
   const no=muEl("button","link","Agora não");no.type="button";no.addEventListener("click",()=>m.remove());c.append(g,no);m.append(c);document.body.append(m);}
 function muAlbumUI(){let p=$("muAlbum");const anchor=$("bxCol")||$("avPanel")||document.querySelector('.wrap>section[data-tab="prog"]');if(!anchor)return;
   if(!p){p=muEl("section","panel mualb");p.id="muAlbum";p.dataset.tab="prog";anchor.after(p);}
-  const s=muSt();const days=Object.keys(s.stk).sort().reverse().filter(d=>(s.stk[d]||[]).length);if(!cfg||cfg.blank){p.hidden=true;return;}p.hidden=false;p.textContent="";
+  const s=muSt();const days=Object.keys(s.stk).sort().reverse().filter(d=>(s.stk[d]||[]).length);if(!cfg||cfg.blank){p.hidden=true;return;}p.hidden=false;
   let n=0;for(const d of days)n+=s.stk[d].length;
-  const hd=muEl("div","qhead");hd.append(muEl("h2",null,"⭐ Álbum de figurinhas"),muEl("span","sm mono",n+(n===1?" figurinha":" figurinhas")));p.append(hd);
+  (typeof bxHead==="function"?bxHead:(p,t,m)=>{p.textContent="";const hd=muEl("div","qhead");hd.append(muEl("h2",null,t),muEl("span","sm mono",m));p.append(hd);})(p,"⭐ Álbum de figurinhas",n+(n===1?" figurinha":" figurinhas"));
   if(!days.length){p.append(muEl("div","sm muted","Concluiu uma tarefa? Toque em « ⭐ Colar figurinha » e ela entra aqui como prova. Fica só no seu aparelho."));return;}
   for(const d of days.slice(0,14)){const row=muEl("div","muday");const [y,mo,da]=d.split("-");row.append(muEl("span","mudd",da+"/"+mo));
     const g=muEl("div","mudg");for(const x of s.stk[d]){const t=muEl("span","mut",x.e);t.title=x.q;t.setAttribute("aria-label",x.e+" "+x.q);g.append(t);}row.append(g);p.append(row);}}
