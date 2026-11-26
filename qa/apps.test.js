@@ -18,6 +18,8 @@ for(const [nome,dev] of [['iPhone',devices['iPhone 13']],['Android',devices['Pix
   await c.route(/duolingo\.com|calendar\.google\.com|chatgpt\.com/,r=>r.fulfill({status:200,contentType:'text/html',body:'ok'}));
   await p.clock.install({time:new Date('2026-11-26T10:00:00-03:00')});
   await p.goto(B+'/comecar/');await p.waitForTimeout(800);await onboard(p);await p.waitForTimeout(400);
+  // jogador novo começa no modo simples (só a próxima missão): este teste usa o app completo
+  {const o=await p.$('.s3off:visible');if(o){await o.click();await p.waitForTimeout(300);}}
   const C=()=>p.evaluate(()=>JSON.parse(localStorage.getItem('asc-u-cfg')));const P=()=>p.evaluate(()=>JSON.parse(localStorage.getItem('asc-u-prog')));
   const tk='2026-11-26';const XP=o=>Object.values(o.log||{}).flat().reduce((a,e)=>a+(e.xp||0)+(e.bonus||0),0);
   await tab(p,'mais');await p.waitForTimeout(200);

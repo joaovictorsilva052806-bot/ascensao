@@ -1,5 +1,12 @@
 # Relatório de QA (ATENA)
 
+## 26/11/2026 · PR #67 atualizado com a main (trens 1 e 2) e QA completo de novo
+
+- Merge da main (#66 a #79). Como o app do JV agora é o mesmo dos testadores, missão v2, troca de tarefa e modo simples entram nos dois; troca só aparece em tarefa gerada pelo perfil e o modo simples só liga para perfil criado do zero.
+- Placar: todos os arquivos de qa/ verdes (alvo 24, apps 47, convite 69, feedback 60, foco 32 com offline, funil 16, ranking-dia 47, relâmpago 27, rótulos 17, segredos 38, toque 19, mural-servidor, e os demais sem FAIL). Migração: perfil e progresso antigos abrem sem modo simples e sem perder campo.
+- qa/apps.test.js: jogador novo começa no modo simples, então o teste toca "Já sei usar" antes de usar as tarefas extras (como o toque.test.js).
+- Caches ascensao-v55 / ascensao-u-v67.
+
 ## 25/11/2026 · Feedback dos testadores, itens 1 a 3 (pedido da EVA na issue #22)
 
 - Missão ativa v2: leitura (páginas), treino (séries + descanso), dúvidas e passo a passo do gatilho. Onboarding v2: 4 perguntas de toque + "Trocar esta tarefa" na 1ª semana. Modo simples nos 3 primeiros dias.
