@@ -97,6 +97,11 @@ for(const [nome,dev] of [['iPhone',devices['iPhone 13']],['Android',devices['Pix
   // foco que acabou por outro caminho não fica preso à tarefa
   await patch(p,()=>{const o=JSON.parse(localStorage.getItem('asc-u-prog'));o.st.cur='t1';o.st.curEnd=123;o.focus=null;localStorage.setItem('asc-u-prog',JSON.stringify(o));});
   pr=await P(p);ok(nome+': tarefa presa a foco antigo é solta',!pr.st.cur);
+  // Forja: dias de treino de lá vêm pré-marcados quando o treino do estudo não foi configurado
+  await patch(p,()=>{const o=JSON.parse(localStorage.getItem('asc-u-prog'));o.st.cfg={};o.forja=Object.assign(o.forja||{},{dias:[0,2,4],ses:[{d:'2026-11-23'}]});localStorage.setItem('asc-u-prog',JSON.stringify(o));});
+  await p.evaluate(()=>{document.querySelector('#stPanel details[data-k="cfg"]').open=true;});
+  const fjOn=await p.$$eval('#stPanel .stday',bs=>bs.map(b=>b.getAttribute('aria-pressed')).join());ok(nome+': dias do Forja pré-marcados',fjOn==='true,false,true,false,true,false,false',fjOn);
+  ok(nome+': explica que falta a hora',/Dias do Forja/.test(await p.textContent('#stPanel details[data-k="cfg"]')));
   // 10) nova tarefa pelo formulário
   await p.evaluate(()=>{document.querySelector('#stPanel details[data-k="add"]').open=true;});
   await p.fill('#stT','Atividade nova');await p.selectOption('#stTy','atividade');await p.fill('#stDue',plus(1));await clickTxt(p,'Salvar');pr=await P(p);

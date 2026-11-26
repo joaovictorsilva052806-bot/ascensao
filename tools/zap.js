@@ -100,6 +100,9 @@ function zapUI(){let p=$("zapPanel");const qp=$("quests")&&$("quests").closest("
   const g=zapEl("div","zapgrid");for(const z of list){const d=zapDone(z.id);const b=zapEl("button","zapc"+(d?" done":""));b.type="button";b.dataset.id=z.id;if(d)b.setAttribute("aria-label",z.t+": concluído");
     b.append(zapEl("span","ic",d?"✓":z.ic),zapEl("span","tt",z.t));if(zapPhotos().p[z.id])b.append(zapEl("span","ph","📸"));
     b.addEventListener("click",()=>{if(!d)zapOpen(z);});g.append(b);}p.append(g);}
+// o painel é refeito a cada render: se o foco estava num cartão (ex.: voltou do desafio com Esc), ele volta para o cartão novo
+{const _z=zapUI;zapUI=function(){const a=document.activeElement;const id=a&&a.classList&&a.classList.contains("zapc")&&a.dataset.id;const r=_z.apply(this,arguments);
+  if(id){const c=document.querySelector('#zapPanel .zapc[data-id="'+id+'"]');if(c&&document.activeElement!==c)try{c.focus({preventScroll:true});}catch(e){}}return r;};}
 {const _rr=renderRankUI;renderRankUI=function(){_rr();try{zapUI();}catch(e){}};}
 {const _r=render;render=function(){_r.apply(this,arguments);try{zapUI();}catch(e){}};}
 setTimeout(()=>{try{zapUI();}catch(e){}},0);

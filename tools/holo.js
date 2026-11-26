@@ -48,3 +48,15 @@ document.addEventListener("pointerdown",e=>{if(HX_RM()||e.pointerType==="mouse"&
   if(!hxT){hxT=document.createElement("i");hxT.className="hxtap";hxT.setAttribute("aria-hidden","true");document.body.append(hxT);}
   hxT.classList.remove("on");hxT.style.left=e.clientX+"px";hxT.style.top=e.clientY+"px";void hxT.offsetWidth;hxT.classList.add("on");},{passive:true});
 })();
+
+// ---------- Holo fino: pedestal de projeção sob o avatar, régua de dados nos painéis e uma varredura de luz pela tela ----------
+(function(){
+const RM=()=>{try{return matchMedia("(prefers-reduced-motion: reduce)").matches;}catch(e){return false;}};
+function hxDeco(){try{
+  const av=$("heroAv");if(av&&!av.querySelector(".hxped")){const i=document.createElement("i");i.className="hxped";i.setAttribute("aria-hidden","true");i.append(document.createElement("b"));av.append(i);}
+  for(const sct of document.querySelectorAll(".wrap>section.panel")){if(sct.querySelector(":scope>.hxrule"))continue;const r=document.createElement("i");r.className="hxrule";r.setAttribute("aria-hidden","true");sct.append(r);}
+  if(!document.querySelector("body>.hxsweep")&&!RM()){const w=document.createElement("i");w.className="hxsweep";w.setAttribute("aria-hidden","true");document.body.append(w);}
+}catch(e){}}
+hxDeco();
+if(typeof render==="function"){const _r=render;render=function(){const x=_r.apply(this,arguments);hxDeco();return x;};}
+})();

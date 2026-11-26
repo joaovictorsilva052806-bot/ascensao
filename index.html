@@ -471,9 +471,11 @@ body[data-tab=foco] #focusNote{font-size:.8rem;color:var(--muted)}
 @media (prefers-reduced-motion:reduce){.panel.fold>.fhd::after{transition:none}}
 /* ---- Missão ativa (tools/mission.*) ---- */
 .quest .btns .msgo{min-width:44px;min-height:40px;padding:0 12px;font-size:1rem;background:transparent;border:1px solid var(--glow);color:var(--glow);border-radius:8px;box-shadow:0 0 10px rgba(111,177,255,.25)}
-.quest.next .btns .msgo{background:var(--accent);color:#02121a;border-color:var(--accent);animation:msp 2.4s ease-in-out infinite}
-@keyframes msp{50%{box-shadow:0 0 18px rgba(111,177,255,.7)}}
-@media (prefers-reduced-motion:reduce){.quest.next .btns .msgo{animation:none}}
+.quest.next .btns .msgo{position:relative;background:var(--accent);color:#02121a;border-color:var(--accent)}
+/* o brilho pulsa pela opacidade de uma camada própria (compositor); animar box-shadow repintava a cada quadro */
+.quest.next .btns .msgo::before{content:"";position:absolute;inset:-1px;border-radius:inherit;box-shadow:0 0 18px rgba(111,177,255,.7);opacity:0;pointer-events:none;will-change:opacity;animation:msp 2.4s ease-in-out infinite}
+@keyframes msp{50%{opacity:1}}
+@media (prefers-reduced-motion:reduce){.quest.next .btns .msgo::before{animation:none}}
 .mshint{grid-column:1/-1;font-size:.78rem;color:var(--glow);font-family:var(--f-mono)}
 .mssheet{position:fixed;inset:0;z-index:60;background:rgba(3,6,14,.86);backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px);display:flex;align-items:flex-end;justify-content:center;padding:12px;padding-bottom:max(12px,env(safe-area-inset-bottom))}
 .mssheet[hidden]{display:none}
@@ -561,6 +563,22 @@ body.inmission{overflow:hidden}
 .gdl li.now .n{background:var(--gold);color:#1a1200;border-color:var(--gold)}
 .gdl li.ok button{opacity:.55}.gdl li.ok .n{border-color:var(--good);color:var(--good)}
 .gdoff{justify-self:start;font-size:.8rem;opacity:.75}
+/* revisão noturna: criar card com área de toque de 44px (campos tinham 24px, "+ Criar cards" 32px) */
+.msadd input{min-height:44px}
+.msadd summary{min-height:44px;line-height:44px}
+/* atalho "⭐ Colar figurinha" (8 s depois de concluir) ficava em cima do "✓ Concluir missão" da próxima missão */
+body.inmission .much{display:none}
+/* barra de abas: em telas abaixo de 390px (Android 360, iPhone SE/mini 375) "PROGRESSO" passava da aba e encostava em "AMIGOS" */
+@media (max-width:389px){.tabbar button{letter-spacing:.02em}}
+@media (max-width:340px){.tabbar button{letter-spacing:0;font-size:.5rem}}
+/* aviso (toast) e atalho "⭐ Colar figurinha" ficavam no mesmo lugar (84px e 86px do rodapé): o aviso sobe quando o atalho aparece */
+body:has(#muChip) .toast{bottom:calc(146px + env(safe-area-inset-bottom,0px))}
+.toast .ntrow{display:block;margin-top:2px;font-size:.92em;opacity:.95}
+.toast .ntundo{min-height:44px;padding:0 6px;margin-left:4px;color:var(--glow,#6fb1ff);font:inherit;text-decoration:underline}
+.ntvolta{border-color:var(--glow,#6fb1ff)}
+.ntvolta h2{margin:0 0 4px}
+.ntvolta .row{display:flex;gap:12px;align-items:center;flex-wrap:wrap;margin-top:8px}
+.ntvolta .row button{min-height:44px}
 /* ---- Quebrar correntes (tools/chain.*) ---- */
 .chc{display:grid;gap:8px;padding:12px;border:1px solid var(--line);border-radius:12px;background:linear-gradient(160deg,#0f1d38,#0a1222);margin-bottom:10px}
 .chc.done{border-color:var(--good)}
@@ -815,8 +833,8 @@ body[data-tab=amigos] #frPanel .frlist{display:none}
 .gthero{position:relative;overflow:hidden;border-color:rgba(242,193,78,.4)!important;background:linear-gradient(160deg,rgba(242,193,78,.1),rgba(0,212,255,.05) 55%,transparent)!important}
 .gthero::before{content:"";position:absolute;inset:0;pointer-events:none;background:repeating-linear-gradient(180deg,rgba(255,255,255,.025) 0 1px,transparent 1px 4px);opacity:.6}
 .gthero>*{position:relative}
-.gthd{display:flex;justify-content:space-between;align-items:center;gap:8px;margin-bottom:8px}
-.gthd h2{margin:0;color:var(--gold);white-space:nowrap}
+.gthd{display:flex;flex-wrap:wrap;justify-content:space-between;align-items:center;gap:2px 8px;margin-bottom:8px}
+.gthd h2{margin:0;color:var(--gold);white-space:nowrap;min-width:0}
 .gtclock{font-family:var(--f-mono);font-size:.72rem;color:var(--gold);white-space:nowrap}
 .gtme{display:flex;align-items:baseline;gap:8px;margin-bottom:8px}
 .gtpos{font-family:var(--f-hud);font-size:1.7rem;line-height:1;color:var(--gold);text-shadow:0 0 14px rgba(242,193,78,.35)}
@@ -1103,6 +1121,51 @@ body[data-bxf] .tmlist li.me .tmav svg{width:38px;height:38px}
   .sysmodal:not([hidden]) .card,.levelup:not([hidden]) .card,.smsheet:not([hidden]) .smcard,.sysmodal .card h3,.levelup .card .big,.sysmodal .card .tag,#quick .qstep,#quick .qstep .tag,.qgrid button,.qtype.hx-frame,.hxbeam,.hxorb g,.hxhud .dot{animation:none!important}
   .hxfx b,.hxtap,.hxburst,.hxflash{display:none!important}
 }
+
+/* ---------- Tipografia única do jogo: 2 fontes, 2 papéis ----------
+   HUD (Orbitron): só o que é título ou etiqueta em CAIXA ALTA e os números grandes (nível, rank, cronômetro).
+   Texto (Inter): todo o resto, inclusive números pequenos (com algarismos de largura fixa) e selos.
+   JetBrains Mono e Chakra Petch saem de cena (o navegador não baixa fonte que não é usada). */
+:root{--f-mono:var(--f-body);--f-display:var(--f-hud)}
+body{font-variant-numeric:tabular-nums}
+.sysmodal .tag,.qstep .tag,.mstag,.sqtag,.smtag,.smlbl,.tbtag,.hxhud,.rnlbl,.nextlbl,.qsync,.smbar .smbt,.fzmis .fzk,.sq .sqbt,.timer,.levelup .big,.rank{font-family:var(--f-hud)!important}
+.toast,.motto,.sysline,.qtype,.mshint,.sq .sqsys,.cdurl,.tbsay,.zaprank,.qtmin{font-family:var(--f-body)!important;letter-spacing:0;text-transform:none}
+.toast{font-weight:600}
+.sysline{font-weight:500}
+.pill,.xp,.mono,.stat b,.atlv,.tbhpn,.tmclock,.tbclock{font-weight:600}
+.lvl{text-transform:uppercase;letter-spacing:.1em;font-size:.82rem}
+
+/* ---------- Holo fino ---------- */
+/* pedestal de projeção sob o avatar (estático: o avatar tem filtro, nada aqui anima) */
+.hxped{position:absolute;left:50%;bottom:-17px;width:118%;height:24px;transform:translateX(-50%);border-radius:50%;pointer-events:none;z-index:-1;
+  border:1px solid rgba(0,212,255,.55);background:radial-gradient(ellipse at 50% 50%,rgba(0,212,255,.32),rgba(0,212,255,.06) 55%,transparent 72%);box-shadow:0 0 14px rgba(0,212,255,.35)}
+.hxped b{position:absolute;inset:5px 14%;border-radius:50%;border:1px dashed rgba(124,244,255,.55)}
+.hxped::before{content:"";position:absolute;left:12%;right:12%;bottom:50%;height:520%;background:linear-gradient(0deg,rgba(0,212,255,.22),rgba(0,212,255,0) 80%);clip-path:polygon(0 100%,100% 100%,82% 0,18% 0);transform:scaleY(-1);transform-origin:50% 100%;opacity:.0}
+/* aberração cromática fina nos títulos (o "fantasma" de holograma) */
+h1#titleName{text-shadow:-1px 0 rgba(255,70,140,.32),1px 0 rgba(0,240,255,.55),0 0 14px rgba(0,212,255,.45)}
+.panel h2{text-shadow:-.6px 0 rgba(255,70,140,.28),.6px 0 rgba(0,240,255,.5),0 0 8px rgba(0,212,255,.45)}
+/* régua de dados no canto de baixo de cada painel */
+.hxrule{position:absolute;left:20px;bottom:5px;width:54px;height:4px;pointer-events:none;opacity:.55;
+  background:repeating-linear-gradient(90deg,var(--accent) 0 1px,transparent 1px 6px) left bottom/100% 3px no-repeat,linear-gradient(var(--accent),var(--accent)) left bottom/100% 1px no-repeat}
+.hxrule::after{content:"";position:absolute;left:calc(100% + 6px);bottom:0;width:4px;height:4px;background:var(--glow);box-shadow:0 0 6px var(--glow)}
+/* varredura de luz que atravessa a tela de tempos em tempos (só transform; fica abaixo das janelas) */
+@keyframes hxSweep{0%{transform:translateY(-10vh)}18%{transform:translateY(110vh)}100%{transform:translateY(110vh)}}
+.hxsweep{position:fixed;left:0;right:0;top:0;height:60px;pointer-events:none;z-index:45;background:linear-gradient(180deg,transparent,rgba(124,244,255,.045) 45%,rgba(124,244,255,.09) 50%,transparent);animation:hxSweep 9s linear 2s infinite;transform:translateY(-10vh);will-change:transform}
+@media (prefers-reduced-motion:reduce){.hxsweep{display:none}}
+/* Alvo de toque ≥44px sem mudar o desenho: área invisível em volta dos botões pequenos */
+.pills{gap:8px 6px}
+.pills>.pill{position:relative}
+.pills>.pill[role=button]::before,.pills>.pill.shield::before,#streak::before,#clsPill::before{content:"";position:absolute;left:-3px;right:-3px;top:-8px;bottom:-8px}
+#fjDaysBtn{position:relative}#fjDaysBtn::before{content:"";position:absolute;left:0;right:0;top:-4px;bottom:-4px}
+.gd .qhead[role=button]{position:relative}.gd .qhead[role=button]::before{content:"";position:absolute;left:-4px;right:-4px;top:-14px;bottom:-14px}
+/* Feito e ▶ das missões: 40px visíveis, 48px de toque */
+.quest .btns button{position:relative}.quest .btns button::after{content:"";position:absolute;left:0;right:0;top:-4px;bottom:-4px}
+#focusQuest{min-height:44px}
+.arhow>summary{list-style:none;min-height:44px;display:flex;align-items:center;gap:6px;cursor:pointer}
+.arhow>summary::before{content:"▸";color:var(--accent);transition:transform .2s}.arhow[open]>summary::before{transform:rotate(90deg)}
+.arhow>summary::-webkit-details-marker{display:none}
+/* nomes em Orbitron sempre em caixa alta (padrão das etiquetas) */
+.tbname{text-transform:uppercase}
 /* ---------- Runa: RPG de mesa dentro do HUD (tools/rune.js) ---------- */
 @keyframes rnSpin{to{transform:rotate(360deg)}}
 @keyframes rnCirc{0%{opacity:0;transform:translate(-50%,-50%) scale(.25) rotate(-40deg)}25%{opacity:1}100%{opacity:0;transform:translate(-50%,-50%) scale(1.25) rotate(30deg)}}
@@ -1175,9 +1238,10 @@ body[data-tab="prog"] .atp .atrow:nth-child(5){animation-delay:.12s}body[data-ta
 #xpbar.rn-gain::after{content:"";position:absolute;inset:0;background:linear-gradient(90deg,transparent,rgba(255,255,255,.85),transparent);animation:rnShine .9s ease-out .35s both}
 
 /* missão PRÓXIMA: uma luz corre pela borda de cima (chama o olho para começar) */
-@keyframes rnRun{from{background-position:-40% 0}to{background-position:140% 0}}
+/* só transform e opacity: roda no compositor. Animar background-position repintava a tela a cada quadro (cerca de 30% da CPU de um Android lento com o app parado) */
+@keyframes rnRun{0%{transform:translateX(0);opacity:0}18%{opacity:1}82%{opacity:1}100%{transform:translateX(186%);opacity:0}}
 .quest.next:not(.done){position:relative}
-.quest.next:not(.done)::after{content:"";position:absolute;left:0;right:0;top:-1px;height:2px;pointer-events:none;background:linear-gradient(90deg,transparent,var(--glow),transparent) no-repeat;background-size:35% 100%;animation:rnRun 2.8s ease-in-out infinite}
+.quest.next:not(.done)::after{content:"";position:absolute;left:0;width:35%;top:-1px;height:2px;pointer-events:none;background:linear-gradient(90deg,transparent,var(--glow),transparent);opacity:0;will-change:transform,opacity;animation:rnRun 2.8s ease-in-out infinite}
 
 @media (prefers-reduced-motion:reduce){
   .quest.next:not(.done)::after,#xpbar.rn-gain::after,body[data-tab="prog"] .atp .atrow,.levelup:not([hidden]) .rnlv,.rnlv svg,.quest.done.pop::after,.hxorb .rn,.rnroll .rnd20,.rnroll.land .rnd20,.rnroll.nat.land .rnd20{animation:none!important}
@@ -1242,6 +1306,66 @@ body.insm .sysmodal:not([hidden]),body.insm .levelup:not([hidden]){z-index:90}
 body[data-tab=foco] #focusPanel.panel{margin-top:0}
 /* aviso que chegar com o relatório aberto fica por cima dele */
 body.infz .sysmodal:not([hidden]),body.infz .levelup:not([hidden]){z-index:90}
+/* ---- Forja: treino em casa (tools/forja.*) ---- */
+.fjhome{border-color:var(--gold)}
+.fjhome .qhead{display:flex;justify-content:space-between;align-items:center;gap:8px;flex-wrap:wrap}
+.fjhome .fjdl{font-family:var(--f-mono);font-size:.75rem;min-height:36px}
+.fjhome .fjline{font-weight:600}
+.fjhome .fjok{color:var(--good)}
+.fjrow button{flex:1;min-height:46px}
+.fjdays{display:flex;flex-wrap:wrap;gap:6px}
+.fjday{min-width:44px;min-height:40px;padding:6px 8px;text-transform:lowercase}
+.fjday.on{background:var(--accent);border-color:var(--accent);color:#fff}
+.fjsheet{position:fixed;inset:0;z-index:62;background:rgba(3,6,14,.88);backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px);display:flex;align-items:flex-end;justify-content:center;padding:12px;padding-bottom:max(12px,env(safe-area-inset-bottom))}
+.fjsheet[hidden]{display:none}
+.fjcard{width:100%;max-width:560px;max-height:92vh;overflow:auto;box-sizing:border-box;background:var(--panel);border:1px solid var(--gold);border-radius:14px;padding:16px;display:grid;gap:12px;box-shadow:0 0 30px rgba(255,190,80,.18);animation:fjin .25s ease-out}
+@keyframes fjin{from{transform:translateY(24px);opacity:0}}
+.fjcard h3{margin:0;font-size:1.2rem;line-height:1.3}
+.fjtop{display:flex;justify-content:space-between;align-items:center;gap:8px}
+.fjtag{font-family:var(--f-mono);font-size:.7rem;letter-spacing:.12em;color:var(--gold)}
+.fjstep{font-family:var(--f-mono);font-size:.78rem;color:var(--glow)}
+.fjrir{color:var(--gold)}
+.fjsets{display:flex;flex-wrap:wrap;gap:6px}
+.fjset{font-family:var(--f-mono);font-size:.75rem;padding:4px 8px;border:1px solid var(--line);border-radius:999px;color:var(--muted)}
+.fjset.ok{border-color:var(--good);color:var(--good)}
+.fjset.cur{border-color:var(--glow);color:var(--fg)}
+.fjctr{display:flex;align-items:center;justify-content:center;gap:12px}
+.fjpm{min-width:56px;min-height:56px;font-size:1.6rem;line-height:1;padding:0}
+.fjval{font-family:var(--f-mono);font-size:2.6rem;min-width:2.5ch;text-align:center;color:var(--glow)}
+.fjbig{min-height:50px;font-size:1rem;width:100%}
+.fjrest{font-family:var(--f-mono);font-size:.9rem;color:var(--muted);min-height:1.3em;text-align:center}
+.fjrest.on{color:var(--glow)}
+.fjnav{justify-content:space-between}
+.fjstop summary{cursor:pointer;color:var(--gold);min-height:32px;font-size:.85rem}
+.fjstop p{margin:6px 0 0}
+.fjsafe{margin:0;padding:12px;border-left:3px solid var(--gold);background:rgba(255,190,80,.06);line-height:1.45}
+.fjpt{display:grid;gap:8px}
+.fjptr{display:flex;align-items:center;justify-content:space-between;gap:10px}
+.fjptr button{min-width:72px;min-height:40px}
+.fjpil{display:grid;gap:8px;padding:10px;border:1px solid var(--line);border-radius:10px}
+.fjpil .row button{flex:1;min-height:44px}
+.fjxp{font-family:var(--f-mono);font-size:1.3rem;color:var(--gold)}
+.fjsum{margin:0;padding-left:18px}
+.fjoffer{display:grid;gap:8px;padding:12px;border:1px solid var(--glow);border-radius:10px;background:#0a1222}
+.fjoffer .row button{flex:1;min-height:44px}
+.fjup{justify-self:center;font-family:var(--f-mono);padding:8px 14px;border:1px solid var(--gold);border-radius:999px;color:var(--gold);animation:fjpop .6s ease-out}
+@keyframes fjpop{0%{transform:scale(.6);opacity:0}60%{transform:scale(1.08)}100%{transform:scale(1)}}
+.fjlv .fjbody{display:grid;gap:10px}
+.fjmov summary{cursor:pointer;min-height:36px;font-size:.88rem}
+.fjlad{margin:6px 0;padding-left:20px}
+.fjlad li.ok{color:var(--good)}
+.fjlad li.cur{color:var(--fg);font-weight:700}
+.fjlad li{color:var(--muted)}
+.fjsub{display:grid;gap:6px}
+@media (prefers-reduced-motion:reduce){.fjcard,.fjup{animation:none}}
+.lemb .lembchips{display:flex;flex-wrap:wrap;gap:8px;justify-content:center}
+.lemb .lembchip{min-width:56px;min-height:44px;padding:8px 14px;border-radius:999px;border:1px solid var(--line);background:#0a1222;color:var(--fg);font:inherit;font-weight:600;cursor:pointer}
+.lemb .lembchip.on{border-color:var(--accent);background:rgba(0,212,255,.16);color:var(--glow);box-shadow:0 0 0 1px var(--accent)}
+.lemb .lembchip:focus-visible{outline:2px solid var(--glow);outline-offset:2px}
+.lemb .lembtime{min-height:44px;padding:8px 12px;border-radius:8px;border:1px solid var(--line);background:#0a1222;color:var(--fg);font:inherit;align-self:center}
+.lemb .lembbt{justify-content:center;gap:10px;flex-wrap:wrap}
+.lemb .lembbt button{min-height:44px}
+#lembMais{min-height:44px;margin:6px 0}
 .vsnews .card{max-width:360px;text-align:left}
 .vsnews .tag,.vsnews h3{text-align:center}
 .vsnews .vsl{list-style:none;margin:2px 0;padding:0;display:grid;gap:8px}
@@ -1288,6 +1412,70 @@ section[data-hbg]>:not(.hrbg){position:relative;z-index:1}
 .gd.gdmini .gdl li:not(.now),.gd.gdmini .gdoff{display:none}
 .gd .qhead[role=button]{cursor:pointer}
 .gd.gdmini .qhead .xp::after{content:" ▾"}
+/* Hoje no celular pequeno: selo PRÓXIMA legível (era 9px) e título do Comece por aqui com 44px de toque */
+.quest.next .nextlbl{font-size:.72rem;pointer-events:none}
+.gd .qhead{min-height:44px;align-items:center}
+/* ---- Arena do Sistema (tools/arena.js) ---- */
+.arhd,.lrhd{display:flex;justify-content:space-between;align-items:center;gap:8px;margin-bottom:6px}
+.arhd h2,.lrhd h2{margin:0}
+.arstats{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:6px;margin:10px 0}
+.arst{display:flex;flex-direction:column;align-items:center;padding:8px 4px;border-radius:10px;border:1px solid var(--line,#1f2e4d);background:#0a1222}
+.arst b{font-family:var(--f-hud,inherit);font-size:.95rem}
+.arst small{font-size:.68rem;color:var(--muted,#9fb0c8)}
+.arnext{display:flex;align-items:center;gap:10px;padding:8px;border-radius:12px;border:1px solid var(--line,#1f2e4d);background:linear-gradient(90deg,rgba(123,44,255,.12),transparent)}
+.arico{width:64px;height:52px;flex:none}.arico svg{width:100%;height:100%;display:block}
+.artx{display:flex;flex-direction:column;min-width:0}.artx b{font-size:.92rem}.artx small{color:var(--muted,#9fb0c8);font-size:.74rem}
+.arfol{display:flex;align-items:center;gap:8px;margin:10px 0 8px}
+.ardots{display:flex;gap:5px}.ardots i{width:12px;height:12px;border-radius:50%;border:1px solid var(--line,#1f2e4d);background:#0a1222}
+.ardots i.on{background:var(--gold,#f2c14e);border-color:var(--gold,#f2c14e);box-shadow:0 0 8px rgba(242,193,78,.6)}
+.ardots i.used{background:#2a3550}
+.arGo{width:100%;min-height:52px;font-size:1rem}
+.arwarn{color:#ffb86b;margin-top:6px}.arok{color:var(--good,#35d49a);margin-top:6px}
+.arhow{margin-top:8px}.arhow ul{margin:6px 0 0;padding-left:18px;display:grid;gap:3px}
+.armodal{position:fixed;inset:0;z-index:85;background:var(--bg,#02070d);display:flex;align-items:stretch;justify-content:center;overflow:auto;animation:arIn .25s ease both}
+@keyframes arIn{from{opacity:0}to{opacity:1}}
+.arcard{width:100%;max-width:460px;display:flex;flex-direction:column;gap:8px;padding:max(14px,env(safe-area-inset-top)) 14px max(14px,env(safe-area-inset-bottom));box-sizing:border-box}
+.artop{display:flex;align-items:center;gap:8px}
+.artag{font-family:var(--f-hud,inherit);font-size:.7rem;letter-spacing:.1em;padding:3px 8px;border-radius:6px;border:1px solid var(--line,#1f2e4d);color:var(--glow,#7cf4ff)}
+.arname{flex:1;min-width:0;font-size:.95rem;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.arflee{min-height:44px}
+.arstage{height:min(34vh,230px);display:flex;justify-content:center}.arstage svg{height:100%;width:auto;max-width:100%}
+.arstage.hit,.arbar.hit{animation:arHit .35s linear}
+@keyframes arHit{20%{opacity:.45}40%{opacity:1}60%{opacity:.6}100%{opacity:1}}
+.arbar{display:grid;grid-template-columns:62px minmax(0,1fr) 58px;align-items:center;gap:8px}
+.arbl{font-size:.75rem;color:var(--muted,#9fb0c8)}.arbv{font-family:var(--f-mono,monospace);font-size:.78rem;text-align:right}
+.arbt{height:10px;border-radius:6px;background:#111a2c;overflow:hidden;border:1px solid var(--line,#1f2e4d)}
+.arbt i{display:block;height:100%;background:linear-gradient(90deg,#35d49a,#7cf4ff);transition:width .4s}
+#arFoeBar .arbt i{background:linear-gradient(90deg,#ff4fd8,#ff6b6b)}
+.arbar.arlow .arbt i{background:#ff6b6b}
+.arsay{font-style:italic;font-size:.82rem;color:var(--muted,#9fb0c8);text-align:center;min-height:1.2em}
+.arroll{min-height:62px;display:flex;align-items:center;justify-content:center;gap:10px;padding:8px;border-radius:12px;border:1px solid var(--line,#1f2e4d);background:#0a1222;font-size:.86rem;text-align:left}
+.arroll.good{border-color:rgba(53,212,154,.5)}.arroll.bad{border-color:rgba(255,107,107,.5)}.arroll.crit{border-color:var(--gold,#f2c14e);box-shadow:0 0 14px rgba(242,193,78,.35)}
+.ard20{position:relative;width:46px;height:46px;flex:none;display:inline-flex;align-items:center;justify-content:center}
+.ard20{color:var(--glow,#7cf4ff)}.ard20.crit{color:var(--gold,#f2c14e)}.ard20.fail{color:#ff6b6b}.ard20 svg{position:absolute;inset:0;width:100%;height:100%}
+.ard20>b{position:relative;top:4px;font-family:var(--f-hud,inherit);font-size:.95rem;color:#fff}
+.ard20.crit>b{color:var(--gold,#f2c14e)}.ard20.fail>b{color:#ff6b6b}
+.aracts{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:2px}
+.aract{min-height:60px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;border-radius:12px;border:1px solid var(--line,#1f2e4d);background:#0d1830;color:var(--fg,#e6ecf7);font:inherit;cursor:pointer}
+.aract b{font-size:.98rem}.aract small{font-size:.7rem;color:var(--muted,#9fb0c8)}
+.aract:not(:disabled):active{background:#14244a}
+.aract:disabled{opacity:.45}
+.arres{padding:14px;border-radius:14px;border:1px solid var(--line,#1f2e4d);background:#0a1222;text-align:center}
+.arres.win{border-color:var(--gold,#f2c14e)}.arres b{font-family:var(--f-hud,inherit);font-size:1.1rem;letter-spacing:.06em}
+.arres .row{justify-content:center;flex-wrap:wrap}
+/* ---- Meta de leitura (tools/leitura.js) ---- */
+.lrgoals{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin:10px 0 4px}
+.lrgoals button{min-height:48px}.lrgoals button.on{border-color:var(--accent,#00d4ff)}
+.lrbar{height:10px;border-radius:6px;background:#111a2c;overflow:hidden;border:1px solid var(--line,#1f2e4d);margin:6px 0 10px}
+.lrbar i{display:block;height:100%;background:#4dabf7;transition:width .4s}.lrbar.hit i{background:var(--good,#35d49a)}
+.lrbar.thin{height:6px;margin:6px 0}.lrbar.thin i{background:#b197fc}
+.lradd{display:grid;grid-template-columns:repeat(3,1fr) 64px auto;gap:6px;align-items:stretch}
+.lradd button{min-height:48px;padding:0 6px}
+.lradd input,.lrform input{min-height:48px;box-sizing:border-box;width:100%;padding:8px;border-radius:8px;border:1px solid var(--line,#1f2e4d);background:#0a1222;color:var(--fg,#e6ecf7);font:inherit}
+@media (max-width:360px){.lradd{grid-template-columns:repeat(3,1fr)}.lradd input{grid-column:1/3}}
+.lrbook{margin:10px 0 4px;padding:10px;border-radius:10px;border:1px dashed var(--line,#1f2e4d)}
+.lrbt{display:flex;justify-content:space-between;gap:8px;align-items:baseline}.lrbt b{min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.lrform{display:grid;grid-template-columns:minmax(0,1fr) 110px;gap:6px}.lrform button{grid-column:1/-1;min-height:48px}
 .bpgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(96px,1fr));gap:6px;margin:6px 0}
 .bptile{border:1px solid var(--line);border-radius:8px;padding:8px;display:flex;flex-direction:column;gap:2px;background:rgba(0,0,0,.15);color:var(--fg)}
 .bptile b{font-size:1.25rem;color:var(--glow);font-variant-numeric:tabular-nums}.bptile span{font-size:.7rem;line-height:1.2}
@@ -1835,11 +2023,14 @@ function render(){
   const list=((cfg&&cfg.quests)||[]).filter(q=>visibleToday(q,dow,tk)).sort((a,b)=>(b.main?2:b.once?1:0)-(a.main?2:a.once?1:0)).concat(prog.extra[tk]||[]);
   if(!list.length){const e=document.createElement("div");e.className="empty";e.textContent=cfg?"Nenhuma quest para hoje. Adicione uma quest rápida abaixo, ou toque em Refazer meu perfil.":"Responda o perfil para montar suas quests. Enquanto isso, adicione uma quest rápida abaixo.";qEl.append(e);}
   let dayxp=0;for(const e of done)dayxp+=(e.xp||0)+(e.bonus||0);
-  $("dayxp").textContent=done.length?("Hoje: "+done.length+" concluída(s) · +"+dayxp+" XP"):"Comece pela primeira. Só uma já deixa o dia ativo.";
+  const nFeitas=done.filter(e=>!/^(ach|checkin|tip|dun|boss|sq|adm|hook|volta):/.test(String(e.q))).length;
+  $("dayxp").textContent=nFeitas?("Hoje: "+nFeitas+" concluída(s) · +"+dayxp+" XP"):"Comece pela primeira. Só uma já deixa o dia ativo.";
   const pens=penalties();const open=pens.filter(p=>!p.forgiven);const redeem=pens.find(p=>p.redeemable&&!p.forgiven);
   const debtEl=$("debt");
   if(open.length){debtEl.hidden=false;
-    debtEl.textContent="Dívida: −"+debtXP()+" XP por quests principais não feitas."+(redeem?" Faça todas as principais hoje (nem que seja o mínimo) e a dívida de ontem (−"+redeem.amount+") é perdoada.":"");}
+    // ganho na frente, sem culpa (revisão 26/11): o que dá para recuperar hoje vem antes do que está em aberto
+    debtEl.textContent=redeem?("Recupere "+redeem.amount+" XP hoje: faça todas as principais (o mínimo vale). Dívida em aberto: −"+debtXP()+" XP.")
+      :("Dívida: −"+debtXP()+" XP de dias sem as principais. Ela sai sozinha em até "+DEBT_DAYS+" dias.");}
   else debtEl.hidden=true;
   const gNow=document.createElement("div");gNow.className="qgroup";
   const dExtra=document.createElement("details");const sExtra=document.createElement("summary");dExtra.append(sExtra);
@@ -2359,10 +2550,13 @@ function stRender(){const p=stPanel();if(!p)return;const s=stS(),tk=todayKey();
     const bk=stSelect("stCb",[["2","2 blocos por dia"],["3","3 blocos"],["4","4 blocos"],["6","6 blocos"],["8","8 blocos"]],String(c.blocks||4));
     const th=stInput("stTh","number","Hora (0-23)");th.min="0";th.max="23";th.value=tr?tr.hour:"";
     const sl=stInput("stSl","number","Ex.: 23");sl.min="0";sl.max="23";sl.value=c.sleep!=null?c.sleep:"";
-    const dw=stEl("div","stdays");const DN=["S","T","Q","Q","S","S","D"],DL=["segunda","terça","quarta","quinta","sexta","sábado","domingo"];const sel=new Set(tr?tr.days:[]);
+    const dw=stEl("div","stdays");const DN=["S","T","Q","Q","S","S","D"],DL=["segunda","terça","quarta","quinta","sexta","sábado","domingo"];// quem usa o Forja já marcou os dias de treino lá: vêm pré-marcados, falta só a hora
+    const fj=!tr&&c.train!==false&&prog.forja&&Array.isArray(prog.forja.dias)&&Array.isArray(prog.forja.ses)&&prog.forja.ses.length?prog.forja.dias.filter(d=>d>=0&&d<7):null;
+    const sel=new Set(tr?tr.days:fj||[]);
     DN.forEach((x,i)=>{const b=stBtn(x,"ghost stday"+(sel.has(i)?" on":""),()=>{sel.has(i)?sel.delete(i):sel.add(i);b.classList.toggle("on");b.setAttribute("aria-pressed",sel.has(i));},"Treino na "+DL[i]);b.setAttribute("aria-pressed",sel.has(i));dw.append(b);});
     f.append(stField("Meta de blocos",bk),stEl("span","sm muted","Dias de treino"),dw,stField("Hora do treino",th),stField("Hora de dormir",sl));
     if(tr&&tr.auto)f.append(stEl("div","sm muted","Treino lido da sua rotina. Salve para ajustar."));
+    else if(fj&&fj.length)f.append(stEl("div","sm muted","Dias do Forja já marcados. Diga a hora e salve."));
     f.append(stEl("div","sm muted","Em dia de treino a meta cai 1 bloco, e nada de estudo 30 min antes e depois."));
     f.append(stBtn("Salvar","go",()=>{c.blocks=+bk.value;const h=th.value===""?null:Math.max(0,Math.min(23,+th.value));
       c.train=h==null||!sel.size?false:{days:[...sel].sort(),hour:h,dur:60};c.sleep=sl.value===""?null:Math.max(0,Math.min(23,+sl.value));save();stRender();toast("Ritmo salvo.");}));
@@ -2375,7 +2569,7 @@ function stAnswer(ok){if(!stRev)return;const c=stRev.q.shift();const real=stC().
 function stAlert(){const host=document.querySelector('section[data-tab="hoje"].panel');if(!host)return;let a=$("stAlert");
   const pend=stS().tasks.filter(t=>!t.done&&t.due&&stDays(t.due)<=7).sort(stOrder);
   if(!pend.length){if(a)a.remove();return;}
-  if(!a){a=stEl("button","stalert");a.type="button";a.id="stAlert";a.addEventListener("click",()=>{if(typeof goTab==="function")goTab("foco");setTimeout(()=>{const p=$("stPanel");if(p)p.scrollIntoView({block:"start"});},50);});host.append(a);}
+  if(!a){a=stEl("button","stalert");a.type="button";a.id="stAlert";a.addEventListener("click",()=>{if(typeof goTab==="function")goTab("foco");stRender();setTimeout(()=>{const p=$("stPanel");if(p)p.scrollIntoView({block:"start"});},50);});host.append(a);}
   const t=pend[0],dd=stDays(t.due);a.className="stalert"+(dd<0?" late":dd<=3?" hot":"");
   a.textContent=(dd<0?"⚠️ ":"📚 ")+t.t+": "+stWhen(dd)+(pend.length>1?" · +"+(pend.length-1)+" prazo"+(pend.length>2?"s":"")+" na semana":"");}
 // ---- ganchos no foco que já existe ----
@@ -2383,7 +2577,9 @@ function stAlert(){const host=document.querySelector('section[data-tab="hoje"].p
 {const fs=$("focusStop");if(fs)fs.addEventListener("click",()=>{if(prog.st&&prog.st.cur){prog.st.cur=null;prog.st.curEnd=null;save();stRender();}});}
 {const tb=document.querySelector('#tabbar [data-go="foco"]');if(tb)tb.addEventListener("click",()=>setTimeout(stRender,0));}
 // não refaz o painel com a pessoa digitando nele (o texto do formulário não se perde)
-{const _sr=render;render=function(){_sr.apply(this,arguments);try{const p=$("stPanel"),ae=document.activeElement;if(p&&ae&&p.contains(ae)&&/INPUT|TEXTAREA|SELECT/.test(ae.tagName)){stAlert();return;}stRender();}catch(e){}};}
+{const _sr=render;render=function(){_sr.apply(this,arguments);try{const p=$("stPanel"),ae=document.activeElement;
+  // fora da aba Foco só o alerta de prazo é atualizado (o painel é refeito ao abrir a aba)
+  if(document.body.dataset.tab!=="foco"||(p&&ae&&p.contains(ae)&&/INPUT|TEXTAREA|SELECT/.test(ae.tagName))){stS();stAlert();return;}stRender();}catch(e){}};}
 // ---------- Perfil e geração de quests (onboarding) ----------
 const DN=["seg","ter","qua","qui","sex","sáb","dom"];
 const FOCI=[["estudos","Estudos"],["sono","Dormir melhor"],["corpo","Saúde e corpo"],["carreira","Carreira"],["dinheiro","Dinheiro"],["relac","Pessoas que amo"],["casa","Casa em ordem"],["remedio","Remédios no horário"],["agua","Beber água"],["tela","Menos tempo de tela"],["leitura","Ler mais"]];
@@ -2824,7 +3020,7 @@ function sysLine(){const dt=new Date();const h=dt.getHours();const nm=((cfg&&cfg
   if(!ms.length)return hi+(done.length?"Dia ativo. Quer pegar uma extra?":"Sem missão principal hoje. Uma tarefa já ativa o dia.");
   if(!left.length)return hi+"Missão diária completa. Sequência protegida. Descanse, você mereceu.";
   const nx=left[0];
-  if(h>=20)return hi+"Faltam "+left.length+". Sugestão: "+(nx.minTitle||nx.title)+" (o mínimo já vale).";
+  if(h>=20)return hi+(left.length>1?"Faltam ":"Falta ")+left.length+". Sugestão: "+(nx.minTitle||nx.title)+" (o mínimo já vale).";
   return hi+(left.length<ms.length?"Bom ritmo. ":"")+"Próxima missão: "+nx.title+".";}
 function typeSys(el,t){if(el.dataset.t===t)return;el.dataset.t=t;clearInterval(typeSys.i);
   if(matchMedia("(prefers-reduced-motion: reduce)").matches||document.body.dataset.tab!=="hoje"){el.textContent=t;return;}
@@ -2932,8 +3128,11 @@ $("dunOpen").addEventListener("click",()=>{const wk=dkey(dunWeek());if(Object.ke
 // ---------- Aviso diário do Sistema: vai pela agenda do celular (arquivo .ics com todos os lembretes) ----------
 const SYSTIP_KEY="ascensao-systip";
 function sysTipUI(){let d="";try{d=localStorage.getItem(SYSTIP_KEY)||"";}catch(e){}const el=$("sysTip");if(!el)return;
-  const days=1;el.hidden=!!d||!cfg||cfg.blank||!!document.querySelector(".sysmodal")||days<1;}
-$("sysTipYes").addEventListener("click",()=>{try{localStorage.setItem(SYSTIP_KEY,"1");}catch(e){}$("sysTip").hidden=true;if($("calIcs"))$("calIcs").click();toast("Abriu a agenda? Toque em Adicionar tudo. O aviso do Sistema vem junto.");});
+  const days=1;el.hidden=!!d||!cfg||cfg.blank||[...document.querySelectorAll(".sysmodal:not([hidden])")].some(m=>m.getClientRects().length)||days<1;}
+// "Ativar" abre a oferta de 1 evento diário com chips de horário (tools/lemb.js): .ics no iPhone/PC, Google Agenda no Android
+$("sysTipYes").addEventListener("click",()=>{$("sysTip").hidden=true;
+  if(typeof window.lembOffer==="function"){window.lembOffer(ok=>{try{localStorage.setItem(SYSTIP_KEY,ok?"1":"0");}catch(e){}});return;}
+  try{localStorage.setItem(SYSTIP_KEY,"1");}catch(e){}if($("calIcs"))$("calIcs").click();});
 $("sysTipNo").addEventListener("click",()=>{try{localStorage.setItem(SYSTIP_KEY,"0");}catch(e){}$("sysTip").hidden=true;});
 
 // ---------- Beta: números anônimos com consentimento (LGPD). Nada sai sem o "sim". ----------
@@ -2977,7 +3176,12 @@ for(const bt of document.querySelectorAll("#tabbar button"))bt.addEventListener(
 function ciStreak(){let n=0;const d=new Date();d.setDate(d.getDate()-1);for(let i=0;i<365;i++){if((prog.log[dkey(d)]||[]).some(e=>String(e.q).startsWith("checkin:")))n++;else break;d.setDate(d.getDate()-1);}return n;}
 function dailyCheckin(){if(document.body.classList.contains("insm")){clearTimeout(dailyCheckin._t);dailyCheckin._t=setTimeout(dailyCheckin,3000);return;}if(!cfg||cfg.blank||($("onb")&&!$("onb").hidden)||document.getElementById("clsModal"))return;const tk=todayKey();if((prog.log[tk]||[]).some(e=>String(e.q).startsWith("checkin:")))return;
   if(dailyCheckin.shown===tk)return;dailyCheckin.shown=tk;const s=ciStreak()+1;const bonus=Math.min(10,(s-1)*2);
-  sysPop("CHECK-IN DIÁRIO","Dia "+s+(s>1?" seguido":""),"Você apareceu, e isso já conta. +10 XP"+(bonus?" e +"+bonus+" de bônus pela sequência de check-ins.":". Volte amanhã para ganhar bônus."),()=>{
+  // 1º dia de quem acabou de criar o jogo: o check-in entra sozinho, sem janela. "Você apareceu" logo depois de "Criar meu jogo"
+  // era 1 toque a mais entre a pessoa e a 1ª missão (revisão noturna 26/11). Do 2º dia em diante a janela volta igual.
+  if(s===1&&cfg.startDate===tk&&!Object.keys(prog.log||{}).some(k=>k!==tk&&(prog.log[k]||[]).length)){
+    addXP({q:"checkin:"+tk,kind:"checkin",xp:10,stat:"foco",bonus:0,t:new Date().toISOString()},"Check-in do dia 1: +10 XP");
+    if(typeof sendRank==="function")sendRank("checkin",true);return;}
+  sysPop("CHECK-IN DIÁRIO",s>1?s+" dias de check-in":"Dia 1","Você apareceu, e isso já conta. +10 XP"+(bonus?" e +"+bonus+" de bônus pela sequência de check-ins.":". Volte amanhã para ganhar bônus."),()=>{
     if((prog.log[todayKey()]||[]).some(e=>String(e.q).startsWith("checkin:")))return;
     addXP({q:"checkin:"+todayKey(),kind:"checkin",xp:10,stat:"foco",bonus,t:new Date().toISOString()},"Check-in feito: +"+(10+bonus)+" XP");
     if(typeof sendRank==="function")sendRank("checkin",true);},"Fazer check-in");}
@@ -3306,7 +3510,7 @@ function shieldAuto(){if(!cfg||cfg.blank||($("onb")&&!$("onb").hidden))return;co
   const before=stRun(d);if(!before){save();return;}
   if(gap.length>s.n){save();if(before>=3)sysPop("NOVA SEQUÊNCIA","Recomeço, sem culpa","Sua sequência de "+before+(before===1?" dia":" dias")+" parou, e tudo bem: o seu XP e o seu nível continuam. Hoje é o dia 1 de novo. Uma tarefa já acende o fogo.",null,"Bora");return;}
   for(const k of gap)s.used[k]=1;s.n-=gap.length;save();render();
-  sysPop("ESCUDO ATIVADO","🛡️ Sequência salva: "+streakDays()+" dias",(gap.length>1?"Dois dias":"Ontem")+" passou em branco e o escudo segurou o fogo sozinho. Faça 1 tarefa hoje para ela seguir. Escudos restantes: "+s.n+".",null,"Valeu, Sistema");}
+  sysPop("ESCUDO ATIVADO","🛡️ Sequência salva: "+streakDays()+(streakDays()===1?" dia":" dias"),(gap.length>1?"Dois dias ficaram":"Ontem ficou")+" sem tarefa e o escudo segurou o fogo sozinho. Faça 1 tarefa hoje para ela seguir. Escudos restantes: "+s.n+".",null,"Valeu, Sistema");}
 const ST_TXT={1:["Sequência iniciada 🔥","Dia 1. Volte amanhã e vira 2. Uma tarefa por dia já mantém o fogo aceso."],
   3:["3 dias seguidos 🔥","Seu cérebro já está pegando o ritmo. Com 7 dias você ganha um escudo de sequência."],
   7:["1 semana! 🛡️ +1 escudo","Se um dia passar em branco, o escudo salva sua sequência sozinho. Você guarda até 2."]};
@@ -3590,6 +3794,9 @@ function zapUI(){let p=$("zapPanel");const qp=$("quests")&&$("quests").closest("
   const g=zapEl("div","zapgrid");for(const z of list){const d=zapDone(z.id);const b=zapEl("button","zapc"+(d?" done":""));b.type="button";b.dataset.id=z.id;if(d)b.setAttribute("aria-label",z.t+": concluído");
     b.append(zapEl("span","ic",d?"✓":z.ic),zapEl("span","tt",z.t));if(zapPhotos().p[z.id])b.append(zapEl("span","ph","📸"));
     b.addEventListener("click",()=>{if(!d)zapOpen(z);});g.append(b);}p.append(g);}
+// o painel é refeito a cada render: se o foco estava num cartão (ex.: voltou do desafio com Esc), ele volta para o cartão novo
+{const _z=zapUI;zapUI=function(){const a=document.activeElement;const id=a&&a.classList&&a.classList.contains("zapc")&&a.dataset.id;const r=_z.apply(this,arguments);
+  if(id){const c=document.querySelector('#zapPanel .zapc[data-id="'+id+'"]');if(c&&document.activeElement!==c)try{c.focus({preventScroll:true});}catch(e){}}return r;};}
 {const _rr=renderRankUI;renderRankUI=function(){_rr();try{zapUI();}catch(e){}};}
 {const _r=render;render=function(){_r.apply(this,arguments);try{zapUI();}catch(e){}};}
 setTimeout(()=>{try{zapUI();}catch(e){}},0);
@@ -3618,6 +3825,87 @@ function gdGo(k){if(k==="q"){const b=document.querySelector("#quests .quest.next
 document.addEventListener("click",e=>{const b=e.target.closest&&e.target.closest('nav button[data-go="prog"]');if(b&&prog){prog.gd=prog.gd||{};if(!prog.gd.rank){prog.gd.rank=1;save();}}},true);
 {const _r=render;render=function(){_r.apply(this,arguments);try{gdUI();}catch(e){}};}
 setTimeout(()=>{try{gdUI();}catch(e){}},50);
+
+// ---------- Revisão noturna (26/11): atritos do usuário novo ----------
+// 1) Madrugada (0h-5h): as principais têm cadeado e o passo 1 do guia ("Toque em ▶") tocava no ▶ trancado (nada acontecia).
+//    Agora abre a 1ª missão liberada (mesmo extra); se nenhuma estiver liberada, explica a hora e abre um desafio relâmpago.
+// 2) A mensagem do [SISTEMA] com tudo trancado aponta o que dá para fazer agora.
+// Não grava nada novo: só usa o que já existe (gdGo, sysLine, desafios relâmpago).
+function ntLockHour(){let h=null;for(const c of document.querySelectorAll("#quests .quest.qtlock[data-q]")){try{const q=questById(c.dataset.q);const l=q&&typeof qtLocked==="function"?qtLocked(q):null;if(l!=null&&(h==null||l<h))h=l;}catch(e){}}return h;}
+// 1ª missão liberada (principal ou extra)
+function ntFreeMs(){return document.querySelector("#quests .quest.next .msgo:not(:disabled)")||[...document.querySelectorAll("#quests .msgo")].find(b=>!b.disabled)||null;}
+if(typeof gdGo==="function"){const _gd=gdGo;gdGo=function(k){try{
+  // sem PRÓXIMA liberada, o original tocava no ▶ trancado (nada acontecia): vai para a 1ª liberada, mesmo extra
+  const nx=document.querySelector("#quests .quest.next .msgo:not(:disabled)"),fr=ntFreeMs();
+  if(k==="q"&&!nx&&fr){fr.scrollIntoView({block:"center",behavior:matchMedia("(prefers-reduced-motion: reduce)").matches?"auto":"smooth"});setTimeout(()=>{try{fr.click();}catch(e){}},350);return;}
+  if(k==="q"&&!fr&&document.querySelector("#quests .msgo")){
+  const h=ntLockHour();const z=document.querySelector(".zapc:not(.done)");
+  toast((h!=null?"🔒 Suas missões liberam às "+h+"h. ":"🔒 Suas missões ainda estão trancadas. ")+(z?"Agora: 1 desafio relâmpago ⚡ +10 XP.":""));
+  if(z){z.scrollIntoView({block:"center",behavior:matchMedia("(prefers-reduced-motion: reduce)").matches?"auto":"smooth"});setTimeout(()=>{try{z.click();}catch(e){}},450);}
+  return;}}catch(e){}return _gd.apply(this,arguments);};}
+// embrulha depois de todos os módulos (qtidy também embrulha sysLine)
+setTimeout(()=>{if(typeof sysLine!=="function")return;const _sl=sysLine;sysLine=function(){const t=_sl.apply(this,arguments);
+  try{if(/libera às \d+h/.test(t)&&!ntFreeMs()&&document.querySelector(".zapc:not(.done)"))return t+" Agora vale 1 desafio relâmpago ⚡ (+10 XP).";}catch(e){}return t;};
+  try{render();}catch(e){}},0);
+// 3) Botão Voltar do Android (e gesto de voltar) com a missão ou o desafio relâmpago aberto: antes fechava o app inteiro
+//    (só havia 1 página no histórico). Agora o 1º Voltar só fecha a folha, como em diálogo de app nativo.
+//    Abrir a folha empilha 1 estado; fechar pelo botão desempilha. Nada é salvo.
+let ntIn=false,ntSkip=false;
+new MutationObserver(()=>{const on=document.body.classList.contains("inmission");if(on===ntIn)return;ntIn=on;
+  try{if(on)history.pushState({ntSheet:1},"");else if(history.state&&history.state.ntSheet){ntSkip=true;history.back();}}catch(e){}}).observe(document.body,{attributes:true,attributeFilter:["class"]});
+addEventListener("popstate",()=>{if(ntSkip){ntSkip=false;return;}if(!document.body.classList.contains("inmission"))return;ntIn=false;
+  try{if($("msSheet")&&!$("msSheet").hidden)msClose();else if($("zapSheet")&&!$("zapSheet").hidden)zapClose();else document.body.classList.remove("inmission");}catch(e){}});
+// 4) Marcou sem querer? "Desfazer" no aviso por 5 s depois de concluir uma tarefa (antes: abrir "Concluídas" e achar o botão).
+//    Desfazer = o mesmo que desmarcar pela lista (toggle de novo). Nada novo é salvo.
+let ntPend=null,ntTgAt=0;
+function ntAttach(){const t=$("toast");if(!t||!ntPend||Date.now()>ntPend.until||t.querySelector(".ntundo"))return;const {q,kind}=ntPend;
+  // linha própria com o nome da tarefa: junto de "Check-in feito" o "Desfazer" parecia desfazer o check-in
+  const row=document.createElement("span");row.className="ntrow";row.textContent="✓ "+(((typeof qtShort==="function"&&qtShort(q))||q.title)+"").slice(0,32);
+  const u=document.createElement("button");u.type="button";u.className="link ntundo";u.textContent="Desfazer";row.append(" ",u);
+  u.addEventListener("click",()=>{ntPend=null;const on=(prog.log[todayKey()]||[]).find(e=>e.q===q.id&&e.kind===kind);if(on)toggle(q,kind);const c=$("muChip");if(c)c.remove();toast("Desfeito.");});
+  t.append(row);clearTimeout(toast._t);toast._t=setTimeout(()=>{t.hidden=true;},Math.max(1500,ntPend.until-Date.now()));}
+function ntUndo(q,kind){ntPend={q,kind,until:Date.now()+5000};setTimeout(()=>{try{const t=$("toast");if(!t)return;
+  if(t.hidden||!t.textContent.trim())toast("Feito!");else ntAttach();}catch(e){}},120);}
+// outro aviso no meio dos 5 s (conquista, baú, check-in) não some com o "Desfazer"
+setTimeout(()=>{if(typeof toast!=="function")return;const _to=toast;toast=function(){const r=_to.apply(this,arguments);try{ntAttach();}catch(e){}return r;};},0);
+setTimeout(()=>{if(typeof toggle!=="function")return;const _t=toggle;toggle=function(q,kind){let had=true;try{had=(prog.log[todayKey()]||[]).some(e=>e.q===q.id);}catch(e){}
+  const r=_t.apply(this,arguments);ntTgAt=Date.now();try{const now=(prog.log[todayKey()]||[]).find(e=>e.q===q.id);if(!had&&now)ntUndo(q,now.kind);}catch(e){}return r;};},0);
+// 5) Volta depois de faltar um dia: antes a 1ª tela não tinha nenhuma tarefa (ranking, avatar, chefe, desafios) e a primeira
+//    ficava a ~2 telas de rolagem, com "Dívida" logo acima. Agora, no topo da aba Hoje, 1 cartão sem cobrança e 1 toque que
+//    abre a 1ª missão liberada (o mínimo dela já vale). Some quando a 1ª tarefa do dia é feita. Nada é salvo ("Agora não"
+//    vale só até fechar o app).
+const NT_NOT=/^(ach|checkin|tip|dun|boss|sq|adm|hook|volta|rec|smb):/;
+let ntVoltaOff=false;
+function ntReal(k){return ((prog&&prog.log&&prog.log[k])||[]).some(e=>!NT_NOT.test(String(e.q)));}
+function ntMissed(){if(!prog||!prog.log||!cfg||cfg.blank)return false;const tk=todayKey();if(ntReal(tk))return false;
+  const y=new Date();y.setHours(12,0,0,0);y.setDate(y.getDate()-1);const yk=dkey(y);if(ntReal(yk)||(prog.rest||{})[yk])return false;
+  return Object.keys(prog.log).some(k=>k<yk&&ntReal(k));}
+function ntVolta(){let c=$("ntVolta");const show=!ntVoltaOff&&ntMissed()&&!document.body.classList.contains("onboarding")&&!($("onb")&&!$("onb").hidden);
+  // o presente de volta dos primeiros dias (hook) já faz esse papel: não repete
+  const hk=$("hkPanel");if(!show||(hk&&!hk.hidden&&hk.dataset.mode==="gift")){if(c)c.hidden=true;return;}
+  const b=ntFreeMs();const card=b&&b.closest(".quest[data-q]");let q=null;try{q=card&&questById(card.dataset.q);}catch(e){}
+  const first=document.querySelector('section[data-tab="hoje"]');if(!first)return;
+  if(!c){c=document.createElement("section");c.id="ntVolta";c.className="panel ntvolta";c.dataset.tab="hoje";c.dataset.sf="1";c.setAttribute("aria-live","polite");}
+  if(c.nextElementSibling!==first&&c!==first)first.before(c);
+  c.hidden=false;c.textContent="";const h=document.createElement("h2");h.textContent="👋 Que bom te ver de volta";
+  const p=document.createElement("p");p.className="sm";p.textContent="Sem cobrança: ontem passou. Recomeçar leva 1 minuto"+(q?": "+(q.minTitle||q.title)+".":".");
+  const row=document.createElement("div");row.className="row";const go=document.createElement("button");go.type="button";go.className="go";
+  go.textContent=b?"▶ Começar agora":"Ver as tarefas de hoje";
+  go.addEventListener("click",()=>{const bb=ntFreeMs();const tgt=bb||$("quests");if(!tgt)return;
+    tgt.scrollIntoView({block:"center",behavior:matchMedia("(prefers-reduced-motion: reduce)").matches?"auto":"smooth"});if(bb)setTimeout(()=>{try{bb.click();}catch(e){}},300);});
+  const no=document.createElement("button");no.type="button";no.className="link";no.textContent="Agora não";no.addEventListener("click",()=>{ntVoltaOff=true;c.hidden=true;});
+  row.append(go,no);c.append(h,p,row);}
+setTimeout(()=>{const _r=render;render=function(){const x=_r.apply(this,arguments);try{ntVolta();}catch(e){}return x;};try{ntVolta();}catch(e){}},0);
+// 6) Galeria de classes: abria sozinha logo depois de "Criar meu jogo", 1 janela entre a pessoa e a 1ª missão.
+//    No dia em que o jogo foi criado, ela espera a 1ª tarefa feita (abre no render seguinte, depois da vitória).
+//    Trocar de classe pela pílula (openCls.force) continua abrindo na hora. Nada novo é salvo.
+let ntClsT=0;
+setTimeout(()=>{if(typeof openCls!=="function")return;const _oc=openCls;openCls=function(){try{
+  if(!openCls.force&&!(rpgState().cls)&&cfg&&cfg.startDate===todayKey()){if(!ntReal(todayKey()))return;
+    // logo depois da 1ª tarefa vêm os avisos da vitória (marco, conquista): a galeria espera eles fecharem, uma janela por vez
+    const busy=(typeof sysQ!=="undefined"&&sysQ.length)||[...document.querySelectorAll(".sysmodal,.levelup")].some(m=>m.id!=="secZen"&&m.getClientRects().length)||Date.now()-ntTgAt<2500;
+    if(busy){clearTimeout(ntClsT);ntClsT=setTimeout(()=>{try{openCls();}catch(e){}},1500);return;}}}catch(e){}
+  return _oc.apply(this,arguments);};},0); // o original lê openCls.force pelo nome, que agora aponta para este embrulho
 
 // ---------- Convite de Esquadrão: tocar no nome chama o amigo; o aviso aparece no app dele ----------
 // Usa o mesmo formulário do ranking: I|de|para|esquadrão|data (convite) e J|quem|de|esquadrão|data (aceite).
@@ -4136,7 +4424,7 @@ function avUI(){let p=$("avPanel");const first=document.querySelector('.wrap>sec
 function avHome(){const st=document.querySelector('.wrap>section[data-tab="hoje"] .status');if(!st)return;let w=$("heroAv");
   if(!w){w=avEl("button","heroav");w.type="button";w.id="heroAv";const rk=$("rank");st.insertBefore(w,rk||st.firstChild);const sv=avEl("span","hav");w.append(sv);if(rk)w.append(rk);
     w.addEventListener("click",e=>{if(e.target.closest("#rank"))return;if(typeof tmCard==="function")tmCard();else avMaker(false);});}
-  const lv=avLv();w.querySelector(".hav").innerHTML=avMine(innerWidth<380?76:88);w.setAttribute("aria-label","Meu card: nível "+lv+". Toque para abrir");
+  const lv=avLv();{const hv=w.querySelector(".hav"),h=avMine(innerWidth<380?76:88);if(hv._h!==h){hv.innerHTML=h;hv._h=h;}} /* só redesenha o avatar quando ele muda: render() roda a cada toque */w.setAttribute("aria-label","Meu card: nível "+lv+". Toque para abrir");
   const pills=st.querySelector(".pills");if(!pills)return;let pp=$("heroPos");
   let pos="";try{if(prog.rank&&prog.rank.on&&ageNow&&ageNow()!=="kid"&&typeof cdPos==="function"&&typeof rankName==="function"&&rankName()){const ps=cdPos(rankName());pos=ps.t?"🏆 "+ps.t+"º na turma":ps.g?"🏆 "+ps.g+"º no geral":"";}}catch(e){}
   if(!pp){pp=avEl("span","pill");pp.id="heroPos";pp.setAttribute("role","button");pp.tabIndex=0;pp.addEventListener("click",()=>{const t=document.querySelector('#tabbar [data-go="amigos"]');t&&t.click();});pills.append(pp);}
@@ -4637,6 +4925,7 @@ function gtPodium(L,view){const top=L.slice(0,3);if(top.length<2)return null;con
 // --- destaque em Hoje: ranking da semana sempre à vista ---
 function gtHero(){let h=$("gtHero");const st=$("dayPill");const host=st&&st.closest("section");if(!host)return;
   if(!h){h=gtEl("section","panel gthero");h.id="gtHero";h.dataset.tab="hoje";host.after(h);}
+  // a posição na aba Hoje é do tools/heroi.js (hrOrder: depois da lista de tarefas)
   const kid=(()=>{try{return ageNow()==="kid";}catch(e){return false;}})();
   if(kid||!cfg||cfg.blank||document.body.classList.contains("onboarding")){h.hidden=true;return;}
   const g=gtSt();const on=tmOn();const pc=$("pingCard");
@@ -5386,6 +5675,18 @@ document.addEventListener("pointerdown",e=>{if(HX_RM()||e.pointerType==="mouse"&
   if(!hxT){hxT=document.createElement("i");hxT.className="hxtap";hxT.setAttribute("aria-hidden","true");document.body.append(hxT);}
   hxT.classList.remove("on");hxT.style.left=e.clientX+"px";hxT.style.top=e.clientY+"px";void hxT.offsetWidth;hxT.classList.add("on");},{passive:true});
 })();
+
+// ---------- Holo fino: pedestal de projeção sob o avatar, régua de dados nos painéis e uma varredura de luz pela tela ----------
+(function(){
+const RM=()=>{try{return matchMedia("(prefers-reduced-motion: reduce)").matches;}catch(e){return false;}};
+function hxDeco(){try{
+  const av=$("heroAv");if(av&&!av.querySelector(".hxped")){const i=document.createElement("i");i.className="hxped";i.setAttribute("aria-hidden","true");i.append(document.createElement("b"));av.append(i);}
+  for(const sct of document.querySelectorAll(".wrap>section.panel")){if(sct.querySelector(":scope>.hxrule"))continue;const r=document.createElement("i");r.className="hxrule";r.setAttribute("aria-hidden","true");sct.append(r);}
+  if(!document.querySelector("body>.hxsweep")&&!RM()){const w=document.createElement("i");w.className="hxsweep";w.setAttribute("aria-hidden","true");document.body.append(w);}
+}catch(e){}}
+hxDeco();
+if(typeof render==="function"){const _r=render;render=function(){const x=_r.apply(this,arguments);hxDeco();return x;};}
+})();
 // ---------- Runa: toque de RPG de mesa no HUD (dado d20 no baú, círculo rúnico no "Feito", crítico no bônus, anel de runas no Despertar). Só visual. ----------
 (function(){
 const RN_RM=()=>{try{return matchMedia("(prefers-reduced-motion: reduce)").matches;}catch(e){return false;}};
@@ -5422,7 +5723,8 @@ function rnLevel(){const l=$("levelup");if(!l||l.querySelector(".rnlv"))return;
 try{const l=$("levelup");if(l){rnLevel();}}catch(e){}
 
 // barra de XP: um brilho corre por ela quando o XP entra
-function rnShine(){if(RN_RM())return;const b=$("xpbar");if(!b)return;b.classList.remove("rn-gain");void b.offsetWidth;b.classList.add("rn-gain");clearTimeout(rnShine._t);rnShine._t=setTimeout(()=>b.classList.remove("rn-gain"),1500);}
+// reinicia no quadro seguinte em vez de forçar layout (void offsetWidth) no meio do toque, que travava o "Feito" em celular lento
+function rnShine(){if(RN_RM())return;const b=$("xpbar");if(!b)return;b.classList.remove("rn-gain");cancelAnimationFrame(rnShine._f);rnShine._f=requestAnimationFrame(()=>{rnShine._f=requestAnimationFrame(()=>b.classList.add("rn-gain"));});clearTimeout(rnShine._t);rnShine._t=setTimeout(()=>b.classList.remove("rn-gain"),1500);}
 // 3) Baú: rola um d20 antes do prêmio (o prêmio já está sorteado; o dado só mostra a raridade)
 function rnD20(n){return '<svg class="rnd20" viewBox="0 0 100 100" aria-hidden="true"><path class="f" d="M50 4L90 27V73L50 96L10 73V27Z"/><path class="l" d="M50 22L22 66H78Z M50 4L50 22M10 27L50 22M10 27L22 66M90 27L50 22M90 27L78 66M10 73L22 66M90 73L78 66M50 96L22 66M50 96L78 66"/><text x="50" y="52" text-anchor="middle" dominant-baseline="middle">'+n+'</text></svg>';}
 function rnRoll(out){if(!out||out.dataset.rn)return;out.dataset.rn="1";
@@ -5691,6 +5993,15 @@ if(typeof sqiCheck==="function"){const _ck=sqiCheck;sqiCheck=function(){_ck.appl
   const b=fdEl("button","ghost fdgo",o?"🤝 Dupla com "+o.w+(o.paid?" ✓":" · "+fdShow(o.hm)):"🤝 Focar em dupla com um amigo");b.type="button";b.onclick=fdStart;t.append(b);}}catch(e){}};}
 setInterval(fdTick,5000);setTimeout(()=>{fdTick();fdBadge();},1500);
 
+// ---------- reduce-motion também na rolagem (tools/rolagem.js) ----------
+// Vários atalhos rolam a tela até um painel com behavior:"smooth" (ficha do personagem, guia, chefão, turma, avatar...).
+// O navegador NÃO desliga essa rolagem animada sozinho com "reduzir movimento". Aqui, com reduce-motion ligado,
+// toda rolagem "smooth" vira salto direto ("auto"). Sem reduce-motion, nada muda. Não toca em dados.
+{const rm=()=>{try{return matchMedia("(prefers-reduced-motion: reduce)").matches;}catch(e){return false;}};
+ const fix=o=>(o&&typeof o==="object"&&o.behavior==="smooth"&&rm())?Object.assign({},o,{behavior:"auto"}):o;
+ const wrap=(obj,k)=>{const f=obj&&obj[k];if(typeof f!=="function"||f.__rmFix)return;const g=function(a,...r){return f.call(this,fix(a),...r);};g.__rmFix=1;obj[k]=g;};
+ try{for(const k of ["scrollIntoView","scrollTo","scrollBy"])wrap(Element.prototype,k);for(const k of ["scrollTo","scrollBy","scroll"])wrap(window,k);wrap(Element.prototype,"scroll");}catch(e){}}
+
 // Janelas do Sistema acessíveis (.sysmodal e .levelup): o leitor de tela anuncia "janela, <título>",
 // o foco vai para o botão principal quando a janela abre (Enter/Espaço já confirmam), o Tab não escapa
 // para a tela de trás e, ao fechar, o foco volta para onde estava. Não muda visual, texto, XP nem dados.
@@ -5722,6 +6033,276 @@ setInterval(fdTick,5000);setTimeout(()=>{fdTick();fdBadge();},1500);
     const f=focaveis(m);if(!f.length)return;const i=f.indexOf(document.activeElement);
     if(i<0||(!e.shiftKey&&i===f.length-1)||(e.shiftKey&&i===0)){e.preventDefault();f[e.shiftKey?f.length-1:0].focus();}},true);
   setTimeout(scan,0);
+})();
+
+// ---------- Forja: treino em casa, sem equipamento, que evolui sozinho (tools/forja.*) ----------
+// Escada de 5 níveis por movimento + dupla progressão (8 a 12 repetições; core 20 a 45 s), mínimo viável de 10 min
+// e quests opcionais dos 4 pilares (Alimentação, Rotina, Exercício, Sono). Nada sai do aparelho.
+// Só ADICIONA dados: prog.forja = {lv, last, ses, ok, dias, pil, pt, cur}. Nenhum campo antigo muda.
+// XP: "forja:<AAAA-MM-DD>" (1 treino com XP por dia), "forja:lv:<mov>:<n>" (subida, uma vez por nível),
+// "forja:sem:<segunda>" (3 treinos na semana). Base: Schoenfeld 2017, Kikuchi & Nakazato 2017, Refalo 2023, OMS 2020.
+const FJ_MOV={
+  push:{n:"Empurrar",m:"peito",L:["Flexão na parede","Flexão na mesa/bancada","Flexão de joelhos","Flexão completa","Flexão com pés elevados"],t:"Consegue 8 flexões de joelho?"},
+  pull:{n:"Puxar",m:"costas",L:["Remada com toalha na porta, corpo quase em pé","Remada com toalha, corpo mais inclinado","Remada embaixo de mesa firme, joelhos dobrados","Remada embaixo da mesa, pernas esticadas","Remada embaixo da mesa, descida em 3 s"],t:"Consegue 8 remadas embaixo de uma mesa firme, joelhos dobrados?"},
+  omb:{n:"Ombro",m:"ombro",L:["Elevação dos braços em Y, deitado de bruços","Flexão pike com as mãos numa cadeira","Flexão pike no chão","Flexão pike com os pés numa cadeira","Pike com pés elevados, descida em 3 s"],t:"Consegue 8 flexões pike no chão?"},
+  perna:{n:"Perna",m:"perna",L:["Agachamento até a cadeira","Agachamento livre","Agachamento com descida em 3 s","Afundo alternado","Agachamento búlgaro (pé de trás na cadeira)"],t:"Consegue 8 agachamentos descendo em 3 s?"},
+  ponte:{n:"Perna (ponte)",m:"glúteo e posterior",L:["Ponte de glúteo com os dois pés","Ponte com pausa de 2 s no alto","Ponte com um pé","Ponte com um pé e pausa de 2 s","Stiff unilateral sem peso"],t:"Consegue 8 pontes com um pé só?"},
+  core:{n:"Core",m:"abdômen",L:["Prancha de joelhos","Prancha","Prancha com toque no ombro","Prancha lateral","Hollow (canoa)"],t:"Aguenta 20 s de prancha com toque no ombro?",s:1}};
+const FJ_TR={A:["push","pull","omb","perna","core"],B:["pull","push","omb","ponte","core"]};
+const FJ_SETS=3,FJ_LO=8,FJ_HI=12,FJ_SLO=20,FJ_SHI=45,FJ_SSTEP=5,FJ_REST=90,FJ_REST_CORE=60;
+const FJ_XP={full:40,ruim:20,lv:30,sem:25};
+const FJ_DN=["seg","ter","qua","qui","sex","sáb","dom"];
+const FJ_SAFE="Pare na hora se sentir dor ou aperto no peito, coração disparado ou batendo irregular, tontura, falta de ar fora do normal ou visão turva. Sente, beba água e procure atendimento se não passar. Tem algum problema de saúde ou usa remédio contínuo? Converse com um profissional de saúde antes de começar. Este app não substitui orientação médica.";
+const FJ_RIR="Pare quando ainda daria para fazer mais 2 ou 3. Nada de série até a falha.";
+let fjPrev=null,fjView=null,fjTick=null,fjOffers=[],fjRes=null,fjSetup={},fjWant=false,fjUp="";
+function fjEl(tag,cls,txt){const e=document.createElement(tag);if(cls)e.className=cls;if(txt!=null)e.textContent=txt;return e;}
+function fjBtn(cls,txt,fn,id){const b=fjEl("button",cls,txt);b.type="button";if(id)b.id=id;b.addEventListener("click",fn);return b;}
+// Lê prog.forja com valores padrão sem estragar dado antigo (perfil sem prog.forja continua valendo).
+function fjS(){let f=prog.forja;if(!f||typeof f!=="object"||Array.isArray(f))f=prog.forja={};
+  if(!f.lv||typeof f.lv!=="object")f.lv={};for(const k in FJ_MOV){const v=Math.floor(+f.lv[k]);f.lv[k]=v>=1&&v<=5?v:1;}
+  if(!f.last||typeof f.last!=="object")f.last={};if(!Array.isArray(f.ses))f.ses=[];
+  if(!Array.isArray(f.dias)||!f.dias.length)f.dias=[0,2,4];
+  if(f.cur&&(typeof f.cur!=="object"||f.cur.d!==todayKey()||!FJ_TR[f.cur.tipo]))f.cur=null; // treino de outro dia não volta
+  return f;}
+const fjDow=()=>(new Date().getDay()+6)%7;
+const fjSec=m=>!!FJ_MOV[m].s;
+function fjNext(f){const l=f.ses[f.ses.length-1];return l&&l.tipo==="A"?"B":"A";}
+function fjTodayE(){return (prog.log[todayKey()]||[]).find(e=>e.q==="forja:"+todayKey());}
+function fjNextDay(f){for(let i=1;i<=7;i++){const d=(fjDow()+i)%7;if(f.dias.includes(d))return FJ_DN[d];}return "";}
+// alvo da série j: última vez +1 repetição (core +5 s), até o topo da faixa
+function fjTarget(f,m,j){const L=f.last[m];const p=Array.isArray(L)?+L[j]||+L[L.length-1]||0:0;
+  if(fjSec(m))return p?Math.min(FJ_SHI,Math.max(FJ_SLO,p+FJ_SSTEP)):FJ_SLO;return p?Math.min(FJ_HI,Math.max(FJ_LO,p+1)):FJ_LO;}
+const fjTop=m=>fjSec(m)?FJ_SHI:FJ_HI;
+const fjUnit=m=>fjSec(m)?"s":"reps";
+function fjNSets(c){return c.ruim?1:FJ_SETS;}
+function fjMotion(){return !matchMedia("(prefers-reduced-motion: reduce)").matches;}
+// ---------- folha do treino ----------
+function fjOpen(ruim){const f=fjS();let m=$("fjSheet");
+  if(!m){m=fjEl("div","fjsheet");m.id="fjSheet";m.setAttribute("role","dialog");m.setAttribute("aria-modal","true");m.setAttribute("aria-label","Treino do Forja");document.body.append(m);}
+  fjPrev=document.activeElement;m.hidden=false;document.body.classList.add("inforja","inmission");
+  if(f.cur)fjView="run";
+  else if(!f.ok){fjView="safe";fjWant=!!ruim;}
+  else if(!f.pt&&!f.ses.length){fjView="setup";fjWant=!!ruim;}
+  else{fjStart(!!ruim);return;}
+  fjRender();}
+function fjClose(){const m=$("fjSheet");const was=m&&!m.hidden;if(m)m.hidden=true;document.body.classList.remove("inforja","inmission");if(was&&fjPrev&&fjPrev.isConnected)try{fjPrev.focus();}catch(e){}clearInterval(fjTick);fjTick=null;fjView=null;fjUI();}
+function fjStart(ruim){const f=fjS();fjWant=false;
+  f.cur={d:todayKey(),tipo:fjNext(f),ruim:ruim?1:0,i:0,sets:{},t0:Date.now(),rest:0,v:null};save();fjView="run";fjRender();fjUI();}
+function fjRender(){const m=$("fjSheet");if(!m||m.hidden)return;m.textContent="";const f=fjS();
+  const c=fjEl("div","fjcard");const top=fjEl("div","fjtop");
+  top.append(fjEl("span","fjtag","[ SISTEMA ] FORJA"+(f.cur?" · TREINO "+f.cur.tipo+(f.cur.ruim?" · DIA RUIM":""):"")),fjBtn("link","Minimizar ⌄",fjClose,"fjMin"));c.append(top);
+  if(fjView==="safe")fjSafeV(c,f);else if(fjView==="setup")fjSetupV(c,f);else if(fjView==="done")fjDoneV(c,f);else if(f.cur)fjRunV(c,f);else{fjClose();return;}
+  const ft=fjEl("details","fjstop");ft.append(fjEl("summary",null,"⚠ Quando parar"),fjEl("p","sm",FJ_SAFE));if(fjView!=="safe")c.append(ft);
+  m.append(c);if(fjView==="run")fjRestUI();
+  // foco no botão principal (leitor de tela e teclado), sem roubar o foco de quem está no − / +
+  const ae=document.activeElement;if(!ae||!m.contains(ae)||!ae.isConnected){const g=m.querySelector(".fjbig")||m.querySelector("button");if(g)try{g.focus({preventScroll:true});}catch(e){}}}
+function fjSafeV(c,f){c.append(fjEl("h3",null,"Antes do 1º treino"));
+  const q=fjEl("blockquote","fjsafe");const b=fjEl("b",null,"Pare na hora");q.append(b,document.createTextNode(FJ_SAFE.replace(/^Pare na hora/,"")));c.append(q);
+  c.append(fjEl("div","sm muted","Este aviso fica sempre no rodapé do treino, em \"Quando parar\"."));
+  c.append(fjBtn("go fjbig","Li e entendi",()=>{f.ok=true;save();if(!f.pt&&!f.ses.length){fjView="setup";fjRender();}else fjStart(fjWant);},"fjOk"));}
+// 1ª abertura: teste de nível de 1 toque por movimento (opcional) + quests dos 4 pilares (opcional)
+function fjSetupV(c,f){c.append(fjEl("h3",null,"Ajuste rápido (opcional)"));
+  c.append(fjEl("div","sm muted","Todo mundo começa no nível 1. Se já treina, toque em Sim e o app pula para o nível 3 daquele movimento."));
+  const box=fjEl("div","fjpt");
+  for(const k of ["push","pull","omb","perna","ponte","core"]){const r=fjEl("div","fjptr");r.append(fjEl("span","sm",FJ_MOV[k].t));
+    const y=fjBtn(fjSetup[k]?"go":"ghost",fjSetup[k]?"Sim ✓":"Sim",()=>{fjSetup[k]=!fjSetup[k];fjRender();});y.dataset.pt=k;y.setAttribute("aria-pressed",fjSetup[k]?"true":"false");r.append(y);box.append(r);}
+  c.append(box);
+  const pq=fjEl("div","fjpil");pq.append(fjEl("div","sm","Quer as quests dos 4 pilares em Hoje? Proteína nas refeições, treino no horário e tela fora antes de dormir. Dá para tirar depois em Mais."));
+  const row=fjEl("div","row");
+  row.append(fjBtn(fjSetup._pil===true?"go":"ghost",fjSetup._pil===true?"Quero ✓":"Quero",()=>{fjSetup._pil=true;fjRender();},"fjPilYes"),
+    fjBtn(fjSetup._pil===false?"go":"ghost",fjSetup._pil===false?"Agora não ✓":"Agora não",()=>{fjSetup._pil=false;fjRender();},"fjPilNo"));
+  pq.append(row);c.append(pq);
+  c.append(fjBtn("go fjbig","Começar treino",()=>{for(const k in FJ_MOV)if(fjSetup[k]&&f.lv[k]<3)f.lv[k]=3;f.pt=1;
+    if(fjSetup._pil===true)fjPil(true,1);else f.pil=false;fjSetup={};fjStart(fjWant);},"fjGo"));}
+function fjRunV(c,f){const cu=f.cur,ex=FJ_TR[cu.tipo],m=ex[cu.i],M=FJ_MOV[m],lv=f.lv[m],n=fjNSets(cu),done=cu.sets[m]||[];
+  c.append(fjEl("div","fjstep","Exercício "+(cu.i+1)+" de "+ex.length+" · "+M.n+" ("+M.m+")"));
+  const h=fjEl("h3",null,M.L[lv-1]);h.id="fjEx";c.append(h);
+  c.append(fjEl("div","sm muted","Nível "+lv+" de 5 · "+n+(n>1?" séries":" série")+" · faixa "+(fjSec(m)?FJ_SLO+" a "+FJ_SHI+" s":FJ_LO+" a "+FJ_HI+" repetições")));
+  c.append(fjEl("div","sm fjrir",FJ_RIR));
+  const sl=fjEl("div","fjsets");for(let j=0;j<n;j++){const d=done[j];sl.append(fjEl("span","fjset"+(d!=null?" ok":j===done.length?" cur":""),"S"+(j+1)+": "+(d!=null?d+(fjSec(m)?" s":"")+" ✓":"alvo "+fjTarget(f,m,j)+(fjSec(m)?" s":""))));}c.append(sl);
+  if(cu.v==null)cu.v=fjTarget(f,m,done.length);
+  const ctr=fjEl("div","fjctr");const step=fjSec(m)?FJ_SSTEP:1;
+  const mi=fjBtn("ghost fjpm","−",()=>{cu.v=Math.max(0,cu.v-step);fjRender();},"fjMinus");mi.setAttribute("aria-label","Menos");
+  const val=fjEl("div","fjval");val.id="fjVal";val.textContent=cu.v;val.setAttribute("aria-live","polite");
+  const pl=fjBtn("ghost fjpm","+",()=>{cu.v=Math.min(fjSec(m)?120:50,cu.v+step);fjRender();},"fjPlus");pl.setAttribute("aria-label","Mais");
+  ctr.append(mi,val,fjEl("span","sm muted",fjUnit(m)),pl);c.append(ctr);
+  c.append(fjBtn("go fjbig","✓ Série "+(done.length+1)+": "+cu.v+" "+fjUnit(m),()=>fjLog(),"fjSet"));
+  const rs=fjEl("div","fjrest");rs.id="fjRest";c.append(rs);
+  const nav=fjEl("div","row fjnav");
+  if(cu.i<ex.length-1)nav.append(fjBtn("link","Pular exercício",()=>{cu.i++;cu.v=null;save();fjRender();},"fjSkip"));
+  if(Object.values(cu.sets).some(a=>a&&a.length))nav.append(fjBtn("link","Terminar agora",()=>fjFinish(),"fjEnd"));
+  c.append(nav);}
+function fjLog(){const f=fjS(),cu=f.cur;if(!cu)return;const ex=FJ_TR[cu.tipo],m=ex[cu.i],n=fjNSets(cu);
+  const a=cu.sets[m]=(cu.sets[m]||[]);a.push(Math.max(0,Math.round(+cu.v||0)));cu.v=null;try{haptic(12);}catch(e){}
+  if(a.length>=n){if(cu.i>=ex.length-1){save();fjFinish();return;}cu.i++;}
+  cu.rest=Date.now()+(fjSec(m)?FJ_REST_CORE:FJ_REST)*1000;save();fjRender();}
+// descanso automático: conta sozinho; dá para registrar a próxima série a qualquer hora
+function fjRestUI(){const el=$("fjRest");const cu=prog.forja&&prog.forja.cur;if(!el||!cu)return;const left=(cu.rest||0)-Date.now();
+  if(left>0){el.textContent="Descanso "+fmt(left)+" · respira e bebe água";el.className="fjrest on";if(!fjTick)fjTick=setInterval(fjRestUI,1000);}
+  else{if(cu.rest){cu.rest=0;try{haptic([20,60,20]);}catch(e){}}el.textContent="";el.className="fjrest";clearInterval(fjTick);fjTick=null;}}
+function fjFinish(){const f=fjS(),cu=f.cur;if(!cu)return;const tk=todayKey();const ex=FJ_TR[cu.tipo];
+  const any=ex.some(m=>(cu.sets[m]||[]).length);if(!any){f.cur=null;save();fjClose();return;}
+  const full=!cu.ruim&&ex.every(m=>(cu.sets[m]||[]).length>=FJ_SETS);
+  fjOffers=[];
+  for(const m of ex){const a=cu.sets[m]||[];if(!a.length)continue;f.last[m]=a.slice(0,FJ_SETS);
+    if(!cu.ruim&&a.length>=FJ_SETS&&a.every(v=>v>=fjTop(m))&&f.lv[m]<5)fjOffers.push(m);}
+  f.ses.push({d:tk,tipo:cu.tipo,min:Math.max(1,Math.round((Date.now()-cu.t0)/60000)),r:full?0:1});if(f.ses.length>400)f.ses=f.ses.slice(-400);
+  f.cur=null;clearInterval(fjTick);fjTick=null;
+  // a quest de treino do perfil fica marcada (sem XP dobrado: o XP do treino vem do Forja)
+  const L=prog.log[tk]=prog.log[tk]||[];const iso=new Date().toISOString();
+  if(todaysQuests().some(q=>q.id==="s_treino")&&!L.some(e=>e.q==="s_treino"))L.push({q:"s_treino",kind:full?"full":"min",xp:0,stat:"corpo",bonus:0,t:iso});
+  const key="forja:"+tk,xp=full?FJ_XP.full:FJ_XP.ruim,had=L.find(e=>e.q===key);
+  fjRes={tipo:cu.tipo,full,xp:0,sets:ex.map(m=>[m,cu.sets[m]||[]])};
+  if(!had){fjRes.xp=xp;addXP({q:key,kind:full?"full":"min",xp,stat:"corpo",bonus:0,t:iso},"");}
+  else if((had.xp||0)<xp){fjRes.xp=xp-(had.xp||0);had.xp=xp;had.kind="full";save();render();}
+  else{save();render();}
+  // semana forjada: 3 dias de treino na mesma semana
+  const ws=weekStart(tk),wk=fjWeekDays(f,ws);
+  if(wk>=3&&!entries().some(e=>e.q==="forja:sem:"+ws)){fjRes.sem=1;addXP({q:"forja:sem:"+ws,kind:"full",xp:FJ_XP.sem,stat:"corpo",bonus:0,t:iso},"");}
+  if(fjAco(f)&&typeof unlockSec==="function")setTimeout(()=>{try{unlockSec("s_aco");}catch(e){}},400);
+  fjView="done";const m=$("fjSheet");if(!m||m.hidden)fjOpenDone();else fjRender();fjUI();}
+function fjOpenDone(){const m=$("fjSheet");if(m){m.hidden=false;document.body.classList.add("inforja","inmission");fjRender();}}
+function fjWeekDays(f,ws){return new Set(f.ses.filter(s=>s&&s.d&&weekStart(s.d)===ws).map(s=>s.d)).size;}
+function fjAco(f){const d=new Date();for(let w=0;w<4;w++){const x=new Date(d);x.setDate(x.getDate()-7*w);if(fjWeekDays(f,weekStart(dkey(x)))<3)return false;}return true;}
+function fjDoneV(c,f){const r=fjRes||{};
+  c.append(fjEl("h3",null,r.full?"Treino "+r.tipo+" forjado 🔥":"Mínimo feito. Sequência protegida 🛡️"));
+  c.append(fjEl("div","fjxp",r.xp?"+"+r.xp+" XP"+(r.sem?" · +"+FJ_XP.sem+" Semana forjada":""):"Treino registrado. O XP do Forja de hoje já tinha entrado."));
+  const ul=fjEl("ul","sm fjsum");for(const [m,a] of r.sets||[])if(a.length)ul.append(fjEl("li",null,FJ_MOV[m].n+": "+a.join(" / ")+" "+fjUnit(m)));c.append(ul);
+  for(const m of fjOffers){const lv=f.lv[m];const o=fjEl("div","fjoffer");o.dataset.mov=m;
+    o.append(fjEl("div","sm","Você bateu o topo em todas as séries de "+FJ_MOV[m].n+". Subir para o nível "+(lv+1)+" ("+FJ_MOV[m].L[lv]+") no próximo treino?"));
+    const row=fjEl("div","row");row.append(fjBtn("go","Subir de nível",()=>fjLevel(m)),fjBtn("ghost","Agora não",()=>{fjOffers=fjOffers.filter(x=>x!==m);fjRender();}));o.append(row);c.append(o);}
+  if(fjUp){c.append(fjEl("div","fjup",fjUp));fjUp="";}
+  c.append(fjEl("div","sm muted","Próximo: Treino "+fjNext(f)+(fjNextDay(f)?" ("+fjNextDay(f)+")":"")+". Descanso também faz o músculo crescer."));
+  c.append(fjBtn("go fjbig","Fechar",fjClose,"fjClose"));}
+function fjLevel(m){const f=fjS();if(f.lv[m]>=5)return;f.lv[m]++;const n=f.lv[m];delete f.last[m];fjOffers=fjOffers.filter(x=>x!==m);
+  fjUp="⬆ "+FJ_MOV[m].n+" · nível "+n+": "+FJ_MOV[m].L[n-1];
+  const key="forja:lv:"+m+":"+n;
+  if(!entries().some(e=>e.q===key))addXP({q:key,kind:"full",xp:FJ_XP.lv,stat:"corpo",bonus:0,t:new Date().toISOString()},"Subiu de nível no Forja. +"+FJ_XP.lv+" XP");else{save();toast("Nível novo gravado.");}
+  try{haptic([15,40,15]);}catch(e){}fjRender();fjUI();}
+// ---------- quests dos 4 pilares (leves, opcionais, nunca principais: não geram dívida) ----------
+function fjPilQ(f){return [
+  {id:"fj_prot",title:"Proteína em cada refeição (ovo, frango, feijão, leite, sardinha)",xp:15,stat:"corpo",minTitle:"2 refeições",ifThen:"Quando montar o prato, a proteína vai primeiro.",fj:1},
+  {id:"fj_hora",title:"Treino do Forja no horário marcado",xp:10,stat:"foco",days:f.dias.slice(),ifThen:"Quando der o horário, troco de roupa antes de pensar.",fj:1},
+  {id:"fj_tela",title:"Tela fora 30 min antes de deitar",xp:15,stat:"corpo",minTitle:"10 min",ifThen:"Quando der o horário, celular no carregador longe da cama.",fj:1}];}
+function fjCfgSave(){try{localStorage.setItem(CFG_KEY,JSON.stringify(cfg));}catch(e){}}
+function fjEnsure(){const f=prog.forja;if(!f||f.pil!==true||!cfg||cfg.blank||!Array.isArray(cfg.quests)||!cfg.quests.length)return false;let ch=false;
+  for(const q of fjPilQ(fjS())){const i=cfg.quests.findIndex(x=>x.id===q.id);
+    if(i<0){cfg.quests.push(q);ch=true;}else if(q.days&&String(cfg.quests[i].days)!==String(q.days)){cfg.quests[i].days=q.days;ch=true;}}
+  if(ch)fjCfgSave();return ch;}
+function fjPil(on,quiet){const f=fjS();f.pil=!!on;
+  if(on)fjEnsure();else if(cfg&&Array.isArray(cfg.quests)){cfg.quests=cfg.quests.filter(q=>!/^fj_/.test(q.id));fjCfgSave();}
+  save();if(!quiet){render();toast(on?"Quests dos 4 pilares em Hoje.":"Quests dos 4 pilares removidas. Seu XP continua.");}}
+function fjSetDay(d){const f=fjS();const has=f.dias.includes(d);if(has&&f.dias.length<=1){toast("Deixe pelo menos 1 dia de treino.");return;}
+  f.dias=has?f.dias.filter(x=>x!==d):f.dias.concat([d]).sort((a,b)=>a-b);save();if(f.pil===true)fjEnsure();render();}
+function fjDays(box){const r=fjEl("div","fjdays");for(let d=0;d<7;d++){const on=fjS().dias.includes(d);const b=fjBtn("fjday"+(on?" on":""),FJ_DN[d],()=>fjSetDay(d));b.setAttribute("aria-pressed",on?"true":"false");b.dataset.d=d;r.append(b);}box.append(r);}
+// ---------- card em Hoje ----------
+let fjEdit=false;
+function fjReady(){const hid=id=>{const e=$(id);return !e||e.hidden;};return !!(cfg&&!cfg.blank&&cfg.quests&&cfg.quests.length)&&hid("quick")&&hid("onb")&&!document.body.classList.contains("onboarding");}
+function fjCard(){let p=$("fjCard");const q=$("quests");const anchor=q&&q.closest(".wrap>section");if(!anchor)return;
+  if(!p){p=fjEl("section","panel fjhome");p.id="fjCard";p.dataset.tab="hoje";p.dataset.sf="1";}
+  // no 1º uso (body[data-hrstart]) quem posiciona a Forja é o hrOrder (tools/heroi.js), abaixo das tarefas
+  if(!p.parentNode||(!document.body.dataset.hrstart&&p.nextElementSibling!==anchor))anchor.before(p);
+  if(!fjReady()){p.hidden=true;return;}p.hidden=false;p.textContent="";
+  const f=fjS(),cu=f.cur,dia=f.dias.includes(fjDow()),feito=fjTodayE(),t=fjNext(f);
+  const hd=fjEl("div","qhead");hd.append(fjEl("h2",null,"🔥 Forja"));
+  const ed=fjBtn("link fjdl",f.dias.map(d=>FJ_DN[d]).join(" · ")+" ✎",()=>{fjEdit=!fjEdit;fjCard();},"fjDaysBtn");ed.setAttribute("aria-label","Dias de treino: "+f.dias.map(d=>FJ_DN[d]).join(", ")+". Toque para mudar");ed.setAttribute("aria-expanded",fjEdit?"true":"false");hd.append(ed);p.append(hd);
+  if(fjEdit)fjDays(p);
+  if(cu){p.append(fjEl("div","sm","Treino "+cu.tipo+" em andamento · exercício "+(cu.i+1)+" de "+FJ_TR[cu.tipo].length));p.append(fjBtn("go fjbig","Continuar treino",()=>fjOpen(),"fjResume"));return;}
+  if(feito){p.append(fjEl("div","sm fjok","Treino de hoje feito ✓ · próximo: Treino "+t+(fjNextDay(f)?" ("+fjNextDay(f)+")":"")));return;}
+  if(dia){p.append(fjEl("div","sm fjline","Treino "+t+" · 5 exercícios · ~30 min"));
+    const row=fjEl("div","row fjrow");row.append(fjBtn("go","Começar",()=>fjOpen(false),"fjStart"),fjBtn("ghost","Dia ruim (10 min)",()=>fjOpen(true),"fjRuim"));p.append(row);}
+  else{p.append(fjEl("div","sm muted","Hoje é descanso. Próximo: Treino "+t+(fjNextDay(f)?" ("+fjNextDay(f)+")":"")+"."));
+    const row=fjEl("div","row fjrow");row.append(fjBtn("ghost","Treinar mesmo assim",()=>fjOpen(false),"fjStart"),fjBtn("link","Dia ruim (10 min)",()=>fjOpen(true),"fjRuim"));p.append(row);}}
+// ---------- Mais: Forja, meus níveis ----------
+function fjPanel(){let p=$("fjPanel");const first=document.querySelector('.wrap>section[data-tab="mais"]');if(!first)return;
+  if(!p){p=fjEl("section","panel fjlv");p.id="fjPanel";p.dataset.tab="mais";p.append(fjEl("h2",null,"🔥 Forja: meus níveis"));const b=fjEl("div","fjbody");b.id="fjBody";p.append(b);first.before(p);}
+  const b=$("fjBody");if(!b)return;b.textContent="";const f=fjS();
+  b.append(fjEl("div","sm muted","Treino em casa, sem equipamento. Bateu "+FJ_HI+" repetições (core: "+FJ_SHI+" s) em todas as "+FJ_SETS+" séries = o app sugere o próximo nível."));
+  for(const k in FJ_MOV){const M=FJ_MOV[k],lv=f.lv[k];const d=fjEl("details","fjmov");d.dataset.mov=k;
+    const s=fjEl("summary",null,M.n+" · nível "+lv+"/5 · "+M.L[lv-1]);d.append(s);
+    const ol=fjEl("ol","sm fjlad");M.L.forEach((x,i)=>ol.append(fjEl("li",i+1<lv?"ok":i+1===lv?"cur":"",x+(i+1<lv?" ✓":i+1===lv?" ← você":""))));d.append(ol);
+    const L=f.last[k];d.append(fjEl("div","sm muted",lv>=5?"Nível máximo. Para evoluir: descida em 3 s e pausa de 1 s embaixo.":"Para subir: "+fjTop(k)+" "+fjUnit(k)+" em todas as "+FJ_SETS+" séries"+(Array.isArray(L)&&L.length?" (última vez: "+L.join(" / ")+")":"")+"."));
+    b.append(d);}
+  const dw=fjEl("div","fjsub");dw.append(fjEl("div","sm","Dias de treino"));fjDays(dw);b.append(dw);
+  const pl=fjEl("div","row");pl.append(fjBtn("ghost",f.pil===true?"Tirar as quests dos 4 pilares":"Colocar as quests dos 4 pilares em Hoje",()=>fjPil(f.pil!==true),"fjPilT"));b.append(pl);
+  const ws=weekStart(todayKey());b.append(fjEl("div","sm muted","Esta semana: "+fjWeekDays(f,ws)+" de 3 treinos · total: "+f.ses.length+" treinos"));
+  const st=fjEl("details","fjstop");st.append(fjEl("summary",null,"⚠ Quando parar"),fjEl("p","sm",FJ_SAFE));b.append(st);}
+function fjUI(){try{fjCard();fjPanel();}catch(e){}}
+// conquista oculta "Aço" (tools/secret.js): 4 semanas seguidas com 3 treinos
+if(typeof SEC!=="undefined"&&Array.isArray(SEC)&&!SEC.some(s=>s[0]==="s_aco"))SEC.push(["s_aco","⚙️","Aço","Forjado no Aço","Quatro semanas sem deixar a forja apagar.","4 semanas seguidas com 3 treinos. Isso já não é fase, é hábito: o ciclo de parar foi quebrado.",40]);
+// ▶ na quest de treino do perfil abre o Forja no lugar do timer genérico
+if(typeof msOpen==="function"){const _mo=msOpen;msOpen=function(q){if(q&&q.id==="s_treino"){fjOpen(false);return;}return _mo.apply(this,arguments);};}
+{const _r=render;render=function(){try{fjEnsure();}catch(e){}_r.apply(this,arguments);fjUI();};}
+document.addEventListener("keydown",e=>{const m=$("fjSheet");if(!m||m.hidden)return;if(e.key==="Escape"){fjClose();return;}
+  if(e.key==="Tab"){const f=[...m.querySelectorAll("button,summary,[tabindex]")].filter(x=>!x.disabled&&x.getClientRects().length);if(!f.length)return;
+    const i=f.indexOf(document.activeElement);if(e.shiftKey&&i<=0){e.preventDefault();f[f.length-1].focus();}else if(!e.shiftKey&&(i<0||i===f.length-1)){e.preventDefault();f[0].focus();}}});
+setTimeout(fjUI,0);
+
+// Lembrete diário de 1 toque (recado da EVA 7200114707, fase 1): "Quer que o Sistema te chame todo dia?"
+// Chips de horário (7h, 12h, 19h, 21h, outro). iPhone/PC: .ics com 1 evento DAILY e UID fixo (trocar o horário substitui).
+// Android: Google Agenda já preenchido (recur DAILY). Grava só o horário e a resposta numa chave própria, fora do progresso.
+// Nada sai do aparelho. Abre pelo "Ativar aviso diário" (#sysTip) e por Mais > Lembretes.
+(function(){
+  const KEY="ascensao-lemb"; // na raiz o gen.py --root troca para "ascensao-lemb"
+  const CH=["07:00","12:00","19:00","21:00"];
+  const ANDROID=/android/i.test(navigator.userAgent);
+  const rd=()=>{try{return JSON.parse(localStorage.getItem(KEY)||"null")||{};}catch(e){return {};}};
+  const wr=o=>{try{localStorage.setItem(KEY,JSON.stringify(Object.assign(rd(),o)));}catch(e){}};
+  const f2=m=>{m=((m%1440)+1440)%1440;return String(Math.floor(m/60)).padStart(2,"0")+":"+String(m%60).padStart(2,"0");};
+  const okH=h=>/^([01]\d|2[0-3]):[0-5]\d$/.test(h||"");
+  function pre(){const s=rd();if(okH(s.h))return s.h;
+    const w=(typeof cfg!=="undefined"&&cfg&&cfg.profile&&cfg.profile.wake)||"";
+    if(okH(w)){const [h,m]=w.split(":").map(Number);return f2(h*60+m+30);}return "19:00";}
+  const link=()=>location.href.split("#")[0];
+  const TIT="⚔️ Ascension: sua missão de hoje",TXT="O Sistema te chama: abra o Ascension e faça a próxima missão.";
+  function nextAt(h){const [hh,mm]=h.split(":").map(Number);const d=new Date();const x=new Date(d);x.setHours(hh,mm,0,0);if(x<=d)x.setDate(x.getDate()+1);return x;}
+  const dt=x=>x.getFullYear()+String(x.getMonth()+1).padStart(2,"0")+String(x.getDate()).padStart(2,"0")+"T"+String(x.getHours()).padStart(2,"0")+String(x.getMinutes()).padStart(2,"0")+"00";
+  const esc=s=>String(s).replace(/[\\;,]/g,m=>"\\"+m).replace(/\n/g,"\\n");
+  function ics(h){const s=nextAt(h),e=new Date(s.getTime()+10*60000);
+    return ["BEGIN:VCALENDAR","VERSION:2.0","PRODID:-//Ascensao//PT-BR","CALSCALE:GREGORIAN","METHOD:PUBLISH","BEGIN:VEVENT","UID:asc-diario@ascensao","DTSTAMP:"+dt(new Date()),
+      "DTSTART:"+dt(s),"DTEND:"+dt(e),"RRULE:FREQ=DAILY","SUMMARY:"+esc(TIT),"DESCRIPTION:"+esc(TXT+"\n"+link()),
+      "BEGIN:VALARM","ACTION:DISPLAY","DESCRIPTION:"+esc(TIT),"TRIGGER:PT0M","END:VALARM","END:VEVENT","END:VCALENDAR"].join("\r\n");}
+  function gcal(h){const s=nextAt(h),e=new Date(s.getTime()+10*60000);
+    return "https://calendar.google.com/calendar/render?action=TEMPLATE&text="+encodeURIComponent(TIT)+"&dates="+dt(s)+"/"+dt(e)+"&ctz=America/Sao_Paulo&recur="+encodeURIComponent("RRULE:FREQ=DAILY")+"&details="+encodeURIComponent(TXT+"\n"+link());}
+  const say=t=>{if(typeof toast==="function")toast(t);};
+  function close(m,back){m.remove();document.removeEventListener("keydown",m._k,true);if(back&&back.isConnected)try{back.focus({preventScroll:true});}catch(e){}}
+  function open(from){if(document.getElementById("lembOffer"))return;const back=document.activeElement;let pick=pre();
+    const m=document.createElement("div");m.className="sysmodal lemb";m.id="lembOffer";m.setAttribute("role","dialog");m.setAttribute("aria-modal","true");m.setAttribute("aria-labelledby","lembT");
+    const c=document.createElement("div");c.className="card";
+    const tg=document.createElement("div");tg.className="tag";tg.textContent="[ SISTEMA ] AVISO DIÁRIO";
+    const h=document.createElement("h3");h.id="lembT";h.textContent="⏰ Quer que o Sistema te chame todo dia?";
+    const p=document.createElement("p");p.className="sm";p.textContent="Escolha a hora. Vai pela agenda do celular, com o app fechado.";
+    const row=document.createElement("div");row.className="lembchips";row.setAttribute("role","radiogroup");row.setAttribute("aria-label","Horário do aviso");
+    const inp=document.createElement("input");inp.type="time";inp.id="lembOutro";inp.className="lembtime";inp.setAttribute("aria-label","Outro horário");inp.hidden=true;
+    const chips=[];const mk=(v,lbl)=>{const b=document.createElement("button");b.type="button";b.className="lembchip";b.dataset.v=v;b.textContent=lbl;b.setAttribute("role","radio");chips.push(b);row.append(b);return b;};
+    CH.forEach(v=>mk(v,String(+v.slice(0,2))+"h"));mk("outro","outro");
+    function sel(v){const out=!CH.includes(v);chips.forEach(b=>{const on=out?b.dataset.v==="outro":b.dataset.v===v;b.classList.toggle("on",on);b.setAttribute("aria-checked",on?"true":"false");b.tabIndex=on?0:-1;});
+      inp.hidden=!out;if(out&&okH(v))inp.value=v;pick=out?(okH(inp.value)?inp.value:""):v;}
+    chips.forEach(b=>b.addEventListener("click",()=>{if(b.dataset.v==="outro"){sel(okH(inp.value)?inp.value:"outro");inp.focus();}else sel(b.dataset.v);}));
+    inp.addEventListener("input",()=>{if(okH(inp.value))pick=inp.value;});
+    const add=document.createElement("button");add.type="button";add.className="go";add.id="lembAdd";add.textContent="Adicionar à agenda";
+    const no=document.createElement("button");no.type="button";no.className="link";no.id="lembNo";no.textContent="Agora não";
+    add.addEventListener("click",()=>{if(!okH(pick)){inp.hidden=false;inp.focus();say("Escolha a hora do aviso.");return;}
+      wr({h:pick,r:"sim",t:new Date().toISOString().slice(0,10)});
+      if(ANDROID){window.open(gcal(pick),"_blank","noopener");say("Abriu o Google Agenda? Toque em Salvar. O Sistema te chama às "+pick.replace(":","h")+".");}
+      else{const u=URL.createObjectURL(new Blob([ics(pick)],{type:"text/calendar;charset=utf-8"}));const a=document.createElement("a");a.href=u;a.download="aviso-diario-ascension.ics";document.body.append(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(u),4000);
+        say("Abriu a agenda? Toque em Adicionar. O Sistema te chama às "+pick.replace(":","h")+".");}
+      close(m,back);if(typeof from==="function")from(true);});
+    no.addEventListener("click",()=>{wr({r:"nao",t:new Date().toISOString().slice(0,10)});close(m,back);if(typeof from==="function")from(false);});
+    const bt=document.createElement("div");bt.className="row lembbt";bt.append(add,no);
+    c.append(tg,h,p,row,inp,bt);m.append(c);
+    m.addEventListener("click",e=>{if(e.target===m)no.click();});
+    m._k=e=>{if(e.key==="Escape"){e.preventDefault();e.stopPropagation();no.click();}
+      else if((e.key==="ArrowRight"||e.key==="ArrowLeft")&&chips.includes(document.activeElement)){e.preventDefault();const i=chips.indexOf(document.activeElement);const n=chips[(i+(e.key==="ArrowRight"?1:chips.length-1))%chips.length];n.click();n.focus();}};
+    document.addEventListener("keydown",m._k,true);
+    document.body.append(m);sel(pick);
+    // foco no chip escolhido (antes do foco automático das janelas do Sistema, que iria para o botão principal)
+    const f=chips.find(b=>b.classList.contains("on"))||chips[0];try{f.focus({preventScroll:true});}catch(e){}}
+  window.lembOffer=open;
+  // Mais > Lembretes: sempre dá para (re)escolher o horário
+  const cal=document.getElementById("calPanel");
+  if(cal&&!document.getElementById("lembMais")){const b=document.createElement("button");b.type="button";b.className="ghost";b.id="lembMais";b.textContent="⏰ Aviso diário do Sistema (1 evento)";
+    b.addEventListener("click",()=>open());const ref=document.getElementById("calIcs");if(ref)ref.before(b);else cal.append(b);}
 })();
 
 // ---------- Versão do app e tela "Novidades" (1x por versão, só para quem já jogava) ----------
@@ -5866,10 +6447,19 @@ function hrDayCount(){const el=$("dayxp");if(!el)return;const tk=todayKey();cons
   const n=done.filter(e=>ids.has(e.q)).length;let xp=0;for(const e of done)xp+=(e.xp||0)+(e.bonus||0);
   el.textContent=n?"Hoje: "+n+(n===1?" tarefa feita":" tarefas feitas")+" · +"+xp+" XP no dia":"Nenhuma tarefa ainda · +"+xp+" XP de bônus. Comece pela primeira.";}
 {const _r2=render;render=function(){_r2.apply(this,arguments);try{hrDayCount();}catch(e){}};}
-// Aba Hoje: as tarefas sobem. Os desafios relâmpago (extra de 30 s) passam para logo depois da lista de tarefas;
-// o "Comece por aqui" continua acima das tarefas enquanto não for escondido.
-function hrOrder(){const q=$("quests")&&$("quests").closest("section");const z=$("zapPanel");if(!q||!z)return;
-  if(q.nextElementSibling!==z)q.after(z);const g=$("gdPanel");if(g&&(q.compareDocumentPosition(g)&Node.DOCUMENT_POSITION_FOLLOWING)){const sb=$("smBar");(sb&&sb.nextElementSibling===q?sb:q).before(g);}}
+// Aba Hoje: as tarefas sobem para logo depois do cartão. Só ficam entre os dois a barra do Sistema (Próxima missão)
+// e a Forja (que se prende ao topo das tarefas). Desafios relâmpago, Comece por aqui, ranking da semana e chefão vão
+// para depois da lista, nessa ordem; qualquer bloco novo que apareça no meio também desce.
+const HR_AFTER=["zapPanel","gdPanel","gtHero","tbStrip"];
+function hrOrder(){const q=$("quests")&&$("quests").closest("section");const st=document.querySelector('.wrap>section[data-tab="hoje"] .status');const hero=st&&st.closest("section");
+  if(!q||!hero||hero.parentNode!==q.parentNode)return;
+  // 1º uso (guia "Comece por aqui" visto nesta abertura): a Forja também desce, para a 1ª missão caber na primeira tela.
+  // A marca fica até fechar o app (nada pula durante o uso); tools/forja.js lê a mesma marca e não se reposiciona.
+  const g=$("gdPanel");if(g&&!g.hidden)document.body.dataset.hrstart="1";
+  const stay=new Set(document.body.dataset.hrstart?["smBar"]:["smBar","fjCard"]);const mid=[];
+  for(let e=hero.nextElementSibling;e&&e!==q;e=e.nextElementSibling)if(!stay.has(e.id)&&!e.classList.contains("tip")&&e.dataset.tab==="hoje"||e.id==="tbStrip")mid.push(e);
+  const ord=HR_AFTER.map(id=>$(id)).filter(Boolean).concat(mid.filter(e=>!HR_AFTER.includes(e.id)));let at=q;
+  for(const e of ord){if(e.parentNode!==q.parentNode)continue;if(at.nextElementSibling!==e)at.after(e);at=e;}}
 {const _r3=render;render=function(){_r3.apply(this,arguments);try{hrOrder();}catch(e){}};}
 setTimeout(()=>{try{hrOrder();}catch(e){}},50);
 // "Comece por aqui": depois do 1º passo feito, vira uma linha só (o passo da vez); toque no título mostra os 3 de novo.
@@ -5878,6 +6468,186 @@ function hrGuide(){const p=$("gdPanel");if(!p)return;const ok=p.querySelectorAll
   if(h)h.setAttribute("aria-expanded",mini?"false":"true");}
 {const _r4=render;render=function(){_r4.apply(this,arguments);try{hrGuide();}catch(e){}};}
 setTimeout(()=>{try{hrGuide();}catch(e){}},80);
+// placeholder da quest rápida cortava em telas de 320-360px
+function hrPh(){const i=$("addInput");if(!i||!i.clientWidth||!/^(Quest rápida|Nova quest)/.test(i.placeholder))return;const cs=getComputedStyle(i);const c=document.createElement("canvas").getContext("2d");c.font=cs.fontSize+" "+cs.fontFamily;
+  const box=i.clientWidth-parseFloat(cs.paddingLeft)-parseFloat(cs.paddingRight)-2;const opts=["Quest rápida (vale 10 XP)","Quest rápida (+10 XP)","Quest rápida +10","Quest rápida"];
+  const want=opts.find(t=>c.measureText(t).width<=box)||opts[opts.length-1];if(i.placeholder!==want)i.placeholder=want;}
+addEventListener("resize",()=>{try{hrPh();}catch(e){}});setTimeout(()=>{try{hrPh();}catch(e){}},0);{const _r5=render;render=function(){_r5.apply(this,arguments);try{hrPh();}catch(e){}};}
+
+// ---------- Arena do Sistema: batalha por turnos com d20, movida pelos 8 atributos ----------
+// O herói é a própria pessoa: os números saem de atLevels() (atributos que sobem com tarefas reais).
+//  ❤️ Vitalidade = vida · 🎯 Disciplina = defesa e Postura · 💪 Força = Golpe · 📘 Intelecto = Arcano
+//  🦉 Sabedoria = Cura · 🗣️ Carisma = inimigo hesita · 🎨 Criatividade = crítico mais fácil · 💰 Fortuna = mais XP no prêmio
+// Bateria do dia (prog.energy) mexe na vida inicial. Ler a meta do dia (leitura.js) dá +1 carga de Arcano.
+// Fôlego: 1 luta por dia + 1 por tarefa feita hoje (máx. AR_MAX). Treinar na vida real = lutar mais e mais forte.
+// Só ADICIONA prog.arena = {fl, best, w, l, day:{dia:lutas}}. XP entra como "ach:bt:<dia>:<n>" (não conta sequência nem atributo), teto AR_CAP/dia.
+const AR_MAX=5,AR_CAP=20;
+const arB=l=>Math.floor((l||1)*2/3);
+function arSt(){if(!prog.arena||typeof prog.arena!=="object")prog.arena={};const a=prog.arena;a.fl=Math.max(1,a.fl|0||1);a.best=a.best|0;a.w=a.w|0;a.l=a.l|0;a.day=a.day&&typeof a.day==="object"?a.day:{};return a;}
+function arEl(t,cl,x){const e=document.createElement(t);if(cl)e.className=cl;if(x!=null)e.textContent=x;return e;}
+function arLv(){try{return atLevels();}catch(e){const o={};for(const a of ["forca","vital","intel","sabed","disc","caris","criat","fort"])o[a]=1;return o;}}
+function arTk(){return todayKey();}
+function arDone(){return (prog.log[arTk()]||[]).filter(e=>!/^(ach|checkin|tip|dun|sq|zap|ch|adm|boss|foco|ler):/.test(String(e.q))).length;}
+function arFolego(){const a=arSt();const tot=Math.min(AR_MAX,1+arDone());const used=a.day[arTk()]||0;return {tot,used,left:Math.max(0,tot-used)};}
+function arReadToday(){try{return typeof lrHitToday==="function"&&lrHitToday();}catch(e){return false;}}
+function arHero(){const L=arLv();const en=((prog.energy||{})[arTk()])||"";let hp=20+4*L.vital;
+  if(en==="baixa")hp=Math.round(hp*.8);else if(en==="alta")hp=Math.round(hp*1.1);
+  return {L,hp,ac:10+arB(L.disc),arc:2+(arReadToday()?1:0),heal:2,crit:L.criat>=10?18:L.criat>=5?19:20,hes:Math.min(.3,arB(L.caris)*.04),en};}
+function arFoe(n){const boss=n%5===0;let b=null;try{b=TB_LIST[(n-1)%TB_LIST.length];}catch(e){}
+  if(!b)b=["Sombra do Adiamento","Sombra","drag","#7b2cff","#ff4fd8","Depois você faz."];
+  return {n,boss,b,name:(boss?"CHEFE · ":"")+b[0],hp:Math.round((14+4*n)*(boss?1.3:1)),ac:9+Math.floor(n/3),th:1+Math.floor(n/2.5),dmg:Math.floor(n/3)};}
+const arD=n=>1+Math.floor(Math.random()*n);
+function arRM(){try{return matchMedia("(prefers-reduced-motion: reduce)").matches;}catch(e){return false;}}
+// --- painel em Progresso ---
+function arUI(){let p=$("arPanel");const anchor=$("atPanel")||$("avPanel");
+  if(!p){if(!anchor)return;p=arEl("section","panel arp");p.id="arPanel";p.dataset.tab="prog";anchor.after(p);}
+  if(!cfg||cfg.blank){p.hidden=true;return;}p.hidden=false;p.textContent="";
+  const a=arSt(),h=arHero(),f=arFolego(),foe=arFoe(a.fl);
+  const hd=arEl("div","arhd");hd.append(arEl("h2",null,"⚔️ Arena do Sistema"),arEl("span","sm mono","andar "+a.fl+(a.best?" · recorde "+a.best:"")));p.append(hd);
+  p.append(arEl("div","sm muted","Batalha por turnos com d20. Sua força aqui é a da vida real: cada atributo que você treina vira poder na luta."));
+  const st=arEl("div","arstats");
+  for(const [ic,lb,v] of [["❤️","Vida",h.hp],["🛡️","Defesa",h.ac],["💪","Golpe","+"+arB(h.L.forca)],["📘","Arcano","+"+arB(h.L.intel)]]){const c=arEl("div","arst");c.append(arEl("b",null,ic+" "+v),arEl("small",null,lb));st.append(c);}
+  p.append(st);
+  const nx=arEl("div","arnext");const ic=arEl("span","arico");try{ic.innerHTML=tbArt(foe.b,100,false);}catch(e){}
+  const tx=arEl("div","artx");tx.append(arEl("b",null,foe.name),arEl("small",null,"Vida "+foe.hp+" · Defesa "+foe.ac+(foe.boss?" · prêmio dobrado":"")));nx.append(ic,tx);p.append(nx);
+  const fo=arEl("div","arfol");fo.append(arEl("span","sm","Fôlego hoje "));const dots=arEl("span","ardots");dots.setAttribute("aria-label",f.left+" de "+f.tot+" lutas");
+  for(let i=0;i<AR_MAX;i++)dots.append(arEl("i",i<f.left?"on":i<f.tot?"used":""));fo.append(dots);p.append(fo);
+  const go=arEl("button","go arGo",f.left?"Lutar no andar "+a.fl:"Sem fôlego: faça uma tarefa");go.type="button";go.id="arGo";go.disabled=!f.left;go.onclick=arStart;p.append(go);
+  if(!f.left)p.append(arEl("div","sm muted","Cada tarefa feita hoje dá +1 luta (até "+AR_MAX+")."));
+  if(h.en==="baixa")p.append(arEl("div","sm arwarn","🔋 Bateria baixa hoje: você entra com 80% da vida."));
+  if(arReadToday())p.append(arEl("div","sm arok","📖 Meta de leitura batida: +1 carga de Arcano hoje."));
+  const dt=arEl("details","arhow");dt.append(arEl("summary",null,"Como cada atributo luta"));const ul=arEl("ul","sm");
+  for(const t of ["❤️ Vitalidade: sua vida (sono, água, comida).","🎯 Disciplina: sua defesa e a Postura.","💪 Força: o Golpe.","📘 Intelecto: o Arcano (forte, poucas cargas).","🦉 Sabedoria: a Cura.","🗣️ Carisma: chance de o inimigo hesitar.","🎨 Criatividade: crítico com 19 (nível 5) e 18 (nível 10).","💰 Fortuna: mais XP quando vence."])ul.append(arEl("li",null,t));
+  dt.append(ul);p.append(dt);}
+// --- a luta ---
+let arB_=null;
+function arStart(){const f=arFolego();if(!f.left){toast("Sem fôlego. Faça uma tarefa para lutar de novo.");return;}
+  const a=arSt();a.day[arTk()]=(a.day[arTk()]||0)+1;for(const k in a.day)if(k<arTk())delete a.day[k];save();
+  const h=arHero(),foe=arFoe(a.fl);arB_={h,foe,hp:h.hp,fh:foe.hp,arc:h.arc,heal:h.heal,guard:false,busy:false,turn:1,over:false};arOpen();}
+function arOpen(){let m=$("arModal");if(m)m.remove();m=arEl("div","armodal");m.id="arModal";m.setAttribute("role","dialog");m.setAttribute("aria-modal","true");m.setAttribute("aria-label","Batalha na Arena");
+  const c=arEl("div","arcard");const B=arB_;
+  const top=arEl("div","artop");top.append(arEl("span","artag","ANDAR "+B.foe.n),arEl("b","arname",B.foe.name));
+  const x=arEl("button","link arflee","Fugir");x.type="button";x.onclick=()=>arEnd(false,true);top.append(x);c.append(top);
+  const stage=arEl("div","arstage tbstage");stage.id="arStage";c.append(stage);
+  c.append(arBar("arFoeBar","Inimigo"));
+  const say=arEl("div","arsay",(B.foe.b[5]||""));c.append(say);
+  const roll=arEl("div","arroll");roll.id="arRoll";roll.setAttribute("aria-live","polite");c.append(roll);
+  c.append(arBar("arHeroBar","Você"));
+  const acts=arEl("div","aracts");acts.id="arActs";
+  for(const [k,ic,nm,sub] of [["g","💪","Golpe","Força"],["a","📘","Arcano","Intelecto"],["d","🎯","Postura","Disciplina"],["c","🦉","Cura","Sabedoria"]]){
+    const b=arEl("button","aract");b.type="button";b.dataset.k=k;b.append(arEl("b",null,ic+" "+nm),arEl("small",null,sub));b.onclick=()=>arTurn(k);acts.append(b);}
+  c.append(acts);m.append(c);document.body.append(m);arDraw();setTimeout(()=>{const b=acts.querySelector("button");if(b)b.focus();},50);}
+function arBar(id,lb){const w=arEl("div","arbar");w.id=id;w.append(arEl("span","arbl",lb),arEl("div","arbt"),arEl("span","arbv"));w.querySelector(".arbt").append(arEl("i"));return w;}
+function arSet(id,v,mx){const w=$(id);if(!w)return;const p=Math.max(0,v)/mx*100;w.querySelector("i").style.width=p.toFixed(1)+"%";w.querySelector(".arbv").textContent=Math.max(0,v)+"/"+mx;w.classList.toggle("arlow",p<35);}
+function arDraw(){const B=arB_;if(!B)return;const pct=Math.round(Math.max(0,B.fh)/B.foe.hp*100);const s=$("arStage");if(s){try{s.innerHTML=tbArt(B.foe.b,pct,B.fh<=0);}catch(e){}s.classList.toggle("dead",B.fh<=0);}
+  arSet("arFoeBar",B.fh,B.foe.hp);arSet("arHeroBar",B.hp,B.h.hp);
+  for(const b of document.querySelectorAll("#arActs .aract")){const k=b.dataset.k;let lbl=b.querySelector("small");
+    if(k==="a"){lbl.textContent="Intelecto · "+B.arc+"x";b.disabled=B.busy||!B.arc;}else if(k==="c"){lbl.textContent="Sabedoria · "+B.heal+"x";b.disabled=B.busy||!B.heal||B.hp>=B.h.hp;}else b.disabled=B.busy;}}
+function arSay(html,cl){const r=$("arRoll");if(!r)return;r.className="arroll"+(cl?" "+cl:"");r.innerHTML=html;}
+function arDie(n,cl){return '<span class="ard20'+(cl?" "+cl:"")+'">'+'<svg viewBox="0 0 100 100" aria-hidden="true"><path d="M50 4L90 27V73L50 96L10 73V27Z" fill="#0d1830" stroke="currentColor" stroke-width="4"/><path d="M50 22L22 66H78Z M50 4V22M10 27L50 22M90 27L50 22M10 27L22 66M90 27L78 66M10 73L22 66M90 73L78 66M50 96L22 66M50 96L78 66" fill="none" stroke="currentColor" stroke-opacity=".45" stroke-width="2.5"/></svg>'+'<b>'+n+'</b></span>';}
+function arShake(id){if(arRM())return;const e=$(id);if(!e)return;e.classList.remove("hit");void e.offsetWidth;e.classList.add("hit");}
+function arTurn(k){const B=arB_;if(!B||B.busy||B.over)return;B.busy=true;arDraw();const L=B.h.L;let msg="";
+  try{haptic(10);}catch(e){}
+  if(k==="c"){B.heal--;const v=arD(8)+2+2*arB(L.sabed);const was=B.hp;B.hp=Math.min(B.h.hp,B.hp+v);msg="🦉 Cura: +"+(B.hp-was)+" de vida.";arSay(msg,"good");}
+  else if(k==="d"){B.guard=true;msg="🎯 Postura: o próximo ataque vem com desvantagem e você contra-ataca se ele errar.";arSay(msg,"good");}
+  else{const at=k==="a"?"intel":"forca";if(k==="a")B.arc--;const d=arD(20),mod=arB(L[at])+3,tot=d+mod;const crit=d>=B.h.crit;
+    let dm=0;if(d!==1&&(crit||tot>=B.foe.ac)){dm=k==="a"?arD(6)+arD(6)+arB(L.intel):arD(8)+arB(L.forca);if(crit)dm+=k==="a"?arD(6)+arD(6):arD(8);B.fh-=dm;}
+    const nm=k==="a"?"📘 Arcano":"💪 Golpe";
+    msg=arDie(d,crit?"crit":d===1?"fail":"")+'<span>'+nm+": "+d+" + "+mod+" = "+tot+" vs defesa "+B.foe.ac+"<br><b>"+(crit?"CRÍTICO! "+dm+" de dano":dm?"Acertou: "+dm+" de dano":d===1?"Falha crítica.":"Errou.")+"</b></span>";
+    arSay(msg,crit?"crit":dm?"good":"bad");if(dm){arShake("arStage");if(crit)try{haptic([20,40,30]);}catch(e){}}}
+  arDraw();if(B.fh<=0){setTimeout(()=>arEnd(true),arRM()?200:900);return;}
+  setTimeout(arFoeTurn,arRM()?300:1100);}
+function arFoeTurn(){const B=arB_;if(!B||B.over)return;const f=B.foe;let txt="";
+  if(Math.random()<B.h.hes){txt="🗣️ "+f.b[1]+" hesitou. Seu Carisma pesou.";arSay(txt,"good");}
+  else{let d=arD(20);if(B.guard)d=Math.min(d,arD(20));const hit=d===20||(d!==1&&d+f.th>=B.h.ac);
+    if(hit){const dm=arD(6)+f.dmg+(d===20?arD(6):0);B.hp-=dm;txt=f.b[1]+" atacou: "+d+" + "+f.th+" vs sua defesa "+B.h.ac+". <b>−"+dm+" de vida</b>";arShake("arHeroBar");try{haptic(30);}catch(e){}arSay(txt,"bad");}
+    else{let ex="";if(B.guard){const c=arB(B.h.L.disc)+1;B.fh-=c;ex=" Contra-ataque: "+c+" de dano.";}txt=f.b[1]+" errou ("+d+" + "+f.th+" vs "+B.h.ac+")."+ex;arSay(txt,"good");}}
+  B.guard=false;B.turn++;B.busy=false;arDraw();
+  if(B.fh<=0){setTimeout(()=>arEnd(true),arRM()?200:900);return;}
+  if(B.hp<=0){B.busy=true;arDraw();setTimeout(()=>arEnd(false),arRM()?200:900);}}
+// fraqueza: o atributo mais baixo entre os que pesam na luta vira conselho de vida real
+function arTip(){const L=arLv();const keys=["vital","forca","intel","disc","sabed"];let w=keys[0];for(const k of keys)if((L[k]||1)<(L[w]||1))w=k;
+  let d=null;try{d=AT_BY[w];}catch(e){}return d?"Ponto fraco: "+d[1]+" "+d[2]+" nível "+(L[w]||1)+". Ele sobe com "+d[4]+".":"Faça suas tarefas de hoje para ficar mais forte.";}
+function arXPToday(){const tk=arTk();return (prog.log[tk]||[]).filter(e=>String(e.q).startsWith("ach:bt:")).reduce((s,e)=>s+(e.xp||0),0);}
+function arEnd(win,fled){const B=arB_;if(!B||B.over)return;B.over=true;B.busy=true;const a=arSt();const m=$("arModal");
+  let title,text,xp=0;
+  if(win){a.w++;const n=B.foe.n;xp=Math.min(AR_CAP-arXPToday(),(4+Math.floor(n/2)+arB(B.h.L.fort))*(B.foe.boss?2:1));xp=Math.max(0,xp);
+    if(n===a.fl)a.fl=n+1;a.best=Math.max(a.best,n);
+    if(xp>0){try{const tk=arTk();const i=(prog.log[tk]||[]).filter(e=>String(e.q).startsWith("ach:bt:")).length;addXP({q:"ach:bt:"+tk+":"+(i+1),kind:"full",xp,stat:"foco",bonus:0,t:new Date().toISOString()},"");}catch(e){}}
+    title=B.foe.boss?"CHEFE DERROTADO":"VITÓRIA";text=B.foe.b[1]+" caiu no andar "+n+"."+(xp?" +"+xp+" XP.":" (XP da arena de hoje já no teto.)")+" Andar "+a.fl+" liberado.";}
+  else{if(!fled)a.l++;title=fled?"VOCÊ RECUOU":"DERROTA";const fp=Math.max(0,B.fh)/B.foe.hp;text=(fled?"Recuar também é estratégia. ":fp<.3?"Faltou pouco. ":"Esse andar ainda está acima do seu nível. ")+arTip();}
+  save();
+  if(m){const c=m.querySelector(".arcard");const r=arEl("div","arres "+(win?"win":"lose"));r.append(arEl("b",null,(win?"🏆 ":fled?"🏳️ ":"💀 ")+title),arEl("p",null,text));
+    if(!win&&!fled)r.append(arEl("p","sm muted","Sua força na arena vem das tarefas reais. Volte mais forte."));
+    const f=arFolego();const row=arEl("div","row");
+    if(f.left){const again=arEl("button","go",win?"Próximo andar ("+f.left+" fôlego)":"Tentar de novo ("+f.left+" fôlego)");again.type="button";again.onclick=()=>{m.remove();arStart();};row.append(again);}
+    const ok=arEl("button",f.left?"ghost":"go","Voltar");ok.type="button";ok.onclick=()=>{m.remove();arB_=null;try{arUI();}catch(e){}};row.append(ok);r.append(row);
+    const acts=$("arActs");if(acts)acts.remove();const fl=m.querySelector(".arflee");if(fl)fl.remove();c.append(r);setTimeout(()=>{try{(row.querySelector("button")).focus();}catch(e){}},50);}
+  try{arUI();}catch(e){}}
+document.addEventListener("keydown",e=>{if(e.key==="Escape"&&$("arModal")&&arB_){if(arB_.over){$("arModal").remove();arB_=null;}}});
+{const _r=render;render=function(){_r.apply(this,arguments);try{if(document.body.dataset.tab==="prog"||!$("arPanel"))arUI();}catch(e){}};}
+document.addEventListener("click",e=>{const b=e.target.closest&&e.target.closest('#tabbar [data-go="prog"]');if(b)setTimeout(()=>{try{arUI();}catch(x){}},0);},true);
+setTimeout(()=>{try{arUI();}catch(e){}},0);
+// ---------- Meta de leitura: páginas por dia, livro atual e livros lidos ----------
+// Pedido de testador: "acrescenta meta de leitura". Alimenta 📘 Intelecto (70%) e 🦉 Sabedoria (30%).
+// XP: 1 a cada 2 páginas (até 15) + 5 ao bater a meta do dia, numa entrada só "ler:<dia>". Terminar um livro: +20 ("ler:livro:<n>").
+// Bater a meta do dia carrega +1 Arcano na Arena (arena.js).
+// Só ADICIONA prog.read = {goal, d:{dia:páginas}, book:{t,tot,pg}, books:[{t,d}], last:[dia,n]}.
+const LR_GOALS=[5,10,20,30],LR_MAXXP=15,LR_HIT=5,LR_BOOK=20;
+function lrSt(){if(!prog.read||typeof prog.read!=="object")prog.read={};const r=prog.read;r.d=r.d&&typeof r.d==="object"?r.d:{};r.books=Array.isArray(r.books)?r.books:[];r.goal=r.goal|0;return r;}
+function lrEl(t,cl,x){const e=document.createElement(t);if(cl)e.className=cl;if(x!=null)e.textContent=x;return e;}
+function lrToday(){return lrSt().d[todayKey()]||0;}
+function lrHitToday(){const r=lrSt();return r.goal>0&&lrToday()>=r.goal;}
+// páginas lidas -> atributos de leitura
+if(typeof atOfEntry==="function"){const _ao=atOfEntry;atOfEntry=function(e,Q){if(/^ler:/.test(String(e&&e.q)))return ["intel","sabed"];return _ao.apply(this,arguments);};}
+function lrSync(){const r=lrSt(),tk=todayKey(),n=r.d[tk]||0;const xp=n>0?Math.min(LR_MAXXP,Math.floor(n/2))+(r.goal&&n>=r.goal?LR_HIT:0):0;
+  const L=prog.log[tk]=prog.log[tk]||[];const e=L.find(x=>x.q==="ler:"+tk);
+  if(!xp){if(e)prog.log[tk]=L.filter(x=>x!==e);return;}
+  if(e){e.xp=xp;return;}
+  try{addXP({q:"ler:"+tk,kind:"full",xp,stat:"mente",bonus:0,t:new Date().toISOString()},"");}catch(x){L.push({q:"ler:"+tk,kind:"full",xp,stat:"mente",bonus:0,t:new Date().toISOString()});}}
+function lrAdd(n){const r=lrSt(),tk=todayKey();const before=r.d[tk]||0;const hitB=lrHitToday();r.d[tk]=Math.max(0,before+n);if(!r.d[tk])delete r.d[tk];
+  if(r.book&&r.book.t){r.book.pg=Math.max(0,Math.min(r.book.tot||1e5,(r.book.pg||0)+n));}
+  r.last=n>0?[tk,n]:null;lrSync();save();try{haptic(12);}catch(e){}
+  if(!hitB&&lrHitToday()){try{sysPop("LEITURA","Meta do dia batida: "+r.goal+" páginas","+"+LR_HIT+" XP extra e +1 carga de Arcano na Arena hoje.");}catch(e){}}
+  else if(n>0)toast("📖 +"+n+" páginas");
+  lrUI();try{render();}catch(e){}}
+function lrUndo(){const r=lrSt();if(!r.last||r.last[0]!==todayKey())return;const n=r.last[1];r.last=null;lrAdd(-n);r.last=null;save();toast("Desfeito.");}
+function lrFinish(){const r=lrSt();if(!r.book||!r.book.t)return;r.books.push({t:r.book.t,d:todayKey()});const i=r.books.length;r.book=null;
+  if(!entries().some(e=>e.q==="ler:livro:"+i))try{addXP({q:"ler:livro:"+i,kind:"full",xp:LR_BOOK,stat:"mente",bonus:0,t:new Date().toISOString()},"");}catch(e){}
+  save();try{sysPop("LIVRO CONCLUÍDO","Livro nº "+i+" na estante","+"+LR_BOOK+" XP em Intelecto e Sabedoria. Qual é o próximo?");}catch(e){}lrUI();try{render();}catch(e){}}
+function lrMonth(){const r=lrSt();const m=todayKey().slice(0,7);let p=0,d=0;for(const k in r.d)if(k.slice(0,7)===m&&r.d[k]>0){p+=r.d[k];d++;}return {p,d};}
+function lrUI(){let p=$("lrPanel");const anchor=$("arPanel")||$("atPanel")||$("avPanel");
+  if(!p){if(!anchor)return;p=lrEl("section","panel lrp");p.id="lrPanel";p.dataset.tab="prog";anchor.after(p);}
+  if(!cfg||cfg.blank){p.hidden=true;return;}p.hidden=false;p.textContent="";const r=lrSt();
+  const hd=lrEl("div","lrhd");hd.append(lrEl("h2",null,"📖 Meta de leitura"));p.append(hd);
+  if(!r.goal||r.edit){p.append(lrEl("div","sm muted","Quantas páginas por dia? Comece pequeno: dá pra subir depois. Conta para 📘 Intelecto e 🦉 Sabedoria."));
+    const row=lrEl("div","lrgoals");for(const g of LR_GOALS){const b=lrEl("button","ghost"+(r.goal===g?" on":""),g+" págs/dia");b.type="button";b.onclick=()=>{r.goal=g;delete r.edit;lrSync();save();lrUI();};row.append(b);}
+    p.append(row);if(r.goal){const c=lrEl("button","link","Cancelar");c.type="button";c.onclick=()=>{delete r.edit;lrUI();};p.append(c);}return;}
+  const n=lrToday();hd.append(lrEl("span","sm mono",n+"/"+r.goal+" hoje"));
+  const bar=lrEl("div","lrbar"+(n>=r.goal?" hit":""));const i=lrEl("i");i.style.width=Math.min(100,n/r.goal*100).toFixed(1)+"%";bar.append(i);p.append(bar);
+  const add=lrEl("div","lradd");for(const k of [2,5,10]){const b=lrEl("button","go","+"+k);b.type="button";b.setAttribute("aria-label","Somar "+k+" páginas");b.onclick=()=>lrAdd(k);add.append(b);}
+  const inp=lrEl("input");inp.type="number";inp.inputMode="numeric";inp.min="1";inp.max="500";inp.placeholder="nº";inp.setAttribute("aria-label","Outro número de páginas");
+  const ok=lrEl("button","ghost","Somar");ok.type="button";ok.onclick=()=>{const v=Math.round(+inp.value||0);if(v>0&&v<=500)lrAdd(v);};add.append(inp,ok);p.append(add);
+  if(r.last&&r.last[0]===todayKey()){const u=lrEl("button","link","Desfazer +"+r.last[1]);u.type="button";u.onclick=lrUndo;p.append(u);}
+  const mo=lrMonth();p.append(lrEl("div","sm muted",mo.p+" páginas este mês em "+mo.d+(mo.d===1?" dia":" dias")+(r.books.length?" · "+r.books.length+(r.books.length===1?" livro lido":" livros lidos"):"")));
+  const bk=lrEl("div","lrbook");
+  if(r.book&&r.book.t){const t=lrEl("div","lrbt");t.append(lrEl("b",null,"📕 "+r.book.t),lrEl("span","sm mono",(r.book.pg||0)+(r.book.tot?"/"+r.book.tot:"")+" págs"));bk.append(t);
+    if(r.book.tot){const b2=lrEl("div","lrbar thin");const j=lrEl("i");j.style.width=Math.min(100,(r.book.pg||0)/r.book.tot*100).toFixed(1)+"%";b2.append(j);bk.append(b2);}
+    const row=lrEl("div","row");const f=lrEl("button","ghost","Terminei o livro 🎉");f.type="button";f.onclick=lrFinish;const x=lrEl("button","link","Trocar livro");x.type="button";x.onclick=()=>{r.book=null;save();lrUI();lrBookForm();};row.append(f,x);bk.append(row);}
+  else{const b=lrEl("button","link","+ Livro que estou lendo (opcional)");b.type="button";b.onclick=lrBookForm;bk.append(b);}
+  p.append(bk);
+  const ch=lrEl("button","link","Mudar meta");ch.type="button";ch.onclick=()=>{r.edit=1;lrUI();};p.append(ch);}
+function lrBookForm(){const p=$("lrPanel");if(!p)return;const bk=p.querySelector(".lrbook");if(!bk)return;bk.textContent="";
+  const f=lrEl("form","lrform");const t=lrEl("input");t.placeholder="Nome do livro";t.maxLength=60;t.setAttribute("aria-label","Nome do livro");
+  const n=lrEl("input");n.type="number";n.inputMode="numeric";n.placeholder="Total de páginas";n.min="1";n.max="5000";n.setAttribute("aria-label","Total de páginas");
+  const s=lrEl("button","go","Salvar");s.type="submit";f.append(t,n,s);
+  f.onsubmit=e=>{e.preventDefault();const nm=t.value.trim();if(!nm){t.focus();return;}const r=lrSt();r.book={t:nm,tot:Math.max(0,Math.min(5000,Math.round(+n.value||0))),pg:0};save();lrUI();};
+  bk.append(f);setTimeout(()=>t.focus(),30);}
+{const _r=render;render=function(){_r.apply(this,arguments);try{if((document.body.dataset.tab==="prog"&&!document.querySelector("#lrPanel .lrform"))||!$("lrPanel"))lrUI();}catch(e){}};}
+document.addEventListener("click",e=>{const b=e.target.closest&&e.target.closest('#tabbar [data-go="prog"]');if(b)setTimeout(()=>{try{lrUI();}catch(x){}},0);},true);
+setTimeout(()=>{try{lrUI();}catch(e){}},0);
+// gancho de teste (só leitura dos números; não muda nada)
+try{window.arQA={hero:()=>arHero(),foe:n=>arFoe(n),b:l=>arB(l),lv:()=>atLevels(),of:e=>atOfEntry(e,{}),battle:()=>arB_&&{hp:arB_.hp,max:arB_.h.hp,arc:arB_.arc,heal:arB_.heal}};}catch(e){}
 
 // ---------- Modo Criador (só no app do JV): jogadores, XP manual, esconder módulos, atalhos ----------
 const CR_HIDE="ascensao-hide",CR_CSV="https://docs.google.com/spreadsheets/d/e/2PACX-1vTyr0ZbAqlFWbOWEZXpjcRPXPE04u9EfktPhrq5Mf_vnQ2YjeVEARfhqGrrpqVXxkIVsvnE_x8DMdpr/pub?gid=1002&single=true&output=csv";

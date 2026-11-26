@@ -73,3 +73,48 @@
   .sysmodal:not([hidden]) .card,.levelup:not([hidden]) .card,.smsheet:not([hidden]) .smcard,.sysmodal .card h3,.levelup .card .big,.sysmodal .card .tag,#quick .qstep,#quick .qstep .tag,.qgrid button,.qtype.hx-frame,.hxbeam,.hxorb g,.hxhud .dot{animation:none!important}
   .hxfx b,.hxtap,.hxburst,.hxflash{display:none!important}
 }
+
+/* ---------- Tipografia única do jogo: 2 fontes, 2 papéis ----------
+   HUD (Orbitron): só o que é título ou etiqueta em CAIXA ALTA e os números grandes (nível, rank, cronômetro).
+   Texto (Inter): todo o resto, inclusive números pequenos (com algarismos de largura fixa) e selos.
+   JetBrains Mono e Chakra Petch saem de cena (o navegador não baixa fonte que não é usada). */
+:root{--f-mono:var(--f-body);--f-display:var(--f-hud)}
+body{font-variant-numeric:tabular-nums}
+.sysmodal .tag,.qstep .tag,.mstag,.sqtag,.smtag,.smlbl,.tbtag,.hxhud,.rnlbl,.nextlbl,.qsync,.smbar .smbt,.fzmis .fzk,.sq .sqbt,.timer,.levelup .big,.rank{font-family:var(--f-hud)!important}
+.toast,.motto,.sysline,.qtype,.mshint,.sq .sqsys,.cdurl,.tbsay,.zaprank,.qtmin{font-family:var(--f-body)!important;letter-spacing:0;text-transform:none}
+.toast{font-weight:600}
+.sysline{font-weight:500}
+.pill,.xp,.mono,.stat b,.atlv,.tbhpn,.tmclock,.tbclock{font-weight:600}
+.lvl{text-transform:uppercase;letter-spacing:.1em;font-size:.82rem}
+
+/* ---------- Holo fino ---------- */
+/* pedestal de projeção sob o avatar (estático: o avatar tem filtro, nada aqui anima) */
+.hxped{position:absolute;left:50%;bottom:-17px;width:118%;height:24px;transform:translateX(-50%);border-radius:50%;pointer-events:none;z-index:-1;
+  border:1px solid rgba(0,212,255,.55);background:radial-gradient(ellipse at 50% 50%,rgba(0,212,255,.32),rgba(0,212,255,.06) 55%,transparent 72%);box-shadow:0 0 14px rgba(0,212,255,.35)}
+.hxped b{position:absolute;inset:5px 14%;border-radius:50%;border:1px dashed rgba(124,244,255,.55)}
+.hxped::before{content:"";position:absolute;left:12%;right:12%;bottom:50%;height:520%;background:linear-gradient(0deg,rgba(0,212,255,.22),rgba(0,212,255,0) 80%);clip-path:polygon(0 100%,100% 100%,82% 0,18% 0);transform:scaleY(-1);transform-origin:50% 100%;opacity:.0}
+/* aberração cromática fina nos títulos (o "fantasma" de holograma) */
+h1#titleName{text-shadow:-1px 0 rgba(255,70,140,.32),1px 0 rgba(0,240,255,.55),0 0 14px rgba(0,212,255,.45)}
+.panel h2{text-shadow:-.6px 0 rgba(255,70,140,.28),.6px 0 rgba(0,240,255,.5),0 0 8px rgba(0,212,255,.45)}
+/* régua de dados no canto de baixo de cada painel */
+.hxrule{position:absolute;left:20px;bottom:5px;width:54px;height:4px;pointer-events:none;opacity:.55;
+  background:repeating-linear-gradient(90deg,var(--accent) 0 1px,transparent 1px 6px) left bottom/100% 3px no-repeat,linear-gradient(var(--accent),var(--accent)) left bottom/100% 1px no-repeat}
+.hxrule::after{content:"";position:absolute;left:calc(100% + 6px);bottom:0;width:4px;height:4px;background:var(--glow);box-shadow:0 0 6px var(--glow)}
+/* varredura de luz que atravessa a tela de tempos em tempos (só transform; fica abaixo das janelas) */
+@keyframes hxSweep{0%{transform:translateY(-10vh)}18%{transform:translateY(110vh)}100%{transform:translateY(110vh)}}
+.hxsweep{position:fixed;left:0;right:0;top:0;height:60px;pointer-events:none;z-index:45;background:linear-gradient(180deg,transparent,rgba(124,244,255,.045) 45%,rgba(124,244,255,.09) 50%,transparent);animation:hxSweep 9s linear 2s infinite;transform:translateY(-10vh);will-change:transform}
+@media (prefers-reduced-motion:reduce){.hxsweep{display:none}}
+/* Alvo de toque ≥44px sem mudar o desenho: área invisível em volta dos botões pequenos */
+.pills{gap:8px 6px}
+.pills>.pill{position:relative}
+.pills>.pill[role=button]::before,.pills>.pill.shield::before,#streak::before,#clsPill::before{content:"";position:absolute;left:-3px;right:-3px;top:-8px;bottom:-8px}
+#fjDaysBtn{position:relative}#fjDaysBtn::before{content:"";position:absolute;left:0;right:0;top:-4px;bottom:-4px}
+.gd .qhead[role=button]{position:relative}.gd .qhead[role=button]::before{content:"";position:absolute;left:-4px;right:-4px;top:-14px;bottom:-14px}
+/* Feito e ▶ das missões: 40px visíveis, 48px de toque */
+.quest .btns button{position:relative}.quest .btns button::after{content:"";position:absolute;left:0;right:0;top:-4px;bottom:-4px}
+#focusQuest{min-height:44px}
+.arhow>summary{list-style:none;min-height:44px;display:flex;align-items:center;gap:6px;cursor:pointer}
+.arhow>summary::before{content:"▸";color:var(--accent);transition:transform .2s}.arhow[open]>summary::before{transform:rotate(90deg)}
+.arhow>summary::-webkit-details-marker{display:none}
+/* nomes em Orbitron sempre em caixa alta (padrão das etiquetas) */
+.tbname{text-transform:uppercase}

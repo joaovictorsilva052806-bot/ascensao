@@ -16,7 +16,7 @@ async function open(route,pre,prog,{age='adult',csv=ROWS,vp={width:390,height:84
   p.on('pageerror',e=>errs.push(e.message));p.on('console',m=>{if(m.type()==='error'&&!/Failed to load resource|ERR_|navigator.vibrate/.test(m.text()))errs.push(m.text())});
   await ctx.route('https://docs.google.com/**',r=>{if(r.request().method()==='POST'){posts.push(decodeURIComponent(r.request().postData()||''));return r.fulfill({status:200,body:''});}return r.fulfill({status:200,contentType:'text/csv',body:csv});});
   await ctx.route(/^https?:\/\/(?!localhost|docs\.google\.com)/,r=>r.abort());
-  await p.clock.install({time:new Date('2026-11-26T10:00:00')});await p.goto('http://localhost:8000/'+route);
+  await p.clock.install({time:new Date('2026-11-26T10:00:00')});await p.goto('http://localhost:8000/'+route+'__seed__');
   await p.evaluate(([c,o,pre])=>{localStorage.clear();localStorage.setItem(pre+'-cfg',JSON.stringify(c));localStorage.setItem(pre+'-prog',JSON.stringify(o));localStorage.setItem(pre+'-season','2');localStorage.setItem('asc-u-perm','1');localStorage.setItem('asc-u-intro','1');localStorage.setItem(pre+'-tele',JSON.stringify({asked:'2026-11-01'}));},[CFG(age),prog,pre]);
   await p.goto('http://localhost:8000/'+route+query);await p.waitForTimeout(1600);await calm(p);return {ctx,p,errs};}
 async function calm(p){let quiet=0;for(let i=0;i<30&&quiet<4;i++){await p.evaluate(()=>{const t=document.getElementById('tlModal');if(t){const g=t.querySelector('button.ghost');g?g.click():t.remove();}});
@@ -109,6 +109,12 @@ for(const [route,pre,dev,vp] of [['comecar/','asc-u','iPhone',{width:390,height:
   ok(tag+' 14-17 antigo: console limpo',errs.length===0,errs.join(' | '));await ctx.close();
   // 13. adulto no ranking não é afetado
   ({ctx,p,errs}=await open(route,pre,base(),{vp}));st=await LS(p,pre);ok(tag+' adulto: segue no ranking',st.rank.on===true&&!st.rank.hold);await ctx.close();
+  // 14. tela pequena (320): cartão abaixo das tarefas (ordem do heroi.js) e cabeçalho sem cortar
+  ({ctx,p,errs}=await open(route,pre,base(),{vp:{width:320,height:568}}));
+  const pos=await p.evaluate(()=>{const h=document.getElementById('gtHero');const q=document.getElementById('quests').closest('section');const hd=h.querySelector('.gthd');
+    return {after:!!(q.compareDocumentPosition(h)&Node.DOCUMENT_POSITION_FOLLOWING),cut:[...hd.children].some(c=>c.getBoundingClientRect().right>hd.getBoundingClientRect().right+1)};});
+  ok(tag+' 320 1º uso: ranking abaixo das tarefas',pos.after);ok(tag+' 320: cabeçalho do ranking sem cortar',!pos.cut);ok(tag+' 320: sem rolagem lateral',!(await hscroll(p)));
+  await p.locator('#gtHero').screenshot({path:SHOT+'hoje-320-'+dev+'.png'});await ctx.close();
   // 11. até 13: nada aparece
   ({ctx,p,errs}=await open(route,pre,base({rank:undefined}),{vp,age:'kid'}));
   ok(tag+' ≤13: sem destaque do ranking',!(await p.locator('#gtHero').isVisible()));ok(tag+' ≤13: console limpo',errs.length===0,errs.join(' | '));await ctx.close();}

@@ -8,7 +8,8 @@
 // Rode com: python3 -m http.server 8000 --bind 127.0.0.1 & node qa/dialogo.test.js
 const {chromium}=require('playwright');const U=process.env.QA_URL||'http://localhost:8000/';
 const R=[];const ok=(n,c,x)=>R.push((c?'PASS ':'FAIL ')+n+(x&&!c?' · '+x:''));
-const CFG={version:3,name:'Teste',startDate:'2026-11-26',profile:{age:'adult'},quests:[{id:'q1',title:'Ler 10 min',xp:10,stat:'mente',main:true}]};
+// startDate antes de hoje: no 1º dia do jogo o check-in entra sozinho (sem janela), e este teste precisa da janela
+const CFG={version:3,name:'Teste',startDate:'2026-11-20',profile:{age:'adult'},quests:[{id:'q1',title:'Ler 10 min',xp:10,stat:'mente',main:true}]};
 const PROG={log:{},extra:{},ach:{},rpg:{cls:{id:'mago',style:'fant',name:'Mago'},cg:1},simple:{off:'2026-11-01'},velho:'fica'};
 process.on('unhandledRejection',e=>{console.log(R.join('\n'));console.log('ERRO',String(e.message).split('\n')[0]);process.exit(1);});
 const dentro=p=>p.evaluate(()=>{const o=[...document.querySelectorAll('.sysmodal,.levelup')].filter(m=>!m.hidden&&m.getClientRects().length);const m=o[o.length-1];return !!(m&&m.contains(document.activeElement));});
@@ -17,9 +18,9 @@ for(const [route,pre] of [['comecar/','asc-u'],['','ascensao']])for(const rm of 
   const ctx=await b.newContext({viewport:{width:390,height:844},reducedMotion:rm});const p=await ctx.newPage();const errs=[];
   p.on('pageerror',e=>errs.push(e.message));p.on('console',m=>{if(m.type()==='error'&&!/Failed to load resource|ERR_|navigator.vibrate/.test(m.text()))errs.push(m.text())});
   await p.route(/^https?:\/\/(?!localhost)/,r=>r.abort());
-  await p.clock.install({time:new Date('2026-11-26T10:00:00')});await p.goto(U+route);
+  await p.clock.install({time:new Date('2026-11-26T10:00:00')});await p.goto(U+route+'__seed__');
   await p.evaluate(([c,o,pre])=>{localStorage.clear();localStorage.setItem(pre+'-cfg',JSON.stringify(c));localStorage.setItem(pre+'-prog',JSON.stringify(o));localStorage.setItem(pre+'-season','2');localStorage.setItem('asc-u-perm','1');localStorage.setItem('asc-u-intro','1');localStorage.setItem(pre+'-tele',JSON.stringify({asked:1}));},[CFG,PROG,pre]);
-  await p.reload();const tag=(route||'/')+(rm==='reduce'?' (reduce-motion)':'')+': ';
+  await p.goto(U+route);const tag=(route||'/')+(rm==='reduce'?' (reduce-motion)':'')+': ';
   // 1) a primeira janela do Sistema que abrir (check-in do dia)
   await p.waitForSelector('.sysmodal button.go',{state:'visible',timeout:10000});await p.waitForTimeout(400);
   const info=await p.evaluate(()=>{const m=[...document.querySelectorAll('.sysmodal')].find(x=>!x.hidden&&x.getClientRects().length);

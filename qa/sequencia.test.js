@@ -5,15 +5,16 @@ const R=[];const ok=(n,c,x)=>R.push((c?'PASS ':'FAIL ')+n+(x&&!c?' · '+x:''));
 const CFG={version:3,name:'Teste',startDate:'2026-11-01',quests:[{id:'q1',title:'Ler 10 min',xp:10,stat:'mente',main:true,minTitle:'Ler 1 página'},{id:'q2',title:'Treinar',xp:20,stat:'corpo',main:true},{id:'q3',title:'Água',xp:5,stat:'corpo'}]};
 const E=(q,d)=>({q,kind:'full',xp:10,stat:'mente',bonus:0,t:d+'T10:00:00'});
 const P=(days,extra={})=>Object.assign({log:Object.fromEntries(days.map(d=>[d,[E('q1',d)]])),extra:{},faith:{},energy:{},mit:{},reviews:{},money:[],rest:{},ach:{a_first:'2026-11-01'},rpg:{cls:{id:'mago',style:'fant',name:'Mago'}},velho:'fica'},extra);
-async function drain(p){const t=await drain1(p);await p.waitForTimeout(1000);return t.concat(await drain1(p));}
+// esvazia os avisos até ficar 2 rodadas seguidas sem nenhum (a galeria de classes do #91 atrasa os avisos seguintes)
+async function drain(p){let t=[],vaz=0;for(let r=0;r<8&&vaz<2;r++){const x=await drain1(p);t=t.concat(x);vaz=x.length?0:vaz+1;await p.waitForTimeout(700);}return t;}
 async function drain1(p){const t=[];for(let i=0;i<10;i++){const m=p.locator('.sysmodal button.go');if(await m.count()){t.push(await p.locator('.sysmodal h3').first().textContent());await m.first().dispatchEvent('click');await p.waitForTimeout(150);continue;}if(await p.locator('#levelup').isVisible()){await p.locator('#luClose').dispatchEvent('click');continue;}await p.waitForTimeout(250);if(!(await p.locator('.sysmodal button.go').count()))break;}return t;}
 const b0=()=>chromium.launch();
 (async()=>{const b=await b0();
 async function open(route,pre,prog,time,rm){const ctx=await b.newContext({viewport:{width:390,height:844},reducedMotion:rm||'no-preference'});const p=await ctx.newPage();const errs=[];
   p.on('pageerror',e=>errs.push(e.message));p.on('console',m=>{if(m.type()==='error'&&!/Failed to load resource|ERR_|navigator.vibrate/.test(m.text()))errs.push(m.text())});
-  await p.clock.install({time:new Date(time)});await p.goto(U+route);
+  await p.clock.install({time:new Date(time)});await p.goto(U+'privacidade/'); // semeia fora do app: o save() da página viva não regrava por cima
   await p.evaluate(([c,o,pre])=>{localStorage.setItem(pre+'-cfg',JSON.stringify(c));localStorage.setItem(pre+'-prog',JSON.stringify(o));localStorage.setItem(pre+'-season','2');localStorage.setItem('asc-u-perm','1');localStorage.setItem('asc-u-intro','1');},[CFG,prog,pre]);
-  await p.reload();await p.waitForTimeout(1200);return {ctx,p,errs};}
+  await p.goto(U+route);await p.waitForTimeout(1200);return {ctx,p,errs};}
 const LS=(p,pre)=>p.evaluate(k=>JSON.parse(localStorage.getItem(k)),pre+'-prog');
 for(const [route,pre] of [['comecar/','asc-u'],['','ascensao']]){const tag=route?'/comecar/':'/';
   // A: jogador novo, 1ª tarefa acende a sequência
