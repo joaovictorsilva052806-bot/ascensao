@@ -338,6 +338,7 @@ function clsApply(cl,dress){const r=rpgState();const st=clsCan();if(!st.ok){toas
   if(old){r.past=(r.past||[]).concat([{id:old.id,name:old.name,style:old.style,d:todayKey()}]).slice(-6);if(st.use==="tk")r.ctk=Math.max(0,(r.ctk||0)-1);r.clast=todayKey();}
   else{r.ct0=Date.now();}
   r.cls=cl;r.evo=lv>=20?2:lv>=10?1:0;r.seen=null;r.cg=1;if(dress){const a=avSt();a.o=0;a.hw=0;a.it=0;}save();render();try{avPost(true);}catch(e){}
+  if(!old){toast("⚔️ Classe definida: "+clsName(cl,lv)+". "+STATS[cl.stat]+" sobe 1,5x mais rápido.");return true;} // 1ª escolha: sem mais uma tela no primeiro acesso
   sysPop(old?"CLASSE TROCADA":"CLASSE DEFINIDA",clsName(cl,lv),"Afinidade: "+STATS[cl.stat]+" sobe 1,5x mais rápido."+(old?" Seu XP e nível continuam os mesmos. Agora você é ex-"+old.name+".":""));return true;}
 function clsPrev(id,sz){try{const o=avParse(avCode());o.cls=AV_CLS.includes(id)?id:"x";o.o=0;o.hw=0;o.it=0;return avSvg(o,sz);}catch(e){return "";}}
 let clsGalOpen=false;

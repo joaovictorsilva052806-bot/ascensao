@@ -70,7 +70,7 @@ function renderRPG(){renderDun();sysTipUI();const r=rpgState();const st=statXP()
   const cur={};for(const k in STATS)cur[k]=slvl(st[k]);
   // grava o que já foi anunciado, senão o alerta volta ao reabrir o app
   if(!r.seen){r.seen=Object.assign({},cur);try{save();}catch(e){}}
-  else{let ch=false;for(const k in STATS){const was=r.seen[k]||1;if(cur[k]>was){for(const [lvN,nm,tx] of SKILLS[k])if(lvN>was&&lvN<=cur[k])sysPop("HABILIDADE DESBLOQUEADA",nm,STATS[k]+" nível "+lvN+". "+tx);r.seen[k]=cur[k];ch=true;}}if(ch)try{save();}catch(e){}}
+  else{let ch=false;for(const k in STATS){const was=r.seen[k]||1;if(cur[k]>was){for(const [lvN,nm,tx] of SKILLS[k])if(lvN>was&&lvN<=cur[k]){if(cfg&&cfg.startDate===todayKey())toast("✨ Habilidade nova: "+nm+" ("+STATS[k]+" nv "+lvN+")");else sysPop("HABILIDADE DESBLOQUEADA",nm,STATS[k]+" nível "+lvN+". "+tx);}r.seen[k]=cur[k];ch=true;}}if(ch)try{save();}catch(e){}}
   if(typeof r.cls==="string")r.cls=null;
   if(r.cls){const t=lv>=20?2:lv>=10?1:0;if(t>(r.evo||0)){r.evo=t;sysPop("EVOLUÇÃO DE CLASSE",clsName(r.cls,lv),"Nível "+lv+". Sua classe evoluiu. Continue no seu ritmo.");}}
   else if(cfg&&!cfg.blank&&(!$("onb")||$("onb").hidden)&&!clsOpen&&!sysQ.length)setTimeout(()=>{if(!sysQ.length)openCls();},400);
