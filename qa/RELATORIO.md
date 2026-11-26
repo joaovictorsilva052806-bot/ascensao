@@ -22,6 +22,14 @@
 ## 26/11/2026 11h40 · Retenção: teste de 14 a 17 anos
 
 - A folga para 14 a 17 anos (só envia com "responsável autorizou" gravado) entrou no #106. Este PR só cobre a regra no teste da retenção: 3 casos novos (sem autorização, com autorização, beta sem autorização). qa/retencao.test.js 31/31 contra a main.
+## 25/11/2026 (23h, Brasília) · Volta do dia 1 ao 3
+
+- 26/11 5h (Brasília): pedido da revisão noturna (#89): o "Presente do dia N" ia para ~1450px no celular; agora fica no topo da aba Hoje (teaser e resgate seguem depois das tarefas). Main dos trens 3–8 trazida para o PR; caches ascensao-v63 / ascensao-u-v75. qa/volta.test.js 46/46; suíte toda verde (runa e seguranca oscilaram só rodando 4 em paralelo e passaram sozinhos).
+
+- Novo: tools/hook.* (teaser "Amanhã no Sistema", presente do dia 2/3 com +15/+25 XP na 1ª tarefa, resgate da sequência depois das 18h). Grava só `prog.hook.got`; nenhuma coleta nova.
+- qa/volta.test.js 44/44 (raiz e /comecar/, 390x844 e desktop, relógio simulado, reduce-motion, dados antigos intactos, veterano não vê nada).
+- Suíte: tudo verde. qa/ranking-dia.test.js ganhou `hook.got[2]` no perfil de teste (o perfil era "dia 2" e o presente somava +15 ao XP do dia). qa/mural-servidor.test.js falha igual na main (precisa de caminho por variável de ambiente; não é desta mudança).
+- Caches ascensao-v55 / ascensao-u-v67.
 
 ## Revisões horárias
 
