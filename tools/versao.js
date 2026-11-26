@@ -12,6 +12,7 @@ function vsBusy(){if(document.hidden)return true;const b=document.body.classList
   if([...document.querySelectorAll(".sysmodal,.mssheet,[role=dialog]")].some(m=>!m.hidden&&m.getClientRects().length))return true;
   const lu=document.getElementById("levelup");if(lu&&!lu.hidden)return true;const o=document.getElementById("onb");return !!(o&&!o.hidden&&o.getClientRects().length);}
 function vsOpen(){if(document.getElementById("vsModal"))return;const prev=document.activeElement;
+  try{if(typeof newsDone==="function")newsDone();}catch(e){} // a tela 1.0 aposenta o cartão antigo de Novidades (NEWS_V)
   const m=document.createElement("div");m.className="sysmodal vsnews";m.id="vsModal";m.setAttribute("role","dialog");m.setAttribute("aria-modal","true");m.setAttribute("aria-labelledby","vsTitle");
   const c=document.createElement("div");c.className="card";const t=document.createElement("div");t.className="tag";t.textContent="[ SISTEMA ] ATUALIZAÇÃO "+APP_VERSION.replace(/\.0$/,"");
   const h=document.createElement("h3");h.id="vsTitle";h.textContent="Ascension "+APP_VERSION.replace(/\.0$/,"");
@@ -34,7 +35,8 @@ let vsTried=false;
 function vsPending(){try{
   if(location.pathname.includes("/comecar/")&&typeof tlGet==="function"&&typeof tlKid==="function"&&!tlKid()&&!tlGet().asked)return true;
   if(typeof avAskNow==="function"&&typeof prog!=="undefined"&&!(prog.avatar&&prog.avatar.ok)&&!prog.avAsk)return true;
-  if(typeof clsNotice==="function"&&typeof prog!=="undefined"&&!(prog.rpg&&prog.rpg.cg))return true;}catch(e){}return false;}
+  if(typeof clsNotice==="function"&&typeof prog!=="undefined"&&!(prog.rpg&&prog.rpg.cg))return true;
+  if(typeof openCls==="function"&&typeof prog!=="undefined"&&!(prog.rpg&&prog.rpg.cls))return true;} /* sem classe: a galeria de classes abre primeiro */catch(e){}return false;}
 (function vsBoot(){let isNew=null,tries=0;
   const tick=()=>{tries++;if(vsGet()===APP_VERSION||navigator.webdriver)return; // como os convites do avatar: robôs de teste não veem (os testes daqui forçam webdriver=false)
     const playing=vsPlaying();
