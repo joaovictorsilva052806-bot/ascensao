@@ -9,6 +9,7 @@
 
 ## Revisões horárias
 
+- 26/11 12h23 · Achado: o ▶ da PRÓXIMA missão (o botão principal de Hoje) era branco sobre ciano, contraste 1.77:1 (WCAG pede 4.5:1). Mudou: símbolo escuro (#02121a), 10.4:1, só em `tools/mission.css`; caches ascensao-v71 / ascensao-u-v83. Placar: novo qa/proxima-contraste.test.js 20/20 (16/20 no código antigo); suíte inteira 45/45 arquivos verdes.
 - 25/11 15h36 · Achado: cabeçalho dos painéis recolhíveis ("Como você está", "Treino do Sistema", "Ligar à planilha") tinha só 28px de altura para o dedo. Mudou: alvo de toque de 44px sem mudar o visual (margem negativa); caches ascensao-v29 / ascensao-u-v38. Placar: 198/198 (novo qa/toque.test.js 19/19, falhava 12/19 no código antigo).
 
 ## 25/11/2026 · 1ª rodada da ATENA: placar inicial e 3 correções (#27, #28, #30)
