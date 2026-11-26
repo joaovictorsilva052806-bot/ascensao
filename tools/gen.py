@@ -182,10 +182,13 @@ if ROOT:
     # raiz: service worker como era antes da unificação (offline também em teste local)
     s=s.replace('"serviceWorker" in navigator&&location.protocol==="https:"','"serviceWorker" in navigator')
     rep('    </details>\n  </section>\n</div>','    </details>\n  </section>\n'+R('creator.html')+'</div>')
+    # resumo do beta no Criador (tools/painel.*): só lê o que o painel já recebe
+    rep('</style></head>',R('painel.css')+'</style></head>')
     rep('Mais</button>\n</nav>','Mais</button>\n  <button type="button" data-go="criador" hidden><svg viewBox="0 0 24 24"><path d="M12 2l2.6 6.3L21 9l-5 4.4L17.5 20 12 16.6 6.5 20 8 13.4 3 9l6.4-.7z"/></svg>Criador</button>\n</nav>')
     rep('let t0="hoje";try{t0=sessionStorage.getItem("asc-tab")||"hoje";}catch(e){}','let t0="hoje";try{t0=sessionStorage.getItem("asc-tab")||"hoje";}catch(e){}if(t0==="criador"&&!crOn())t0="hoje";')
     rep('</style></head>',R('retencao.css')+'</style></head>')
     rep('\nlet saveTimer=null, SYNC="";','\n'+R('creator.js')+R('retencao.js')+'\n// planilha ligada e tarefas chegaram: fecha o cadastro de pessoa nova se estiver aberto\n{const _rr=render;render=function(){_rr.apply(this,arguments);try{if(cfg&&!cfg.blank&&cfg.quests&&cfg.quests.length&&document.body.classList.contains("onboarding")&&localStorage.getItem("ascensao-sync")){for(const id of ["onb","quick","intro"]){const e=$(id);if(e)e.hidden=true;}document.body.classList.remove("onboarding");}}catch(e){}};}\nlet saveTimer=null, SYNC="";')
+    rep('\nlet saveTimer=null, SYNC="";','\n'+R('creator.js')+R('painel.js')+'\n// planilha ligada e tarefas chegaram: fecha o cadastro de pessoa nova se estiver aberto\n{const _rr=render;render=function(){_rr.apply(this,arguments);try{if(cfg&&!cfg.blank&&cfg.quests&&cfg.quests.length&&document.body.classList.contains("onboarding")&&localStorage.getItem("ascensao-sync")){for(const id of ["onb","quick","intro"]){const e=$(id);if(e)e.hidden=true;}document.body.classList.remove("onboarding");}}catch(e){}};}\nlet saveTimer=null, SYNC="";')
     rep('setTimeout(dailyCheckin,600);','setTimeout(dailyCheckin,600);crApply();crRender();')
     # com planilha ligada, as tarefas vêm dela: nunca abrir o cadastro de pessoa nova
     rep('if(!cfg||cfg.blank||!cfg.quests||!cfg.quests.length)openOnb();','if((!cfg||cfg.blank||!cfg.quests||!cfg.quests.length)&&!(()=>{try{return localStorage.getItem("ascensao-sync");}catch(e){return "";}})())openOnb();')
