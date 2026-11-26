@@ -167,6 +167,9 @@ rep('\nlet saveTimer=null, SYNC="";','\n'+R('versao.js')+'\nlet saveTimer=null, 
 # cartão do jogador: ficha expansível na aba Hoje (tools/heroi.*)
 rep('</style></head>',R('heroi.css')+'</style></head>')
 rep('\nlet saveTimer=null, SYNC="";','\n'+R('heroi.js')+'\nlet saveTimer=null, SYNC="";')
+# estudo na aba Foco: Hoje com 3 tarefas, prazos com alerta, flashcards e horas complementares (tools/estudo.*)
+rep('</style></head>',R('estudo.css')+'</style></head>')
+rep('\nlet saveTimer=null, SYNC="";','\n'+R('estudo.js')+'\nlet saveTimer=null, SYNC="";')
 if not ROOT: open('comecar/index.html','w').write(s)
 pass
 

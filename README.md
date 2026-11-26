@@ -52,6 +52,18 @@ Escolha de classe (`openCls` em `tools/rpg.js`): na 1ª vez o Sistema sugere uma
 
 Teste: `node qa/ranking-dia.test.js`.
 
+## Estudo (aba Foco)
+
+`tools/estudo.js` e `tools/estudo.css` (entram nos dois geradores): painel **📚 Estudo** logo abaixo do Modo foco, pensado para TDAH.
+
+- **Hoje:** no máximo 3 tarefas. Administrativo (📌) sempre primeiro; depois prazo, peso e a tarefa mais curta. Uma em destaque com "▶ Começar 25 min", que usa o timer que já existe. No fim do bloco: "Terminei", "Avancei" (abre pausa de 5 min; 15 a cada 4 blocos) ou "Travei" (quebra em um passo de 10 min que vai para o topo). "Não consigo agora" adia 1 dia; no 2º adiamento pede o passo menor.
+- **Prazos:** alerta na aba Hoje quando falta 7 dias ou menos (amarelo até 3, vermelho atrasado).
+- **Flashcards:** revisão espaçada 1-3-7-14-30 dias, errou volta para 1; sessão de até 10 cards; importa `frente;verso` colado.
+- **Horas complementares:** meta em horas; só "Validado" conta como cumprido.
+- **Treino e sono:** nada de estudo no treino ±30 min (lê a tarefa de treino da rotina ou o ajuste), meta cai 1 bloco em dia de treino e aviso 1 h antes de dormir.
+
+Grava só `prog.st`. XP novo: `st:t:<id>` (+10, entregue no prazo) e `st:c:<dia>` (+1 por card, até 10 por dia). Teste: `node qa/estudo.test.js`.
+
 ## Resumo do beta (Modo Criador)
 
 `tools/painel.js` e `tools/painel.css` (só na aba Criador do app do JV, via `gen.py --root`): números agregados em cima das abas privadas que o painel já lê (testadores, ativos hoje e em 7 dias, volta no dia 2 e no dia 8, missões feitas, feedbacks, funil e ativos por dia). Colunas achadas pelo nome do cabeçalho. Não envia nada; guarda no aparelho do criador só a contagem diária em `ascensao-painel-hist`. Teste: `node qa/painel.test.js`. Integração com a EVA: `docs/integracao-eva.md`.
