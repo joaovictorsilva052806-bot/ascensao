@@ -93,3 +93,9 @@ function hrOrder(){const q=$("quests")&&$("quests").closest("section");const z=$
   if(q.nextElementSibling!==z)q.after(z);const g=$("gdPanel");if(g&&(q.compareDocumentPosition(g)&Node.DOCUMENT_POSITION_FOLLOWING)){const sb=$("smBar");(sb&&sb.nextElementSibling===q?sb:q).before(g);}}
 {const _r3=render;render=function(){_r3.apply(this,arguments);try{hrOrder();}catch(e){}};}
 setTimeout(()=>{try{hrOrder();}catch(e){}},50);
+// "Comece por aqui": depois do 1º passo feito, vira uma linha só (o passo da vez); toque no título mostra os 3 de novo.
+function hrGuide(){const p=$("gdPanel");if(!p)return;const ok=p.querySelectorAll(".gdl li.ok").length;const mini=ok>0&&!p.dataset.full;p.classList.toggle("gdmini",mini);
+  const h=p.querySelector(".qhead");if(h&&!h.dataset.hr){h.dataset.hr="1";h.setAttribute("role","button");h.tabIndex=0;h.addEventListener("click",()=>{if(p.dataset.full)delete p.dataset.full;else p.dataset.full="1";hrGuide();});}
+  if(h)h.setAttribute("aria-expanded",mini?"false":"true");}
+{const _r4=render;render=function(){_r4.apply(this,arguments);try{hrGuide();}catch(e){}};}
+setTimeout(()=>{try{hrGuide();}catch(e){}},80);
