@@ -25,10 +25,12 @@ function rnCrit(x,y){const d=document.createElement("div");d.className="rncrit";
 if(typeof fx==="function"){const _fx=fx;fx=function(xp,gold){const r=_fx.apply(this,arguments);try{rnCircle(rnX,rnY,gold);if(gold)rnCrit(rnX,rnY);}catch(e){}return r;};}
 
 // 4) Level up: círculo mágico grande girando atrás do card
-function rnLevel(){const l=$("levelup");if(!l||l.querySelector(".rnlv"))return;const ns="http://www.w3.org/2000/svg",s=document.createElementNS(ns,"svg");s.setAttribute("class","rnlv");s.setAttribute("viewBox","0 0 200 200");s.setAttribute("aria-hidden","true");
+function rnLevel(){const l=$("levelup");if(!l||l.querySelector(".rnlv"))return;
+  // 3 camadas separadas: cada uma gira inteira (transform no compositor), sem filtro, para manter 60fps em Android barato
   let tk="";for(let i=0;i<72;i++){const a=i*5*Math.PI/180,r1=i%6?92:88;tk+=`M${(100+r1*Math.cos(a)).toFixed(1)} ${(100+r1*Math.sin(a)).toFixed(1)}L${(100+95*Math.cos(a)).toFixed(1)} ${(100+95*Math.sin(a)).toFixed(1)}`;}
-  s.innerHTML='<g class="a"><circle cx="100" cy="100" r="96"/><path d="'+tk+'"/></g><g class="b">'+rnRing(100,100,74,16,.6)+'<circle cx="100" cy="100" r="62"/></g><g class="c"><path d="M100 40L152 130H48Z M100 160L48 70H152Z"/><circle cx="100" cy="100" r="40"/></g>';
-  l.prepend(s);}
+  const L=['<circle cx="100" cy="100" r="96"/><path d="'+tk+'"/>',rnRing(100,100,74,16,.6)+'<circle cx="100" cy="100" r="62"/>','<path class="g" d="M100 40L152 130H48Z M100 160L48 70H152Z"/><circle cx="100" cy="100" r="40"/>'];
+  const w=document.createElement("div");w.className="rnlv";w.setAttribute("aria-hidden","true");
+  w.innerHTML=L.map((x,k)=>'<svg class="l'+k+'" viewBox="0 0 200 200">'+x+'</svg>').join("");l.prepend(w);}
 try{const l=$("levelup");if(l){rnLevel();}}catch(e){}
 
 // 3) Baú: rola um d20 antes do prêmio (o prêmio já está sorteado; o dado só mostra a raridade)
