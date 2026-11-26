@@ -1,5 +1,6 @@
 # Aviso diário com o app fechado (Web Push), sem servidor novo: o GitHub Actions é o "relógio".
-# Segredos (Settings > Secrets and variables > Actions): VAPID_PRIVATE, VAPID_SUBJECT (mailto:…), LEMB_KEY (o mesmo das Script Properties do Apps Script).
+# Segredos (Settings > Secrets and variables > Actions): VAPID_PRIVATE e LEMB_KEY (o mesmo das Script Properties do Apps Script).
+# A chave pública VAPID fica no código (tools/push.js e tools/push-send.mjs): ela é pública por natureza.
 # Sem segredos, o robô só diz "nada a fazer" e termina verde.
 # Atenção: em repositório público, o GitHub pausa workflow agendado depois de 60 dias sem commit. Qualquer trem novo reativa.
 name: Aviso diário (push)
@@ -29,7 +30,6 @@ jobs:
       - name: Mandar os avisos da vez
         env:
           VAPID_PRIVATE: ${{ secrets.VAPID_PRIVATE }}
-          VAPID_SUBJECT: ${{ secrets.VAPID_SUBJECT }}
           LEMB_KEY: ${{ secrets.LEMB_KEY }}
         run: |
           if [ -n "$LEMB_KEY" ]; then echo "::add-mask::$LEMB_KEY"; fi
