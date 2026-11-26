@@ -1,5 +1,12 @@
 # Relatório de QA (ATENA)
 
+## 25/11/2026 (23h, Brasília) · Volta do dia 1 ao 3
+
+- Novo: tools/hook.* (teaser "Amanhã no Sistema", presente do dia 2/3 com +15/+25 XP na 1ª tarefa, resgate da sequência depois das 18h). Grava só `prog.hook.got`; nenhuma coleta nova.
+- qa/volta.test.js 44/44 (raiz e /comecar/, 390x844 e desktop, relógio simulado, reduce-motion, dados antigos intactos, veterano não vê nada).
+- Suíte: tudo verde. qa/ranking-dia.test.js ganhou `hook.got[2]` no perfil de teste (o perfil era "dia 2" e o presente somava +15 ao XP do dia). qa/mural-servidor.test.js falha igual na main (precisa de caminho por variável de ambiente; não é desta mudança).
+- Caches ascensao-v55 / ascensao-u-v67.
+
 ## Revisões horárias
 
 - 25/11 15h36 · Achado: cabeçalho dos painéis recolhíveis ("Como você está", "Treino do Sistema", "Ligar à planilha") tinha só 28px de altura para o dedo. Mudou: alvo de toque de 44px sem mudar o visual (margem negativa); caches ascensao-v29 / ascensao-u-v38. Placar: 198/198 (novo qa/toque.test.js 19/19, falhava 12/19 no código antigo).
