@@ -167,6 +167,9 @@ rep('\nlet saveTimer=null, SYNC="";','\n'+R('versao.js')+'\nlet saveTimer=null, 
 # cartão do jogador: ficha expansível na aba Hoje (tools/heroi.*)
 rep('</style></head>',R('heroi.css')+'</style></head>')
 rep('\nlet saveTimer=null, SYNC="";','\n'+R('heroi.js')+'\nlet saveTimer=null, SYNC="";')
+# Arena do Sistema + meta de leitura (tools/arena.*, tools/leitura.js)
+rep('</style></head>',R('arena.css')+'</style></head>')
+rep('\nlet saveTimer=null, SYNC="";','\n'+R('arena.js')+R('leitura.js')+'\nlet saveTimer=null, SYNC="";')
 if not ROOT: open('comecar/index.html','w').write(s)
 pass
 
