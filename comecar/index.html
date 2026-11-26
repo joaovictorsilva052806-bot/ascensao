@@ -1156,6 +1156,15 @@ body.insm .sysmodal:not([hidden]),body.insm .levelup:not([hidden]){z-index:90}
 body[data-tab=foco] #focusPanel.panel{margin-top:0}
 /* aviso que chegar com o relatório aberto fica por cima dele */
 body.infz .sysmodal:not([hidden]),body.infz .levelup:not([hidden]){z-index:90}
+.vsnews .card{max-width:360px;text-align:left}
+.vsnews .tag,.vsnews h3{text-align:center}
+.vsnews .vsl{list-style:none;margin:2px 0;padding:0;display:grid;gap:8px}
+.vsnews .vsl li{display:flex;gap:10px;align-items:flex-start;font-size:.92rem;line-height:1.35}
+.vsnews .vsi{flex:none;width:1.5em;text-align:center}
+.vsnews .go{min-height:44px;margin-top:4px}
+.vsfoot{display:flex;flex-wrap:wrap;gap:4px 6px;align-items:center;justify-content:center;padding:14px 8px 4px;text-align:center}
+.vsfoot>span{padding:0 8px}
+.vsfoot a,.vsfoot .link{display:inline-flex;align-items:center;justify-content:center;min-height:44px;min-width:44px;padding:0 10px;color:var(--muted)}
 </style></head><body>
 
 <div class="hudtop"><span>ASCENSION<i>//</i>SISTEMA ONLINE</span><span class="mono" id="clock">--:--</span></div>
@@ -1565,7 +1574,7 @@ body.infz .sysmodal:not([hidden]),body.infz .levelup:not([hidden]){z-index:90}
       <summary>Como o jogo funciona</summary>
       <ul>
         <li><b>Feito</b> dá o XP inteiro. <b>Mínimo</b> dá metade e já conta como dia ativo.</li>
-        <li><b>Dívida:</b> cada quest principal sem nem o mínimo custa 10 XP. Fez todas as principais no dia seguinte? A dívida de ontem é perdoada.</li>
+        <li><b>Dívida:</b> nos 3 primeiros dias não tem. Depois, cada quest principal sem nem o mínimo custa 10 XP. Fez todas as principais no dia seguinte? A dívida de ontem é perdoada.</li>
         <li><b>Baú surpresa:</b> 1 chance em 5 de XP extra ao concluir uma quest.</li>
         <li><b>Masmorra da semana:</b> cada dia com as tarefas principais feitas limpa um andar. 5 andares abrem o baú (+50 XP). Ela volta toda segunda.</li>
         <li><b>Dia de descanso:</b> 1 por semana. Nesse dia nenhuma quest gera dívida. Use em dia de doença ou cansaço de verdade.</li>
@@ -1617,14 +1626,14 @@ function entries(){const out=[];for(const k in prog.log){for(const e of (prog.lo
 function earnedXP(){return entries().reduce((s,e)=>s+(e.xp||0)+(e.bonus||0),0);}
 // Punição leve e recuperável: cada quest principal não feita (nem no mínimo) num dia passado = -10 XP.
 // Redenção: fazer todas as principais no dia seguinte perdoa a dívida do dia anterior.
-const PEN=10, DEBT_DAYS=3;
+const PEN=10, DEBT_DAYS=3, DEBT_GRACE=3; // carência: os 3 primeiros dias de jogo nunca geram dívida
 function mainsFor(dt){const dow=(dt.getDay()+6)%7;return ((cfg&&cfg.quests)||[]).filter(q=>q.main&&!q.once&&(!q.days||q.days.includes(dow)));}
 function onceDoneBefore(q,tk){if(!q.once)return false;for(const k in prog.log){if(k!==tk&&(prog.log[k]||[]).some(e=>e.q===q.id))return true;}return false;}
 function visibleToday(q,dow,tk){return (!q.days||q.days.includes(dow))&&!onceDoneBefore(q,tk);}
 function allMainsDone(dt){const k=dkey(dt);const done=prog.log[k]||[];const m=mainsFor(dt);return m.length>0&&m.every(q=>done.some(e=>e.q===q.id));}
 function penalties(){
   const out=[];if(!cfg||!cfg.startDate)return out;
-  const [y,m,d]=cfg.startDate.split("-").map(Number);const dt=new Date(y,m-1,d);const tk=todayKey();
+  const [y,m,d]=cfg.startDate.split("-").map(Number);const dt=new Date(y,m-1,d+DEBT_GRACE);const tk=todayKey();
   // Punição leve: só os últimos DEBT_DAYS dias contam. Quem some uma semana volta sem o XP zerado.
   const lim=new Date();lim.setHours(0,0,0,0);lim.setDate(lim.getDate()-DEBT_DAYS);if(dt<lim)dt.setTime(lim.getTime());
   while(dkey(dt)<tk){const k=dkey(dt);const done=prog.log[k]||[];if(isRest(k)){dt.setDate(dt.getDate()+1);continue;}
@@ -3085,7 +3094,16 @@ function tlUI(){let p=$("tlPanel");if(!p){const anchor=$("betaPanel");if(!anchor
   r.append(b);bd.append(r);}
 // nota do "Teste do app" também vai identificada para quem aceitou
 {const bs=$("betaSend");if(bs)bs.addEventListener("click",()=>{try{const t=tlGet();if(!t.on||tlKid()||!betaRate)return;const tx=$("betaText").value.trim().replace(/\S+@\S+/g,"[email]").replace(/\+?\d[\d\s().-]{7,}\d/g,"[número]").slice(0,240);tlSend("nota",betaRate+": "+tx);}catch(e){}},true);}
-function tlBoot(){try{anon(standalone()?"3-abriu-app":"2-abriu-navegador");if(cfg&&!cfg.blank&&cfg.quests&&cfg.quests.length){anon("4-perfil");tlDaily();setTimeout(tlAsk,2500);}tlUI();}catch(e){}}
+// funil anônimo do dia (mesmo opt-in e mesmo formato A|id|etapa|data): fez 1 missão de verdade hoje; fechou o dia (baú liberado)
+function tlFunnel(){try{if(!anonOk()||!cfg||cfg.blank||!cfg.quests||!cfg.quests.length)return;const L=prog.log[todayKey()]||[];const ids=new Set(cfg.quests.map(q=>q.id));
+  if(L.some(e=>ids.has(e.q)))anon("7-quest");if(typeof bxReady==="function"&&bxReady())anon("8-fechou-dia");}catch(e){}}
+function tlBoot(){try{anon(standalone()?"3-abriu-app":"2-abriu-navegador");if(cfg&&!cfg.blank&&cfg.quests&&cfg.quests.length){anon("4-perfil");tlDaily();tlZap();setTimeout(tlAsk,2500);}tlUI();tlFunnel();setInterval(tlFunnel,15000);document.addEventListener("visibilitychange",()=>{if(document.hidden)tlFunnel();});}catch(e){}}
+// Métrica dos desafios relâmpago (só com opt-in, anônima: id aleatório, sem apelido): 1 linha por dia sobre ONTEM.
+// A|id|6-desafios|dia de ontem|aparelho|app/navegador|feitos de 3|dupla 0/1|sensor 0/1|usou o app ontem 0/1
+function tlZap(){if(!anonOk()||typeof zapToday!=="function")return;const t=tlGet();const y=new Date();y.setDate(y.getDate()-1);const yk=dkey(y),yd=yk.replace(/-/g,"");if(t.zd===yd)return;
+  const n=Object.keys(((prog.zap||{})[yk])||{}).length;const L=prog.log[yk]||[];const duo=L.some(e=>String(e.q).startsWith("zap:duo:"))?1:0;
+  let mo=0;try{mo=(JSON.parse(localStorage.getItem("asc-u-zapmo")||"{}")||{})[yk]?1:0;}catch(e){}
+  t.zd=yd;tlSet(t);tlPost(["A",anonId(),"6-desafios",yd,tlPlat(),standalone()?"app":"navegador",Math.min(3,n)+"/3",duo,mo,L.length?1:0]);}
 setTimeout(tlBoot,1200);
 // quem acabou de criar o perfil vê o aceite depois de fechar os avisos de boas-vindas
 let tlTry=0;const tlIv=setInterval(()=>{if(tlGet().asked||tlKid()||++tlTry>120){clearInterval(tlIv);return;}try{if(cfg&&cfg.quests&&cfg.quests.length){anon("4-perfil");tlAsk();}}catch(e){}},5000);
@@ -3157,7 +3175,7 @@ function zapFinish(z){if(zapDone(z.id))return;const tk=todayKey();prog.zap=prog.
   addXP({q:"zap:"+z.id+":"+tk,kind:"zap",xp,stat:"corpo",bonus:0,t:new Date().toISOString()},"Desafio relâmpago: +"+xp+" XP");
   try{if(typeof sendRank==="function")sendRank("desafio",true);}catch(e){}
   try{if(typeof duoDone==="function")duoDone(z);}catch(e){}
-  if(zapMo.used){try{const k="asc-u-zapmo";const o=JSON.parse(localStorage.getItem(k)||"{}");o[tk]=(o[tk]||0)+1;for(const d in o)if(d<tk)delete o[d];localStorage.setItem(k,JSON.stringify(o));}catch(e){}zapMo.used=false;}
+  if(zapMo.used){try{const k="asc-u-zapmo";const o=JSON.parse(localStorage.getItem(k)||"{}");o[tk]=(o[tk]||0)+1;for(const d in o)if(d<dkey(new Date(Date.now()-2*864e5)))delete o[d];localStorage.setItem(k,JSON.stringify(o));}catch(e){}zapMo.used=false;}
   zapClose();zapUI();
   const after=zapRankLine();const all=zapToday().every(q=>zapDone(q.id));
   if(before&&after&&after.pos<before.pos)sysPop("RANKING","Subiu para #"+after.pos,"Você passou alguém no ranking da semana. "+(after.pos>1?after.txt.replace(/^#\d+ na semana · /,"Agora "):"Topo conquistado."),null,"Bora");
@@ -5180,6 +5198,59 @@ setInterval(fdTick,5000);setTimeout(()=>{fdTick();fdBadge();},1500);
     if(i<0||(!e.shiftKey&&i===f.length-1)||(e.shiftKey&&i===0)){e.preventDefault();f[e.shiftKey?f.length-1:0].focus();}},true);
   setTimeout(scan,0);
 })();
+
+// ---------- Versão do app e tela "Novidades" (1x por versão, só para quem já jogava) ----------
+// Quem é novo não vê: o onboarding já apresenta o jogo, e a versão fica marcada como vista ao terminar.
+// Não abre para navegador automatizado (navigator.webdriver), para não travar os testes da qa/. Nunca abre em cima de outro modal, do onboarding ou de missão ativa. Grava só a chave *-ver, fora do progresso.
+const APP_VERSION="1.0.0";
+const VS_KEY=location.pathname.includes("/comecar/")?"asc-u-ver":"ascensao-ver";
+const VS_BASE=location.pathname.includes("/comecar/")?"../":"./";
+const VS_NEWS=[["⚔️","Classes","que evoluem com você nos níveis 10 e 20"],["▶️","Missão ativa","com timer e a ferramenta certa em 1 toque"],["🐉","Chefão, masmorra e baú","toda semana"],["⚡","Desafios relâmpago","e Quebrar correntes"],["👥","Esquadrão, liga da semana","e desafio em dupla com amigos"],["🔒","Política de Privacidade e Termos","novos, em Mais"]];
+function vsGet(){try{return localStorage.getItem(VS_KEY)||"";}catch(e){return "";}}
+function vsSet(){try{localStorage.setItem(VS_KEY,APP_VERSION);}catch(e){}}
+function vsPlaying(){return !!(typeof cfg!=="undefined"&&cfg&&!cfg.blank&&cfg.quests&&cfg.quests.length);}
+function vsBusy(){if(document.hidden)return true;const b=document.body.classList;if(b.contains("onboarding")||b.contains("inmission"))return true;
+  if([...document.querySelectorAll(".sysmodal,.mssheet,[role=dialog]")].some(m=>!m.hidden&&m.getClientRects().length))return true;
+  const lu=document.getElementById("levelup");if(lu&&!lu.hidden)return true;const o=document.getElementById("onb");return !!(o&&!o.hidden&&o.getClientRects().length);}
+function vsOpen(){if(document.getElementById("vsModal"))return;const prev=document.activeElement;
+  try{if(typeof newsDone==="function")newsDone();}catch(e){} // a tela 1.0 aposenta o cartão antigo de Novidades (NEWS_V)
+  const m=document.createElement("div");m.className="sysmodal vsnews";m.id="vsModal";m.setAttribute("role","dialog");m.setAttribute("aria-modal","true");m.setAttribute("aria-labelledby","vsTitle");
+  const c=document.createElement("div");c.className="card";const t=document.createElement("div");t.className="tag";t.textContent="[ SISTEMA ] ATUALIZAÇÃO "+APP_VERSION.replace(/\.0$/,"");
+  const h=document.createElement("h3");h.id="vsTitle";h.textContent="Ascension "+APP_VERSION.replace(/\.0$/,"");
+  const p=document.createElement("p");p.className="sm";p.textContent="O jogo saiu do beta. Obrigado por testar com a gente.";
+  const ul=document.createElement("ul");ul.className="vsl";for(const [i,b,r] of VS_NEWS){const li=document.createElement("li");const e=document.createElement("span");e.className="vsi";e.setAttribute("aria-hidden","true");e.textContent=i;const s=document.createElement("span");const bb=document.createElement("b");bb.textContent=b;s.append(bb," "+r);li.append(e,s);ul.append(li);}
+  const k=document.createElement("p");k.className="sm muted";k.textContent="Seu XP, sua sequência e seu histórico continuam iguais.";
+  const go=document.createElement("button");go.type="button";go.className="go";go.textContent="Continuar";
+  const close=()=>{vsSet();m.remove();document.removeEventListener("keydown",esc);try{prev&&prev.focus&&prev.focus();}catch(e){}};
+  const esc=e=>{if(e.key==="Escape")close();};
+  go.addEventListener("click",close);document.addEventListener("keydown",esc);
+  c.append(t,h,p,ul,k,go);m.append(c);document.body.append(m);setTimeout(()=>{try{go.focus();}catch(e){}},30);}
+// rodapé em Mais: versão, novidades e textos legais
+function vsFoot(){if(document.getElementById("vsFoot"))return;const ms=[...document.querySelectorAll('section[data-tab="mais"]')];if(!ms.length)return;
+  const d=document.createElement("section");d.id="vsFoot";d.className="vsfoot sm muted";d.dataset.tab="mais";d.setAttribute("aria-label","Sobre o app");
+  const v=document.createElement("span");v.textContent="Ascension "+APP_VERSION;
+  const nb=document.createElement("button");nb.type="button";nb.className="link";nb.textContent="Novidades";nb.addEventListener("click",vsOpen);
+  const mk=(href,txt)=>{const a=document.createElement("a");a.href=VS_BASE+href;a.textContent=txt;a.target="_blank";a.rel="noopener";return a;};
+  d.append(v,nb,mk("privacidade/","Privacidade"),mk("termos/","Termos"));ms[ms.length-1].after(d);}
+let vsTried=false;
+function vsPending(){try{
+  if(location.pathname.includes("/comecar/")&&typeof tlGet==="function"&&typeof tlKid==="function"&&!tlKid()&&!tlGet().asked)return true;
+  if(typeof avAskNow==="function"&&typeof prog!=="undefined"&&!(prog.avatar&&prog.avatar.ok)&&!prog.avAsk)return true;
+  if(typeof clsNotice==="function"&&typeof prog!=="undefined"&&!(prog.rpg&&prog.rpg.cg))return true;
+  if(typeof openCls==="function"&&typeof prog!=="undefined"&&!(prog.rpg&&prog.rpg.cls))return true;} /* sem classe: a galeria de classes abre primeiro */catch(e){}return false;}
+(function vsBoot(){let isNew=null,tries=0;
+  const tick=()=>{tries++;if(vsGet()===APP_VERSION||navigator.webdriver)return; // como os convites do avatar: robôs de teste não veem (os testes daqui forçam webdriver=false)
+    const playing=vsPlaying();
+    if(isNew===null)isNew=!playing;
+    if(isNew){if(playing)vsSet();else if(tries<400)setTimeout(tick,3000);return;} // novo: marca como visto ao terminar o perfil
+    // 1 tela do Sistema por abertura: se ainda falta o aceite do painel (só /comecar/), montar o avatar ou o aviso de classe,
+    // a Novidades fica para a próxima abertura (no máximo 3 vezes; depois entra na fila normal)
+    if(!vsTried){vsTried=true;let skip=0;try{skip=+localStorage.getItem(VS_KEY+"-adia")||0;}catch(e){}
+      if(skip<3&&vsPending()){try{localStorage.setItem(VS_KEY+"-adia",String(skip+1));}catch(e){}return;}}
+    if(!vsBusy()){vsOpen();return;}
+    if(tries<60)setTimeout(tick,3000);};
+  const start=()=>{try{vsFoot();}catch(e){}setTimeout(tick,2500);};
+  if(document.readyState==="loading")document.addEventListener("DOMContentLoaded",start);else start();})();
 
 let saveTimer=null, SYNC="";
 try{SYNC=localStorage.getItem("asc-u-sync")||"";}catch(e){}
