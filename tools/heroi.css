@@ -35,3 +35,6 @@ section[data-hbg]>:not(.hrbg){position:relative;z-index:1}
 .gd.gdmini .gdl li:not(.now),.gd.gdmini .gdoff{display:none}
 .gd .qhead[role=button]{cursor:pointer}
 .gd.gdmini .qhead .xp::after{content:" ▾"}
+/* Hoje no celular pequeno: selo PRÓXIMA legível (era 9px) e título do Comece por aqui com 44px de toque */
+.quest.next .nextlbl{font-size:.72rem;pointer-events:none}
+.gd .qhead{min-height:44px;align-items:center}
