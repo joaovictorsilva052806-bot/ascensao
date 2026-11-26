@@ -185,3 +185,5 @@ Efeito no painel: o funil passa a contar só quem aceitou; a etapa "convite" par
 | Site no ar: "pages build and deployment" da main `02bb36c` | sucesso (26/11 3h06) |
 
 Falhou e foi corrigido: `qa/mural-servidor.test.js` quebrava com `TypeError` quando rodado como os outros (`node qa/mural-servidor.test.js`, sem argumento), então o laço `for f in qa/*.test.js` sempre ficava vermelho. Agora usa `server/mural.gs` por padrão (29/29). Só teste: app e cache do SW sem mudança (`ascensao-v61` / `ascensao-u-v73`).
+
+- 26/11/2026 7h23 · Revisão horária · Main `0f0c936` (Trem 8) verde; checklist da EVA (convite, idade, amigos/avatar) verde. Achado em 390x844: no "Comece por aqui", quem marcou "Até 13" (sem ranking) via "Veja seu lugar no ranking" e "te sobe no ranking". Mudou: para menor de 14 o passo 3 vira "Veja sua evolução", o desafio diz "Vale XP na hora" e o aviso final fala em evolução; 14+ igual. Teste novo `qa/guia-idade.test.js` 24/24 (4 falham no código antigo). Cache `ascensao-v63` / `ascensao-u-v75`. Placar: suíte inteira 33/33 arquivos verdes.
