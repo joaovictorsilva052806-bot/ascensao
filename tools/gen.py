@@ -153,6 +153,9 @@ rep('\nlet saveTimer=null, SYNC="";','\n'+R('boss.js')+R('chest.js')+R('mural.js
 # celular de verdade: 📅 agenda e tarefas de apps (tools/apps.*)
 rep('</style></head>',R('apps.css')+'</style></head>')
 rep('\nlet saveTimer=null, SYNC="";','\n'+R('apps.js')+'\nlet saveTimer=null, SYNC="";')
+# volta do dia 1 ao 3: teaser de amanhã, presente de volta e resgate da sequência (tools/hook.*)
+rep('</style></head>',R('hook.css')+'</style></head>')
+rep('\nlet saveTimer=null, SYNC="";','\n'+R('hook.js')+'\nlet saveTimer=null, SYNC="";')
 if not ROOT: open('comecar/index.html','w').write(s)
 pass
 

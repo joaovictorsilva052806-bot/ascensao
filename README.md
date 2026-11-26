@@ -51,6 +51,16 @@ Escolha de classe (`openCls` em `tools/rpg.js`): na 1ª vez o Sistema sugere uma
 
 Teste: `node qa/ranking-dia.test.js`.
 
+## Volta do dia 1 ao 3
+
+`tools/hook.js`/`hook.css` (nos dois apps): nos 7 primeiros dias de jogo, um cartão logo abaixo das tarefas de Hoje puxa a volta no dia seguinte.
+
+- **Fez a 1ª tarefa do dia:** "🌙 Amanhã no Sistema" mostra o que vem (presente do dia 2/3, sequência que vira N+1, quanto falta para o escudo) e a versão mínima da 1ª tarefa de amanhã.
+- **Dia 2 e dia 3:** "🎁 Presente do dia N" abre com a 1ª tarefa: +15 e +25 XP, uma vez só (`ach:volta:<n>`, não conta sequência). Vale mesmo depois de uma pausa, sem culpa.
+- **Depois das 18h sem tarefa:** "🔥 Dá tempo de salvar o dia" com a versão mínima da próxima tarefa. Com os avisos do Ranking do dia já ligados, um lembrete às 19h com o app em 2º plano (sem permissão nova).
+
+Dia de jornada = dias diferentes com pelo menos 1 tarefa de verdade. Grava só `prog.hook.got`. Teste: `node qa/volta.test.js`.
+
 ## Reinstalação do app pessoal
 
 Na 1ª ligação da planilha num aparelho (link `#s=` ou colar o endereço), a planilha vence e o progresso local vira backup em `ascensao-prog-prelink`. Teste: `node qa/religar.test.js`.
