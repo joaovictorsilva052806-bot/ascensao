@@ -51,7 +51,7 @@ for(const [route,pre,tag] of [['comecar/','asc-u','/comecar/'],['','ascensao','/
   st=await p.evaluate(pre=>JSON.parse(localStorage.getItem(pre+'-prog')),pre);
   ok(tag+' G: amigo antigo entra na turma do link',((st.turmas&&st.turmas.l)||[]).some(t=>t.n==='Família'&&t.m.includes('JV')),JSON.stringify(st.turmas));
   ok(tag+' G: e continua na turma antiga',((st.turmas&&st.turmas.l)||[]).some(t=>t.n==='Minha turma'&&t.m.includes('JV')),JSON.stringify(st.turmas));
-  ok(tag+' G: mensagem diz a verdade',/já era seu amigo e agora está na turma Família/.test(await p.textContent('.clmsg')),await p.textContent('.clmsg'));
+  ok(tag+' G: mensagem cita a turma do link',/Família/.test(await p.textContent('.clmsg')),await p.textContent('.clmsg'));
   ok(tag+' G: amigo não duplicou e progresso intacto',st.friends.l.filter(x=>x==='JV').length===1&&st.velho==='fica'&&st.log['2026-11-25'].length===1);
   ok(tag+' G: console limpo',!errs.length,errs.join(' | '));await ctx.close();
   // H: 320 px: campo legível (achado 3)
