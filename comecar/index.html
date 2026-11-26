@@ -649,6 +649,7 @@ body.avmkon{overflow:hidden}
 .status .who,.status .who h1,#titleName,.sysmsg,.sysline,#sysTip,.hero .msg{min-width:0;max-width:100%;overflow-wrap:anywhere;word-break:break-word}
 .status{min-width:0}.wrap{max-width:100%}
 .avmkc{padding-left:max(14px,env(safe-area-inset-left));padding-right:max(14px,env(safe-area-inset-right));height:min(94dvh,calc(100dvh - env(safe-area-inset-top)))}
+.tmoff{min-height:44px;display:flex;align-items:center;justify-content:center;text-align:center;padding:6px 10px;border:1px dashed var(--line);border-radius:10px;margin:6px 0}
 /* ---- Tarefas limpas + horário (tools/qtidy.js) ---- */
 .quest:not(.open) .tag,.quest:not(.open) .if,.quest:not(.open) .qlink,.quest:not(.open) .qtmin,.quest:not(.open) .mshint{display:none!important}
 .quest:not(.open) .btns .ghost{display:none}
@@ -1987,7 +1988,7 @@ const icsDT=x=>x.getFullYear()+String(x.getMonth()+1).padStart(2,"0")+String(x.g
 const icsEsc=s=>String(s).replace(/[\;,]/g,m=>"\\"+m).replace(/\n/g,"\\n");
 function buildICS(){const L=["BEGIN:VCALENDAR","VERSION:2.0","PRODID:-//Ascensao//PT-BR","CALSCALE:GREGORIAN","METHOD:PUBLISH"];const st=icsDT(new Date());
   remPlan().forEach((r,i)=>{const s=nextDate(r.h,r.d),e=new Date(s.getTime()+10*60000);
-    L.push("BEGIN:VEVENT","UID:asc-r-"+String(r.t).normalize("NFD").replace(/[\u0300-\u036f]/g,"").replace(/[^\w]+/g,"-").toLowerCase().slice(0,40)+"@ascensao","DTSTAMP:"+st,"DTSTART:"+icsDT(s),"DTEND:"+icsDT(e),"RRULE:FREQ=WEEKLY;BYDAY="+r.d.map(x=>BYD[x]).join(","),"SUMMARY:"+icsEsc(r.t),"DESCRIPTION:"+icsEsc(r.n+"\n"+location.href.split("#")[0]),
+    L.push("BEGIN:VEVENT","UID:asc-r-"+String(r.t).normalize("NFD").replace(/[\u0300-\u036f]/g,"").replace(/[^\w]+/g,"-").replace(/^-+|-+$/g,"").toLowerCase().slice(0,40)+"@ascensao","DTSTAMP:"+st,"DTSTART:"+icsDT(s),"DTEND:"+icsDT(e),"RRULE:FREQ=WEEKLY;BYDAY="+r.d.map(x=>BYD[x]).join(","),"SUMMARY:"+icsEsc(r.t),"DESCRIPTION:"+icsEsc(r.n+"\n"+location.href.split("#")[0]),
       "BEGIN:VALARM","ACTION:DISPLAY","DESCRIPTION:"+icsEsc(r.t),"TRIGGER:PT0M","END:VALARM","END:VEVENT");});
   L.push("END:VCALENDAR");return L.join("\r\n");}
 function gcalLink(r){const s=nextDate(r.h,r.d),e=new Date(s.getTime()+10*60000);
@@ -2424,7 +2425,15 @@ function statXP(){const st={foco:0,vendas:0,mente:0,corpo:0};for(const e of entr
 function coinsEarned(){let s=0;for(const e of entries())s+=Math.max(0,(e.xp||0)+(e.bonus||0));return Math.floor(s/10);}
 function rpgTip(){const d=new Date();const n=Math.floor((d-new Date(d.getFullYear(),0,0))/864e5);return TIPS[n%TIPS.length];}
 let sysQ=[];function sysPop(tag,title,text,cb,lbl){sysQ.push([tag,title,text,cb,lbl]);if(sysQ.length===1)sysNext();}
-let sysShown=null;function sysNext(){if(!sysQ.length||(sysShown&&sysShown.isConnected))return;const [tag,title,text,cb,lbl]=sysQ[0];const m=document.createElement("div");m.className="sysmodal";m.setAttribute("role","dialog");sysShown=m;
+// Uma janela por vez: espera o Modo Sistema (#smSheet), a galeria e outras janelas abertas. Na abertura do app (primeiros 20 s)
+// no máximo 2 janelas; as demais sem ação viram aviso curto.
+const SYS_T0=Date.now();let sysOpenN=0;
+function sysBlocked(){const sm=document.getElementById("smSheet");if(sm&&!sm.hidden&&sm.getClientRects().length)return true;
+  for(const x of document.querySelectorAll(".sysmodal,.levelup:not([hidden]),.smsheet"))if(x!==sysShown&&!x.hidden&&x.getClientRects().length)return true;return false;}
+let sysShown=null;function sysNext(){if(!sysQ.length||(sysShown&&sysShown.isConnected))return;
+  if(sysBlocked()){clearTimeout(sysNext._t);sysNext._t=setTimeout(sysNext,1200);return;}
+  if(Date.now()-SYS_T0<20000&&sysOpenN>=2&&!sysQ[0][3]){const q=sysQ.shift();try{toast(q[1]);}catch(e){}if(sysQ.length)setTimeout(sysNext,900);return;}
+  sysOpenN++;const [tag,title,text,cb,lbl]=sysQ[0];const m=document.createElement("div");m.className="sysmodal";m.setAttribute("role","dialog");sysShown=m;
   const c=document.createElement("div");c.className="card";const a=document.createElement("div");a.className="tag";a.textContent="[ SISTEMA ] "+tag;const h=document.createElement("h3");h.textContent=title;const p=document.createElement("p");p.className="sm";p.textContent=text;
   const b=document.createElement("button");b.className="go";b.type="button";b.textContent=lbl||"Aceitar";b.addEventListener("click",()=>{m.remove();sysQ.shift();if(cb)try{cb();}catch(e){}if(sysQ.length)sysNext();else setTimeout(render,50);});c.append(a,h,p,b);m.append(c);document.body.append(m);try{const ua=navigator.userActivation;if(navigator.vibrate&&(!ua||ua.hasBeenActive))navigator.vibrate([10,30,10]);}catch(e){}}
 function sparks(gold){if(matchMedia("(prefers-reduced-motion: reduce)").matches)return;const pt=lastPt||{x:innerWidth/2,y:innerHeight/2};
@@ -3759,8 +3768,10 @@ function avPost(force){if(typeof RK_POST==="undefined"||ageNow()==="kid"||!(prog
 if(typeof sendRank==="function"){const _sr=sendRank;sendRank=function(){_sr.apply(this,arguments);try{avPost();}catch(e){}};}
 // ---- LGPD: perfil antigo sem faixa de idade que estava no ranking: pede um apelido (o nome real não sai mais) ----
 function lgNickAsk(){try{if(typeof AGE_UNK_MINOR==="undefined"||!AGE_UNK_MINOR||navigator.webdriver)return;if(!cfg||cfg.blank||(cfg.profile&&cfg.profile.age))return;
-  if(!(prog.rank&&prog.rank.on)||cleanNick(prog.rank.nick))return;if(sessionStorage.getItem("asc-lgnick"))return;sessionStorage.setItem("asc-lgnick","1");
-  sysPop("RANKING","Escolha um apelido","Para proteger sua privacidade, o ranking agora mostra só apelidos para quem não informou a idade. Escolha o seu para voltar a aparecer.",()=>{setTimeout(()=>{try{goTab("prog");const n=$("rkNick");if(n){n.scrollIntoView({block:"center"});n.focus();}}catch(e){}},250);},"Escolher apelido");}catch(e){}}
+  if(!(prog.rank&&prog.rank.on)||cleanNick(prog.rank.nick))return;if(sessionStorage.getItem("asc-lgnick"))return;if(typeof sysBlocked==="function"&&sysBlocked()){setTimeout(lgNickAsk,3000);return;}sessionStorage.setItem("asc-lgnick","1");
+  sysPop("RANKING","Escolha um apelido","Para proteger sua privacidade, o ranking agora mostra só apelidos para quem não informou a idade. Escolha o seu para voltar a aparecer.",()=>{setTimeout(()=>{try{const t=document.querySelector('#tabbar [data-go="amigos"]');if(t)t.click();else goTab("prog");
+    setTimeout(()=>{const rp=$("rankPanel");if(rp&&rp.classList.contains("fold")&&!rp.classList.contains("open")){const h=rp.querySelector(":scope>.fhd");if(h)h.click();}
+      const n=$("rkNick");if(n){n.scrollIntoView({block:"center"});setTimeout(()=>n.focus(),120);}},200);}catch(e){}},250);},"Escolher apelido");}catch(e){}}
 setTimeout(lgNickAsk,4000);
 // ---------- Amigos: adicionar, aceitar no app do outro e comparar lado a lado ----------
 // Canal: F|de|para||data (pedido) e G|quem|de||data (aceite), no mesmo formulário do ranking. Só apelidos do ranking (14+).
@@ -4021,7 +4032,7 @@ function tmUI(){const p=tmPlace();if(!p)return;if(tmKid()||!cfg||cfg.blank){p.hi
     const nt=dyNote();if(nt)box.append(tmEl("div","sm muted",nt));box.append(dyNtfBtn());p.append(box);}
   if(s.view==="turma"&&!fr.length){const e=tmEl("div","tmempty");e.append(tmEl("p",null,"Sua turma ainda está vazia. Chame alguém para jogar com você."));
     const b=tmEl("button","go","+ Adicionar amigo");b.type="button";b.addEventListener("click",()=>{try{frAdd=true;frUI();}catch(e){}setTimeout(()=>{const f=$("frPanel");if(!f)return;if(f.classList.contains("fold")&&!f.classList.contains("open")){const h=f.querySelector(":scope>.fhd");if(h)h.click();}f.scrollIntoView({block:"start",behavior:matchMedia("(prefers-reduced-motion: reduce)").matches?"auto":"smooth"});const i=f.querySelector("input");if(i)setTimeout(()=>i.focus(),80);},0);});e.append(b);p.append(e);}
-  if(rankRows&&typeof rankErr!=="undefined"&&rankErr){const w=tmEl("div","sm muted tmoff","Sem conexão · mostrando a última lista. Toque para tentar de novo.");w.setAttribute("role","button");w.tabIndex=0;w.style.cursor="pointer";w.addEventListener("click",()=>{rankErr=false;try{tmUI();}catch(e){}loadRank();});p.append(w);}
+  if(rankRows&&typeof rankErr!=="undefined"&&rankErr){const w=tmEl("div","sm muted tmoff","Sem conexão · mostrando a última lista. Toque para tentar de novo.");w.setAttribute("role","button");w.tabIndex=0;w.style.cursor="pointer";w.addEventListener("click",()=>{rankErr=false;try{tmUI();}catch(e){}loadRank();});const f0=p.firstElementChild;if(f0)f0.after(w);else p.append(w);}
   if(!rankRows){const w=tmEl("div","sm muted",(typeof rankErr!=="undefined"&&rankErr)?"Sem conexão com o ranking. Toque aqui para tentar de novo.":"Carregando a turma…");if(typeof rankErr!=="undefined"&&rankErr){w.style.cursor="pointer";w.addEventListener("click",()=>{rankErr=false;try{tmUI();}catch(e){}loadRank();});}p.append(w);}
   const ol=tmEl("ol","tmlist");L.slice(0,30).forEach((r,i)=>{const li=tmEl("li",(r.me?"me ":"")+(i<3&&L.length>=2?"up":""));
     li.append(tmEl("span","tmpos",i<3?["🥇","🥈","🥉"][i]:String(i+1)));const av=tmEl("span","tmav");av.innerHTML=tmAv(r.av,44);li.append(av);

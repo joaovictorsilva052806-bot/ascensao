@@ -47,7 +47,15 @@ function statXP(){const st={foco:0,vendas:0,mente:0,corpo:0};for(const e of entr
 function coinsEarned(){let s=0;for(const e of entries())s+=Math.max(0,(e.xp||0)+(e.bonus||0));return Math.floor(s/10);}
 function rpgTip(){const d=new Date();const n=Math.floor((d-new Date(d.getFullYear(),0,0))/864e5);return TIPS[n%TIPS.length];}
 let sysQ=[];function sysPop(tag,title,text,cb,lbl){sysQ.push([tag,title,text,cb,lbl]);if(sysQ.length===1)sysNext();}
-let sysShown=null;function sysNext(){if(!sysQ.length||(sysShown&&sysShown.isConnected))return;const [tag,title,text,cb,lbl]=sysQ[0];const m=document.createElement("div");m.className="sysmodal";m.setAttribute("role","dialog");sysShown=m;
+// Uma janela por vez: espera o Modo Sistema (#smSheet), a galeria e outras janelas abertas. Na abertura do app (primeiros 20 s)
+// no máximo 2 janelas; as demais sem ação viram aviso curto.
+const SYS_T0=Date.now();let sysOpenN=0;
+function sysBlocked(){const sm=document.getElementById("smSheet");if(sm&&!sm.hidden&&sm.getClientRects().length)return true;
+  for(const x of document.querySelectorAll(".sysmodal,.levelup:not([hidden]),.smsheet"))if(x!==sysShown&&!x.hidden&&x.getClientRects().length)return true;return false;}
+let sysShown=null;function sysNext(){if(!sysQ.length||(sysShown&&sysShown.isConnected))return;
+  if(sysBlocked()){clearTimeout(sysNext._t);sysNext._t=setTimeout(sysNext,1200);return;}
+  if(Date.now()-SYS_T0<20000&&sysOpenN>=2&&!sysQ[0][3]){const q=sysQ.shift();try{toast(q[1]);}catch(e){}if(sysQ.length)setTimeout(sysNext,900);return;}
+  sysOpenN++;const [tag,title,text,cb,lbl]=sysQ[0];const m=document.createElement("div");m.className="sysmodal";m.setAttribute("role","dialog");sysShown=m;
   const c=document.createElement("div");c.className="card";const a=document.createElement("div");a.className="tag";a.textContent="[ SISTEMA ] "+tag;const h=document.createElement("h3");h.textContent=title;const p=document.createElement("p");p.className="sm";p.textContent=text;
   const b=document.createElement("button");b.className="go";b.type="button";b.textContent=lbl||"Aceitar";b.addEventListener("click",()=>{m.remove();sysQ.shift();if(cb)try{cb();}catch(e){}if(sysQ.length)sysNext();else setTimeout(render,50);});c.append(a,h,p,b);m.append(c);document.body.append(m);try{const ua=navigator.userActivation;if(navigator.vibrate&&(!ua||ua.hasBeenActive))navigator.vibrate([10,30,10]);}catch(e){}}
 function sparks(gold){if(matchMedia("(prefers-reduced-motion: reduce)").matches)return;const pt=lastPt||{x:innerWidth/2,y:innerHeight/2};
