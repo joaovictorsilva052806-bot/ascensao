@@ -33,7 +33,7 @@ await p.fill('#secCode','420');await p.press('#secCode','Enter');ok('código 420
 await p.click('#tabbar [data-go="hoje"]');for(let i=0;i<10;i++)await p.click('#rank',{delay:10,force:true});await p.waitForTimeout(300);
 ok('cutucar rank 10x',(await modal(p)).includes('Cutucar'));await clear(p);
 console.log('TOP',await p.evaluate(()=>{const r=document.getElementById('clock').getBoundingClientRect();const e=document.elementFromPoint(r.x+r.width/2,r.y+r.height/2);return e&&(e.id||e.className)+' '+r.x+','+r.y;}));for(let i=0;i<7;i++)await p.click('#clock',{force:true});await p.waitForTimeout(200);ok('tocar relógio 7x',!!(await sec(p)).s_tempo,await modal(p)+JSON.stringify(await sec(p)));await clear(p);
-{const bb=await p.locator('#rank').boundingBox();await p.mouse.move(bb.x+20,bb.y+20);}await p.mouse.down();await p.clock.runFor(1100);await p.mouse.up();
+{const bb=await p.locator('#rank').boundingBox();await p.mouse.move(bb.x+bb.width/2,bb.y+bb.height/2);}await p.mouse.down();await p.clock.runFor(1100);await p.mouse.up();
 ok('segurar rank abre Modo Zen',await p.isVisible('#secZen'));await p.clock.runFor(2000);await p.screenshot({path:SP+'zen.png'});
 await p.clock.runFor(30000);await p.waitForTimeout(200);ok('zen completo libera segredo',(await modal(p)).includes('Modo Zen')&&await p.locator('#secZen').isHidden());await clear(p);
 for(let i=0;i<6;i++){await tap(p,'q1');}await p.waitForTimeout(200);

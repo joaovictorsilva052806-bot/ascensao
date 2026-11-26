@@ -55,5 +55,25 @@ ok('#s= de outra planilha pede confirmação',dlg.some(m=>m.includes('troca a pl
 ok('recusou: planilha original mantida',(await p2.evaluate(()=>localStorage.getItem('ascensao-sync')))===A);
 await p2.goto(U+'#k=chave_nova_de_teste_123456789012');await p2.waitForTimeout(300);
 ok('#k= guarda a chave do painel só no aparelho',(await p2.evaluate(()=>JSON.parse(localStorage.getItem('ascensao-painel')||'{}').k))==='chave_nova_de_teste_123456789012');
+// #s= na 1ª vez (sem planilha ligada) também pergunta; recusou = nada ligado
+const p3=await ctx.newPage();const d3=[];const h3=d=>{d3.push(d.message());d.dismiss();};p3.on('dialog',h3);
+await p3.goto(U+'comecar/');await p3.evaluate(()=>localStorage.removeItem('asc-u-sync'));await p3.goto(U+'comecar/#s='+X);await p3.waitForTimeout(800);
+ok('#s= na 1ª vez pede confirmação',d3.some(m=>m.includes('liga este app')),d3.join('/'));ok('#s= recusado na 1ª vez: nada ligado',!(await p3.evaluate(()=>localStorage.getItem('asc-u-sync'))));p3.off('dialog',h3);
+// restaurar backup vazio é recusado; backup com dias pede confirmação e guarda reserva
+const bk=async(txt,aceita)=>{const dd=[];const h=d=>{dd.push(d.message());aceita?d.accept():d.dismiss();};p3.on('dialog',h);
+  await p3.evaluate(t=>{document.getElementById('bkText').value=t;document.getElementById('bkRestore').click();},txt);await p3.waitForTimeout(200);p3.off('dialog',h);return dd;};
+await p3.evaluate(([c,o])=>{localStorage.setItem('asc-u-cfg',JSON.stringify(c));localStorage.setItem('asc-u-prog',JSON.stringify(o));localStorage.setItem('asc-u-intro','1');localStorage.setItem('asc-u-season','2');localStorage.setItem('asc-u-perm','1');},[CFG,prog]);await p3.reload();await p3.waitForTimeout(500);
+const d0=await bk('{"log":{}}',true);ok('backup sem dias é recusado',d0.length===0&&(await p3.evaluate(()=>Object.keys(JSON.parse(localStorage.getItem('asc-u-prog')).log).length===1)));
+const dq=await bk(JSON.stringify({log:{'2026-11-20':[{q:'q1',kind:'full',xp:10}]}}),false);ok('backup pede confirmação com nº de dias',dq.some(m=>/1 dia/.test(m)),dq.join('/'));
+ok('recusou: progresso intacto',(await p3.evaluate(()=>!!JSON.parse(localStorage.getItem('asc-u-prog')).log['2026-11-26'])));
+await bk(JSON.stringify({log:{'2026-11-20':[{q:'q1',kind:'full',xp:10}]}}),true);const pre=await p3.evaluate(()=>localStorage.getItem('asc-u-prog-prebackup')||'');ok('aceitou: reserva do progresso anterior guardada',pre.includes('2026-11-26'),pre.slice(0,120));
+// CSV com erro do Google (500 em HTML) nunca vira jogador
+const c4=await b.newContext({viewport:{width:390,height:844}});const p4=await c4.newPage();
+await c4.route('https://fonts.googleapis.com/**',r=>r.fulfill({status:200,contentType:'text/css',body:''}));
+await c4.route('https://docs.google.com/**',r=>r.request().method()==='POST'?r.fulfill({status:200,body:''}):r.fulfill({status:500,contentType:'text/html',body:"<html><body><p><b>500.</b> That's an error.</p></body></html>"}));
+await p4.clock.install({time:new Date('2026-11-26T14:00:00')});await p4.goto(U+'comecar/');
+await p4.evaluate(([c,o])=>{localStorage.setItem('asc-u-cfg',JSON.stringify(c));localStorage.setItem('asc-u-prog',JSON.stringify(o));localStorage.setItem('asc-u-season','2');localStorage.setItem('asc-u-perm','1');localStorage.setItem('asc-u-intro','1');},[CFG,prog]);
+await p4.reload();await p4.waitForTimeout(2500);
+ok('CSV 500 do Google não vira jogador na tela',!(await p4.evaluate(()=>document.body.innerText.includes("That's an error")||document.body.innerHTML.includes('500.</b>'))));await c4.close();
 ok('CSP sem bloqueios na raiz',csp.length===0,csp.join(' | '));
 await b.close();console.log(R.join('\n'));process.exit(R.some(x=>x.startsWith('FAIL'))?1:0);})();

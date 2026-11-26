@@ -18,8 +18,8 @@ for(const modo of ['colar','link']){
   const cl=p.locator('.sysmodal button').first();if(await cl.count())await cl.dispatchEvent('click');await p.waitForTimeout(300);await clear(p);
   await p.evaluate(()=>{const o=JSON.parse(localStorage.getItem('ascensao-prog')||'{"log":{}}');o.log=o.log||{};o.log["2026-11-25"]=[{q:"q_checkin",kind:"full",xp:5,stat:"foco",bonus:0,t:"x"}];o.updatedAt=new Date().toISOString();localStorage.setItem('ascensao-prog',JSON.stringify(o));});
   if(modo==='colar'){await p.reload();await p.waitForTimeout(600);await clear(p);await p.evaluate(e=>{document.getElementById('syncUrl').value=e;document.getElementById('syncSave').click();},EXEC);}
-  else{await p.goto(U+'#s='+SID);}
-  await p.waitForTimeout(3500);await clear(p);
+  const dl=[];if(modo!=='colar'){p.on('dialog',d=>{dl.push(d.message());d.accept();});await p.goto(U+'#s='+SID);}
+  await p.waitForTimeout(3500);if(modo!=='colar')ok('link: pede confirmação antes de ligar',dl.some(m=>/liga este app/.test(m)),dl.join('/')||'nenhum diálogo');await clear(p);
   const st=await p.evaluate(()=>JSON.parse(localStorage.getItem('ascensao-prog')||'{}'));
   const bak=await p.evaluate(()=>JSON.parse(localStorage.getItem('ascensao-prog-prelink')||'null'));
   ok(modo+': progresso da planilha voltou',st.log&&st.log["2026-11-10"]&&st.velho==='fica',JSON.stringify(st).slice(0,200));
