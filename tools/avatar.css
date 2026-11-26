@@ -41,7 +41,7 @@ body.avmkon{overflow:hidden}
 .avmk{align-items:end;padding:0}
 .avmkc{width:100%;max-width:520px;height:94dvh;max-height:94dvh;display:flex;flex-direction:column;gap:8px;padding:14px 14px calc(12px + env(safe-area-inset-bottom));border-radius:18px 18px 0 0;overflow:hidden;animation:avup .35s cubic-bezier(.2,.9,.3,1.1)}
 @keyframes avup{from{transform:translateY(40px);opacity:0}}
-.avmkh{text-align:center}.avmkt{margin:0;font-size:1rem;font-family:var(--f-hud,var(--f-mono));letter-spacing:.12em;color:var(--glow);font-weight:700}
+.avmkh{text-align:center}.avmkt{margin:0;font-size:clamp(.78rem,4.2vw,.95rem)!important;white-space:nowrap;letter-spacing:.05em!important;overflow:hidden;text-overflow:ellipsis;font-family:var(--f-hud,var(--f-mono));letter-spacing:.12em;color:var(--glow);font-weight:700}
 .avmkpv{display:flex;justify-content:center;filter:drop-shadow(0 0 18px rgba(111,177,255,.45))}
 .avmkcl{text-align:center;font-size:.8rem;color:var(--muted)}
 .avtabs{display:grid;grid-template-columns:repeat(4,1fr);gap:4px;border-bottom:1px solid var(--line)}

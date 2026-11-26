@@ -43,6 +43,17 @@ await p.locator('#bxPill').click();await p.waitForTimeout(300);const r1=await p.
 await p.evaluate(()=>document.getElementById('bxModal').remove());await p.reload();await p.waitForTimeout(1500);await drain(p);
 await p.locator('#bxPill').click();await p.waitForTimeout(300);const r2=await p.evaluate(()=>JSON.stringify(JSON.parse(localStorage.getItem('asc-u-prog')).chest.roll['2026-11-25']));
 ok('reabrir não troca o prêmio',r1===r2,r1+' vs '+r2);await ctx.close();
+// 3b: desmarcar o "Fechar o dia" tira o XP do baú; marcar de novo devolve o mesmo prêmio, sem duplicar
+({ctx,p,errs}=await open(base({chest:{roll:{'2026-11-25':{k:'x',xp:30,r:2,tier:0}}}}),'2026-11-27T20:30:00'.replace('27','25')));await drain(p);
+const fech=()=>p.locator('#quests .quest[data-q="s_fech"] button.go').first().dispatchEvent('click');
+const bau=async()=>(await p.evaluate(()=>JSON.parse(localStorage.getItem('asc-u-prog')).log['2026-11-25'].filter(e=>e.q==='ach:bau:2026-11-25').reduce((a,e)=>a+e.xp,0)));
+await fech();await p.waitForTimeout(1500);await drain(p);for(let i=0;i<3;i++){await p.locator('#bxModal .bxbtn').click();await p.waitForTimeout(250);}await p.waitForTimeout(900);
+ok('baú deu +30',(await bau())===30);await p.locator('#bxModal .bxrow button').last().click();await p.waitForTimeout(300);
+await fech();await p.waitForTimeout(800);ok('desmarcar tira o XP do baú',(await bau())===0);
+await fech();await p.waitForTimeout(1500);await drain(p);ok('marcar de novo reabre o baú',await p.locator('#bxModal').isVisible());
+for(let i=0;i<3;i++){await p.locator('#bxModal .bxbtn').click();await p.waitForTimeout(250);}await p.waitForTimeout(900);
+ok('mesmo prêmio, XP uma vez só',(await bau())===30&&(await p.textContent('#bxModal .bxout')).includes('+30'));
+ok('console limpo (3b)',errs.length===0,errs.join(' | '));await ctx.close();
 // 4: chefão derrotado => +60 XP e título, uma vez só
 ({ctx,p,errs}=await open(base({log:{'2026-11-25':[{q:'q1',kind:'full',xp:500,stat:'mente',bonus:0,t:'x'}]}}),'2026-11-25T14:00:00'));
 let t=await drain(p);ok('vitória sobre o chefão',t.some(x=>/caiu/.test(x)),t.join('/'));

@@ -591,7 +591,7 @@ body.avmkon{overflow:hidden}
 .avmk{align-items:end;padding:0}
 .avmkc{width:100%;max-width:520px;height:94dvh;max-height:94dvh;display:flex;flex-direction:column;gap:8px;padding:14px 14px calc(12px + env(safe-area-inset-bottom));border-radius:18px 18px 0 0;overflow:hidden;animation:avup .35s cubic-bezier(.2,.9,.3,1.1)}
 @keyframes avup{from{transform:translateY(40px);opacity:0}}
-.avmkh{text-align:center}.avmkt{margin:0;font-size:1rem;font-family:var(--f-hud,var(--f-mono));letter-spacing:.12em;color:var(--glow);font-weight:700}
+.avmkh{text-align:center}.avmkt{margin:0;font-size:clamp(.78rem,4.2vw,.95rem)!important;white-space:nowrap;letter-spacing:.05em!important;overflow:hidden;text-overflow:ellipsis;font-family:var(--f-hud,var(--f-mono));letter-spacing:.12em;color:var(--glow);font-weight:700}
 .avmkpv{display:flex;justify-content:center;filter:drop-shadow(0 0 18px rgba(111,177,255,.45))}
 .avmkcl{text-align:center;font-size:.8rem;color:var(--muted)}
 .avtabs{display:grid;grid-template-columns:repeat(4,1fr);gap:4px;border-bottom:1px solid var(--line)}
@@ -790,7 +790,7 @@ body[data-tab=amigos] #frPanel .frlist{display:none}
 .tbmg{grid-column:1/3;height:4px;border-radius:4px;background:#111a2c;overflow:hidden}
 .tbmg>i{display:block;height:100%;background:linear-gradient(90deg,#ff5a6e,#ffd166)}
 .tbsolo{display:flex;flex-direction:column;gap:8px;margin-top:10px;padding:10px;border:1px dashed var(--line,#1f2e4d);border-radius:10px;font-size:.86rem}
-.tbdmg{position:absolute;left:50%;top:30%;transform:translateX(-50%);font-family:var(--f-hud,inherit);font-weight:900;font-size:2rem;color:#fff;text-shadow:0 0 10px #ff3d6e,0 2px 0 #b8323f;pointer-events:none;animation:tbdmg 1.2s ease-out forwards;z-index:2}
+.tbdmg{position:absolute;right:6%;top:2%;font-family:var(--f-hud,inherit);font-weight:900;font-size:2rem;color:#fff;text-shadow:0 0 10px #ff3d6e,0 2px 0 #b8323f;pointer-events:none;animation:tbdmg 1.2s ease-out forwards;z-index:2}
 .tbdmg.sm{font-size:1.2rem;top:0;left:auto;right:16px;transform:none}
 .tbhit .tbsvg,.tbstrip.tbhit .tbsico{animation:tbshake .45s}
 .tbhit .tbsvg .tbbody{filter:brightness(2.2)}
@@ -898,6 +898,21 @@ body[data-bxf] .tmlist li.me .tmav svg{width:38px;height:38px}
 .muop{margin-left:auto;font-size:.8rem;min-height:40px}
 @keyframes muin{from{opacity:0;transform:translate(-50%,16px)}to{opacity:1;transform:translate(-50%,0)}}
 @media (prefers-reduced-motion:reduce){.much{animation:none}}
+.muhd{display:flex;justify-content:space-between;align-items:center;gap:8px;margin-bottom:10px}
+.muhd h2{margin:0;white-space:nowrap}
+/* ---- Tarefas de app + 📅 agenda (tools/apps.js) ---- */
+.qapp{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
+.quest:not(.open) .qapp{display:none}
+.quest.qtlock .qapp .apf,.quest.qtlock .qapp .aph{display:none}
+.qapp button,.qapp .apf{min-height:44px;padding:0 14px;font-size:.9rem;display:inline-flex;align-items:center;gap:6px;border-radius:10px;cursor:pointer}
+.qapp .apf{position:relative;border:1px solid var(--line);color:var(--fg)}
+.qapp .apf input{position:absolute;inset:0;opacity:0;width:100%;height:100%;cursor:pointer}
+.qapp .aph{flex-basis:100%;margin:-2px 0 0;font-size:.76rem}
+.qapp .apok{display:flex;align-items:center;gap:8px}
+.qapp .apok img{width:44px;height:44px;object-fit:cover;border-radius:8px;border:1px solid var(--line)}
+.quest.apback{box-shadow:0 0 0 2px var(--gold)}
+.apadd{margin:8px 0 4px}.apadd .row{flex-wrap:wrap;gap:6px}.apadd button{min-height:40px;font-size:.88rem}
+@media (max-width:400px){.qapp button,.qapp .apf{flex:1 1 calc(50% - 4px);justify-content:center}}
 </style></head><body>
 
 <div class="hudtop"><span>ASCENSION<i>//</i>SISTEMA ONLINE</span><span class="mono" id="clock">--:--</span></div>
@@ -1471,10 +1486,10 @@ function fx(xp,gold){try{if(navigator.vibrate)navigator.vibrate(gold?[12,40,18]:
   const pt=lastPt||{x:innerWidth/2,y:innerHeight/2};f.style.left=pt.x+"px";f.style.top=(pt.y-20)+"px";document.body.append(f);setTimeout(()=>f.remove(),1200);}
 // ---------- Sequência (estilo Duolingo: descanso congela, não quebra) ----------
 function isRest(k){return !!(prog.rest||{})[k]||!!(prog.shield&&prog.shield.used&&prog.shield.used[k]);}
-function streakDays(){const act=k=>(prog.log[k]||[]).some(e=>!/^(ach|checkin|tip|dun|sq|zap|ch):/.test(String(e.q)));const rest=isRest;
+function streakDays(){const act=k=>(prog.log[k]||[]).some(e=>!/^(ach|checkin|tip|dun|sq|zap|ch|adm):/.test(String(e.q)));const rest=isRest;
   const d=new Date();let n=0;if(!act(dkey(d))&&!rest(dkey(d)))d.setDate(d.getDate()-1);
   for(let i=0;i<400;i++){const k=dkey(d);if(act(k))n++;else if(!rest(k))break;d.setDate(d.getDate()-1);}return n;}
-function renderPills(){const n=streakDays();const today=(prog.log[todayKey()]||[]).some(e=>!/^(ach|checkin|tip|dun|sq|zap|ch):/.test(String(e.q)));
+function renderPills(){const n=streakDays();const today=(prog.log[todayKey()]||[]).some(e=>!/^(ach|checkin|tip|dun|sq|zap|ch|adm):/.test(String(e.q)));
   const st=$("streak");st.textContent="🔥 "+n+(n===1?" dia":" dias");st.classList.toggle("cold",!today);st.title=today?"Sequência garantida hoje":"Faça 1 quest hoje para manter a sequência";
   const dt=new Date();const ms=mainsFor(dt);const done=prog.log[todayKey()]||[];const ok=ms.filter(q=>done.some(e=>e.q===q.id)).length;
   $("dayPill").textContent=ok+"/"+ms.length+" principais";$("dayPill").classList.toggle("full",ms.length>0&&ok===ms.length);}
@@ -1692,7 +1707,7 @@ $("restBtn").addEventListener("click",()=>{const tk=todayKey();prog.rest=prog.re
 
 // ---------- Conquistas (novidade que não acaba) ----------
 let ACH=[];function achList(){return [
- ["a_first","Primeiro passo","1ª quest concluída",10,()=>entries().some(e=>!/^(ach|checkin|tip|dun|sq|zap|ch):/.test(String(e.q)))],
+ ["a_first","Primeiro passo","1ª quest concluída",10,()=>entries().some(e=>!/^(ach|checkin|tip|dun|sq|zap|ch|adm):/.test(String(e.q)))],
  ["a_3d","Esquentando","3 dias ativos",20,()=>activeDays()>=3],
  ["a_7d","Uma semana inteira","7 dias ativos",50,()=>activeDays()>=7],
  ["a_21d","Hábito formando","21 dias ativos",100,()=>activeDays()>=21],
@@ -1702,7 +1717,7 @@ let ACH=[];function achList(){return [
  ["a_review","Olhar de dono","1ª revisão da semana",20,()=>Object.keys(prog.reviews||{}).length>0],
  ["a_faith","Coração grato","7 dias com o painel de gratidão",40,()=>Object.keys(prog.faith||{}).length>=7,()=>!!(cfg&&cfg.faith)],
  ["a_once","Missão cumprida","Concluir todas as missões únicas",60,()=>{const o=((cfg&&cfg.quests)||[]).filter(q=>q.once);return o.length>0&&o.every(q=>entries().some(e=>e.q===q.id));}]].filter(a=>!a[5]||a[5]());}
-function activeDays(){return new Set(entries().filter(e=>!/^(ach|checkin|tip|dun|sq|zap|ch):/.test(String(e.q))).map(e=>e.date)).size;}
+function activeDays(){return new Set(entries().filter(e=>!/^(ach|checkin|tip|dun|sq|zap|ch|adm):/.test(String(e.q))).map(e=>e.date)).size;}
 function renderAch(){const box=$("achList");box.textContent="";prog.ach=prog.ach||{};let got=0;
   for(const [id,name,desc,xp] of (ACH=achList())){const on=!!prog.ach[id];if(on)got++;const d=document.createElement("div");d.className="badge"+(on?" on":"");const b=document.createElement("b");b.textContent=(on?"🏅 ":"🔒 ")+name;d.append(b,document.createTextNode(desc+" · +"+xp+" XP"));box.append(d);}
   $("achCount").textContent=got+" / "+ACH.length;$("faithPanel").hidden=!(cfg&&cfg.faith);applyCopy();renderEd();renderAdj();renderRPG();betaUI();setTimeout(dailyCheckin,600);}
@@ -2042,7 +2057,8 @@ async function aiCopyText(t){try{await navigator.clipboard.writeText(t);return t
 const AI_URL={chatgpt:t=>"https://chatgpt.com/?q="+encodeURIComponent(t),claude:t=>"https://claude.ai/new?q="+encodeURIComponent(t),gemini:()=>"https://gemini.google.com/app"};
 for(const b of document.querySelectorAll("#aiPanel [data-ai]"))b.addEventListener("click",async()=>{const k=b.dataset.ai;const t=aiPrompt();
   // abre na hora (no iPhone o pop-up precisa sair do toque); depois copia como reserva
-  const w=window.open(AI_URL[k](t),"_blank","noopener");const ok=await aiCopyText(t);
+  // sem "noopener": com ele o navegador devolve null e o app achava que a janela foi bloqueada
+  const w=window.open(AI_URL[k](t),"_blank");if(w)try{w.opener=null;}catch(e){}const ok=await aiCopyText(t);
   $("aiMsg").textContent=(k==="gemini"?"O Gemini abriu: cole o pedido (já copiado) e envie. ":"A IA abriu com o pedido pronto: é só enviar. ")+"Quando ela responder, toque em Copiar na resposta e volte aqui em 📋 Colar resposta."+(ok?"":" (Se o pedido não veio, toque em Só copiar o pedido.)");
   if(!w)$("aiMsg").textContent="O celular bloqueou a janela. Toque em Só copiar o pedido e abra a IA você mesmo.";
   try{prog.aiUse=(prog.aiUse||0)+1;save();}catch(e){}});
@@ -2280,7 +2296,7 @@ function betaPost(parts){const v=["B"].concat(parts).map(x=>String(x==null?"":x)
 function betaTab(t){const b=betaGet();if(!b.on)return;const k=todayKey();b.tabs=b.tabs||{};b.tabs[k]=b.tabs[k]||{};b.tabs[k][t]=(b.tabs[k][t]||0)+1;
   for(const d in b.tabs)if(d<k&&Object.keys(b.tabs).length>3)delete b.tabs[d];betaSet(b);}
 function betaDaily(){const b=betaGet();if(!b.on||betaKid())return;const tk=todayKey();if(b.last===tk)return;
-  const y=new Date();y.setDate(y.getDate()-1);const yk=dkey(y);const L=(prog.log[yk]||[]).filter(e=>!/^(ach|checkin|tip|dun|sq|zap|ch):/.test(String(e.q)));
+  const y=new Date();y.setDate(y.getDate()-1);const yk=dkey(y);const L=(prog.log[yk]||[]).filter(e=>!/^(ach|checkin|tip|dun|sq|zap|ch|adm):/.test(String(e.q)));
   const ms=mainsFor(y);const mDone=ms.filter(q=>L.some(e=>e.q===q.id)).length;
   let act=0;const d=new Date();for(let i=1;i<=14;i++){d.setDate(d.getDate()-1);if((prog.log[dkey(d)]||[]).length)act++;}
   const P=(cfg&&cfg.profile)||{};const c=(prog.rpg&&prog.rpg.cls)||{};const tabs=(b.tabs&&b.tabs[yk])||{};
@@ -3967,8 +3983,9 @@ function tbHitFx(box,n){if(!box||n<=0||!tbMotion())return;const f=tbEl("span","t
   setTimeout(()=>f.remove(),1300);try{haptic([8,20,8]);}catch(e){}}
 function tbCheckWin(st){const s=tbSt();const ws=tbWk();if(st.left>0||s.won[ws]||st.rows.length<1)return;s.won[ws]=1;save();const b=st.boss;
   const solo=st.rows.length===1;if(!tbSocial())s.won[ws]=1;
-  sysPop("CHEFÃO DERROTADO",b[0]+" caiu!",(solo?"Você derrubou o chefão sozinho.":"A turma ("+st.rows.length+" pessoas) derrubou o chefão antes de domingo.")+" Recompensa: +"+TB_PRIZE+" XP e o título raro « Ruína de "+b[1]+" ».",()=>{
+  sysPop("CHEFÃO DERROTADO",b[0]+" caiu!",(solo?"Você derrubou o chefão sozinho.":"A turma ("+st.rows.length+" pessoas) derrubou o chefão antes de domingo.")+" Recompensa: +"+TB_PRIZE+" XP e o título raro « Ruína de "+b[1]+" »"+(typeof clsGrantScroll==="function"&&!tbSt().scroll?" + 1 Pergaminho de Renascimento (1ª vitória).":"."),()=>{
     if(!entries().some(e=>e.q==="ach:tb:"+ws))addXP({q:"ach:tb:"+ws,kind:"full",xp:TB_PRIZE,stat:"foco",bonus:0,t:new Date().toISOString()},"Chefão derrotado: +"+TB_PRIZE+" XP");
+    try{if(typeof clsGrantScroll==="function"&&!tbSt().scroll){tbSt().scroll=1;save();clsGrantScroll(1,"chefão");}}catch(e){}
     try{if(typeof bxGiveTitle==="function")bxGiveTitle("tb_"+tbN(b[1]),"Ruína de "+b[1],"chefão");}catch(e){}
     try{tbUI();}catch(e){}},"Coletar recompensa");}
 // --- painel na aba Amigos (logo acima da turma) ---
@@ -4037,6 +4054,7 @@ function bxTier(){let n=0;try{n=streakDays()||0;}catch(e){}return n>=7?2:n>=3?1:
 const BX_TIER=[["Baú de madeira","#8b5a2b","#d9a066"],["Baú de prata","#8d99ae","#e9eef7"],["Baú de ouro","#b8860b","#ffe08a"]];
 // --- sorteio (com garantia: no máximo 4 baús seguidos sem item) ---
 function bxRoll(){const c=bxSt();const tier=bxTier();
+  if(typeof clsGrantScroll==="function"&&bxRnd()<[.03,.05,.08][tier])return {k:"s",n:"Pergaminho de Renascimento",r:2,xp:5,tier};
   const fr=BX_FR.filter(f=>!c.frames.includes(f[0])),tt=BX_TT.filter(t=>!c.titles.some(x=>x.id===t[0]));
   const pc=[.25,.35,.5][tier];const want=(fr.length||tt.length)&&(c.dry>=4||bxRnd()<pc);
   if(want){const w=tier===2?[0,4,4,2]:[0,6,3,1];
@@ -4085,31 +4103,38 @@ function bxOpen(){if($("bxModal"))return;const c=bxSt();const tk=todayKey();if(c
     if(taps<need){btn.classList.remove("shake");void btn.offsetWidth;btn.classList.add("shake");tap.textContent=need-taps===1?"Mais uma vez!":"Mais "+(need-taps)+"…";return;}
     btn.dataset.open="1";btn.classList.add("open");tap.hidden=true;hint.hidden=true;setTimeout(reveal,bxMotion()?650:0);});
   function reveal(){if(c.got[tk])return;c.got[tk]=1;for(const k in c.got)if(k<dkeyBack(30))delete c.got[k];
-    if(rw.k==="f"){if(!c.frames.includes(rw.id))c.frames.push(rw.id);c.dry=0;}else if(rw.k==="t"){bxGiveTitle(rw.id,rw.n,"baú");c.dry=0;}else c.dry++;
-    save();
+    if(!c.paid||c.paid.d!==tk){c.paid={d:tk};if(rw.k==="s"){try{clsGrantScroll(1,"baú");}catch(e){}c.dry=0;}else if(rw.k==="f"){if(!c.frames.includes(rw.id))c.frames.push(rw.id);c.dry=0;}else if(rw.k==="t"){bxGiveTitle(rw.id,rw.n,"baú");c.dry=0;}else c.dry++;
+    }save();
     if(!entries().some(e=>e.q==="ach:bau:"+tk))addXP({q:"ach:bau:"+tk,kind:"full",xp:rw.xp,stat:"mente",bonus:0,t:new Date().toISOString()},"");
     out.hidden=false;out.textContent="";out.style.setProperty("--rc",BX_RCOL[rw.r||0]);
     out.append(bxEl("div","bxrar",rw.r?BX_RAR[rw.r]:"Comum"));
     if(rw.k==="f"){const pv=bxEl("div","bxfpv");pv.style.cssText=bxFrameCss(rw.id);try{pv.innerHTML=avMine(84);}catch(e){}out.append(pv,bxEl("b","bxname","Moldura: "+rw.n),bxEl("span","sm muted","+"+rw.xp+" XP"));}
+    else if(rw.k==="s")out.append(bxEl("b","bxname","📜 "+rw.n),bxEl("span","sm muted","Vale 1 troca de classe · +"+rw.xp+" XP"));
     else if(rw.k==="t")out.append(bxEl("b","bxname","Título: « "+rw.n+" »"),bxEl("span","sm muted","+"+rw.xp+" XP"));
     else out.append(bxEl("b","bxname bxxp","+"+rw.xp+" XP"),bxEl("span","sm muted",c.dry>=3?"Item garantido em até "+Math.max(1,5-c.dry)+" baú(s).":"Amanhã tem outro."));
     row.hidden=false;row.textContent="";
-    if(rw.k!=="x"){const eq=bxEl("button","go","Usar agora");eq.type="button";eq.addEventListener("click",()=>{if(rw.k==="f"){c.frame=rw.id;save();bxApplyFrame();}else bxEquipTitle(rw.id);toast("Equipado: "+rw.n);close();});row.append(eq);}
+    if(rw.k==="f"||rw.k==="t"){const eq=bxEl("button","go","Usar agora");eq.type="button";eq.addEventListener("click",()=>{if(rw.k==="f"){c.frame=rw.id;save();bxApplyFrame();}else bxEquipTitle(rw.id);toast("Equipado: "+rw.n);close();});row.append(eq);}
     const ok=bxEl("button",rw.k==="x"?"go":"ghost","Fechar");ok.type="button";ok.addEventListener("click",close);row.append(ok);setTimeout(()=>(row.querySelector("button")||ok).focus(),50);
     try{if(typeof sparks==="function")sparks(true);}catch(e){}
     bxColUI();bxPill();}
   function close(){m.remove();bxPill();try{render();}catch(e){}}
   m.addEventListener("click",e=>{if(e.target===m&&btn.dataset.open)close();});}
+// desfez o "Fechar o dia": o XP do baú sai; ao fechar de novo, o mesmo prêmio volta (item não duplica)
+function bxUndo(){const c=bxSt();const tk=todayKey();if(!c.got[tk]||bxReady())return;delete c.got[tk];
+  prog.log[tk]=(prog.log[tk]||[]).filter(e=>e.q!=="ach:bau:"+tk);save();try{render();}catch(e){}toast("Baú do dia guardado: volta quando você fechar o dia.");}
 function dkeyBack(n){const d=new Date();d.setDate(d.getDate()-n);try{return dkey(d);}catch(e){return "";}}
 // --- pílula na tela Hoje quando o baú está esperando ---
 function bxPill(){let p=$("bxPill");const hoje=document.querySelector('.wrap>section[data-tab="hoje"] .status');if(!hoje)return;
   const on=bxPending();if(!p){if(!on)return;p=bxEl("button","bxpill");p.type="button";p.id="bxPill";p.addEventListener("click",bxOpen);hoje.closest("section").before(p);}
   p.hidden=!on;if(on){p.textContent="";const i=bxEl("span","bxpi");i.innerHTML=bxArt(bxTier());p.append(i,bxEl("b",null,"🎁 Baú do dia pronto"),bxEl("span","sm","Toque para abrir"));}}
 // --- coleção (aba Progresso): molduras e títulos para equipar ---
+// mantém o cabeçalho (as telas enxutas transformam ele no botão de abrir/fechar) e troca só o resto
+function bxHead(p,t,meta){const h=p.firstElementChild;if(h&&h.classList.contains("qhead")){const h2=h.querySelector("h2"),sp=h.querySelector("span");if(h2)h2.textContent=t;if(sp)sp.textContent=meta;while(h.nextSibling)h.nextSibling.remove();return h;}
+  p.textContent="";const hd=bxEl("div","qhead");hd.append(bxEl("h2",null,t),bxEl("span","sm mono",meta));p.append(hd);return hd;}
 function bxColUI(){let p=$("bxCol");const first=$("avPanel")||document.querySelector('.wrap>section[data-tab="prog"]');if(!first)return;
   if(!p){p=bxEl("section","panel bxcol");p.id="bxCol";p.dataset.tab="prog";first.after(p);}
-  if(!cfg||cfg.blank){p.hidden=true;return;}p.hidden=false;const c=bxSt();p.textContent="";
-  const hd=bxEl("div","qhead");hd.append(bxEl("h2",null,"🎁 Coleção do baú"),bxEl("span","sm mono",(c.frames.length+c.titles.length)+((c.frames.length+c.titles.length)===1?" item":" itens")));p.append(hd);
+  if(!cfg||cfg.blank){p.hidden=true;return;}p.hidden=false;const c=bxSt();
+  bxHead(p,"🎁 Coleção do baú",(c.frames.length+c.titles.length)+((c.frames.length+c.titles.length)===1?" item":" itens"));
   p.append(bxEl("div","sm muted","Feche o dia para abrir 1 baú. Toque num item para usar; toque de novo para tirar."));
   p.append(bxEl("h3","bxh","Molduras"));const g=bxEl("div","bxgrid");
   for(const f of BX_FR){const own=c.frames.includes(f[0]);const b=bxEl("button","bxf"+(own?"":" lock")+(c.frame===f[0]?" eq":""));b.type="button";b.style.cssText=bxFrameCss(f[0]);
@@ -4122,7 +4147,7 @@ function bxColUI(){let p=$("bxCol");const first=$("avPanel")||document.querySele
     b.append(bxEl("b",null,"« "+t.n+" »"),bxEl("span","sm muted",(t.src==="chefão"?"do chefão":BX_RAR[r])+(c.title===t.id?" · em uso":"")));b.addEventListener("click",()=>bxEquipTitle(c.title===t.id?"":t.id));tl.append(b);}
   p.append(tl);}
 // quando a tarefa de fechar o dia sai, o baú aparece
-{const _tg=toggle;toggle=function(q,kind){const before=bxPending();_tg.apply(this,arguments);try{bxPill();if(!before&&bxPending())setTimeout(()=>{if(sysQ&&sysQ.length){const w=setInterval(()=>{if(!sysQ.length){clearInterval(w);bxOpen();}},400);setTimeout(()=>clearInterval(w),20000);}else bxOpen();},900);}catch(e){}};}
+{const _tg=toggle;toggle=function(q,kind){const before=bxPending();_tg.apply(this,arguments);try{bxUndo();bxPill();if(!before&&bxPending())setTimeout(()=>{if(sysQ&&sysQ.length){const w=setInterval(()=>{if(!sysQ.length){clearInterval(w);bxOpen();}},400);setTimeout(()=>clearInterval(w),20000);}else bxOpen();},900);}catch(e){}};}
 {const _r=render;render=function(){_r.apply(this,arguments);try{bxPill();bxTitleUI();}catch(e){}};}
 setTimeout(()=>{try{bxApplyFrame();bxTitleUI();bxColUI();bxPill();}catch(e){}},0);
 // ---------- Mural da turma (prova por foto, 14+) e Álbum de figurinhas (todas as idades) ----------
@@ -4133,8 +4158,8 @@ setTimeout(()=>{try{bxApplyFrame();bxTitleUI();bxColUI();bxPill();}catch(e){}},0
 //   - O servidor (server/mural.gs) confere token, idade, amizade, tamanho e tipo; o app só mostra.
 //   - MURAL_URL vazio = mural de fotos escondido. O Álbum de figurinhas funciona sempre, sem sair do aparelho.
 // Só ADICIONA prog.mural = {ok:1, par:1, reg:"faixa", stk:{dia:[{q,e}]}}. Nada novo no formulário público.
-// Teste antes de lançar: localStorage "asc-mural-url" com um endereço /exec do Apps Script (só no próprio aparelho).
-const MURAL_URL=(()=>{const fixo="";try{const t=localStorage.getItem("asc-mural-url")||"";if(/^https:\/\/script\.google\.com\/macros\/s\/[\w-]+\/exec$/.test(t))return t;}catch(e){}return fixo;})();
+// Servidor publicado em 26/11 (thread de segurança, PR #70). Teste com outro servidor: localStorage "asc-mural-url" com um endereço /exec do Apps Script (só no próprio aparelho).
+const MURAL_URL=(()=>{const fixo="https://script.google.com/macros/s/AKfycbwI3tDbLa7qYH2_oLn8kQAHuLrn-NXrtOjLEMXEcjdn_NsjW3UM7QAJE9hvQg_47isJbA/exec";try{const t=localStorage.getItem("asc-mural-url")||"";if(/^https:\/\/script\.google\.com\/macros\/s\/[\w-]+\/exec$/.test(t))return t;}catch(e){}return fixo;})();
 const MU_REACT=["🔥","💪","👏"];
 const MU_CAPS=["","Feito ✅","Mínimo cumprido","Dia difícil, fiz mesmo assim","Novo recorde","Primeira vez!"];
 const MU_STK=["⭐","🏆","🔥","💪","📚","🧠","🏃","🎯","🌙","✨","🦸","🐉","🎨","🎵","🥇","💧"];
@@ -4159,7 +4184,8 @@ async function muShrink(file){if(!file||!/^image\//.test(file.type||"image/"))th
     if(url.length*.75<=MU_MAXB)return url;if(q>.45)q-=.12;else side=Math.round(side*.8);}
   if(url.length*.75<=MU_MAXB)return url;throw new Error("grande");}
 // --- depois de concluir uma tarefa: atalho por 8 s ---
-function muChip(q){if(!q||!cfg||cfg.blank)return;const old=$("muChip");if(old)old.remove();const photo=muPhotoOn();
+function muBlocked(){return [...document.querySelectorAll(".sysmodal,#levelup:not([hidden]),#bxModal")].some(x=>x.getClientRects().length);}
+function muChip(q,tries){if(!q||!cfg||cfg.blank)return;tries=tries||0;if(muBlocked()){if(tries<40)setTimeout(()=>muChip(q,tries+1),500);return;}const old=$("muChip");if(old)old.remove();const photo=muPhotoOn();
   const b=muEl("button","much",photo?"📸 Provar no mural":"⭐ Colar figurinha");b.type="button";b.id="muChip";
   b.addEventListener("click",()=>{b.remove();photo?muCompose(q):muSticker(q);});document.body.append(b);setTimeout(()=>{if(b.isConnected)b.remove();},8000);}
 {const _tg=toggle;toggle=function(q,kind){const tk=todayKey();const had=(prog.log[tk]||[]).some(e=>e.q===q.id);_tg.apply(this,arguments);
@@ -4174,9 +4200,9 @@ function muSticker(q){const m=muEl("div","sysmodal mumodal");m.setAttribute("rol
   const no=muEl("button","link","Agora não");no.type="button";no.addEventListener("click",()=>m.remove());c.append(g,no);m.append(c);document.body.append(m);}
 function muAlbumUI(){let p=$("muAlbum");const anchor=$("bxCol")||$("avPanel")||document.querySelector('.wrap>section[data-tab="prog"]');if(!anchor)return;
   if(!p){p=muEl("section","panel mualb");p.id="muAlbum";p.dataset.tab="prog";anchor.after(p);}
-  const s=muSt();const days=Object.keys(s.stk).sort().reverse().filter(d=>(s.stk[d]||[]).length);if(!cfg||cfg.blank){p.hidden=true;return;}p.hidden=false;p.textContent="";
+  const s=muSt();const days=Object.keys(s.stk).sort().reverse().filter(d=>(s.stk[d]||[]).length);if(!cfg||cfg.blank){p.hidden=true;return;}p.hidden=false;
   let n=0;for(const d of days)n+=s.stk[d].length;
-  const hd=muEl("div","qhead");hd.append(muEl("h2",null,"⭐ Álbum de figurinhas"),muEl("span","sm mono",n+(n===1?" figurinha":" figurinhas")));p.append(hd);
+  (typeof bxHead==="function"?bxHead:(p,t,m)=>{p.textContent="";const hd=muEl("div","qhead");hd.append(muEl("h2",null,t),muEl("span","sm mono",m));p.append(hd);})(p,"⭐ Álbum de figurinhas",n+(n===1?" figurinha":" figurinhas"));
   if(!days.length){p.append(muEl("div","sm muted","Concluiu uma tarefa? Toque em « ⭐ Colar figurinha » e ela entra aqui como prova. Fica só no seu aparelho."));return;}
   for(const d of days.slice(0,14)){const row=muEl("div","muday");const [y,mo,da]=d.split("-");row.append(muEl("span","mudd",da+"/"+mo));
     const g=muEl("div","mudg");for(const x of s.stk[d]){const t=muEl("span","mut",x.e);t.title=x.q;t.setAttribute("aria-label",x.e+" "+x.q);g.append(t);}row.append(g);p.append(row);}}
@@ -4219,7 +4245,7 @@ async function muAct(a,o,okMsg){try{await muApi(a,o);if(okMsg)toast(okMsg);}catc
 function muUI(){let p=$("muPanel");const wrap=document.querySelector(".wrap");if(!wrap)return;
   if(!p){p=muEl("section","panel mu");p.id="muPanel";p.dataset.tab="amigos";const at=$("tmPanel");at&&at.parentNode===wrap?at.after(p):wrap.append(p);}
   if(!MURAL_URL||!muBand()||!(prog.rank&&prog.rank.on)){p.hidden=true;return;}p.hidden=false;p.textContent="";const s=muSt();
-  const hd=muEl("div","qhead");hd.append(muEl("h2",null,"📸 Mural da turma"),muEl("span","sm muted","só amigos · 7 dias"));p.append(hd);
+  const hd=muEl("div","muhd");hd.append(muEl("h2",null,"📸 Mural da turma"),muEl("span","sm muted","só amigos · 7 dias"));p.append(hd);
   if(!muPhotoOn()){p.append(muEl("div","sm muted","O mural liga quando você está no ranking com apelido."));return;}
   if(!s.ok){p.append(muEl("p","sm","Prove uma tarefa com foto. Só seus amigos veem e ela some em 7 dias."));const b=muEl("button","go","Ligar o mural");b.type="button";b.addEventListener("click",()=>muConsent(()=>{muAt=0;muLoad();}));p.append(b);return;}
   const add=muEl("button","ghost","＋ Postar prova de uma tarefa de hoje");add.type="button";add.addEventListener("click",()=>{const tk=todayKey();const done=(prog.log[tk]||[]).map(e=>e.q);
@@ -4234,7 +4260,7 @@ function muUI(){let p=$("muPanel");const wrap=document.querySelector(".wrap");if
     const av=muEl("span","muav");try{av.innerHTML=frAv(((typeof sqPub!=="undefined"&&sqPub[String(x.a||"").toLowerCase()])||{}).av,32);}catch(e){}
     top.append(av,muEl("b",null,String(x.a||"").slice(0,16)),muEl("span","sm muted",muAgo(x.d)));card.append(top);
     const im=muEl("img","muimg");im.alt="Foto de prova de "+String(x.a||"");im.loading="lazy";im.src=x.img;card.append(im);
-    card.append(muEl("div","muq","✅ "+String(x.q||"").slice(0,40)+(x.cap&&MU_CAPS.includes(x.cap)?" · "+x.cap:"")));
+    {const qt=String(x.q||"").slice(0,40),cp=x.cap&&MU_CAPS.includes(x.cap)?x.cap:"";const tx=[qt,cp].filter(Boolean).join(" · ")||"Tarefa feita";card.append(muEl("div","muq",(/✅/.test(tx)?"":"✅ ")+tx));}
     const bar=muEl("div","murx");for(const e of MU_REACT){const n=+((x.r||{})[e])||0;const mine=!!((x.my||{})[e]);const b=muEl("button","murb"+(mine?" on":""),e+(n?" "+n:""));b.type="button";b.setAttribute("aria-pressed",mine?"true":"false");b.setAttribute("aria-label","Reagir "+e);
       b.addEventListener("click",()=>{x.my=x.my||{};x.r=x.r||{};x.my[e]=!mine;x.r[e]=Math.max(0,n+(mine?-1:1));muUI();muAct("react",{id:x.id,e});});bar.append(b);}
     const own=String(x.a||"").toLowerCase()===me;const act=muEl("button","link muop",own?"Apagar":"Denunciar");act.type="button";
@@ -4245,6 +4271,90 @@ function muUI(){let p=$("muPanel");const wrap=document.querySelector(".wrap");if
 document.addEventListener("click",e=>{const b=e.target.closest&&e.target.closest('#tabbar [data-go="amigos"]');if(b)setTimeout(()=>{try{muLoad();}catch(x){}},0);},true);
 {const _r=render;render=function(){_r.apply(this,arguments);try{if(!$("muAlbum")||document.body.dataset.tab==="prog")muAlbumUI();}catch(e){}};}
 setTimeout(()=>{try{muAlbumUI();muUI();}catch(e){}},0);
+
+// ---------- Celular: 📅 na tarefa com horário e tarefas ligadas a apps (Duolingo, leitura, corrida, meditação) ----------
+// 📅 abre o Google Agenda já preenchido (Android) ou baixa um .ics que o Calendário do iPhone abre. Repete nos dias da tarefa.
+// Tarefa de app: botão para abrir o app (deep link com reserva na web) e 📸 print de prova (+5 XP, no máx. 3 por dia).
+// O print NÃO sai do celular: vira miniatura guardada só hoje (asc-u-appfoto). O XP entra como "app:<id da tarefa>".
+const AP_UA=navigator.userAgent,AP_IOS=/iphone|ipad|ipod/i.test(AP_UA)||(navigator.platform==="MacIntel"&&navigator.maxTouchPoints>1),AP_AND=/android/i.test(AP_UA);
+const AP_XP=5,AP_MAX=3;
+const AP_APPS=[
+  {k:"duo",re:/duolingo|ingl[eê]s|espanhol|idioma|franc[eê]s|alem[aã]o|italiano/i,ic:"🦉",nm:"Duolingo",pkg:"com.duolingo",web:"https://www.duolingo.com/learn",hint:"Print da lição concluída"},
+  {k:"run",re:/\bcorr(er|ida)\b|caminh(ar|ada)|pedalar|bike\b/i,ic:"🏃",nm:"Strava",pkg:"com.strava",web:"https://www.strava.com/",hint:"Print do app de corrida, da distância ou dos passos"},
+  {k:"med",re:/medit|respira[çc][aã]o|mindful/i,ic:"🧘",nm:"",hint:"Print do app de meditação ou do timer"},
+  {k:"ler",re:/\bler\b|leitura|livro|p[aá]ginas/i,ic:"📖",nm:"",hint:"Foto da página ou print do app de leitura"}];
+function apApp(q){if(!q)return null;if(q.app)return AP_APPS.find(a=>a.k===q.app)||null;const t=String(q.title||"")+" "+String(q.minTitle||"");return AP_APPS.find(a=>a.re.test(t))||null;}
+// horário da tarefa: "às 19h", "19:30", "quando der 14h" no gatilho ou no título; senão a hora em que ela libera (noite/almoço)
+function apTime(q){if(!q)return null;const s=String(q.ifThen||"")+" "+String(q.title||"");
+  let m=/(?:às|as|quando der|a partir das|até)\s+(\d{1,2})(?:[:h](\d{2}))?\s*h?/i.exec(s)||/\b(\d{1,2}):(\d{2})\b/.exec(s)||/\b(\d{1,2})h(\d{2})?\b/.exec(s);
+  if(m){const h=+m[1],mi=+(m[2]||0);if(h>=5&&h<=23&&mi<60)return [h,mi];}
+  const f=typeof qtFrom==="function"?qtFrom(q):null;if(f!=null&&f>=11)return [f,0];return null;}
+function apMins(q){const m=/(\d{1,3})\s*min/i.exec(String(q.title||""));const n=m?+m[1]:15;return Math.max(5,Math.min(120,n));}
+function apFirst(q,hm){const d=new Date();d.setHours(hm[0],hm[1],0,0);const days=q.days&&q.days.length?q.days:null;
+  for(let i=0;i<8;i++){const dow=(d.getDay()+6)%7;if((!days||days.includes(dow))&&(i>0||d>new Date()-3600000))break;d.setDate(d.getDate()+1);}return d;}
+function apRule(q){const days=q.days&&q.days.length&&q.days.length<7?q.days:null;return q.once?"":days?"RRULE:FREQ=WEEKLY;BYDAY="+days.map(x=>BYD[x]).join(","):"RRULE:FREQ=DAILY";}
+function apNote(q){return (q.minTitle?"Mínimo: "+q.minTitle+"\n":"")+(q.ifThen?"Gatilho: "+q.ifThen+"\n":"")+location.href.split("#")[0];}
+function apICS(q,hm){const s=apFirst(q,hm),e=new Date(s.getTime()+apMins(q)*60000),st=icsDT(new Date()),r=apRule(q);
+  const L=["BEGIN:VCALENDAR","VERSION:2.0","PRODID:-//Ascensao//PT-BR","CALSCALE:GREGORIAN","METHOD:PUBLISH","BEGIN:VEVENT","UID:asc-q-"+String(q.id).replace(/[^\w-]/g,"")+"@ascensao","DTSTAMP:"+st,"DTSTART:"+icsDT(s),"DTEND:"+icsDT(e)];
+  if(r)L.push(r);L.push("SUMMARY:"+icsEsc("Ascension: "+q.title),"DESCRIPTION:"+icsEsc(apNote(q)),"BEGIN:VALARM","ACTION:DISPLAY","DESCRIPTION:"+icsEsc(q.title),"TRIGGER:PT0M","END:VALARM","END:VEVENT","END:VCALENDAR");return L.join("\r\n");}
+function apTZ(){try{return Intl.DateTimeFormat().resolvedOptions().timeZone||"America/Sao_Paulo";}catch(e){return "America/Sao_Paulo";}}
+function apGcal(q,hm){const s=apFirst(q,hm),e=new Date(s.getTime()+apMins(q)*60000),r=apRule(q);
+  return "https://calendar.google.com/calendar/render?action=TEMPLATE&text="+encodeURIComponent("Ascension: "+q.title)+"&dates="+icsDT(s)+"/"+icsDT(e)+"&ctz="+encodeURIComponent(apTZ())+(r?"&recur="+encodeURIComponent(r):"")+"&details="+encodeURIComponent(apNote(q));}
+function apCal(q){const hm=apTime(q);if(!hm)return;try{prog.apCal=(prog.apCal||0)+1;save();}catch(e){}
+  if(AP_IOS){const u=URL.createObjectURL(new Blob([apICS(q,hm)],{type:"text/calendar;charset=utf-8"}));const a=document.createElement("a");a.href=u;a.download="tarefa-ascension.ics";document.body.append(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(u),60000);
+    toast("Abriu o Calendário? Toque em Adicionar. O aviso vem na hora da tarefa.");}
+  else{window.open(apGcal(q,hm),"_blank","noopener");toast("No Google Agenda, toque em Salvar. O aviso vem na hora da tarefa.");}}
+// abrir o app: Android usa intent com o pacote (sem o app, cai na web); iPhone abre o link https, que o iOS entrega ao app instalado (sem o app, abre o site). Nada de esquema duolingo:// no iPhone: sem o app ele mostra "endereço inválido".
+let apBack=null;
+function apOpen(a,q){if(!a||!a.web)return;try{prog.apOpen=(+prog.apOpen||0)+1;save();}catch(e){}if(q)apBack={q:q.id,a,t:Date.now()};
+  if(AP_AND&&a.pkg){location.href="intent://"+a.web.replace(/^https:\/\//,"")+"#Intent;scheme=https;package="+a.pkg+";S.browser_fallback_url="+encodeURIComponent(a.web)+";end";return;}
+  window.open(a.web,"_blank","noopener");}
+// voltou do app: aponta a tarefa e lembra do print
+document.addEventListener("visibilitychange",()=>{if(document.hidden||!apBack)return;const o=apBack,el=(Date.now()-o.t)/1000;apBack=null;
+  if(el<20||el>4*3600||(prog.log[todayKey()]||[]).some(e=>e.q===o.q))return;
+  const c=document.querySelector('#quests .quest[data-q="'+CSS.escape(o.q)+'"]');if(c){c.classList.add("open","apback");c.scrollIntoView({block:"center",behavior:"smooth"});setTimeout(()=>c.classList.remove("apback"),4000);}
+  toast(o.a.ic+" Voltou? Mande o print de prova (+"+AP_XP+" XP) ou toque em Feito.");try{haptic([20,40,20]);}catch(e){}});
+// prints de prova: só no aparelho, só hoje
+const AP_PH="asc-u-appfoto";
+function apPhotos(){try{const o=JSON.parse(localStorage.getItem(AP_PH)||"{}");return o.d===todayKey()?o:{d:todayKey(),p:{}};}catch(e){return {d:todayKey(),p:{}};}}
+function apSavePhoto(id,url){const o=apPhotos();o.p[id]=url;try{localStorage.setItem(AP_PH,JSON.stringify(o));}catch(e){}}
+function apThumb(file){return new Promise((res,rej)=>{const r=new FileReader();r.onload=()=>{const im=new Image();im.onload=()=>{const k=Math.min(1,160/Math.max(im.width,im.height));const c=document.createElement("canvas");c.width=Math.max(1,Math.round(im.width*k));c.height=Math.max(1,Math.round(im.height*k));c.getContext("2d").drawImage(im,0,0,c.width,c.height);res(c.toDataURL("image/jpeg",.6));};im.onerror=rej;im.src=r.result;};r.onerror=rej;r.readAsDataURL(file);});}
+function apBonusToday(){return (prog.log[todayKey()]||[]).filter(e=>String(e.q).startsWith("app:")).length;}
+function apHas(q){return (prog.log[todayKey()]||[]).some(e=>e.q==="app:"+q.id);}
+async function apProof(q,file){if(!file)return;let url;try{url=await apThumb(file);}catch(e){toast("Não consegui ler a imagem.");return;}
+  const tk=todayKey(),done=(prog.log[tk]||[]).some(e=>e.q===q.id);
+  if(!done){toggle(q,"full");const mc=$("muChip");if(mc)mc.remove();if(!(prog.log[tk]||[]).some(e=>e.q===q.id))return;} // travada pelo horário: não marca nem dá XP
+  apSavePhoto(q.id,url);try{haptic(15);}catch(e){}
+  if(apHas(q)){render();toast("Print trocado.");return;}
+  if(apBonusToday()>=AP_MAX){render();toast("Prova registrada. O bônus de print é de até "+AP_MAX+" por dia.");return;}
+  addXP({q:"app:"+q.id,kind:"full",xp:AP_XP,stat:q.stat||"foco"},"📸 Prova registrada · +"+AP_XP+" XP");}
+function apEl(t,c,x){const e=document.createElement(t);if(c)e.className=c;if(x!=null)e.textContent=x;return e;}
+function apDecorate(){const box=$("quests");if(!box)return;
+  for(const c of box.querySelectorAll(".quest[data-q]")){if(c.querySelector(".qapp"))continue;const q=questById(c.dataset.q);if(!q)continue;
+    const a=apApp(q),hm=apTime(q);if(!a&&!hm)continue;
+    const nm=c.querySelector(".t .tt, .t > div:not(.xp)");if(nm&&!c.querySelector(".t .tt")&&!q.ifThen){nm.classList.add("tt");nm.setAttribute("role","button");nm.tabIndex=0;nm.onclick=()=>c.classList.toggle("open");}
+    if(a){const tg=c.querySelector(".t .tag");if(tg&&!tg.dataset.ap){tg.dataset.ap="1";tg.textContent=a.ic+" "+tg.textContent;}}
+    const row=apEl("div","qapp");const done=c.classList.contains("done")||c.classList.contains("min");
+    if(a&&a.web){const b=apEl("button","ghost apo",a.ic+" Abrir "+a.nm);b.type="button";b.onclick=ev=>{ev.stopPropagation();apOpen(a,q);};row.append(b);}
+    if(a){const ph=apPhotos().p[q.id];
+      if(ph&&done){const w=apEl("div","apok");const im=apEl("img");im.src=ph;im.alt="Seu print de prova";w.append(im,apEl("span","sm",apHas(q)?"Prova registrada · +"+AP_XP+" XP":"Prova registrada"));row.append(w);}
+      else{const lb=apEl("label","ghost apf");const inp=apEl("input");inp.type="file";inp.accept="image/*";inp.setAttribute("aria-label","Enviar print de prova de "+q.title);
+        inp.addEventListener("change",()=>{const f=inp.files&&inp.files[0];inp.value="";apProof(q,f);});lb.append(document.createTextNode("📸 Print +"+AP_XP+" XP"),inp);row.append(lb);}
+      if(!(ph&&done))row.append(apEl("div","sm muted aph",(a.hint||"Print de prova")+". Marca a tarefa como feita. A imagem fica só no seu celular."));}
+    if(hm){const b=apEl("button","ghost apc","📅 "+String(hm[0]).padStart(2,"0")+":"+String(hm[1]).padStart(2,"0")+" na agenda");b.type="button";b.setAttribute("aria-label","Pôr na agenda do celular às "+hm[0]+"h"+(hm[1]?String(hm[1]).padStart(2,"0"):""));b.onclick=ev=>{ev.stopPropagation();apCal(q);};row.append(b);}
+    const ft=c.querySelector(".qtfoot");if(ft)ft.after(row);else c.append(row);}}
+{const _r=render;render=function(){_r.apply(this,arguments);try{apDecorate();apAddUI();}catch(e){}};}
+// desmarcou a tarefa: o bônus do print sai junto
+{const _tg=toggle;toggle=function(q){const r=_tg.apply(this,arguments);try{const tk=todayKey(),L=prog.log[tk]||[];if(q&&!L.some(e=>e.q===q.id)&&L.some(e=>e.q==="app:"+q.id)){prog.log[tk]=L.filter(e=>e.q!=="app:"+q.id);save();render();}}catch(e){}return r;};}
+// atalho: adicionar uma tarefa de app pronta (só onde dá para editar tarefas)
+const AP_ADD=[{app:"duo",title:"Duolingo: 1 lição",minTitle:"1 lição curta",xp:15,stat:"mente"},{app:"ler",title:"Ler 10 páginas",minTitle:"2 páginas",xp:15,stat:"mente"},{app:"run",title:"Correr ou caminhar 20 min",minTitle:"10 min",xp:20,stat:"corpo"},{app:"med",title:"Meditar 5 min",minTitle:"1 min respirando",xp:10,stat:"foco"}];
+function apAdd(t){if(!cfg||typeof edSave!=="function")return;const Q=(cfg.quests||[]).slice();if(Q.some(x=>x.app===t.app)){toast("Você já tem essa tarefa.");return;}
+  Q.push(Object.assign({id:"ap_"+t.app+Date.now().toString(36)},t));cfg=Object.assign({},cfg,{quests:Q,blank:false});edSave();save();render();toast(t.title+": adicionada às tarefas de hoje (extra).");apAddUI();}
+function apAddUI(){const ed=$("edNew");if(!ed||typeof edSave!=="function")return;let w=$("apAdd");
+  if(!w){w=apEl("div","apadd");w.id="apAdd";w.append(apEl("div","sm muted","Tarefas com app e prova por print:"));const r=apEl("div","row");r.id="apAddRow";w.append(r);ed.parentNode.insertBefore(w,ed.nextSibling);}
+  const r=$("apAddRow");r.textContent="";const Q=(cfg&&cfg.quests)||[];
+  for(const t of AP_ADD){const a=AP_APPS.find(x=>x.k===t.app);const has=Q.some(x=>x.app===t.app);const b=apEl("button","ghost",a.ic+" "+(has?"✓ ":"")+t.title);b.type="button";b.disabled=has;b.onclick=()=>apAdd(t);r.append(b);}}
+setTimeout(()=>{try{apAddUI();apDecorate();}catch(e){}},0);
 
 let saveTimer=null, SYNC="";
 try{SYNC=localStorage.getItem("asc-u-sync")||"";}catch(e){}
