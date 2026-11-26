@@ -2427,7 +2427,9 @@ function statXP(){const st={foco:0,vendas:0,mente:0,corpo:0};for(const e of entr
 function coinsEarned(){let s=0;for(const e of entries())s+=Math.max(0,(e.xp||0)+(e.bonus||0));return Math.floor(s/10);}
 function rpgTip(){const d=new Date();const n=Math.floor((d-new Date(d.getFullYear(),0,0))/864e5);return TIPS[n%TIPS.length];}
 let sysQ=[];function sysPop(tag,title,text,cb,lbl){sysQ.push([tag,title,text,cb,lbl]);if(sysQ.length===1)sysNext();}
-let sysShown=null;function sysNext(){if(!sysQ.length||(sysShown&&sysShown.isConnected))return;const [tag,title,text,cb,lbl]=sysQ[0];const m=document.createElement("div");m.className="sysmodal";m.setAttribute("role","dialog");sysShown=m;
+let sysShown=null;function sysNext(){if(!sysQ.length||(sysShown&&sysShown.isConnected))return;
+  // uma janela por vez: espera o criador de avatar fechar (ele abre sozinho no 1º acesso)
+  if(document.querySelector(".avmk")){clearTimeout(sysNext._t);sysNext._t=setTimeout(sysNext,1000);return;}const [tag,title,text,cb,lbl]=sysQ[0];const m=document.createElement("div");m.className="sysmodal";m.setAttribute("role","dialog");sysShown=m;
   const c=document.createElement("div");c.className="card";const a=document.createElement("div");a.className="tag";a.textContent="[ SISTEMA ] "+tag;const h=document.createElement("h3");h.textContent=title;const p=document.createElement("p");p.className="sm";p.textContent=text;
   const b=document.createElement("button");b.className="go";b.type="button";b.textContent=lbl||"Aceitar";b.addEventListener("click",()=>{m.remove();sysQ.shift();if(cb)try{cb();}catch(e){}if(sysQ.length)sysNext();else setTimeout(render,50);});c.append(a,h,p,b);m.append(c);document.body.append(m);try{const ua=navigator.userActivation;if(navigator.vibrate&&(!ua||ua.hasBeenActive))navigator.vibrate([10,30,10]);}catch(e){}}
 function sparks(gold){if(matchMedia("(prefers-reduced-motion: reduce)").matches)return;const pt=lastPt||{x:innerWidth/2,y:innerHeight/2};
@@ -2919,7 +2921,7 @@ function shieldAuto(){if(!cfg||cfg.blank||($("onb")&&!$("onb").hidden))return;co
   for(let i=0;i<3;i++){const k=dkey(d);if(stAct(k)||isRest(k))break;gap.push(k);d.setDate(d.getDate()-1);}
   s.chk=tk;if(!gap.length||gap.length>2){save();return;}
   const before=stRun(d);if(!before){save();return;}
-  if(gap.length>s.n){save();if(before>=3)sysPop("NOVA SEQUÊNCIA","Recomeço, sem culpa","Sua sequência de "+before+" dias parou, e tudo bem: o seu XP e o seu nível continuam. Hoje é o dia 1 de novo. Uma tarefa já acende o fogo.",null,"Bora");return;}
+  if(gap.length>s.n){save();if(before>=3)sysPop("NOVA SEQUÊNCIA","Recomeço, sem culpa","Sua sequência de "+before+(before===1?" dia":" dias")+" parou, e tudo bem: o seu XP e o seu nível continuam. Hoje é o dia 1 de novo. Uma tarefa já acende o fogo.",null,"Bora");return;}
   for(const k of gap)s.used[k]=1;s.n-=gap.length;save();render();
   sysPop("ESCUDO ATIVADO","🛡️ Sequência salva: "+streakDays()+" dias",(gap.length>1?"Dois dias":"Ontem")+" passou em branco e o escudo segurou o fogo sozinho. Faça 1 tarefa hoje para ela seguir. Escudos restantes: "+s.n+".",null,"Valeu, Sistema");}
 const ST_TXT={1:["Sequência iniciada 🔥","Dia 1. Volte amanhã e vira 2. Uma tarefa por dia já mantém o fogo aceso."],
@@ -2942,7 +2944,7 @@ function stPerfect(){if(!cfg||cfg.blank)return;const s=shieldSt();const tk=today
 function stInfo(){const s=shieldSt();const n=streakDays();
   sysPop("SEQUÊNCIA","🔥 "+n+(n===1?" dia":" dias")+" · 🛡️ "+s.n,"1 tarefa por dia mantém o fogo (o mínimo vale). Se um dia passar em branco, um escudo salva a sequência sozinho. Você ganha 1 escudo a cada marco de 7, 14, 30 dias e guarda até "+ST_MAX+".",null,"Entendi");}
 {const _sl=sysLine;sysLine=function(){const t=_sl();if(!stRisk())return t;const ms=mainsFor(new Date()).filter(q=>!(prog.log[todayKey()]||[]).some(e=>e.q===q.id));const nx=ms[0];
-  return "🔥 Sua sequência de "+streakDays()+" dias está em risco. "+(nx?"1 tarefa salva: "+(nx.minTitle||nx.title)+".":"Uma tarefa qualquer salva.")+(shieldSt().n?" Se não der, o escudo segura.":"");};}
+  return "🔥 Sua sequência de "+streakDays()+(streakDays()===1?" dia":" dias")+" está em risco. "+(nx?"1 tarefa salva: "+(nx.minTitle||nx.title)+".":"Uma tarefa qualquer salva.")+(shieldSt().n?" Se não der, o escudo segura.":"");};}
 
 // ---------- Liga da semana (estilo Duolingo, leve): divisão que só sobe, rival mais próximo e fechamento da semana ----------
 // Só ADICIONA prog.league = {t, snap:{wk,pos,of,xp}, res:{semana:posição}}. Usa a lista do ranking que já existe (opt-in).
@@ -4926,7 +4928,7 @@ function smPick(){const L=smCands();if(!L.length)return null;smIdx=smIdx%L.lengt
 // ---- tela ----
 function smSheet(){let m=$("smSheet");if(!m){m=smEl("div","smsheet");m.id="smSheet";m.setAttribute("role","dialog");m.setAttribute("aria-modal","true");m.setAttribute("aria-label","Missão do Sistema");document.body.append(m);}return m;}
 function smClose(){clearInterval(smIv);const m=$("smSheet");if(m)m.hidden=true;document.body.classList.remove("insm");smBar();}
-function smShell(tag){const m=smSheet();m.hidden=false;document.body.classList.add("insm");m.textContent="";const c=smEl("div","smcard");c.append(smEl("div","smtag","[ SISTEMA ] "+tag));m.append(c);
+function smShell(tag){const m=smSheet();m.hidden=false;document.body.classList.add("insm");setTimeout(smGuardOn,0);m.textContent="";const c=smEl("div","smcard");c.append(smEl("div","smtag","[ SISTEMA ] "+tag));m.append(c);
   const x=smEl("button","smx","✕");x.type="button";x.setAttribute("aria-label","Fechar e ver a lista");x.onclick=smClose;m.append(x);return c;}
 function smOpen(){smShow();}
 function smShow(){clearInterval(smIv);const s=smSt();
@@ -4963,6 +4965,12 @@ function smTimer(q,rec){const c=smShell("2 MINUTOS");smEnd=Date.now()+SM_SECS*10
 // recompensa primeiro: se a marcação gerou aviso (nível, atributo, conquista), o Sistema sai da frente e volta quando ele fechar
 function smBusyRw(){return (typeof sysQ!=="undefined"&&sysQ.length)||[...document.querySelectorAll(".sysmodal:not([hidden]),.levelup:not([hidden])")].some(e=>e.getClientRects().length);}
 function smAfter(fn,n){n=n||0;if(n===0){clearInterval(smIv);}if(smBusyRw()&&n<400){if(n===0){const m=$("smSheet");if(m)m.hidden=true;document.body.classList.remove("insm");}setTimeout(()=>smAfter(fn,n+1),300);return;}fn();}
+// só um diálogo ativo: com outro aria-modal visível por cima (prêmio, check-in, aviso), o Sistema fica inerte até ele fechar
+let smGuardIv=0;
+function smGuard(){const m=$("smSheet");if(!m||m.hidden||!document.body.classList.contains("insm")){if(m){m.inert=false;m.removeAttribute("aria-hidden");}clearInterval(smGuardIv);smGuardIv=0;return;}
+  const other=[...document.querySelectorAll('[aria-modal="true"]:not([hidden]),.sysmodal:not([hidden]),.levelup:not([hidden])')].some(e=>e!==m&&!m.contains(e)&&e.getClientRects().length);
+  if(other!==!!m.inert){m.inert=other;if(other)m.setAttribute("aria-hidden","true");else{m.removeAttribute("aria-hidden");const g=m.querySelector(".smgo");if(g)try{g.focus();}catch(e){}}}}
+function smGuardOn(){if(!smGuardIv)smGuardIv=setInterval(smGuard,250);smGuard();}
 function smMinDone(q,rec){clearInterval(smIv);const s=smSt(),tk=smTk();
   if(q.minTitle){if(!smDone(q))toggle(q,"min");}
   else if(!(prog.log[tk]||[]).some(e=>e.q==="sm:"+q.id)&&smCount("sm:")<SM_CAP)addXP({q:"sm:"+q.id,kind:"full",xp:SM_START,stat:q.stat||"foco"},"Começou. +"+SM_START+" XP");
