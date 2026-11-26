@@ -763,6 +763,69 @@ body[data-tab=amigos] #frPanel .frlist{display:none}
 .cdlink{display:flex;flex-direction:column;gap:6px;padding:12px;margin-bottom:10px;border:1px dashed var(--accent);border-radius:12px;background:rgba(0,212,255,.05)}
 .cdurl{font-family:var(--f-mono);font-size:.74rem;color:var(--glow);overflow-wrap:anywhere;user-select:all;-webkit-user-select:all;padding:8px;border-radius:8px;background:rgba(0,0,0,.25)}
 .cdlbtn{display:grid;grid-template-columns:1fr 1fr;gap:6px}.cdlbtn button{min-height:42px}
+/* ---- Várias turmas + ranking em destaque (tools/grupos.js) ---- */
+.gtbar{display:flex;gap:6px;overflow-x:auto;padding:2px 2px 8px;margin:0 -2px 6px;scrollbar-width:none;-webkit-overflow-scrolling:touch}
+.gtbar::-webkit-scrollbar{display:none}
+.gtchip{flex:0 0 auto;display:inline-flex;align-items:center;gap:6px;min-height:44px;padding:0 14px;border-radius:999px;border:1px solid var(--line);background:rgba(0,212,255,.03);color:var(--muted);font-size:.86rem;white-space:nowrap}
+.gtchip .gte{font-size:1rem}
+.gtchip .gtc{font-family:var(--f-mono);font-size:.7rem;padding:1px 6px;border-radius:999px;background:rgba(255,255,255,.06);color:var(--muted)}
+.gtchip.on{border-color:var(--accent);color:var(--fg);background:linear-gradient(135deg,rgba(0,212,255,.16),rgba(0,212,255,.04));box-shadow:0 0 0 1px rgba(0,212,255,.25) inset,0 0 14px rgba(0,212,255,.18)}
+.gtchip.on .gtc{background:rgba(0,212,255,.2);color:var(--glow)}
+.gtchip.on::after{content:"✎";font-size:.8rem;color:var(--glow);opacity:.8}
+.gtchip.gtnew{border-style:dashed;color:var(--glow)}
+.gtcount{font-family:var(--f-mono);font-size:.74rem;letter-spacing:.08em;color:var(--glow);margin:2px 0 8px}
+/* pódio */
+.gtpod{display:grid;grid-template-columns:1fr 1.15fr 1fr;align-items:end;gap:8px;margin:4px 0 12px}
+.gtpod:has(> .gtp:nth-child(2):last-child){grid-template-columns:1fr 1.15fr}
+.gtp{position:relative;display:flex;flex-direction:column;align-items:center;gap:3px;min-width:0;text-align:center}
+.gtp b{max-width:100%;font-size:.82rem;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.gtp.me b{color:var(--glow)}
+.gtpm{font-size:1.2rem;line-height:1}
+.gtpav svg{display:block}
+.gtpx{font-family:var(--f-mono);font-size:.76rem;color:var(--gold)}
+.gtpb{display:block;width:100%;border-radius:8px 8px 3px 3px;border:1px solid var(--line);border-bottom:0;background:linear-gradient(180deg,rgba(0,212,255,.14),rgba(0,212,255,.02));margin-top:4px}
+.gtp1 .gtpb{height:54px;border-color:rgba(242,193,78,.55);background:linear-gradient(180deg,rgba(242,193,78,.26),rgba(242,193,78,.03));box-shadow:0 -6px 18px rgba(242,193,78,.14)}
+.gtp2 .gtpb{height:38px}
+.gtp3 .gtpb{height:26px}
+.gtp1 .gtpav{filter:drop-shadow(0 0 10px rgba(242,193,78,.35))}
+/* destaque em Hoje */
+.gthero{position:relative;overflow:hidden;border-color:rgba(242,193,78,.4)!important;background:linear-gradient(160deg,rgba(242,193,78,.1),rgba(0,212,255,.05) 55%,transparent)!important}
+.gthero::before{content:"";position:absolute;inset:0;pointer-events:none;background:repeating-linear-gradient(180deg,rgba(255,255,255,.025) 0 1px,transparent 1px 4px);opacity:.6}
+.gthero>*{position:relative}
+.gthd{display:flex;justify-content:space-between;align-items:center;gap:8px;margin-bottom:8px}
+.gthd h2{margin:0;color:var(--gold);white-space:nowrap}
+.gtclock{font-family:var(--f-mono);font-size:.72rem;color:var(--gold);white-space:nowrap}
+.gtme{display:flex;align-items:baseline;gap:8px;margin-bottom:8px}
+.gtpos{font-family:var(--f-hud);font-size:1.7rem;line-height:1;color:var(--gold);text-shadow:0 0 14px rgba(242,193,78,.35)}
+.gtme span{font-size:.84rem;color:var(--muted)}
+.gttop{list-style:none;margin:0 0 6px;padding:0;display:flex;flex-direction:column;gap:4px}
+.gttop li{display:grid;grid-template-columns:28px 30px minmax(0,1fr) auto;align-items:center;gap:8px;padding:5px 8px;border-radius:8px;background:rgba(255,255,255,.03)}
+.gttop li.me{background:rgba(0,212,255,.09);box-shadow:inset 0 0 0 1px rgba(0,212,255,.35)}
+.gttop li.gtgap{margin-top:4px}
+.gttop .gtm{text-align:center;font-family:var(--f-mono);font-size:.8rem;color:var(--muted)}
+.gttop .gtav svg{display:block;width:30px;height:30px}
+.gtnm{font-size:.88rem;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.gtx{font-family:var(--f-mono);font-size:.78rem;color:var(--gold);white-space:nowrap}
+.gtlead{margin:4px 0 8px;font-size:.9rem;color:var(--fg)}
+.gtpeek{display:flex;margin:2px 0 8px;padding-left:8px}
+.gtpk{margin-left:-8px;border-radius:50%;box-shadow:0 0 0 2px #0a1222}
+.gtpk svg{display:block}
+.gthero .row{flex-wrap:wrap}
+/* folha de criar/editar */
+.gtcard{max-height:86vh;overflow:auto}
+.gtlbl{display:flex;flex-direction:column;gap:6px;margin:10px 0 6px;font-size:.8rem;color:var(--muted)}
+.gtname{font:inherit;width:100%;min-height:44px;background:rgba(0,212,255,.04);border:1px solid var(--line);color:var(--fg);border-radius:6px;padding:8px 10px}
+.gtems{display:flex;flex-wrap:wrap;gap:6px}
+.gtems button{width:44px;height:44px;border-radius:10px;border:1px solid var(--line);background:transparent;font-size:1.2rem}
+.gtems button.on{border-color:var(--accent);background:rgba(0,212,255,.12);box-shadow:0 0 10px rgba(0,212,255,.25)}
+.gtmem{display:flex;flex-direction:column;gap:4px;max-height:34vh;overflow:auto}
+.gtchk{display:flex;align-items:center;gap:10px;min-height:44px;padding:4px 8px;border-radius:8px;background:rgba(255,255,255,.03);color:var(--fg);font-size:.9rem}
+.gtchk input{width:20px;height:20px;accent-color:var(--accent)}
+.gtav svg{display:block}
+.gtmsg{min-height:1.2em;color:var(--gold);margin-top:6px}
+.gtdel{display:block;margin:10px auto 0;color:var(--bad,#ff6b6b)}
+#gtAge label.chk{display:flex;align-items:center;gap:8px;margin:10px 0;font-size:.86rem}
+@media (prefers-reduced-motion:reduce){.gtchip,.gtp{transition:none}}
 /* ---- Chefão da turma (tools/boss.js) ---- */
 .tb{position:relative;overflow:hidden;background:radial-gradient(120% 80% at 50% 0%,rgba(123,44,255,.16),transparent 60%),var(--panel,#0b1220)}
 .tbhd{display:flex;justify-content:space-between;align-items:center;gap:8px;margin-bottom:6px}
@@ -4044,9 +4107,11 @@ function tmPlace(){const wrap=document.querySelector(".wrap");if(!wrap)return;le
 // --- quem está na turma ---
 function tmMe(){let sq=0;try{sq=streakDays()||0;}catch(e){}let av="";try{av=avCode();}catch(e){}return {n:rankName()||"Você",xp:weekXP(),lv:levelOf(totalXP()),seq:sq,av,me:true};}
 function tmFriends(){try{return frSt().l.map(n=>frRow(n));}catch(e){return [];}}
+// quem aparece na lista "turma": por padrão todos os amigos; tools/grupos.js troca pela turma escolhida (igreja, família...)
+let tmGroup=function(){return tmFriends();};let tmGroupName=function(){return "Amigos";};
 function tmAll(){return (rankRows||[]).map(r=>{const p=(typeof sqPub!=="undefined"&&sqPub[tmN(r.n)])||{};return {n:r.n,xp:r.xp,lv:r.lv,seq:p.seq||0,av:p.av||""};});}
 function tmBoard(view){if(view==="hoje"&&typeof dyBoard==="function"){const pub=r=>(typeof sqPub!=="undefined"&&sqPub[tmN(r.n)])||{};return dyBoard().map(r=>{const m=r.me?tmMe():{};return Object.assign({},r,{lv:r.me?m.lv:r.lv,seq:r.me?m.seq:(pub(r).seq||0),av:r.me?m.av:(pub(r).av||"")});});}
-  const me=tmMe();const L=view==="geral"?tmAll().filter(r=>tmN(r.n)!==tmN(me.n)):tmFriends();
+  const me=tmMe();const L=view==="geral"?tmAll().filter(r=>tmN(r.n)!==tmN(me.n)):tmGroup();
   return [me,...L].sort((a,b)=>(b.xp||0)-(a.xp||0)||(b.lv||0)-(a.lv||0));}
 // --- novidades: compara com a última vez que viu cada amigo ---
 function tmFeedAdd(k,n,t){const s=tmSt();const id=k+":"+tmN(n)+":"+todayKey();if(s.feed.some(f=>f.id===id))return;s.feed.unshift({id,k,n,t,d:todayKey()});s.feed=s.feed.slice(0,20);}
@@ -4080,18 +4145,18 @@ function tmUI(){const p=tmPlace();if(!p)return;if(tmKid()||!cfg||cfg.blank){p.hi
     const b=tmEl("button","go","Entrar no ranking");b.type="button";b.addEventListener("click",()=>{const j=$("rkJoin");if(j&&!j.hidden){j.click();setTimeout(tmUI,600);}else{const r=$("rankPanel");if(r)r.scrollIntoView({block:"start",behavior:"smooth"});}});c.append(b);p.append(c);return;}
   // liga + seletor
   const lg=tmEl("div","tmlg");lg.append(tmEl("b",null,tier||"Liga"),tmEl("span","sm muted","Os 3 primeiros da semana sobem. Ninguém cai."));p.append(lg);
-  const fr=tmFriends();const seg=tmEl("div","tmseg");const VW=[["turma","Amigos"+(fr.length?" ("+fr.length+")":"")],["geral","Semana"]];if(typeof dyBoard==="function")VW.unshift(["hoje","Hoje"]);else if(s.view==="hoje")s.view="turma";
-  for(const [k,l] of VW){const b=tmEl("button",s.view===k?"on":"",l);b.type="button";b.setAttribute("aria-pressed",s.view===k?"true":"false");b.addEventListener("click",()=>{s.view=k;save();tmUI();});seg.append(b);}p.append(seg);
+  const fr=tmFriends(),gr=tmGroup();const seg=tmEl("div","tmseg");const VW=[["turma",tmGroupName()+(gr.length?" ("+gr.length+")":"")],["geral","Semana · todos"]];if(typeof dyBoard==="function")VW.unshift(["hoje","Hoje"]);else if(s.view==="hoje")s.view="turma";
+  for(const [k,l] of VW){const b=tmEl("button",s.view===k?"on":"",l);b.type="button";b.dataset.v=k;b.setAttribute("aria-pressed",s.view===k?"true":"false");b.addEventListener("click",()=>{s.view=k;save();tmUI();});seg.append(b);}p.append(seg);
   const L=tmBoard(s.view);
   if(s.view==="hoje"){const box=tmEl("div","dybox");const rv=typeof dyRival==="function"?dyRival():null;box.append(tmEl("div","dyriv",rv?rv.txt:"Ranking de hoje: zera à meia-noite. Cada XP de hoje conta."));
     const nt=dyNote();if(nt)box.append(tmEl("div","sm muted",nt));box.append(dyNtfBtn());p.append(box);}
-  if(s.view==="turma"&&!fr.length){const e=tmEl("div","tmempty");e.append(tmEl("p",null,"Sua turma ainda está vazia. Chame alguém para jogar com você."));
+  if(s.view==="turma"&&!gr.length){const e=tmEl("div","tmempty");e.append(tmEl("p",null,"Sua turma ainda está vazia. Chame alguém para jogar com você."));
     const b=tmEl("button","go","+ Adicionar amigo");b.type="button";b.addEventListener("click",()=>{try{frAdd=true;frUI();}catch(e){}setTimeout(()=>{const f=$("frPanel");if(!f)return;if(f.classList.contains("fold")&&!f.classList.contains("open")){const h=f.querySelector(":scope>.fhd");if(h)h.click();}f.scrollIntoView({block:"start",behavior:matchMedia("(prefers-reduced-motion: reduce)").matches?"auto":"smooth"});const i=f.querySelector("input");if(i)setTimeout(()=>i.focus(),80);},0);});e.append(b);p.append(e);}
   if(rankRows&&typeof rankErr!=="undefined"&&rankErr){const w=tmEl("div","sm muted tmoff","Sem conexão · mostrando a última lista. Toque para tentar de novo.");w.setAttribute("role","button");w.tabIndex=0;w.style.cursor="pointer";w.addEventListener("click",()=>{rankErr=false;try{tmUI();}catch(e){}loadRank();});const f0=p.firstElementChild;if(f0)f0.after(w);else p.append(w);}
   if(!rankRows){const w=tmEl("div","sm muted",(typeof rankErr!=="undefined"&&rankErr)?"Sem conexão com o ranking. Toque aqui para tentar de novo.":"Carregando a turma…");if(typeof rankErr!=="undefined"&&rankErr){w.style.cursor="pointer";w.addEventListener("click",()=>{rankErr=false;try{tmUI();}catch(e){}loadRank();});}p.append(w);}
-  const ol=tmEl("ol","tmlist");L.slice(0,30).forEach((r,i)=>{const li=tmEl("li",(r.me?"me ":"")+(i<3&&L.length>=2?"up":""));
+  const ol=tmEl("ol","tmlist");L.slice(0,300).forEach((r,i)=>{const li=tmEl("li",(r.me?"me ":"")+(i<3&&L.length>=2?"up":""));
     li.append(tmEl("span","tmpos",i<3?["🥇","🥈","🥉"][i]:String(i+1)));const av=tmEl("span","tmav");av.innerHTML=tmAv(r.av,44);li.append(av);
-    const tx=tmEl("div","tmtx");const cls=tmCls(r.av);tx.append(tmEl("b",null,r.n+(r.me?" (você)":"")),tmEl("span","tmmeta",(r.lv?"Nv "+r.lv:"")+(cls?" · "+cls:"")+(r.seq?" · 🔥 "+r.seq:"")));li.append(tx);
+    const tx=tmEl("div","tmtx");const cls=tmCls(r.av);tx.append(tmEl("b",null,r.n+(r.me?" (você)":"")),tmEl("span","tmmeta",(r.lv?"Nv "+r.lv:"")+(cls?" · "+cls:"")+(r.seq?" · 🔥 "+r.seq:"")+(!r.me&&r.on===false&&s.view==="turma"?" · ainda não pontuou na semana":"")));li.append(tx);
     li.append(tmEl("span","tmxp",s.view==="hoje"?"+"+(r.xp||0)+" hoje":(r.xp||0)+" XP"));
     if(!r.me){const fz=fr.some(f=>tmN(f.n)===tmN(r.n));const act=tmEl("div","tmact");
       if(fz){for(const k of ["p","c"]){const t=TM_K[k];const done=s.sent[k+":"+tmN(r.n)+":"+todayKey()];const b=tmEl("button","tmbtn"+(done?" done":""),t[0]);b.type="button";b.title=(k==="p"?"Dar parabéns para ":"Cutucar ")+r.n;b.setAttribute("aria-label",b.title);b.addEventListener("click",ev=>{ev.stopPropagation();tmSend(r.n,k);});act.append(b);}
@@ -4199,6 +4264,141 @@ document.addEventListener("click",e=>{const li=e.target.closest&&e.target.closes
 setTimeout(()=>{try{cdBadgeUI();tmUI();}catch(e){}},0);
 // menor de 18 sem apelido: o pedido de apelido fica na aba Amigos (o ranking mora lá agora)
 if(typeof joinRank==="function"){const _jr=joinRank;joinRank=function(){_jr.apply(this,arguments);try{if(!tmOn()&&$("rkNick")){goTab("amigos");const r=$("rankPanel");if(r){if(r.classList.contains("fold")&&!r.classList.contains("open")){const h=r.querySelector(".fhd");if(h)h.click();}r.scrollIntoView({block:"center"});}setTimeout(()=>$("rkNick").focus(),80);}}catch(e){}};}
+// ---------- Várias turmas (igreja, família, trabalho...) + ranking semanal em destaque ----------
+// Turma = grupo de amigos que você organiza. Tudo fica neste aparelho: o canal público (F/G/K) não muda e nada novo sai do celular.
+// Só ADICIONA prog.turmas = {l:[{id,n,e,c,m:[apelidos]}], cur:id, hx:"AAAA-MM-DD"}.
+// Migração: quem já joga ganha a turma "Minha turma" com todos os amigos de hoje e o mesmo link de convite (links já enviados continuam valendo).
+// Link por turma: ...?amigo=APELIDO&c=CÓDIGO-DA-TURMA&t=NOME. Quem entra vira amigo (mesma assinatura do card.js) e cai na turma certa dos dois lados.
+// LGPD: até 13 anos, nada disso aparece. 14-17 (e idade não informada no /comecar) só entram no ranking com apelido e "meu responsável autorizou".
+const GT_EM=["⭐","⛪","🏠","⚽","🎓","💼","🎮","💪","🎸","❤️"];
+const GT_MAX=12;
+const gtN=v=>String(v||"").trim().toLowerCase();
+const gtClean=v=>String(v||"").replace(/[|,;"<>\n\r]/g,"").replace(/\s+/g," ").trim().slice(0,20);
+function gtEl(t,cl,x){const e=document.createElement(t);if(cl)e.className=cl;if(x!=null)e.textContent=x;return e;}
+function gtCode(){const a=new Uint8Array(8);crypto.getRandomValues(a);return [...a].map(x=>(x%36).toString(36)).join("");}
+function gtSt(){let g=prog.turmas;
+  if(!g||typeof g!=="object"||!Array.isArray(g.l)||!g.l.length){let fr=[];try{fr=frSt().l.slice();}catch(e){}
+    g=prog.turmas={l:[{id:"t0",n:"Minha turma",e:"⭐",c:"",m:fr}],cur:"t0"};save();}
+  for(const t of g.l){t.m=Array.isArray(t.m)?t.m:[];t.n=gtClean(t.n)||"Turma";if(!GT_EM.includes(t.e))t.e="⭐";}
+  if(!g.l.some(t=>t.id===g.cur))g.cur=g.l[0].id;return g;}
+function gtCur(){const g=gtSt();return g.l.find(t=>t.id===g.cur)||g.l[0];}
+function gtByName(n){return gtSt().l.find(t=>gtN(t.n)===gtN(n));}
+// amigo novo que ainda não está em nenhuma turma entra na turma aberta (ou na turma do link pelo qual entrou)
+function gtPendGet(){try{return JSON.parse(localStorage.getItem("asc-amigo-t")||"null");}catch(e){return null;}}
+function gtSync(){const g=gtSt();let fr=[];try{fr=frSt().l;}catch(e){return;}let ch=false;const has=n=>fr.some(x=>gtN(x)===gtN(n));
+  for(const t of g.l){const k=t.m.filter(has);if(k.length!==t.m.length){t.m=k;ch=true;}}
+  const pd=gtPendGet();
+  for(const n of fr){if(g.l.some(t=>t.m.some(x=>gtN(x)===gtN(n))))continue;let t=gtCur();
+    if(pd&&gtN(pd.a)===gtN(n)&&pd.t){t=gtByName(pd.t);if(!t&&g.l.length<GT_MAX){t={id:"t"+Date.now().toString(36),n:gtClean(pd.t),e:"⭐",c:"",m:[]};g.l.push(t);}t=t||gtCur();
+      try{localStorage.removeItem("asc-amigo-t");}catch(e){}setTimeout(()=>toast("🤝 "+n+" entrou na turma "+t.n+"."),1800);}
+    t.m.push(n);ch=true;}
+  if(ch)save();}
+// a lista "turma" da aba Amigos passa a ser a turma escolhida
+tmGroup=function(){try{gtSync();}catch(e){}const t=gtCur();return t.m.map(n=>frRow(n));};
+tmGroupName=function(){const t=gtCur();return t.e+" Turma";};
+// --- link de convite por turma ---
+{const _cl=cdLink;cdLink=function(){const u=_cl();if(!u)return u;const t=gtCur();if(t.id==="t0"&&!t.c)return u;
+  if(!t.c){t.c=gtCode();save();}return u.replace(/&c=[a-z0-9]*/,"&c="+t.c)+"&t="+encodeURIComponent(t.n);};}
+(function(){try{const u=new URLSearchParams(location.search);const t=gtClean(u.get("t")||"");if(!u.has("t"))return;
+  const a=localStorage.getItem("asc-amigo")||"";if(t&&a)localStorage.setItem("asc-amigo-t",JSON.stringify({a,t}));
+  u.delete("t");history.replaceState(null,"",location.pathname+(u.toString()?"?"+u:""));}catch(e){}})();
+// lado de quem convidou: quem entrou pelo link de uma turma vira amigo e cai nela
+let gtBusy=false;
+async function gtInbox(){const me=rankName();if(gtBusy||!me||typeof sqInvRows==="undefined"||!tmOn())return;const g=gtSt();const T=g.l.filter(t=>t.c&&t.id!=="t0");if(!T.length)return;
+  gtBusy=true;let ch=false;try{const f=frSt();
+    for(const r of sqInvRows){if(r.k!=="F"||gtN(r.b)!==gtN(me)||!r.a||frHas(r.a)||!/^cv[0-9a-f]{12}$/.test(r.s))continue;
+      for(const t of T){let ok=false;try{ok=r.s===await cdSig(t.c,r.a);}catch(e){}if(!ok||frHas(r.a))continue;
+        f.l.push(r.a);delete f.pend[r.a];if(!t.m.some(x=>gtN(x)===gtN(r.a)))t.m.push(r.a);sqiPost(["G",me,r.a,"",sqiDk()]);ch=true;
+        tmFeedAdd("conv",r.a,"🤝 "+r.a+" entrou pelo link da turma "+t.n);try{cdBadge(1);}catch(e){}toast("🤝 "+r.a+" entrou na turma "+t.n+". Agora são amigos!");break;}}}
+  finally{gtBusy=false;}if(ch){save();try{frUI();tmUI();}catch(e){}}}
+{const _ck=sqiCheck;sqiCheck=function(){gtInbox().catch(()=>{});_ck.apply(this,arguments);};}
+// --- criar, editar e trocar de turma ---
+function gtGo(id){const g=gtSt();g.cur=id;try{tmSt().view="turma";}catch(e){}save();try{haptic([8]);}catch(e){}tmUI();}
+function gtSheet(id){const g=gtSt();const novo=!id;const t=novo?{id:"",n:"",e:GT_EM[g.l.length%GT_EM.length],c:"",m:[]}:g.l.find(x=>x.id===id);if(!t)return;
+  let fr=[];try{fr=frSt().l.slice();}catch(e){}
+  const m=gtEl("div","sysmodal gtmodal");m.setAttribute("role","dialog");m.setAttribute("aria-modal","true");m.setAttribute("aria-label",novo?"Nova turma":"Editar turma");
+  const c=gtEl("div","card gtcard");c.append(gtEl("div","tag",novo?"[ SISTEMA ] NOVA TURMA":"[ SISTEMA ] EDITAR TURMA"));
+  const close=()=>{m.remove();};m.addEventListener("click",e=>{if(e.target===m)close();});
+  const lb=gtEl("label","gtlbl","Nome da turma");const inp=gtEl("input","gtname");inp.maxLength=20;inp.autocomplete="off";inp.placeholder="Ex.: Igreja, Família, Trabalho";inp.value=t.n;lb.append(inp);c.append(lb);
+  const ems=gtEl("div","gtems");ems.setAttribute("role","radiogroup");ems.setAttribute("aria-label","Ícone da turma");let em=t.e;
+  for(const e of GT_EM){const b=gtEl("button",e===em?"on":"",e);b.type="button";b.setAttribute("role","radio");b.setAttribute("aria-checked",e===em?"true":"false");
+    b.addEventListener("click",()=>{em=e;for(const x of ems.children){x.classList.toggle("on",x===b);x.setAttribute("aria-checked",x===b?"true":"false");}});ems.append(b);}
+  c.append(ems);
+  const sel=new Set(t.m.map(gtN));
+  if(fr.length){c.append(gtEl("div","gtlbl","Quem está nesta turma"));const ul=gtEl("div","gtmem");
+    for(const n of fr){const l=gtEl("label","gtchk");const x=gtEl("input");x.type="checkbox";x.checked=sel.has(gtN(n));x.addEventListener("change",()=>{if(x.checked)sel.add(gtN(n));else sel.delete(gtN(n));});
+      const av=gtEl("span","gtav");av.innerHTML=tmAv((typeof sqPub!=="undefined"&&sqPub[gtN(n)]||{}).av,28);l.append(x,av,gtEl("span",null,n));ul.append(l);}c.append(ul);
+    c.append(gtEl("p","sm muted","Um amigo pode estar em mais de uma turma. Para chamar gente nova, use o link da turma."));}
+  else c.append(gtEl("p","sm muted","Ainda sem amigos para pôr aqui. Crie a turma e mande o link dela no grupo do WhatsApp: quem entrar cai direto nela."));
+  const msg=gtEl("div","sm gtmsg");msg.setAttribute("role","status");c.append(msg);inp.addEventListener("input",()=>{msg.textContent="";});
+  const row=gtEl("div","row");const ok=gtEl("button","go",novo?"Criar turma":"Salvar");ok.type="button";const no=gtEl("button","ghost","Cancelar");no.type="button";row.append(ok,no);c.append(row);
+  ok.addEventListener("click",()=>{const n=gtClean(inp.value);if(!n){msg.textContent="Dê um nome para a turma.";inp.focus();return;}
+    if(g.l.some(x=>x!==t&&gtN(x.n)===gtN(n))){msg.textContent="Já existe uma turma com esse nome.";inp.focus();return;}
+    t.n=n;t.e=em;t.m=fr.filter(x=>sel.has(gtN(x)));
+    if(novo){if(g.l.length>=GT_MAX){msg.textContent="Limite de "+GT_MAX+" turmas.";return;}t.id="t"+Date.now().toString(36);g.l.push(t);}
+    g.cur=t.id;try{tmSt().view="turma";}catch(e){}save();close();tmUI();toast(novo?t.e+" Turma "+t.n+" criada. Mande o link dela no grupo.":"Turma salva.");});
+  no.addEventListener("click",close);
+  if(!novo&&g.l.length>1){const del=gtEl("button","link gtdel","Apagar esta turma");del.type="button";del.addEventListener("click",()=>{
+      if(del.dataset.k!=="1"){del.dataset.k="1";del.textContent="Toque de novo para apagar (os amigos continuam seus amigos)";return;}
+      g.l=g.l.filter(x=>x!==t);g.cur=g.l[0].id;save();close();tmUI();toast("Turma apagada. Os amigos continuam na sua lista.");});c.append(del);}
+  m.append(c);document.body.append(m);setTimeout(()=>(novo?inp:ok).focus(),60);}
+function gtBar(){const g=gtSt();const bar=gtEl("div","gtbar");bar.setAttribute("role","tablist");bar.setAttribute("aria-label","Suas turmas");
+  for(const t of g.l){const on=t.id===g.cur;const b=gtEl("button","gtchip"+(on?" on":""));b.type="button";b.setAttribute("role","tab");b.setAttribute("aria-selected",on?"true":"false");b.dataset.t=t.id;
+    b.append(gtEl("span","gte",t.e),gtEl("span","gtn",t.n),gtEl("span","gtc",String(t.m.length)));
+    b.addEventListener("click",()=>{if(on)gtSheet(t.id);else gtGo(t.id);});bar.append(b);}
+  if(g.l.length<GT_MAX){const nb=gtEl("button","gtchip gtnew","+ Nova turma");nb.type="button";nb.addEventListener("click",()=>gtSheet());bar.append(nb);}
+  return bar;}
+// pódio: os 3 primeiros em destaque, com avatar grande
+function gtPodium(L,view){const top=L.slice(0,3);if(top.length<2)return null;const w=gtEl("div","gtpod");w.setAttribute("aria-label","Pódio da semana");
+  const ord=top.length===3?[1,0,2]:[1,0];for(const i of ord){const r=top[i];if(!r)continue;const d=gtEl("div","gtp gtp"+(i+1)+(r.me?" me":""));
+    const av=gtEl("div","gtpav");av.innerHTML=tmAv(r.av,i===0?72:56);d.append(gtEl("span","gtpm",["🥇","🥈","🥉"][i]),av,gtEl("b",null,r.n+(r.me?" (você)":"")),gtEl("span","gtpx",(view==="hoje"?"+":"")+(r.xp||0)+" XP"),gtEl("i","gtpb"));w.append(d);}
+  return w;}
+{const _tu=tmUI;tmUI=function(){_tu.apply(this,arguments);try{const p=$("tmPanel");if(!p||p.hidden||!tmOn())return;const s=tmSt();
+  const hd=p.querySelector(".tmhd");if(hd&&!p.querySelector(".gtbar"))hd.after(gtBar());
+  if(s.view==="turma"){const t=gtCur();const lk=p.querySelector(".cdlink > b");if(lk)lk.textContent="🔗 Link da turma "+t.e+" "+t.n;
+    const em=p.querySelector(".tmempty p");if(em&&t.id!=="t0")em.textContent="Ninguém na turma "+t.n+" ainda. Mande o link dela no grupo ou toque na turma para pôr amigos que você já tem.";}
+  const ol=p.querySelector(".tmlist");if(ol&&s.view!=="hoje"&&!p.querySelector(".gtpod")){const L=tmBoard(s.view);const pd=gtPodium(L,s.view);if(pd)ol.before(pd);}
+  if(ol&&!p.querySelector(".gtcount")){const L=tmBoard(s.view);const me=L.findIndex(r=>r.me);if(L.length>1&&me>=0)ol.before(gtEl("div","gtcount",(me+1)+"º de "+L.length+(s.view==="geral"?" no ranking da semana":s.view==="hoje"?" hoje":" na turma")));}}catch(e){}};}
+// --- destaque em Hoje: ranking da semana sempre à vista ---
+function gtHero(){let h=$("gtHero");const st=$("dayPill");const host=st&&st.closest("section");if(!host)return;
+  if(!h){h=gtEl("section","panel gthero");h.id="gtHero";h.dataset.tab="hoje";host.after(h);}
+  const kid=(()=>{try{return ageNow()==="kid";}catch(e){return false;}})();
+  if(kid||!cfg||cfg.blank||document.body.classList.contains("onboarding")){h.hidden=true;return;}
+  const g=gtSt();const on=tmOn();const pc=$("pingCard");
+  if(!on&&((pc&&!pc.hidden)||(g.hx&&g.hx>=todayKey()))){h.hidden=true;return;}
+  h.hidden=false;h.textContent="";let tier="";try{tier=lgName(lgSt().t);}catch(e){}
+  const hd=gtEl("div","gthd");hd.append(gtEl("h2",null,"🏆 Ranking da semana"),gtEl("span","gtclock","⏳ fecha em "+tmLeft()));h.append(hd);
+  const n=(rankRows||[]).length;
+  if(!on){h.append(gtEl("p","gtlead",n?n+" pessoa"+(n>1?"s estão":" está")+" disputando a semana. Falta você.":"A semana está aberta. Seja o primeiro a pontuar."));
+    const peek=gtEl("div","gtpeek");(rankRows||[]).slice(0,5).forEach((r,i)=>{const d=gtEl("span","gtpk");d.innerHTML=tmAv((typeof sqPub!=="undefined"&&sqPub[gtN(r.n)]||{}).av,34);d.title=r.n;d.style.zIndex=String(9-i);peek.append(d);});if(peek.children.length)h.append(peek);
+    h.append(gtEl("p","sm muted",isMinor()?"Só aparece um apelido e o XP da semana. Nenhuma tarefa sai do seu celular.":"Aparece só o apelido (ou 1º nome) e o XP da semana. Os 3 primeiros sobem de liga."));
+    const row=gtEl("div","row");const b=gtEl("button","go","Entrar no ranking");b.type="button";b.addEventListener("click",()=>{joinRank("destaque");setTimeout(gtHero,500);});
+    const x=gtEl("button","link","Agora não");x.type="button";x.addEventListener("click",()=>{const d=new Date();d.setDate(d.getDate()+3);g.hx=dkey(d);save();h.hidden=true;});row.append(b,x);h.append(row);return;}
+  let t=gtCur();let L=tmBoard("turma");let where="em "+t.e+" "+t.n;if(L.length<2){L=tmBoard("geral");where="no geral";}
+  const i=L.findIndex(r=>r.me);
+  const me=gtEl("div","gtme");me.append(gtEl("b","gtpos",i>=0?(i+1)+"º":"–"),gtEl("span",null,"de "+L.length+" "+where+(tier?" · "+tier:"")));h.append(me);
+  const top=gtEl("ol","gttop");L.slice(0,3).forEach((r,k)=>{const li=gtEl("li",r.me?"me":"");const av=gtEl("span","gtav");av.innerHTML=tmAv(r.av,30);li.append(gtEl("span","gtm",["🥇","🥈","🥉"][k]),av,gtEl("span","gtnm",r.n+(r.me?" (você)":"")),gtEl("span","gtx",(r.xp||0)+" XP"));top.append(li);});
+  if(i>2){const li=gtEl("li","me gtgap");const av=gtEl("span","gtav");av.innerHTML=tmAv(L[i].av,30);li.append(gtEl("span","gtm",(i+1)+"º"),av,gtEl("span","gtnm",L[i].n+" (você)"),gtEl("span","gtx",(L[i].xp||0)+" XP"));top.append(li);}
+  h.append(top);
+  let tip="";if(i>0){const a=L[i-1];const d=(a.xp||0)-(L[i].xp||0)+1;tip="Faltam "+d+" XP para passar "+a.n+(d<=20?": 1 tarefa resolve.":".");}else if(L.length>1)tip="Você lidera. Segura até domingo.";
+  if(tip)h.append(gtEl("p","gtlead",tip));
+  const row=gtEl("div","row");const b=gtEl("button","ghost","Ver ranking completo");b.type="button";b.addEventListener("click",()=>{try{tmSt().view=where==="no geral"?"geral":"turma";save();}catch(e){}goTab("amigos");try{loadRank();}catch(e){}tmUI();});
+  const inv=gtEl("button","ghost","📨 Chamar alguém");inv.type="button";inv.addEventListener("click",()=>{try{cdInvite();}catch(e){}});row.append(b,inv);h.append(row);}
+{const _rr=renderRankUI;renderRankUI=function(){_rr.apply(this,arguments);try{gtHero();}catch(e){}};}
+{const _r=render;render=function(){_r.apply(this,arguments);try{gtHero();}catch(e){}};}
+// --- LGPD: 14-17 (e idade não informada) só entram no ranking com apelido e autorização do responsável ---
+{const _jr=joinRank;joinRank=function(){const args=arguments;let need=false;try{need=isMinor()&&ageNow()!=="kid"&&!(prog.rank&&prog.rank.on)&&!(prog.rank&&prog.rank.par);}catch(e){}
+  if(!need)return _jr.apply(this,args);if($("gtAge"))return;const teen=ageNow()==="teen";
+  const m=gtEl("div","sysmodal");m.id="gtAge";m.setAttribute("role","dialog");m.setAttribute("aria-modal","true");m.setAttribute("aria-label","Entrar no ranking");const c=gtEl("div","card gtcard");
+  c.append(gtEl("div","tag","[ SISTEMA ] ENTRAR NO RANKING"),gtEl("h3",null,"Escolha como você aparece"),gtEl("p","sm","No ranking aparece só o apelido e o XP da semana. Nada de nome real, tarefa ou horário."));
+  const lb=gtEl("label","gtlbl","Apelido (não use seu nome real)");const nk=gtEl("input","gtname");nk.maxLength=16;nk.autocomplete="off";nk.value=(prog.rank&&prog.rank.nick)||"";lb.append(nk);c.append(lb);
+  const l2=gtEl("label","chk sm");const par=gtEl("input");par.type="checkbox";l2.append(par,document.createTextNode(teen?" Meu responsável autorizou eu aparecer no ranking":" Tenho 18 anos ou mais, ou meu responsável autorizou"));c.append(l2);
+  const msg=gtEl("div","sm gtmsg");msg.setAttribute("role","status");c.append(msg);
+  const row=gtEl("div","row");const ok=gtEl("button","go","Entrar");ok.type="button";const no=gtEl("button","ghost","Agora não");no.type="button";row.append(ok,no);c.append(row);
+  ok.addEventListener("click",()=>{const n=cleanNick(nk.value);if(!n){msg.textContent="Escolha um apelido.";nk.focus();return;}if(!par.checked){msg.textContent=teen?"Para quem tem 14 a 17 anos, o responsável precisa autorizar.":"Marque a confirmação para entrar.";return;}
+    prog.rank=Object.assign(prog.rank||{},{nick:n,par:new Date().toISOString().slice(0,10)});save();m.remove();_jr.apply(null,args);try{tmUI();gtHero();}catch(e){}});
+  no.addEventListener("click",()=>m.remove());m.append(c);document.body.append(m);setTimeout(()=>nk.focus(),60);};}
+setTimeout(()=>{try{gtSync();gtHero();}catch(e){}},0);
 // ---------- Desafio em dupla: chame um amigo ou aliado do Esquadrão para o mesmo desafio relâmpago do dia ----------
 // Canal: o mesmo formulário do ranking, linha K (como parabéns/cutucar): K|de|para|d-<desafio> (convite), da-<desafio> (aceite), dk-<desafio> (feito).
 // Só vale de amigo ou aliado do Esquadrão, só no mesmo dia, 1 dupla por dia, no máximo 3 convites recebidos por dia. Quem tem até 13 anos não participa.

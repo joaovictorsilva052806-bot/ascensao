@@ -25,9 +25,11 @@ function tmPlace(){const wrap=document.querySelector(".wrap");if(!wrap)return;le
 // --- quem está na turma ---
 function tmMe(){let sq=0;try{sq=streakDays()||0;}catch(e){}let av="";try{av=avCode();}catch(e){}return {n:rankName()||"Você",xp:weekXP(),lv:levelOf(totalXP()),seq:sq,av,me:true};}
 function tmFriends(){try{return frSt().l.map(n=>frRow(n));}catch(e){return [];}}
+// quem aparece na lista "turma": por padrão todos os amigos; tools/grupos.js troca pela turma escolhida (igreja, família...)
+let tmGroup=function(){return tmFriends();};let tmGroupName=function(){return "Amigos";};
 function tmAll(){return (rankRows||[]).map(r=>{const p=(typeof sqPub!=="undefined"&&sqPub[tmN(r.n)])||{};return {n:r.n,xp:r.xp,lv:r.lv,seq:p.seq||0,av:p.av||""};});}
 function tmBoard(view){if(view==="hoje"&&typeof dyBoard==="function"){const pub=r=>(typeof sqPub!=="undefined"&&sqPub[tmN(r.n)])||{};return dyBoard().map(r=>{const m=r.me?tmMe():{};return Object.assign({},r,{lv:r.me?m.lv:r.lv,seq:r.me?m.seq:(pub(r).seq||0),av:r.me?m.av:(pub(r).av||"")});});}
-  const me=tmMe();const L=view==="geral"?tmAll().filter(r=>tmN(r.n)!==tmN(me.n)):tmFriends();
+  const me=tmMe();const L=view==="geral"?tmAll().filter(r=>tmN(r.n)!==tmN(me.n)):tmGroup();
   return [me,...L].sort((a,b)=>(b.xp||0)-(a.xp||0)||(b.lv||0)-(a.lv||0));}
 // --- novidades: compara com a última vez que viu cada amigo ---
 function tmFeedAdd(k,n,t){const s=tmSt();const id=k+":"+tmN(n)+":"+todayKey();if(s.feed.some(f=>f.id===id))return;s.feed.unshift({id,k,n,t,d:todayKey()});s.feed=s.feed.slice(0,20);}
@@ -61,18 +63,18 @@ function tmUI(){const p=tmPlace();if(!p)return;if(tmKid()||!cfg||cfg.blank){p.hi
     const b=tmEl("button","go","Entrar no ranking");b.type="button";b.addEventListener("click",()=>{const j=$("rkJoin");if(j&&!j.hidden){j.click();setTimeout(tmUI,600);}else{const r=$("rankPanel");if(r)r.scrollIntoView({block:"start",behavior:"smooth"});}});c.append(b);p.append(c);return;}
   // liga + seletor
   const lg=tmEl("div","tmlg");lg.append(tmEl("b",null,tier||"Liga"),tmEl("span","sm muted","Os 3 primeiros da semana sobem. Ninguém cai."));p.append(lg);
-  const fr=tmFriends();const seg=tmEl("div","tmseg");const VW=[["turma","Amigos"+(fr.length?" ("+fr.length+")":"")],["geral","Semana"]];if(typeof dyBoard==="function")VW.unshift(["hoje","Hoje"]);else if(s.view==="hoje")s.view="turma";
-  for(const [k,l] of VW){const b=tmEl("button",s.view===k?"on":"",l);b.type="button";b.setAttribute("aria-pressed",s.view===k?"true":"false");b.addEventListener("click",()=>{s.view=k;save();tmUI();});seg.append(b);}p.append(seg);
+  const fr=tmFriends(),gr=tmGroup();const seg=tmEl("div","tmseg");const VW=[["turma",tmGroupName()+(gr.length?" ("+gr.length+")":"")],["geral","Semana · todos"]];if(typeof dyBoard==="function")VW.unshift(["hoje","Hoje"]);else if(s.view==="hoje")s.view="turma";
+  for(const [k,l] of VW){const b=tmEl("button",s.view===k?"on":"",l);b.type="button";b.dataset.v=k;b.setAttribute("aria-pressed",s.view===k?"true":"false");b.addEventListener("click",()=>{s.view=k;save();tmUI();});seg.append(b);}p.append(seg);
   const L=tmBoard(s.view);
   if(s.view==="hoje"){const box=tmEl("div","dybox");const rv=typeof dyRival==="function"?dyRival():null;box.append(tmEl("div","dyriv",rv?rv.txt:"Ranking de hoje: zera à meia-noite. Cada XP de hoje conta."));
     const nt=dyNote();if(nt)box.append(tmEl("div","sm muted",nt));box.append(dyNtfBtn());p.append(box);}
-  if(s.view==="turma"&&!fr.length){const e=tmEl("div","tmempty");e.append(tmEl("p",null,"Sua turma ainda está vazia. Chame alguém para jogar com você."));
+  if(s.view==="turma"&&!gr.length){const e=tmEl("div","tmempty");e.append(tmEl("p",null,"Sua turma ainda está vazia. Chame alguém para jogar com você."));
     const b=tmEl("button","go","+ Adicionar amigo");b.type="button";b.addEventListener("click",()=>{try{frAdd=true;frUI();}catch(e){}setTimeout(()=>{const f=$("frPanel");if(!f)return;if(f.classList.contains("fold")&&!f.classList.contains("open")){const h=f.querySelector(":scope>.fhd");if(h)h.click();}f.scrollIntoView({block:"start",behavior:matchMedia("(prefers-reduced-motion: reduce)").matches?"auto":"smooth"});const i=f.querySelector("input");if(i)setTimeout(()=>i.focus(),80);},0);});e.append(b);p.append(e);}
   if(rankRows&&typeof rankErr!=="undefined"&&rankErr){const w=tmEl("div","sm muted tmoff","Sem conexão · mostrando a última lista. Toque para tentar de novo.");w.setAttribute("role","button");w.tabIndex=0;w.style.cursor="pointer";w.addEventListener("click",()=>{rankErr=false;try{tmUI();}catch(e){}loadRank();});const f0=p.firstElementChild;if(f0)f0.after(w);else p.append(w);}
   if(!rankRows){const w=tmEl("div","sm muted",(typeof rankErr!=="undefined"&&rankErr)?"Sem conexão com o ranking. Toque aqui para tentar de novo.":"Carregando a turma…");if(typeof rankErr!=="undefined"&&rankErr){w.style.cursor="pointer";w.addEventListener("click",()=>{rankErr=false;try{tmUI();}catch(e){}loadRank();});}p.append(w);}
-  const ol=tmEl("ol","tmlist");L.slice(0,30).forEach((r,i)=>{const li=tmEl("li",(r.me?"me ":"")+(i<3&&L.length>=2?"up":""));
+  const ol=tmEl("ol","tmlist");L.slice(0,300).forEach((r,i)=>{const li=tmEl("li",(r.me?"me ":"")+(i<3&&L.length>=2?"up":""));
     li.append(tmEl("span","tmpos",i<3?["🥇","🥈","🥉"][i]:String(i+1)));const av=tmEl("span","tmav");av.innerHTML=tmAv(r.av,44);li.append(av);
-    const tx=tmEl("div","tmtx");const cls=tmCls(r.av);tx.append(tmEl("b",null,r.n+(r.me?" (você)":"")),tmEl("span","tmmeta",(r.lv?"Nv "+r.lv:"")+(cls?" · "+cls:"")+(r.seq?" · 🔥 "+r.seq:"")));li.append(tx);
+    const tx=tmEl("div","tmtx");const cls=tmCls(r.av);tx.append(tmEl("b",null,r.n+(r.me?" (você)":"")),tmEl("span","tmmeta",(r.lv?"Nv "+r.lv:"")+(cls?" · "+cls:"")+(r.seq?" · 🔥 "+r.seq:"")+(!r.me&&r.on===false&&s.view==="turma"?" · ainda não pontuou na semana":"")));li.append(tx);
     li.append(tmEl("span","tmxp",s.view==="hoje"?"+"+(r.xp||0)+" hoje":(r.xp||0)+" XP"));
     if(!r.me){const fz=fr.some(f=>tmN(f.n)===tmN(r.n));const act=tmEl("div","tmact");
       if(fz){for(const k of ["p","c"]){const t=TM_K[k];const done=s.sent[k+":"+tmN(r.n)+":"+todayKey()];const b=tmEl("button","tmbtn"+(done?" done":""),t[0]);b.type="button";b.title=(k==="p"?"Dar parabéns para ":"Cutucar ")+r.n;b.setAttribute("aria-label",b.title);b.addEventListener("click",ev=>{ev.stopPropagation();tmSend(r.n,k);});act.append(b);}
