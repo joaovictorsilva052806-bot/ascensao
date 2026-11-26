@@ -40,11 +40,6 @@ function smShell(tag){const m=smSheet();m.hidden=false;document.body.classList.a
   const x=smEl("button","smx","✕");x.type="button";x.setAttribute("aria-label","Fechar e ver a lista");x.onclick=smClose;m.append(x);return c;}
 function smOpen(){smShow();}
 function smShow(){clearInterval(smIv);const s=smSt();
-  // 1º do dia: bateria
-  if(!smEnergy()&&document.querySelector("#energy button")){const c=smShell("CHECK-IN DE ENERGIA");c.append(smEl("h3","smh","Como está sua bateria hoje?"),smEl("p","sm muted","Sem resposta certa. O Sistema ajusta o tamanho do dia para você."));
-    const r=smEl("div","smen");for(const [k,l,d] of [["alta","🔋 Cheia","Dá para ir além"],["media","🔋 Média","Dia normal"],["baixa","🪫 Baixa","Só o essencial"]]){const b=smEl("button","ghost");b.type="button";b.append(smEl("b",null,l),smEl("small",null,d));
-      b.onclick=()=>{const eb=document.querySelector('#energy button[data-e="'+k+'"]');if(eb)eb.click();smIdx=0;setTimeout(smShow,60);};r.append(b);}
-    c.append(r);const sk=smEl("button","link","Pular");sk.type="button";sk.onclick=()=>{prog.energy=prog.energy||{};prog.energy[smTk()]="media";save();smShow();};c.append(sk);c.querySelector(".smen button").focus();return;}
   const q=smPick();smQ=q;const e=smEnergy();
   if(smRecNeeded()&&!smRecDone()&&q){const c=smShell("MISSÃO DE RECUPERAÇÃO");c.append(smEl("h3","smh","Ontem passou em branco. Ainda dá para salvar."),
       smEl("p","sm","Faça só o mínimo de uma missão hoje e sua sequência de ontem é salva. +"+SM_REC+" XP."),smEl("p","sm muted","Vale 1 vez a cada 7 dias."));
@@ -58,7 +53,11 @@ function smMission(q,rec){const c=smShell(rec?"MISSÃO DE RECUPERAÇÃO":q.main?
   c.append(smEl("h3","smh",smName(q)));
   const min=q.minTitle?q.minTitle:"só os primeiros 2 minutos";
   const st=smEl("div","smstart");st.append(smEl("div","smlbl","COMECE POR AQUI · 2 MIN"),smEl("div","smmin",min));c.append(st);
-  c.append(smEl("p","sm muted",(e==="baixa"?"Bateria baixa: hoje o mínimo já vale o dia inteiro. ":e==="alta"?"Bateria cheia: terminou o mínimo, vá até o fim e ganhe bônus. ":"")+"Recompensa: +"+q.xp+" XP"+(q.minTitle?" (mínimo: +"+Math.ceil(q.xp/2)+")":"")+"."));
+  // bateria do dia dentro do cartão (1 tela a menos): enquanto não responder, vale "média"
+  if(!e&&!rec&&document.querySelector("#energy button")){const r=smEl("div","smen");r.setAttribute("role","group");r.setAttribute("aria-label","Bateria de hoje");r.append(smEl("span","smenl","Bateria hoje?"));
+    for(const [k,l] of [["baixa","🪫 Baixa"],["media","🔋 Média"],["alta","⚡ Cheia"]]){const b=smEl("button","ghost",l);b.type="button";b.dataset.e=k;
+      b.onclick=()=>{const eb=document.querySelector('#energy button[data-e="'+k+'"]');if(eb)eb.click();else{prog.energy=prog.energy||{};prog.energy[smTk()]=k;save();}smIdx=0;setTimeout(smShow,60);};r.append(b);}c.append(r);}
+  c.append(smEl("p","sm muted",(e==="baixa"?"Bateria baixa: hoje o mínimo já vale o dia inteiro. ":e==="alta"?"Bateria cheia: terminou o mínimo, vá até o fim e ganhe bônus. ":"")+(q.minTitle?"Mínimo feito: +"+Math.ceil(q.xp/2)+" XP. Completa: +"+q.xp+" XP.":"Começou: +"+SM_START+" XP. Completa: +"+q.xp+" XP.")));
   const go=smEl("button","go smgo","ACEITAR");go.type="button";go.onclick=()=>smTimer(q,rec);c.append(go);
   const r=smEl("div","smrow");const n=smCands().length;
   const tr=smEl("button","ghost","↻ Trocar");tr.type="button";tr.disabled=n<2;tr.onclick=()=>{smIdx++;smMission(smPick()||q,rec);};
@@ -71,14 +70,19 @@ function smTimer(q,rec){const c=smShell("2 MINUTOS");smEnd=Date.now()+SM_SECS*10
   const ok=smEl("button","go smgo",q.minTitle?"Fiz o mínimo ✓":"Comecei ✓");ok.type="button";ok.onclick=()=>smMinDone(q,rec);c.append(ok);
   const bk=smEl("button","link","Voltar");bk.type="button";bk.onclick=()=>smMission(q,rec);c.append(bk);
   smIv=setInterval(()=>{const left=(smEnd-Date.now())/1000;t.textContent=smFmt(left);if(left<=0){clearInterval(smIv);t.classList.add("end");tip.textContent="Tempo! Começou? Isso é o mais difícil.";smBuzz([30,60,30]);}},250);}
+// recompensa primeiro: se a marcação gerou aviso (nível, atributo, conquista), o Sistema sai da frente e volta quando ele fechar
+function smBusyRw(){return (typeof sysQ!=="undefined"&&sysQ.length)||[...document.querySelectorAll(".sysmodal:not([hidden]),.levelup:not([hidden])")].some(e=>e.getClientRects().length);}
+function smAfter(fn,n){n=n||0;if(n===0){clearInterval(smIv);}if(smBusyRw()&&n<400){if(n===0){const m=$("smSheet");if(m)m.hidden=true;document.body.classList.remove("insm");}setTimeout(()=>smAfter(fn,n+1),300);return;}fn();}
 function smMinDone(q,rec){clearInterval(smIv);const s=smSt(),tk=smTk();
   if(q.minTitle){if(!smDone(q))toggle(q,"min");}
   else if(!(prog.log[tk]||[]).some(e=>e.q==="sm:"+q.id)&&smCount("sm:")<SM_CAP)addXP({q:"sm:"+q.id,kind:"full",xp:SM_START,stat:q.stat||"foco"},"Começou. +"+SM_START+" XP");
   const mc=$("muChip");if(mc)mc.remove();
   if(rec||s.recArm===tk){s.recArm="";smRecClaim();}
+  setTimeout(()=>smAfter(()=>smEmb(q,s,tk)),400);}
+function smEmb(q,s,tk){
   const c=smShell("MÍNIMO CUMPRIDO");c.append(smEl("h3","smh","Embalou?"),smEl("p","sm","Vá até o fim de \""+smName(q)+"\" e ganhe +"+SM_BONUS+" XP de bônus."+(smEnergy()==="baixa"?" Ou pare aqui: hoje o mínimo basta.":"")));
   const go=smEl("button","go smgo","Continuar até o fim");go.type="button";go.onclick=()=>{(s.cont[tk]=s.cont[tk]||[]).includes(q.id)||s.cont[tk].push(q.id);save();smClose();if(typeof msOpen==="function"){const f=typeof msFind==="function"?msFind(q.id):q;if(f)msOpen(f);}else toast("Quando terminar, toque em Feito na tarefa.");};
-  const fu=smEl("button","ghost","Já fiz tudo ✓");fu.type="button";fu.onclick=()=>{(s.cont[tk]=s.cont[tk]||[]).includes(q.id)||s.cont[tk].push(q.id);save();toggle(q,"full");const mc=$("muChip");if(mc)mc.remove();smIdx=0;smShow();};
+  const fu=smEl("button","ghost","Já fiz tudo ✓");fu.type="button";fu.onclick=()=>{(s.cont[tk]=s.cont[tk]||[]).includes(q.id)||s.cont[tk].push(q.id);save();toggle(q,"full");const mc=$("muChip");if(mc)mc.remove();smIdx=0;setTimeout(()=>smAfter(smShow),400);};
   const st=smEl("button","link","Parar aqui, sem culpa");st.type="button";st.onclick=()=>{smIdx=0;smShow();};
   c.append(go,fu,st);go.focus();}
 // terminou a completa depois do mínimo do Sistema: bônus
@@ -99,7 +103,7 @@ function smBar(){const qs=$("quests");if(!qs||!cfg||cfg.blank)return;const sec=q
 // em navegador automatizado (testes) não abre sozinho, para não cobrir a tela dos outros testes; o teste do Sistema liga com asc-sm-qa
 function smAutoOk(){try{return !navigator.webdriver||localStorage.getItem("asc-sm-qa")==="1";}catch(e){return true;}}
 function smAuto(n){n=n||0;try{if(!cfg||cfg.blank||smSt().off||!smAutoOk())return;let last=0;try{last=+localStorage.getItem("asc-sm-last")||0;}catch(e){}if(Date.now()-last<SM_GAP)return;
-  const busy=($("onb")&&!$("onb").hidden)||document.querySelector(".sysmodal:not([hidden]),#clsModal:not([hidden]),.levelup:not([hidden])")||($("msSheet")&&!$("msSheet").hidden)||($("zapSheet")&&!$("zapSheet").hidden)||document.body.classList.contains("inmission");
+  const busy=($("onb")&&!$("onb").hidden)||[...document.querySelectorAll(".sysmodal:not([hidden]),#clsModal:not([hidden]),.levelup:not([hidden])")].some(e=>e.getClientRects().length)||(typeof sysQ!=="undefined"&&sysQ.length)||($("msSheet")&&!$("msSheet").hidden)||($("zapSheet")&&!$("zapSheet").hidden)||document.body.classList.contains("inmission");
   if(busy){if(n<80)setTimeout(()=>smAuto(n+1),1500);return;}
   if(!smCands().length&&smEnergy())return;try{localStorage.setItem("asc-sm-last",String(Date.now()));}catch(e){}smIdx=0;smShow();}catch(e){}}
 document.addEventListener("keydown",e=>{if(e.key==="Escape"&&$("smSheet")&&!$("smSheet").hidden)smClose();});

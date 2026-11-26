@@ -556,10 +556,10 @@ svg.av{display:block;flex:none}
 .avtop h2{margin:0 0 4px}.avtop .sm{margin-bottom:8px}
 .avpv{filter:drop-shadow(0 0 10px rgba(111,177,255,.35))}
 .avrow{margin-top:12px}.avchips{display:flex;flex-wrap:wrap;gap:6px;margin-top:6px}
-.avchip{font:inherit;font-size:.8rem;min-height:40px;padding:6px 10px;border:1px solid var(--line);border-radius:8px;background:transparent;color:var(--fg);cursor:pointer}
+.avchip{font:inherit;font-size:.8rem;min-height:44px;padding:6px 10px;border:1px solid var(--line);border-radius:8px;background:transparent;color:var(--fg);cursor:pointer}
 .avchip.on{border-color:var(--glow);box-shadow:0 0 0 1px var(--glow) inset;color:var(--glow)}
 .avchip.lock{opacity:.55}
-.avchip.sw{width:40px;padding:0;background:var(--sw)}.avchip.sw.on{box-shadow:0 0 0 3px var(--glow)}
+.avchip.sw{width:44px;padding:0;background:var(--sw)}.avchip.sw.on{box-shadow:0 0 0 3px var(--glow)}
 .frlist{list-style:none;padding:0;margin:8px 0;display:grid;gap:8px}
 .frlist li{display:grid;grid-template-columns:auto 1fr auto auto;gap:10px;align-items:center;padding:8px;border:1px solid var(--line);border-radius:10px}
 .frlist li.me{border-color:var(--glow)}
@@ -649,6 +649,7 @@ body.avmkon{overflow:hidden}
 .status .who,.status .who h1,#titleName,.sysmsg,.sysline,#sysTip,.hero .msg{min-width:0;max-width:100%;overflow-wrap:anywhere;word-break:break-word}
 .status{min-width:0}.wrap{max-width:100%}
 .avmkc{padding-left:max(14px,env(safe-area-inset-left));padding-right:max(14px,env(safe-area-inset-right));height:min(94dvh,calc(100dvh - env(safe-area-inset-top)))}
+.tmoff{min-height:44px;display:flex;align-items:center;justify-content:center;text-align:center;padding:6px 10px;border:1px dashed var(--line);border-radius:10px;margin:6px 0}
 /* ---- Tarefas limpas + horário (tools/qtidy.js) ---- */
 .quest:not(.open) .tag,.quest:not(.open) .if,.quest:not(.open) .qlink,.quest:not(.open) .qtmin,.quest:not(.open) .mshint{display:none!important}
 .quest:not(.open) .btns .ghost{display:none}
@@ -941,6 +942,162 @@ body[data-bxf] .tmlist li.me .tmav svg{width:38px;height:38px}
 .quest.apback{box-shadow:0 0 0 2px var(--gold)}
 .apadd{margin:8px 0 4px}.apadd .row{flex-wrap:wrap;gap:6px}.apadd button{min-height:40px;font-size:.88rem}
 @media (max-width:400px){.qapp button,.qapp .apf{flex:1 1 calc(50% - 4px);justify-content:center}}
+/* ---------- Holo: camada visual de projeção holográfica (só CSS + 1 SVG). Não muda layout nem texto. ---------- */
+/* 1) Janelas do Sistema, level up e baú abrem como projeção: linha de luz -> painel -> leve tremulação */
+@keyframes hxUnfold{0%{opacity:0;clip-path:inset(49.6% 47% 49.6% 47%)}28%{opacity:1;clip-path:inset(49.6% 0 49.6% 0)}62%{clip-path:inset(0 0 0 0)}72%{opacity:1}78%{opacity:.72}84%{opacity:1}90%{opacity:.88}100%{opacity:1;clip-path:inset(0 0 0 0)}}
+@keyframes hxStep{0%{opacity:0;clip-path:inset(0 0 100% 0)}60%{opacity:1}100%{opacity:1;clip-path:inset(0 0 0 0)}}
+@keyframes hxIn{from{opacity:0}to{opacity:1}}
+@keyframes hxScan{from{transform:translateY(-12%)}to{transform:translateY(112%)}}
+@keyframes hxWipe{from{clip-path:inset(0 100% 0 0)}to{clip-path:inset(0 0 0 0)}}
+@keyframes hxSpin{to{transform:rotate(360deg)}}
+@keyframes hxSpinR{to{transform:rotate(-360deg)}}
+@keyframes hxBeam{0%,100%{opacity:.55}50%{opacity:.85}}
+@keyframes hxRing{from{opacity:.8;transform:translate(-50%,-50%) scale(.2)}to{opacity:0;transform:translate(-50%,-50%) scale(1)}}
+@keyframes hxBurst{0%{opacity:.9;transform:scale(.3)}100%{opacity:0;transform:scale(3.2)}}
+@keyframes hxFlash{0%{opacity:0}20%{opacity:.14}100%{opacity:0}}
+@keyframes hxGlitch{0%{opacity:0}20%{opacity:.8}30%{opacity:.3}45%{opacity:1}70%{opacity:.6}100%{opacity:1}}
+@keyframes hxFlick{0%{opacity:.35}12%{opacity:1}20%{opacity:.6}30%{opacity:1}100%{opacity:1}}
+@keyframes hxBlink{50%{opacity:.25}}
+
+/* entrada só com clip-path e opacidade (sem transform): a caixa do card e os botões ficam parados desde o 1º quadro */
+.sysmodal:not([hidden]) .card,.levelup:not([hidden]) .card{animation:hxUnfold .52s cubic-bezier(.2,.9,.25,1) backwards}
+.sysmodal:not([hidden]) .card .tag{animation:hxWipe .45s linear .28s both}
+.sysmodal:not([hidden]) .card h3{animation:hxGlitch .5s linear .3s both}
+.levelup:not([hidden]) .card .big{animation:hxGlitch .5s linear .3s both,lvPulse 1.6s ease-in-out .8s infinite}
+/* Modo Sistema e Foco: sem mudar tamanho (o ACEITAR responde e mede certo na hora), só tremulação de holograma e a varredura */
+.smsheet:not([hidden]) .smcard{animation:hxFlick .45s linear both}
+.hx-rel{position:relative}
+/* película holográfica por cima do card: scanlines, cantos e uma varredura de luz (não recebe toque) */
+.hxfx{position:absolute;inset:0;pointer-events:none;overflow:hidden;border-radius:inherit;z-index:3;
+  background:
+    linear-gradient(var(--accent),var(--accent)) left top/14px 2px no-repeat,linear-gradient(var(--accent),var(--accent)) left top/2px 14px no-repeat,
+    linear-gradient(var(--accent),var(--accent)) right top/14px 2px no-repeat,linear-gradient(var(--accent),var(--accent)) right top/2px 14px no-repeat,
+    linear-gradient(var(--accent),var(--accent)) left bottom/14px 2px no-repeat,linear-gradient(var(--accent),var(--accent)) left bottom/2px 14px no-repeat,
+    linear-gradient(var(--accent),var(--accent)) right bottom/14px 2px no-repeat,linear-gradient(var(--accent),var(--accent)) right bottom/2px 14px no-repeat,
+    repeating-linear-gradient(180deg,rgba(124,244,255,.05) 0 1px,transparent 1px 3px)}
+.hxfx b{position:absolute;left:0;right:0;top:0;height:100%;background:linear-gradient(180deg,transparent 0,rgba(124,244,255,.0) 40%,rgba(124,244,255,.22) 49%,rgba(255,255,255,.35) 50%,transparent 52%);transform:translateY(-12%);animation:hxScan .9s cubic-bezier(.4,0,.2,1) .45s 1 both;will-change:transform}
+
+/* 2) Começo (Despertar): projetor com anéis girando, feixe de luz e leituras nos cantos */
+.qperm{position:relative}
+.qorb{position:relative}
+.hxorb{position:absolute;left:50%;top:50%;width:190px;height:190px;margin:-95px 0 0 -95px;pointer-events:none;overflow:visible}
+.hxorb g{transform-origin:95px 95px;transform-box:view-box}
+.hxorb .r1{animation:hxSpin 14s linear infinite}
+.hxorb .r2{animation:hxSpinR 9s linear infinite}
+.hxorb .r3{animation:hxSpin 22s linear infinite}
+.hxorb circle,.hxorb path{fill:none;stroke:var(--accent);vector-effect:non-scaling-stroke}
+.hxbeam{position:absolute;left:50%;bottom:-6vh;width:min(84vw,340px);height:62vh;transform:translateX(-50%);pointer-events:none;z-index:-1;
+  background:radial-gradient(ellipse 50% 9% at 50% 100%,rgba(0,212,255,.5),transparent 70%),linear-gradient(0deg,rgba(0,212,255,.16),rgba(0,212,255,0) 75%);
+  clip-path:polygon(44% 100%,56% 100%,100% 0,0 0);animation:hxBeam 3.4s ease-in-out infinite}
+.qtype{position:relative;padding:10px 14px;max-width:330px;width:100%;box-sizing:border-box}
+.qtype.hx-frame{background:linear-gradient(90deg,transparent,rgba(0,212,255,.07),transparent);animation:hxStep .45s cubic-bezier(.2,.9,.25,1) backwards}
+.qtype.hx-frame::before,.qtype.hx-frame::after{content:"";position:absolute;top:0;bottom:0;width:10px;border:1px solid var(--accent);opacity:.7}
+.qtype.hx-frame::before{left:0;border-right:0}.qtype.hx-frame::after{right:0;border-left:0}
+.hxhud{position:absolute;top:max(10px,env(safe-area-inset-top));left:14px;right:14px;bottom:max(10px,env(safe-area-inset-bottom));pointer-events:none;font-family:var(--f-mono,ui-monospace,monospace);font-size:.6rem;letter-spacing:.18em;color:var(--accent);opacity:.75;text-transform:uppercase}
+.hxhud span{position:absolute}
+.hxhud .tl{top:0;left:0}.hxhud .tr{top:0;right:0;text-align:right}.hxhud .bl{bottom:0;left:0}.hxhud .br{bottom:0;right:0;text-align:right}
+.hxhud .dot{display:inline-block;width:6px;height:6px;border-radius:50%;background:var(--glow);margin-right:6px;vertical-align:1px;animation:hxBlink 1.2s steps(2) infinite}
+.hxhud .bars i{display:inline-block;width:3px;margin-left:2px;background:var(--accent);vertical-align:bottom}
+.hxburst{position:fixed;left:50%;top:40%;width:180px;height:180px;margin:-90px 0 0 -90px;border-radius:50%;border:2px solid var(--glow);box-shadow:0 0 40px var(--accent),inset 0 0 30px var(--accent);pointer-events:none;z-index:80;animation:hxBurst .6s cubic-bezier(.2,.8,.2,1) forwards}
+.hxflash{position:fixed;inset:0;background:var(--glow);pointer-events:none;z-index:79;animation:hxFlash .5s ease-out forwards}
+
+/* 3) Passos do começo e grades de escolha entram em sequência */
+#quick .qstep:not(.qperm){animation:hxStep .42s cubic-bezier(.2,.9,.25,1) backwards}
+#quick .qstep:not(.qperm) .tag{animation:hxWipe .45s steps(20,end) .1s both}
+.qgrid button{animation:hxIn .32s cubic-bezier(.2,.9,.25,1) both}
+.qgrid button:nth-child(2){animation-delay:.04s}.qgrid button:nth-child(3){animation-delay:.08s}.qgrid button:nth-child(4){animation-delay:.12s}
+.qgrid button:nth-child(5){animation-delay:.16s}.qgrid button:nth-child(6){animation-delay:.2s}.qgrid button:nth-child(n+7){animation-delay:.24s}
+
+/* 4) Toque: anel de luz no ponto do toque + botão afunda de leve */
+.hxtap{position:fixed;left:0;top:0;width:64px;height:64px;border-radius:50%;border:1.5px solid var(--glow);box-shadow:0 0 12px var(--accent);pointer-events:none;z-index:90;opacity:0;will-change:transform,opacity}
+.hxtap.on{animation:hxRing .42s cubic-bezier(.2,.8,.2,1) forwards}
+.go:active,.qgrid button:active{filter:brightness(1.35)}
+
+@media (prefers-reduced-motion:reduce){
+  .sysmodal:not([hidden]) .card,.levelup:not([hidden]) .card,.smsheet:not([hidden]) .smcard,.sysmodal .card h3,.levelup .card .big,.sysmodal .card .tag,#quick .qstep,#quick .qstep .tag,.qgrid button,.qtype.hx-frame,.hxbeam,.hxorb g,.hxhud .dot{animation:none!important}
+  .hxfx b,.hxtap,.hxburst,.hxflash{display:none!important}
+}
+/* ---------- Runa: RPG de mesa dentro do HUD (tools/rune.js) ---------- */
+@keyframes rnSpin{to{transform:rotate(360deg)}}
+@keyframes rnCirc{0%{opacity:0;transform:translate(-50%,-50%) scale(.25) rotate(-40deg)}25%{opacity:1}100%{opacity:0;transform:translate(-50%,-50%) scale(1.25) rotate(30deg)}}
+@keyframes rnCrit{0%{opacity:0;transform:translate(-50%,0) scale(.4) rotate(-20deg)}20%{opacity:1;transform:translate(-50%,-6px) scale(1.15) rotate(6deg)}35%{transform:translate(-50%,-8px) scale(1) rotate(0)}80%{opacity:1}100%{opacity:0;transform:translate(-50%,-40px) scale(1)}}
+@keyframes rnTumble{0%{transform:translateY(-60px) rotate(0) scale(.6)}35%{transform:translateY(0) rotate(400deg) scale(1)}50%{transform:translateY(-18px) rotate(560deg)}65%{transform:translateY(0) rotate(680deg)}80%{transform:translateY(-6px) rotate(710deg)}100%{transform:translateY(0) rotate(720deg)}}
+@keyframes rnLand{0%{transform:scale(1.25)}100%{transform:scale(1)}}
+@keyframes rnGlow{50%{filter:drop-shadow(0 0 16px var(--gold,#f2c14e))}}
+
+/* etiqueta das janelas do Sistema ganha uma faixa de runas embaixo */
+.sysmodal .card>.tag::after{content:"";display:block;height:10px;margin:6px auto 0;width:120px;max-width:100%;background:var(--rn-strip) center/120px 10px no-repeat;opacity:.5}
+
+/* Despertar: anel de runas */
+.hxorb .rn{transform-origin:95px 95px;transform-box:view-box;animation:rnSpin 40s linear infinite reverse}
+.hxorb .rn path,.rncirc path,.rncirc circle{fill:none;stroke:var(--accent);stroke-width:1.3;stroke-linecap:round;stroke-linejoin:round;vector-effect:non-scaling-stroke}
+.hxorb .rn path{opacity:.6}
+
+/* "Feito": círculo rúnico */
+.rncirc{position:fixed;width:120px;height:120px;pointer-events:none;z-index:69;animation:rnCirc .85s cubic-bezier(.2,.8,.2,1) forwards;filter:drop-shadow(0 0 6px var(--accent))}
+.rncirc circle:first-child{stroke-dasharray:3 5}
+.rncirc.gold path,.rncirc.gold circle{stroke:var(--gold,#f2c14e)}.rncirc.gold{filter:drop-shadow(0 0 8px var(--gold,#f2c14e))}
+.rncrit{position:fixed;z-index:71;pointer-events:none;display:flex;align-items:center;gap:6px;animation:rnCrit 1.4s cubic-bezier(.2,.8,.2,1) forwards;font-family:var(--f-hud,inherit);font-weight:700;letter-spacing:.12em;color:#fff3cf;text-shadow:0 0 10px var(--gold,#f2c14e),0 0 22px var(--gold,#f2c14e)}
+.rncrit .rnd20{width:34px;height:34px}
+
+/* d20 */
+.rnd20{display:block;overflow:visible}
+.rnd20 .f{fill:rgba(0,212,255,.1);stroke:var(--accent);stroke-width:3;stroke-linejoin:round}
+.rnd20 .l{fill:none;stroke:var(--accent);stroke-width:1.5;opacity:.55;stroke-linejoin:round}
+.rnd20 text{font-family:var(--f-hud,inherit);font-weight:700;font-size:21px;fill:#eaffff;stroke:#02121a;stroke-width:4px;paint-order:stroke;stroke-linejoin:round}
+.rncrit .rnd20 .f,.rnroll.nat .rnd20 .f{fill:rgba(242,193,78,.18);stroke:var(--gold,#f2c14e)}.rncrit .rnd20 .l,.rnroll.nat .rnd20 .l{stroke:var(--gold,#f2c14e)}
+.rnroll{display:flex;flex-direction:column;align-items:center;gap:4px;margin:-4px 0 2px}
+.rnroll .rnd20{width:72px;height:72px;animation:rnTumble .85s cubic-bezier(.3,.7,.3,1) both;filter:drop-shadow(0 0 8px var(--accent))}
+.rnroll.land .rnd20{animation:rnLand .3s cubic-bezier(.3,1.6,.5,1)}
+.rnroll.nat.land .rnd20{animation:rnLand .3s cubic-bezier(.3,1.6,.5,1),rnGlow 1.4s ease-in-out .3s infinite}
+.rnlbl{font-family:var(--f-mono,ui-monospace,monospace);font-size:.72rem;letter-spacing:.2em;color:var(--accent);text-transform:uppercase;opacity:0;transition:opacity .25s}
+.rnroll.nat .rnlbl{color:var(--gold,#f2c14e)}
+.rnroll.land .rnlbl{opacity:1}
+.bxout.rnwait{opacity:0;animation:none}
+
+/* Quadro de missões: missão cumprida ganha um selo (carimbo na hora em que conclui) */
+@keyframes rnStamp{0%{opacity:0;transform:scale(2.4) rotate(-40deg)}55%{opacity:1;transform:scale(.9) rotate(-8deg)}75%{transform:scale(1.06) rotate(-14deg)}100%{opacity:1;transform:scale(1) rotate(-12deg)}}
+.quest.done{position:relative}
+.quest.done::after{content:"✓";position:absolute;top:-11px;right:12px;width:26px;height:26px;display:grid;place-items:center;border-radius:50%;font:700 .8rem/1 var(--f-hud,inherit);color:#fff3cf;
+  background:radial-gradient(circle at 35% 30%,#d9a441,#8a5a12 70%);box-shadow:0 0 0 2px rgba(2,7,13,.9),0 0 0 3px rgba(242,193,78,.7),0 0 10px rgba(242,193,78,.45);transform:rotate(-12deg);pointer-events:none;z-index:2}
+.quest.done.pop::after{animation:rnStamp .5s cubic-bezier(.3,1.4,.5,1) .12s both}
+
+/* Level up: círculo mágico atrás do card */
+@keyframes rnLvIn{from{opacity:0;transform:scale(.4) rotate(-60deg)}to{opacity:.9;transform:none}}
+.levelup{isolation:isolate}
+.rnlv{position:absolute;left:50%;top:50%;width:min(118vw,520px);height:min(118vw,520px);margin:calc(min(118vw,520px)/-2) 0 0 calc(min(118vw,520px)/-2);pointer-events:none;z-index:-1;opacity:.9}
+.levelup:not([hidden]) .rnlv{animation:rnLvIn .7s cubic-bezier(.2,.8,.2,1) .45s both}
+.rnlv svg{position:absolute;inset:0;width:100%;height:100%;overflow:visible;will-change:transform}
+.rnlv circle,.rnlv path{fill:none;stroke:var(--accent);stroke-width:1.2;vector-effect:non-scaling-stroke;stroke-linecap:round}
+.rnlv .l0{opacity:.5;animation:rnSpin 30s linear infinite}
+.rnlv .l1{opacity:.75;animation:rnSpin 18s linear infinite reverse}
+.rnlv .l2{animation:rnSpin 40s linear infinite}.rnlv .l2 .g{stroke:var(--gold,#f2c14e);opacity:.55}
+
+/* Ficha de personagem (atributos, tools/attr.* do PR #75): só estilo, sem mudar texto */
+.atp .atrow{position:relative;border-radius:4px;background:linear-gradient(90deg,rgba(0,212,255,.05),rgba(10,18,34,.9) 40%)}
+.atp .atrow.pri{background:linear-gradient(90deg,rgba(242,193,78,.12),rgba(10,18,34,.9) 45%);box-shadow:inset 0 0 0 1px var(--ac)}
+.atp .atlv{min-width:52px;padding:6px 8px;text-align:center;font-weight:700;background:color-mix(in srgb,var(--ac) 20%,rgba(2,7,13,.85));clip-path:polygon(10px 0,calc(100% - 10px) 0,100% 50%,calc(100% - 10px) 100%,10px 100%,0 50%)}
+.atp .atbar>i{box-shadow:0 0 8px var(--ac)}
+.atradar .atpoly{filter:drop-shadow(0 0 4px var(--accent))}
+body[data-tab="prog"] .atp .atrow{animation:hxIn .32s cubic-bezier(.2,.9,.25,1) both}
+body[data-tab="prog"] .atp .atrow:nth-child(2){animation-delay:.03s}body[data-tab="prog"] .atp .atrow:nth-child(3){animation-delay:.06s}body[data-tab="prog"] .atp .atrow:nth-child(4){animation-delay:.09s}
+body[data-tab="prog"] .atp .atrow:nth-child(5){animation-delay:.12s}body[data-tab="prog"] .atp .atrow:nth-child(6){animation-delay:.15s}body[data-tab="prog"] .atp .atrow:nth-child(n+7){animation-delay:.18s}
+
+/* barra de XP: brilho ao ganhar XP */
+@keyframes rnShine{from{transform:translateX(-100%)}to{transform:translateX(100%)}}
+#xpbar{position:relative;overflow:hidden}
+#xpbar.rn-gain::after{content:"";position:absolute;inset:0;background:linear-gradient(90deg,transparent,rgba(255,255,255,.85),transparent);animation:rnShine .9s ease-out .35s both}
+
+/* missão PRÓXIMA: uma luz corre pela borda de cima (chama o olho para começar) */
+@keyframes rnRun{from{background-position:-40% 0}to{background-position:140% 0}}
+.quest.next:not(.done){position:relative}
+.quest.next:not(.done)::after{content:"";position:absolute;left:0;right:0;top:-1px;height:2px;pointer-events:none;background:linear-gradient(90deg,transparent,var(--glow),transparent) no-repeat;background-size:35% 100%;animation:rnRun 2.8s ease-in-out infinite}
+
+@media (prefers-reduced-motion:reduce){
+  .quest.next:not(.done)::after,#xpbar.rn-gain::after,body[data-tab="prog"] .atp .atrow,.levelup:not([hidden]) .rnlv,.rnlv svg,.quest.done.pop::after,.hxorb .rn,.rnroll .rnd20,.rnroll.land .rnd20,.rnroll.nat.land .rnd20{animation:none!important}
+  .rncirc,.rncrit{display:none!important}
+  .rnlbl{transition:none}
+}
 /* ---- Modo Sistema (tools/sistema.js) ---- */
 .smsheet{position:fixed;inset:0;z-index:80;display:flex;align-items:center;justify-content:center;padding:16px;background:rgba(2,7,13,.94);backdrop-filter:blur(6px)}
 .smsheet[hidden]{display:none}
@@ -956,8 +1113,8 @@ body.insm{overflow:hidden}
 .smrow{display:flex;gap:8px}.smrow button{flex:1;min-height:48px}
 .smcard .link{min-height:44px;align-self:center}
 .smcard>.ghost{min-height:48px}
-.smen{display:grid;gap:8px}.smen button{min-height:56px;display:flex;flex-direction:column;align-items:flex-start;justify-content:center;padding:8px 14px;text-align:left}
-.smen small{color:var(--muted);font-size:.8rem}
+.smen{display:flex;align-items:center;gap:6px;flex-wrap:wrap;margin:2px 0}.smen button{flex:1;min-height:44px;padding:0 6px;white-space:nowrap;font-size:.88rem}.smenl{flex-basis:100%;font-size:.8rem;color:var(--muted)}
+
 .smclock{font-family:var(--f-mono,monospace);font-size:3.4rem;text-align:center;color:var(--accent);text-shadow:0 0 18px rgba(124,244,255,.45);font-variant-numeric:tabular-nums}
 .smclock.end{color:var(--gold)}
 .smx{position:absolute;top:max(12px,env(safe-area-inset-top));right:12px;width:44px;height:44px;border-radius:50%;background:transparent;border:1px solid var(--line);color:var(--fg);font-size:1.1rem}
@@ -966,6 +1123,8 @@ body.insm{overflow:hidden}
 .smbar .smbn{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-size:.95rem}
 .smbar .smbg{flex:none;font-weight:700;color:var(--accent);font-size:.85rem}
 @media (prefers-reduced-motion:reduce){.smsheet{backdrop-filter:none}}
+/* recompensa (atributo, nível, conquista) sempre por cima do Sistema: o jogador vê o prêmio, toca em Aceitar e volta para a missão */
+body.insm .sysmodal:not([hidden]),body.insm .levelup:not([hidden]){z-index:90}
 /* ---- Foco com mais utilidade (tools/foco2.js) ---- */
 .fzbox{display:flex;flex-direction:column;gap:10px;margin:4px 0 8px}
 .fzmis{display:flex;flex-direction:column;align-items:flex-start;gap:2px;min-height:60px;padding:10px 14px;text-align:left;width:100%}
@@ -992,6 +1151,9 @@ body.insm{overflow:hidden}
 .fdbadge{font-size:.9rem;color:var(--gold)}
 .fzrate button{white-space:nowrap;padding:0 8px}
 .fztop{margin:0 0 10px}.fdgo{width:100%}
+#fzRef .link{min-height:44px}
+/* a aba Foco agora começa pela missão: sem o respiro de 8vh que existia quando era só o relógio */
+body[data-tab=foco] #focusPanel.panel{margin-top:0}
 </style></head><body>
 
 <div class="hudtop"><span>ASCENSION<i>//</i>SISTEMA ONLINE</span><span class="mono" id="clock">--:--</span></div>
@@ -1828,7 +1990,7 @@ const icsDT=x=>x.getFullYear()+String(x.getMonth()+1).padStart(2,"0")+String(x.g
 const icsEsc=s=>String(s).replace(/[\;,]/g,m=>"\\"+m).replace(/\n/g,"\\n");
 function buildICS(){const L=["BEGIN:VCALENDAR","VERSION:2.0","PRODID:-//Ascensao//PT-BR","CALSCALE:GREGORIAN","METHOD:PUBLISH"];const st=icsDT(new Date());
   remPlan().forEach((r,i)=>{const s=nextDate(r.h,r.d),e=new Date(s.getTime()+10*60000);
-    L.push("BEGIN:VEVENT","UID:asc-r-"+String(r.t).normalize("NFD").replace(/[^\w]+/g,"-").toLowerCase().slice(0,40)+"@ascensao","DTSTAMP:"+st,"DTSTART:"+icsDT(s),"DTEND:"+icsDT(e),"RRULE:FREQ=WEEKLY;BYDAY="+r.d.map(x=>BYD[x]).join(","),"SUMMARY:"+icsEsc(r.t),"DESCRIPTION:"+icsEsc(r.n+"\n"+location.href.split("#")[0]),
+    L.push("BEGIN:VEVENT","UID:asc-r-"+String(r.t).normalize("NFD").replace(/[\u0300-\u036f]/g,"").replace(/[^\w]+/g,"-").replace(/^-+|-+$/g,"").toLowerCase().slice(0,40)+"@ascensao","DTSTAMP:"+st,"DTSTART:"+icsDT(s),"DTEND:"+icsDT(e),"RRULE:FREQ=WEEKLY;BYDAY="+r.d.map(x=>BYD[x]).join(","),"SUMMARY:"+icsEsc(r.t),"DESCRIPTION:"+icsEsc(r.n+"\n"+location.href.split("#")[0]),
       "BEGIN:VALARM","ACTION:DISPLAY","DESCRIPTION:"+icsEsc(r.t),"TRIGGER:PT0M","END:VALARM","END:VEVENT");});
   L.push("END:VCALENDAR");return L.join("\r\n");}
 function gcalLink(r){const s=nextDate(r.h,r.d),e=new Date(s.getTime()+10*60000);
@@ -2288,7 +2450,7 @@ function renderRPG(){renderDun();sysTipUI();const r=rpgState();const st=statXP()
   const cur={};for(const k in STATS)cur[k]=slvl(st[k]);
   // grava o que já foi anunciado, senão o alerta volta ao reabrir o app
   if(!r.seen){r.seen=Object.assign({},cur);try{save();}catch(e){}}
-  else{let ch=false;for(const k in STATS){const was=r.seen[k]||1;if(cur[k]>was){for(const [lvN,nm,tx] of SKILLS[k])if(lvN>was&&lvN<=cur[k])sysPop("HABILIDADE DESBLOQUEADA",nm,STATS[k]+" nível "+lvN+". "+tx);r.seen[k]=cur[k];ch=true;}}if(ch)try{save();}catch(e){}}
+  else{let ch=false;for(const k in STATS){const was=r.seen[k]||1;if(cur[k]>was){for(const [lvN,nm,tx] of SKILLS[k])if(lvN>was&&lvN<=cur[k]){if(cfg&&cfg.startDate===todayKey())toast("✨ Habilidade nova: "+nm+" ("+STATS[k]+" nv "+lvN+")");else sysPop("HABILIDADE DESBLOQUEADA",nm,STATS[k]+" nível "+lvN+". "+tx);}r.seen[k]=cur[k];ch=true;}}if(ch)try{save();}catch(e){}}
   if(typeof r.cls==="string")r.cls=null;
   if(r.cls){const t=lv>=20?2:lv>=10?1:0;if(t>(r.evo||0)){r.evo=t;sysPop("EVOLUÇÃO DE CLASSE",clsName(r.cls,lv),"Nível "+lv+". Sua classe evoluiu. Continue no seu ritmo.");}}
   else if(cfg&&!cfg.blank&&(!$("onb")||$("onb").hidden)&&!clsOpen&&!sysQ.length)setTimeout(()=>{if(!sysQ.length)openCls();},400);
@@ -3516,6 +3678,7 @@ function clsApply(cl,dress){const r=rpgState();const st=clsCan();if(!st.ok){toas
   if(old){r.past=(r.past||[]).concat([{id:old.id,name:old.name,style:old.style,d:todayKey()}]).slice(-6);if(st.use==="tk")r.ctk=Math.max(0,(r.ctk||0)-1);r.clast=todayKey();}
   else{r.ct0=Date.now();}
   r.cls=cl;r.evo=lv>=20?2:lv>=10?1:0;r.seen=null;r.cg=1;if(dress){const a=avSt();a.o=0;a.hw=0;a.it=0;}save();render();try{avPost(true);}catch(e){}
+  if(!old){toast("⚔️ Classe definida: "+clsName(cl,lv)+". "+STATS[cl.stat]+" sobe 1,5x mais rápido.");return true;} // 1ª escolha: sem mais uma tela no primeiro acesso
   sysPop(old?"CLASSE TROCADA":"CLASSE DEFINIDA",clsName(cl,lv),"Afinidade: "+STATS[cl.stat]+" sobe 1,5x mais rápido."+(old?" Seu XP e nível continuam os mesmos. Agora você é ex-"+old.name+".":""));return true;}
 function clsPrev(id,sz){try{const o=avParse(avCode());o.cls=AV_CLS.includes(id)?id:"x";o.o=0;o.hw=0;o.it=0;return avSvg(o,sz);}catch(e){return "";}}
 let clsGalOpen=false;
@@ -3600,6 +3763,13 @@ function avPost(force){if(typeof RK_POST==="undefined"||ageNow()==="kid"||!(prog
   const v=["P",me,sq,avZapWeek(),avCode(),todayKey().replace(/-/g,""),at,(typeof rkTok==="function"?rkTok():"")].join("|");
   try{fetch(RK_POST,{method:"POST",mode:"no-cors",keepalive:true,body:new URLSearchParams({"entry.807978446":v})}).catch(()=>{});}catch(e){}}
 if(typeof sendRank==="function"){const _sr=sendRank;sendRank=function(){_sr.apply(this,arguments);try{avPost();}catch(e){}};}
+// ---- LGPD: perfil antigo sem faixa de idade que estava no ranking: pede um apelido (o nome real não sai mais) ----
+function lgNickAsk(){try{if(typeof AGE_UNK_MINOR==="undefined"||!AGE_UNK_MINOR||navigator.webdriver)return;if(!cfg||cfg.blank||(cfg.profile&&cfg.profile.age))return;
+  if(!(prog.rank&&prog.rank.on)||cleanNick(prog.rank.nick))return;if(sessionStorage.getItem("asc-lgnick"))return;if([...document.querySelectorAll(".sysmodal,.smsheet,.levelup:not([hidden])")].some(x=>!x.hidden&&x.getClientRects().length)){setTimeout(lgNickAsk,3000);return;}sessionStorage.setItem("asc-lgnick","1");
+  sysPop("RANKING","Escolha um apelido","Para proteger sua privacidade, o ranking agora mostra só apelidos para quem não informou a idade. Escolha o seu para voltar a aparecer.",()=>{setTimeout(()=>{try{const t=document.querySelector('#tabbar [data-go="amigos"]');if(t)t.click();else goTab("prog");
+    setTimeout(()=>{const rp=$("rankPanel");if(rp&&rp.classList.contains("fold")&&!rp.classList.contains("open")){const h=rp.querySelector(":scope>.fhd");if(h)h.click();}
+      const n=$("rkNick");if(n){n.scrollIntoView({block:"center"});setTimeout(()=>n.focus(),120);}},200);}catch(e){}},250);},"Escolher apelido");}catch(e){}}
+setTimeout(lgNickAsk,4000);
 // ---------- Amigos: adicionar, aceitar no app do outro e comparar lado a lado ----------
 // Canal: F|de|para||data (pedido) e G|quem|de||data (aceite), no mesmo formulário do ranking. Só apelidos do ranking (14+).
 // Só ADICIONA prog.friends = {l:[nomes], pend:{nome:data}, seen:{chave:1}}.
@@ -3682,7 +3852,7 @@ function qtLocked(q){const f=qtFrom(q);if(f==null)return null;const h=new Date()
 const QT_SHORT={s_fech:"🌙 Fechar o dia",q_fech:"🌙 Fechar o dia"};
 const QT_SHORT_RE=[[/^antes de dormir/i,"🌙 Fechar o dia"],[/^fechamento/i,"🌙 Fechar o dia"],[/trabalhar 90 min/i,"Bloco de foco: 90 min"],[/oferecer desenho/i,"Oferecer desenho técnico"],[/abordar 3 corretores/i,"Abordar 3 corretores"]];
 // título longo: corta o parêntese ou o que vem depois de ":" (o texto inteiro fica nos detalhes)
-function qtAuto(t){t=String(t||"");if(t.length<=34)return null;let s=t.replace(/\s*\([^)]*\)/g,"").trim();if(s.length>40&&t.indexOf(": ")>8)s=t.slice(0,t.indexOf(": "));return s&&s!==t&&s.length<t.length?s:null;}
+function qtAuto(t){t=String(t||"");if(t.length<=34)return null;let s=t.replace(/\s*\([^)]*\)/g,"").trim();if(s.length>40&&t.indexOf(": ")>8){const c=t.slice(0,t.indexOf(": "));if(!/\s(para|de|do|da|dos|das|com|em|no|na|a|o|e|ou|pra|por|sobre)$/i.test(c))s=c;}return s&&s!==t&&s.length<t.length?s:null;}
 function qtShort(q){return q.short||QT_SHORT[q.id]||(String(q.title).length>46&&QT_SHORT_RE.find(r=>r[0].test(q.title))||[])[1]||qtAuto(q.title);}
 function qtTidy(){const box=$("quests");if(!box)return;let nextMoved=false;
   for(const c of box.querySelectorAll(".quest[data-q]")){const q=((cfg&&cfg.quests)||[]).find(x=>x.id===c.dataset.q);if(!q)continue;
@@ -3859,6 +4029,7 @@ function tmUI(){const p=tmPlace();if(!p)return;if(tmKid()||!cfg||cfg.blank){p.hi
     const nt=dyNote();if(nt)box.append(tmEl("div","sm muted",nt));box.append(dyNtfBtn());p.append(box);}
   if(s.view==="turma"&&!fr.length){const e=tmEl("div","tmempty");e.append(tmEl("p",null,"Sua turma ainda está vazia. Chame alguém para jogar com você."));
     const b=tmEl("button","go","+ Adicionar amigo");b.type="button";b.addEventListener("click",()=>{try{frAdd=true;frUI();}catch(e){}setTimeout(()=>{const f=$("frPanel");if(!f)return;if(f.classList.contains("fold")&&!f.classList.contains("open")){const h=f.querySelector(":scope>.fhd");if(h)h.click();}f.scrollIntoView({block:"start",behavior:matchMedia("(prefers-reduced-motion: reduce)").matches?"auto":"smooth"});const i=f.querySelector("input");if(i)setTimeout(()=>i.focus(),80);},0);});e.append(b);p.append(e);}
+  if(rankRows&&typeof rankErr!=="undefined"&&rankErr){const w=tmEl("div","sm muted tmoff","Sem conexão · mostrando a última lista. Toque para tentar de novo.");w.setAttribute("role","button");w.tabIndex=0;w.style.cursor="pointer";w.addEventListener("click",()=>{rankErr=false;try{tmUI();}catch(e){}loadRank();});const f0=p.firstElementChild;if(f0)f0.after(w);else p.append(w);}
   if(!rankRows){const w=tmEl("div","sm muted",(typeof rankErr!=="undefined"&&rankErr)?"Sem conexão com o ranking. Toque aqui para tentar de novo.":"Carregando a turma…");if(typeof rankErr!=="undefined"&&rankErr){w.style.cursor="pointer";w.addEventListener("click",()=>{rankErr=false;try{tmUI();}catch(e){}loadRank();});}p.append(w);}
   const ol=tmEl("ol","tmlist");L.slice(0,30).forEach((r,i)=>{const li=tmEl("li",(r.me?"me ":"")+(i<3&&L.length>=2?"up":""));
     li.append(tmEl("span","tmpos",i<3?["🥇","🥈","🥉"][i]:String(i+1)));const av=tmEl("span","tmav");av.innerHTML=tmAv(r.av,44);li.append(av);
@@ -4621,6 +4792,105 @@ function apAddUI(){const ed=$("edNew");if(!ed||typeof edSave!=="function")return
   for(const t of AP_ADD){const a=AP_APPS.find(x=>x.k===t.app);const has=Q.some(x=>x.app===t.app);const b=apEl("button","ghost",a.ic+" "+(has?"✓ ":"")+t.title);b.type="button";b.disabled=has;b.onclick=()=>apAdd(t);r.append(b);}}
 setTimeout(()=>{try{apAddUI();apDecorate();}catch(e){}},0);
 
+// ---------- Holo: projeção holográfica nas janelas do Sistema, no começo (Despertar) e nos toques. Só visual: não muda texto, dados nem fluxo. ----------
+(function(){
+const HX_RM=()=>{try{return matchMedia("(prefers-reduced-motion: reduce)").matches;}catch(e){return false;}};
+// película (scanlines + cantos + varredura) em cada card de janela que aparece
+function hxFilm(card){if(!card||card.querySelector(":scope>.hxfx"))return;
+  if(getComputedStyle(card).position==="static")card.classList.add("hx-rel");
+  const f=document.createElement("i");f.className="hxfx";f.setAttribute("aria-hidden","true");f.append(document.createElement("b"));card.append(f);}
+function hxReplay(card){const b=card&&card.querySelector(":scope>.hxfx>b");if(!b)return;b.style.animation="none";void b.offsetWidth;b.style.animation="";}
+function hxScanAll(root){for(const m of (root||document).querySelectorAll(".sysmodal,.levelup,.smsheet")){const c=m.querySelector(".card,.smcard");if(c)hxFilm(c);}}
+// janelas criadas na hora (append) e janelas fixas que só trocam o hidden (level up)
+try{new MutationObserver(ms=>{for(const m of ms){
+    if(m.type==="childList"){for(const n of m.addedNodes){if(n.nodeType!==1)continue;if(n.matches&&n.matches(".sysmodal,.levelup,.smsheet"))hxScanAll(n.parentNode||document);else if(n.querySelector&&n.querySelector(".sysmodal .card,.smsheet .smcard"))hxScanAll(n);}}
+    else if(m.type==="attributes"&&m.target.matches&&m.target.matches(".sysmodal,.levelup,.smsheet")&&!m.target.hidden){const c=m.target.querySelector(".card,.smcard");if(c){hxFilm(c);hxReplay(c);}}
+  }}).observe(document.body,{childList:true,subtree:true,attributes:true,attributeFilter:["hidden"]});}catch(e){}
+hxScanAll();
+
+// Despertar: anéis do projetor, feixe de luz e leituras nos cantos
+function hxWake(){const orb=document.querySelector("#qPerm .qorb"),perm=$("qPerm");if(!orb||!perm||orb.querySelector(".hxorb"))return;
+  const ns="http://www.w3.org/2000/svg",svg=document.createElementNS(ns,"svg");svg.setAttribute("class","hxorb");svg.setAttribute("viewBox","0 0 190 190");svg.setAttribute("aria-hidden","true");
+  // 3 anéis: tracejado fino, arcos grossos e régua de marcas
+  let ticks="";for(let i=0;i<60;i++){const a=i*6*Math.PI/180,r1=i%5?86:82,r2=90;ticks+=`M${(95+r1*Math.cos(a)).toFixed(1)} ${(95+r1*Math.sin(a)).toFixed(1)}L${(95+r2*Math.cos(a)).toFixed(1)} ${(95+r2*Math.sin(a)).toFixed(1)}`;}
+  svg.innerHTML=`<g class="r3"><path d="${ticks}" stroke-width="1" opacity=".45"/></g>`+
+    `<g class="r1"><circle cx="95" cy="95" r="74" stroke-width="1" stroke-dasharray="2 6" opacity=".7"/></g>`+
+    `<g class="r2"><circle cx="95" cy="95" r="64" stroke-width="3" stroke-dasharray="40 26 10 26" opacity=".55"/></g>`;
+  orb.append(svg);
+  const beam=document.createElement("i");beam.className="hxbeam";beam.setAttribute("aria-hidden","true");perm.prepend(beam);
+  const q=$("quick");if(q&&!q.querySelector(":scope>.hxhud")){const h=document.createElement("div");h.className="hxhud";h.setAttribute("aria-hidden","true");
+    h.innerHTML='<span class="tl"><i class="dot"></i>Sistema</span><span class="tr">Link <b class="bars"><i style="height:4px"></i><i style="height:6px"></i><i style="height:8px"></i><i style="height:10px"></i></b></span><span class="bl">ASC-OS 2.6</span><span class="br" id="hxSig">Sinal 00%</span>';
+    q.append(h);
+    // contador de sinal sobe até 100% enquanto a tela Despertar está aberta
+    if(!HX_RM()){let v=0;const s=h.querySelector("#hxSig");const t=setInterval(()=>{if(perm.hidden||!document.body.contains(s)){clearInterval(t);return;}v=Math.min(100,v+3+Math.round(Math.random()*6));s.textContent="Sinal "+String(v).padStart(2,"0")+"%";if(v>=100)clearInterval(t);},70);}
+    else h.querySelector("#hxSig").textContent="Sinal 100%";}
+  const ty=$("qType");if(ty)ty.classList.add("hx-frame");
+  try{new MutationObserver(hxHudOff).observe(perm,{attributes:true,attributeFilter:["hidden"]});}catch(e){}}
+function hxHudOff(){const h=document.querySelector("#quick>.hxhud");if(h)h.hidden=!!($("qPerm")&&$("qPerm").hidden);}
+// abrir o começo: instala o projetor
+if(typeof openQuick==="function"){const _oq=openQuick;openQuick=function(){const r=_oq.apply(this,arguments);try{hxWake();hxHudOff();}catch(e){}return r;};}
+// Despertar tocado: explosão de luz por cima da transição (não atrasa nada)
+{const b=$("q_perm");if(b)b.addEventListener("click",()=>{try{if(!HX_RM()){const fl=document.createElement("i");fl.className="hxflash";const bu=document.createElement("i");bu.className="hxburst";
+    const r=document.querySelector("#qPerm .qorb");if(r){const k=r.getBoundingClientRect();if(k.width){bu.style.top=(k.top+k.height/2)+"px";}}
+    document.body.append(fl,bu);setTimeout(()=>{fl.remove();bu.remove();},700);}}catch(e){}});}
+{const p=$("qPerm");if(p&&!p.hidden){try{hxWake();}catch(e){}}}
+
+// Toque: anel de luz onde o dedo encostou (1 elemento reaproveitado, só transform/opacity)
+let hxT=null;
+document.addEventListener("pointerdown",e=>{if(HX_RM()||e.pointerType==="mouse"&&e.button!==0)return;
+  const t=e.target&&e.target.closest&&e.target.closest("button,.quest,[role=button],summary,a.btnlink");if(!t||t.disabled)return;
+  if(!hxT){hxT=document.createElement("i");hxT.className="hxtap";hxT.setAttribute("aria-hidden","true");document.body.append(hxT);}
+  hxT.classList.remove("on");hxT.style.left=e.clientX+"px";hxT.style.top=e.clientY+"px";void hxT.offsetWidth;hxT.classList.add("on");},{passive:true});
+})();
+// ---------- Runa: toque de RPG de mesa no HUD (dado d20 no baú, círculo rúnico no "Feito", crítico no bônus, anel de runas no Despertar). Só visual. ----------
+(function(){
+const RN_RM=()=>{try{return matchMedia("(prefers-reduced-motion: reduce)").matches;}catch(e){return false;}};
+// runas próprias do Sistema (traços em grade 10x14), não são alfabeto real
+const RN_G=["M2 1V13M2 4L8 1M2 8L8 5","M5 1V13M1 4L5 7L9 4","M2 1V13M8 1V13M2 7H8","M1 13L5 1L9 13M3 8H7","M5 1V13M5 4L1 1M5 4L9 1M5 10L1 13","M1 1L9 13M9 1L1 13M1 7H9","M2 1V13M2 1L8 5L2 9","M1 1H9L5 7L9 13H1","M5 1L9 7L5 13L1 7Z","M2 13V1L8 13V1"];
+function rnRing(cx,cy,r,n,s){let o="";for(let i=0;i<n;i++){const a=i/n*360;o+=`<path d="${RN_G[i%RN_G.length]}" transform="rotate(${a.toFixed(1)} ${cx} ${cy}) translate(${cx-5*s} ${cy-r-7*s}) scale(${s})"/>`;}return o;}
+// faixa de runas (fundo das etiquetas das janelas)
+try{const svg=`<svg xmlns="http://www.w3.org/2000/svg" width="120" height="10" viewBox="0 0 120 10"><g fill="none" stroke="#00d4ff" stroke-width="1.4" stroke-linecap="round">${[0,1,2,3,4,5,6,7].map(i=>`<path d="${RN_G[(i*3)%RN_G.length]}" transform="translate(${i*15+2} .5) scale(.62)"/>`).join("")}</g></svg>`;
+  document.documentElement.style.setProperty("--rn-strip",`url("data:image/svg+xml,${encodeURIComponent(svg)}")`);}catch(e){}
+
+// 1) Despertar: anel de runas por fora do projetor
+function rnWake(){const o=document.querySelector("#qPerm .hxorb");if(!o||o.querySelector(".rn"))return;
+  const g=document.createElementNS("http://www.w3.org/2000/svg","g");g.setAttribute("class","rn");g.innerHTML=rnRing(95,95,104,18,.8);o.setAttribute("viewBox","-20 -20 230 230");o.append(g);}
+if(typeof openQuick==="function"){const _oq=openQuick;openQuick=function(){const r=_oq.apply(this,arguments);try{rnWake();}catch(e){}return r;};}
+try{rnWake();}catch(e){}
+
+// 2) "Feito": círculo rúnico no ponto do toque; bônus surpresa vira CRÍTICO com d20
+let rnX=innerWidth/2,rnY=innerHeight/2;
+document.addEventListener("click",e=>{if(e.target&&e.target.closest&&e.target.closest(".quest button")){rnX=e.clientX||rnX;rnY=e.clientY||rnY;}},true);
+function rnCircle(x,y,gold){if(RN_RM())return;const ns="http://www.w3.org/2000/svg",s=document.createElementNS(ns,"svg");s.setAttribute("class","rncirc"+(gold?" gold":""));s.setAttribute("viewBox","0 0 120 120");s.setAttribute("aria-hidden","true");
+  s.innerHTML='<circle cx="60" cy="60" r="56"/><circle cx="60" cy="60" r="40"/><path d="M60 22L93 79H27Z M60 98L27 41H93Z"/><g class="rnr">'+rnRing(60,60,40,10,.55)+'</g>';
+  s.style.left=x+"px";s.style.top=y+"px";document.body.append(s);setTimeout(()=>s.remove(),900);}
+function rnCrit(x,y){const d=document.createElement("div");d.className="rncrit";d.setAttribute("aria-hidden","true");d.innerHTML=rnD20(20)+"<b>CRÍTICO!</b>";
+  d.style.left=x+"px";d.style.top=(y-56)+"px";document.body.append(d);setTimeout(()=>d.remove(),1500);}
+if(typeof fx==="function"){const _fx=fx;fx=function(xp,gold){const r=_fx.apply(this,arguments);try{rnCircle(rnX,rnY,gold);if(gold)rnCrit(rnX,rnY);rnShine();}catch(e){}return r;};}
+
+// 4) Level up: círculo mágico grande girando atrás do card
+function rnLevel(){const l=$("levelup");if(!l||l.querySelector(".rnlv"))return;
+  // 3 camadas separadas: cada uma gira inteira (transform no compositor), sem filtro, para manter 60fps em Android barato
+  let tk="";for(let i=0;i<72;i++){const a=i*5*Math.PI/180,r1=i%6?92:88;tk+=`M${(100+r1*Math.cos(a)).toFixed(1)} ${(100+r1*Math.sin(a)).toFixed(1)}L${(100+95*Math.cos(a)).toFixed(1)} ${(100+95*Math.sin(a)).toFixed(1)}`;}
+  const L=['<circle cx="100" cy="100" r="96"/><path d="'+tk+'"/>',rnRing(100,100,74,16,.6)+'<circle cx="100" cy="100" r="62"/>','<path class="g" d="M100 40L152 130H48Z M100 160L48 70H152Z"/><circle cx="100" cy="100" r="40"/>'];
+  const w=document.createElement("div");w.className="rnlv";w.setAttribute("aria-hidden","true");
+  w.innerHTML=L.map((x,k)=>'<svg class="l'+k+'" viewBox="0 0 200 200">'+x+'</svg>').join("");l.prepend(w);}
+try{const l=$("levelup");if(l){rnLevel();}}catch(e){}
+
+// barra de XP: um brilho corre por ela quando o XP entra
+function rnShine(){if(RN_RM())return;const b=$("xpbar");if(!b)return;b.classList.remove("rn-gain");void b.offsetWidth;b.classList.add("rn-gain");clearTimeout(rnShine._t);rnShine._t=setTimeout(()=>b.classList.remove("rn-gain"),1500);}
+// 3) Baú: rola um d20 antes do prêmio (o prêmio já está sorteado; o dado só mostra a raridade)
+function rnD20(n){return '<svg class="rnd20" viewBox="0 0 100 100" aria-hidden="true"><path class="f" d="M50 4L90 27V73L50 96L10 73V27Z"/><path class="l" d="M50 22L22 66H78Z M50 4L50 22M10 27L50 22M10 27L22 66M90 27L50 22M90 27L78 66M10 73L22 66M90 73L78 66M50 96L22 66M50 96L78 66"/><text x="50" y="52" text-anchor="middle" dominant-baseline="middle">'+n+'</text></svg>';}
+function rnRoll(out){if(!out||out.dataset.rn)return;out.dataset.rn="1";
+  const rar=(out.querySelector(".bxrar")||{}).textContent||"";const n=/lend/i.test(rar)?20:/épic|epic/i.test(rar)?17+Math.floor(Math.random()*3):/raro/i.test(rar)?13+Math.floor(Math.random()*4):6+Math.floor(Math.random()*7);
+  const w=document.createElement("div");w.className="rnroll"+(n===20?" nat":"");w.setAttribute("aria-hidden","true");w.innerHTML=rnD20(n)+'<div class="rnlbl">'+(n===20?"20 NATURAL!":"Rolou "+n)+'</div>';
+  out.before(w);if(RN_RM()){w.classList.add("land");return;}
+  out.classList.add("rnwait");const t=w.querySelector("text");let k=0;const iv=setInterval(()=>{k++;t.textContent=1+Math.floor(Math.random()*20);},70);
+  setTimeout(()=>{clearInterval(iv);t.textContent=n;w.classList.add("land");out.classList.remove("rnwait");try{if(navigator.vibrate)navigator.vibrate(n===20?[20,50,20,50,40]:[18]);}catch(e){}},850);}
+try{new MutationObserver(ms=>{for(const m of ms){const t=m.target;if(m.type==="attributes"&&t.classList&&t.classList.contains("bxout")&&!t.hidden)rnRoll(t);}})
+  .observe(document.body,{subtree:true,attributes:true,attributeFilter:["hidden"]});}catch(e){}
+})();
+
 // ---------- Modo Sistema: o Sistema escolhe UMA missão, você só aceita e começa por 2 minutos ----------
 // Para quem trava para começar (TDAH, procrastinação): menos escolha, começo minúsculo, sem culpa.
 // 1) Uma missão por vez em tela cheia: ACEITAR / Trocar / Adiar. A lista continua lá atrás ("Ver todas").
@@ -4663,11 +4933,6 @@ function smShell(tag){const m=smSheet();m.hidden=false;document.body.classList.a
   const x=smEl("button","smx","✕");x.type="button";x.setAttribute("aria-label","Fechar e ver a lista");x.onclick=smClose;m.append(x);return c;}
 function smOpen(){smShow();}
 function smShow(){clearInterval(smIv);const s=smSt();
-  // 1º do dia: bateria
-  if(!smEnergy()&&document.querySelector("#energy button")){const c=smShell("CHECK-IN DE ENERGIA");c.append(smEl("h3","smh","Como está sua bateria hoje?"),smEl("p","sm muted","Sem resposta certa. O Sistema ajusta o tamanho do dia para você."));
-    const r=smEl("div","smen");for(const [k,l,d] of [["alta","🔋 Cheia","Dá para ir além"],["media","🔋 Média","Dia normal"],["baixa","🪫 Baixa","Só o essencial"]]){const b=smEl("button","ghost");b.type="button";b.append(smEl("b",null,l),smEl("small",null,d));
-      b.onclick=()=>{const eb=document.querySelector('#energy button[data-e="'+k+'"]');if(eb)eb.click();smIdx=0;setTimeout(smShow,60);};r.append(b);}
-    c.append(r);const sk=smEl("button","link","Pular");sk.type="button";sk.onclick=()=>{prog.energy=prog.energy||{};prog.energy[smTk()]="media";save();smShow();};c.append(sk);c.querySelector(".smen button").focus();return;}
   const q=smPick();smQ=q;const e=smEnergy();
   if(smRecNeeded()&&!smRecDone()&&q){const c=smShell("MISSÃO DE RECUPERAÇÃO");c.append(smEl("h3","smh","Ontem passou em branco. Ainda dá para salvar."),
       smEl("p","sm","Faça só o mínimo de uma missão hoje e sua sequência de ontem é salva. +"+SM_REC+" XP."),smEl("p","sm muted","Vale 1 vez a cada 7 dias."));
@@ -4681,7 +4946,11 @@ function smMission(q,rec){const c=smShell(rec?"MISSÃO DE RECUPERAÇÃO":q.main?
   c.append(smEl("h3","smh",smName(q)));
   const min=q.minTitle?q.minTitle:"só os primeiros 2 minutos";
   const st=smEl("div","smstart");st.append(smEl("div","smlbl","COMECE POR AQUI · 2 MIN"),smEl("div","smmin",min));c.append(st);
-  c.append(smEl("p","sm muted",(e==="baixa"?"Bateria baixa: hoje o mínimo já vale o dia inteiro. ":e==="alta"?"Bateria cheia: terminou o mínimo, vá até o fim e ganhe bônus. ":"")+"Recompensa: +"+q.xp+" XP"+(q.minTitle?" (mínimo: +"+Math.ceil(q.xp/2)+")":"")+"."));
+  // bateria do dia dentro do cartão (1 tela a menos): enquanto não responder, vale "média"
+  if(!e&&!rec&&document.querySelector("#energy button")){const r=smEl("div","smen");r.setAttribute("role","group");r.setAttribute("aria-label","Bateria de hoje");r.append(smEl("span","smenl","Bateria hoje?"));
+    for(const [k,l] of [["baixa","🪫 Baixa"],["media","🔋 Média"],["alta","⚡ Cheia"]]){const b=smEl("button","ghost",l);b.type="button";b.dataset.e=k;
+      b.onclick=()=>{const eb=document.querySelector('#energy button[data-e="'+k+'"]');if(eb)eb.click();else{prog.energy=prog.energy||{};prog.energy[smTk()]=k;save();}smIdx=0;setTimeout(smShow,60);};r.append(b);}c.append(r);}
+  c.append(smEl("p","sm muted",(e==="baixa"?"Bateria baixa: hoje o mínimo já vale o dia inteiro. ":e==="alta"?"Bateria cheia: terminou o mínimo, vá até o fim e ganhe bônus. ":"")+(q.minTitle?"Mínimo feito: +"+Math.ceil(q.xp/2)+" XP. Completa: +"+q.xp+" XP.":"Começou: +"+SM_START+" XP. Completa: +"+q.xp+" XP.")));
   const go=smEl("button","go smgo","ACEITAR");go.type="button";go.onclick=()=>smTimer(q,rec);c.append(go);
   const r=smEl("div","smrow");const n=smCands().length;
   const tr=smEl("button","ghost","↻ Trocar");tr.type="button";tr.disabled=n<2;tr.onclick=()=>{smIdx++;smMission(smPick()||q,rec);};
@@ -4694,14 +4963,19 @@ function smTimer(q,rec){const c=smShell("2 MINUTOS");smEnd=Date.now()+SM_SECS*10
   const ok=smEl("button","go smgo",q.minTitle?"Fiz o mínimo ✓":"Comecei ✓");ok.type="button";ok.onclick=()=>smMinDone(q,rec);c.append(ok);
   const bk=smEl("button","link","Voltar");bk.type="button";bk.onclick=()=>smMission(q,rec);c.append(bk);
   smIv=setInterval(()=>{const left=(smEnd-Date.now())/1000;t.textContent=smFmt(left);if(left<=0){clearInterval(smIv);t.classList.add("end");tip.textContent="Tempo! Começou? Isso é o mais difícil.";smBuzz([30,60,30]);}},250);}
+// recompensa primeiro: se a marcação gerou aviso (nível, atributo, conquista), o Sistema sai da frente e volta quando ele fechar
+function smBusyRw(){return (typeof sysQ!=="undefined"&&sysQ.length)||[...document.querySelectorAll(".sysmodal:not([hidden]),.levelup:not([hidden])")].some(e=>e.getClientRects().length);}
+function smAfter(fn,n){n=n||0;if(n===0){clearInterval(smIv);}if(smBusyRw()&&n<400){if(n===0){const m=$("smSheet");if(m)m.hidden=true;document.body.classList.remove("insm");}setTimeout(()=>smAfter(fn,n+1),300);return;}fn();}
 function smMinDone(q,rec){clearInterval(smIv);const s=smSt(),tk=smTk();
   if(q.minTitle){if(!smDone(q))toggle(q,"min");}
   else if(!(prog.log[tk]||[]).some(e=>e.q==="sm:"+q.id)&&smCount("sm:")<SM_CAP)addXP({q:"sm:"+q.id,kind:"full",xp:SM_START,stat:q.stat||"foco"},"Começou. +"+SM_START+" XP");
   const mc=$("muChip");if(mc)mc.remove();
   if(rec||s.recArm===tk){s.recArm="";smRecClaim();}
+  setTimeout(()=>smAfter(()=>smEmb(q,s,tk)),400);}
+function smEmb(q,s,tk){
   const c=smShell("MÍNIMO CUMPRIDO");c.append(smEl("h3","smh","Embalou?"),smEl("p","sm","Vá até o fim de \""+smName(q)+"\" e ganhe +"+SM_BONUS+" XP de bônus."+(smEnergy()==="baixa"?" Ou pare aqui: hoje o mínimo basta.":"")));
   const go=smEl("button","go smgo","Continuar até o fim");go.type="button";go.onclick=()=>{(s.cont[tk]=s.cont[tk]||[]).includes(q.id)||s.cont[tk].push(q.id);save();smClose();if(typeof msOpen==="function"){const f=typeof msFind==="function"?msFind(q.id):q;if(f)msOpen(f);}else toast("Quando terminar, toque em Feito na tarefa.");};
-  const fu=smEl("button","ghost","Já fiz tudo ✓");fu.type="button";fu.onclick=()=>{(s.cont[tk]=s.cont[tk]||[]).includes(q.id)||s.cont[tk].push(q.id);save();toggle(q,"full");const mc=$("muChip");if(mc)mc.remove();smIdx=0;smShow();};
+  const fu=smEl("button","ghost","Já fiz tudo ✓");fu.type="button";fu.onclick=()=>{(s.cont[tk]=s.cont[tk]||[]).includes(q.id)||s.cont[tk].push(q.id);save();toggle(q,"full");const mc=$("muChip");if(mc)mc.remove();smIdx=0;setTimeout(()=>smAfter(smShow),400);};
   const st=smEl("button","link","Parar aqui, sem culpa");st.type="button";st.onclick=()=>{smIdx=0;smShow();};
   c.append(go,fu,st);go.focus();}
 // terminou a completa depois do mínimo do Sistema: bônus
@@ -4722,7 +4996,7 @@ function smBar(){const qs=$("quests");if(!qs||!cfg||cfg.blank)return;const sec=q
 // em navegador automatizado (testes) não abre sozinho, para não cobrir a tela dos outros testes; o teste do Sistema liga com asc-sm-qa
 function smAutoOk(){try{return !navigator.webdriver||localStorage.getItem("asc-sm-qa")==="1";}catch(e){return true;}}
 function smAuto(n){n=n||0;try{if(!cfg||cfg.blank||smSt().off||!smAutoOk())return;let last=0;try{last=+localStorage.getItem("asc-sm-last")||0;}catch(e){}if(Date.now()-last<SM_GAP)return;
-  const busy=($("onb")&&!$("onb").hidden)||document.querySelector(".sysmodal:not([hidden]),#clsModal:not([hidden]),.levelup:not([hidden])")||($("msSheet")&&!$("msSheet").hidden)||($("zapSheet")&&!$("zapSheet").hidden)||document.body.classList.contains("inmission");
+  const busy=($("onb")&&!$("onb").hidden)||[...document.querySelectorAll(".sysmodal:not([hidden]),#clsModal:not([hidden]),.levelup:not([hidden])")].some(e=>e.getClientRects().length)||(typeof sysQ!=="undefined"&&sysQ.length)||($("msSheet")&&!$("msSheet").hidden)||($("zapSheet")&&!$("zapSheet").hidden)||document.body.classList.contains("inmission");
   if(busy){if(n<80)setTimeout(()=>smAuto(n+1),1500);return;}
   if(!smCands().length&&smEnergy())return;try{localStorage.setItem("asc-sm-last",String(Date.now()));}catch(e){}smIdx=0;smShow();}catch(e){}}
 document.addEventListener("keydown",e=>{if(e.key==="Escape"&&$("smSheet")&&!$("smSheet").hidden)smClose();});
@@ -4745,7 +5019,7 @@ function fzUI(){const p=$("focusPanel");if(!p)return;const on=!!(prog.focus&&pro
   if(!t){t=fzEl("div","fzbox fztop");t.id="fzTop";const h=p.querySelector(".qhead");if(h)h.after(t);else p.prepend(t);}
   if(!w){w=fzEl("div","fzbox");w.id="fzBox";const note=$("focusNote");p.insertBefore(w,note);}
   t.hidden=on;w.hidden=on;if(on)return;t.textContent="";w.textContent="";
-  const q=fzTarget();
+  const q=fzTarget();{const sel=$("focusQuest");if(q&&sel&&!sel.value){try{fillFocusSelect();}catch(e){}if([...sel.options].some(o=>o.value===q.id))sel.value=q.id;}}
   if(q){const b=fzEl("button","go fzmis");b.type="button";b.append(fzEl("span","fzk","[ SISTEMA ] FOCAR NA MISSÃO"),fzEl("span","fzt",(typeof qtShort==="function"&&qtShort(q))||q.title));
     b.onclick=()=>{const sel=$("focusQuest");if(sel){fillFocusSelect();sel.value=q.id;}startFocus(25);};t.append(b);}
   const r=fzEl("div","fzdur");r.append(fzEl("span","sm muted","Outro tempo:"));
@@ -4844,7 +5118,7 @@ function fdCheck(){if(!fdOn()||typeof sqInvRows==="undefined")return;const me=du
       o.seen[key]=1;o.ask++;ch=true;fdAsk(r.a,hm);break;}}
   if(ch){save();fdPay();fdBadge();}}
 // na hora combinada o bloco começa sozinho (até 5 min de atraso)
-function fdTick(){try{const o=prog.fd;if(!o||o.d!==todayKey()||!o.w||o.go||o.s!=="on")return;const at=fdAt(o.hm),now=Date.now();if(now<at)return fdBadge();
+function fdTick(){try{const o=prog.fd;if(o&&o.d===todayKey()&&o.w)fdBadge();if(!o||o.d!==todayKey()||!o.w||o.go||o.s!=="on")return;const at=fdAt(o.hm),now=Date.now();if(now<at)return fdBadge();
   o.go=1;save();if(now>at+5*60000){toast("🤝 O foco em dupla das "+fdShow(o.hm)+" já começou. Comece um bloco quando der.");return;}
   if(!(prog.focus&&prog.focus.end)){if(typeof goTab==="function")try{goTab("foco");}catch(e){}startFocus(25);prog.focus.fd=1;save();toast("🤝 Foco em dupla com "+o.w+": valendo!");}}catch(e){}}
 function fdPay(){const o=fdSt();if(!(o.me&&o.pa)||o.paid)return;const td=todayKey();if((prog.log[td]||[]).some(e=>e.q==="fd:"+td)){o.paid=1;save();return;}o.paid=1;

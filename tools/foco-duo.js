@@ -38,7 +38,7 @@ function fdCheck(){if(!fdOn()||typeof sqInvRows==="undefined")return;const me=du
       o.seen[key]=1;o.ask++;ch=true;fdAsk(r.a,hm);break;}}
   if(ch){save();fdPay();fdBadge();}}
 // na hora combinada o bloco começa sozinho (até 5 min de atraso)
-function fdTick(){try{const o=prog.fd;if(!o||o.d!==todayKey()||!o.w||o.go||o.s!=="on")return;const at=fdAt(o.hm),now=Date.now();if(now<at)return fdBadge();
+function fdTick(){try{const o=prog.fd;if(o&&o.d===todayKey()&&o.w)fdBadge();if(!o||o.d!==todayKey()||!o.w||o.go||o.s!=="on")return;const at=fdAt(o.hm),now=Date.now();if(now<at)return fdBadge();
   o.go=1;save();if(now>at+5*60000){toast("🤝 O foco em dupla das "+fdShow(o.hm)+" já começou. Comece um bloco quando der.");return;}
   if(!(prog.focus&&prog.focus.end)){if(typeof goTab==="function")try{goTab("foco");}catch(e){}startFocus(25);prog.focus.fd=1;save();toast("🤝 Foco em dupla com "+o.w+": valendo!");}}catch(e){}}
 function fdPay(){const o=fdSt();if(!(o.me&&o.pa)||o.paid)return;const td=todayKey();if((prog.log[td]||[]).some(e=>e.q==="fd:"+td)){o.paid=1;save();return;}o.paid=1;

@@ -8,7 +8,9 @@ const CFG={version:1,startDate:'2026-11-20',profile:{name:'Teste',age:'18 a 29'}
   {id:'x1',title:'Beber 2 litros de água',xp:10,stat:'corpo'},
   {id:'x2',title:'Organizar a mesa',xp:10,stat:'foco'}]};
 const sheet=p=>p.evaluate(()=>{const m=document.getElementById('smSheet');return m&&!m.hidden?{tag:(m.querySelector('.smtag')||{}).textContent,h:(m.querySelector('.smh')||{}).textContent,txt:m.textContent}:null;});
-const btn=async(p,t)=>{const h=p.locator('#smSheet button:not([disabled])',{hasText:t}).first();if(!(await h.count()))return false;await h.click();return true;};
+// prêmio (atributo, conquista) agora aparece por cima do Sistema: o usuário toca em Aceitar e segue
+const dismiss=async p=>{for(let i=0;i<6;i++){const ix=await p.evaluate(()=>[...document.querySelectorAll('.sysmodal:not([hidden]) button.go')].findIndex(b=>b.getClientRects().length));if(ix<0)return;await p.locator('.sysmodal:not([hidden]) button.go').nth(ix).click();await p.waitForTimeout(120);}};
+const btn=async(p,t)=>{await dismiss(p);const h=p.locator('#smSheet button:not([disabled])',{hasText:t}).first();if(!(await h.count()))return false;await h.click();return true;};
 const P=p=>p.evaluate(()=>JSON.parse(localStorage.getItem('asc-u-prog')||'{}'));
 async function boot(b,dev,prog){const c=await b.newContext({...dev,timezoneId:'America/Sao_Paulo'});const p=await c.newPage();const errs=[];p.on('pageerror',e=>errs.push(e.message));
   p.on('console',m=>{if(m.type()==='error'&&!/ERR_TUNNEL|ERR_PROXY|Failed to load resource|ERR_CONNECTION/.test(m.text()))errs.push(m.text());});
@@ -17,7 +19,7 @@ async function boot(b,dev,prog){const c=await b.newContext({...dev,timezoneId:'A
   await p.clock.install({time:new Date(TK+'T10:00:00-03:00')});
   await p.addInitScript(([c,o])=>{if(sessionStorage.getItem('qa-set'))return;sessionStorage.setItem('qa-set','1');for(const k of Object.keys(localStorage))localStorage.removeItem(k);
     localStorage.setItem('asc-u-cfg',JSON.stringify(c));localStorage.setItem('asc-u-prog',JSON.stringify(o));
-    for(const k of ['asc-u-intro','asc-u-news','asc-u-perm','asc-u-tip','asc-u-guide'])localStorage.setItem(k,'1');localStorage.setItem('asc-u-season','2');localStorage.setItem('asc-sm-qa','1');},[CFG,prog]);
+    for(const k of ['asc-u-intro','asc-u-news','asc-u-perm','asc-u-tip','asc-u-guide'])localStorage.setItem(k,'1');localStorage.setItem('asc-u-season','2');localStorage.setItem('asc-sm-qa','1');localStorage.setItem('asc-u-tele',JSON.stringify({asked:1}));},[CFG,prog]);
   await p.goto(B+'/comecar/');
   // fecha o que vier antes (check-in, avisos) para o Sistema poder abrir
   for(let i=0;i<30;i++){await p.clock.runFor(1500);await p.waitForTimeout(80);if(await sheet(p))break;await p.evaluate(()=>{for(const id of ['tlModal','clsModal']){const e=document.getElementById(id);if(e)e.remove();}});
@@ -28,12 +30,14 @@ for(const [nome,dev] of [['iPhone',devices['iPhone 13']],['Android',devices['Pix
   // ---- dia normal ----
   let {c,p,errs}=await boot(b,dev,{log:{'2026-11-25':[{q:'m1',kind:'full',xp:30}]},extra:{},energy:{},rest:{}});
   let s=await sheet(p);console.log('DBG',JSON.stringify(s),await p.evaluate(()=>[[...document.querySelectorAll('.sysmodal')].map(m=>m.textContent.slice(0,80)),document.querySelectorAll('.sysmodal').length,!!document.getElementById('onb')&&!document.getElementById('onb').hidden,document.body.className]));ok(nome+': Sistema abre sozinho',!!s,JSON.stringify(s));
-  ok(nome+': 1º pergunta a bateria',s&&/ENERGIA/.test(s.tag),s&&s.tag);
+  ok(nome+': abre direto na missão, com a bateria no cartão',s&&/MISSÃO PRINCIPAL/.test(s.tag)&&/Bateria hoje/.test(s.txt),s&&s.tag+' '+(s&&s.txt));
   await p.screenshot({path:'qa/shots-sistema-energia-'+nome+'.png'});
   await btn(p,'Baixa');await p.waitForTimeout(200);s=await sheet(p);
   ok(nome+': missão principal em tela cheia',s&&/MISSÃO PRINCIPAL/.test(s.tag),s&&s.tag);
   ok(nome+': abre no mínimo (2 min)',s&&/COMECE POR AQUI/.test(s.txt)&&/Abrir o caderno|10 polichinelos/.test(s.txt),s&&s.txt);
-  ok(nome+': bateria baixa sem culpa',s&&/o mínimo já vale/.test(s.txt));
+  ok(nome+': recompensa diz o que paga',s&&/Mínimo feito: \+\d+ XP\. Completa: \+\d+ XP/.test(s.txt),s&&s.txt);
+  ok(nome+': bateria baixa sem culpa',s&&/o mínimo já vale/.test(s.txt)&&!/Bateria hoje/.test(s.txt));
+  ok(nome+': bateria gravada',(await P(p)).energy[TK]==='baixa');
   ok(nome+': lista escondida atrás',await p.evaluate(()=>document.body.classList.contains('insm')));
   ok(nome+': sem rolagem lateral',await p.evaluate(()=>document.documentElement.scrollWidth<=innerWidth));
   const go=await p.$eval('#smSheet .smgo',e=>e.getBoundingClientRect().height);ok(nome+': ACEITAR grande (≥ 56px)',go>=55,String(go));
@@ -46,7 +50,9 @@ for(const [nome,dev] of [['iPhone',devices['iPhone 13']],['Android',devices['Pix
   ok(nome+': timer de 2:00',s&&/2 MINUTOS/.test(s.tag)&&/2:00/.test(s.txt),s&&s.txt);
   await p.screenshot({path:'qa/shots-sistema-2min-'+nome+'.png'});
   await p.clock.runFor(121000);await p.waitForTimeout(100);ok(nome+': tempo acaba e avisa',await p.$eval('#smSheet .smclock',e=>e.classList.contains('end')&&e.textContent==='0:00'));
-  await btn(p,'Fiz o mínimo');await p.waitForTimeout(200);let o=await P(p);let L=o.log[TK]||[];
+  await btn(p,'Fiz o mínimo');await p.clock.runFor(800);await p.waitForTimeout(200);
+  for(let i=0;i<6;i++){const ix=await p.evaluate(()=>[...document.querySelectorAll('.sysmodal:not([hidden]) button.go')].findIndex(b=>b.getClientRects().length));if(ix<0)break;await p.locator('.sysmodal:not([hidden]) button.go').nth(ix).click();await p.clock.runFor(800);await p.waitForTimeout(150);}
+  let o=await P(p);let L=o.log[TK]||[];
   ok(nome+': mínimo marcado',L.some(e=>e.kind==='min'),JSON.stringify(L));s=await sheet(p);ok(nome+': oferece continuar com bônus',s&&/MÍNIMO CUMPRIDO/.test(s.tag)&&/\+5 XP/.test(s.txt));
   await p.screenshot({path:'qa/shots-sistema-continuar-'+nome+'.png'});
   await btn(p,'Já fiz tudo');await p.waitForTimeout(200);o=await P(p);L=o.log[TK]||[];

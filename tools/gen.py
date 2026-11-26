@@ -153,6 +153,8 @@ rep('\nlet saveTimer=null, SYNC="";','\n'+R('boss.js')+R('chest.js')+R('mural.js
 # celular de verdade: 📅 agenda e tarefas de apps (tools/apps.*)
 rep('</style></head>',R('apps.css')+'</style></head>')
 rep('\nlet saveTimer=null, SYNC="";','\n'+R('apps.js')+'\nlet saveTimer=null, SYNC="";')
+rep('</style></head>',R('holo.css')+R('rune.css')+'</style></head>')
+rep('\nlet saveTimer=null, SYNC="";','\n'+R('holo.js')+R('rune.js')+'\nlet saveTimer=null, SYNC="";')
 rep('</style></head>',R('sistema.css')+'</style></head>')
 rep('\nlet saveTimer=null, SYNC="";','\n'+R('sistema.js')+'\nlet saveTimer=null, SYNC="";')
 rep('</style></head>',R('foco2.css')+'</style></head>')
@@ -168,8 +170,10 @@ if ROOT:
     rep('setTimeout(tlBoot,1200);','')
     # o aparelho do criador nunca pede o aceite para ele mesmo nem entra nas métricas anônimas
     rep('let tlTry=0;const tlIv=setInterval(','let tlTry=0;const tlIv=0&&setInterval(')
+    rep('function tlAsk(){','function tlAsk(){return;')
     # app do criador (adulto): perfil vindo da planilha pode não ter faixa de idade
     rep('const AGE_UNK_MINOR=true;','const AGE_UNK_MINOR=false;')
+    rep('const SYSTIP_KEY=document.getElementById("o_go")?"asc-"+"u-systip":"ascensao-systip";','const SYSTIP_KEY="ascensao-systip";')
     # raiz: service worker como era antes da unificação (offline também em teste local)
     s=s.replace('"serviceWorker" in navigator&&location.protocol==="https:"','"serviceWorker" in navigator')
     rep('    </details>\n  </section>\n</div>','    </details>\n  </section>\n'+R('creator.html')+'</div>')
