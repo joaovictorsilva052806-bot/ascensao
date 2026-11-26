@@ -18,7 +18,7 @@ for(const [dev,vp] of [['iPhone',{width:390,height:844}],['Pixel7',{width:412,he
 // "Feito" com o jogo montado: círculo rúnico (só sem reduce-motion) e quest marcada normalmente
 for(const rm of ['no-preference','reduce']){const ctx=await b.newContext({viewport:{width:390,height:844},reducedMotion:rm});const p=await ctx.newPage();const errs=[];p.on('pageerror',e=>errs.push(e.message));
   await p.goto(U+'comecar/');await p.waitForTimeout(400);await p.click('#q_perm');await p.fill('#q_name','Teste');await p.click('#q_n0');await p.waitForTimeout(250);
-  await p.click('#q_age button:nth-child(3)');await p.waitForTimeout(250);await p.click('#q_occ button:nth-child(3)');await p.waitForTimeout(300);await p.click('#q_done');await p.waitForTimeout(2600);
+  await p.click('#q_age button:nth-child(3)');await p.waitForTimeout(250);await p.click('#q_occ button:nth-child(3)');await p.waitForTimeout(300);while(await p.isVisible('#q_xskip')){await p.click('#q_xskip');await p.waitForTimeout(120);}await p.click('#q_done');await p.waitForTimeout(2600);
   await p.evaluate(()=>{for(const m of document.querySelectorAll('.sysmodal'))m.remove();const l=document.getElementById('levelup');if(l)l.hidden=true;});
   const id=await p.evaluate(()=>{const q=document.querySelector('.quest:not(.done):not(.qtlock)');return q&&q.dataset.q;});
   await p.locator(`.quest[data-q="${id}"] .btns .go`).dispatchEvent('click');await p.waitForTimeout(120);

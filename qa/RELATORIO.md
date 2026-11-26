@@ -1,5 +1,11 @@
 # Relatório de QA (ATENA)
 
+## 26/11/2026 4h40 · PR #67: main com mais 9 PRs (holo, runa, sistema, foco2) e suíte inteira até o fim
+
+- Servidor local checado antes de cada arquivo (cai de vez em quando no sandbox e derrubava testes no meio). 36 arquivos de qa/ rodaram até o fim.
+- Resultado final: todos verdes. 3 testes novos da main precisaram acompanhar o #67, sem mudar o que checam: runa (passa pelas 4 perguntas de toque com "Pular esta"), alvo (traz os botões do cartão aberto para a tela antes de medir; com o Hoje mais curto do modo simples, a barra de abas ficava por cima) e liga (falhou 1 vez por tempo; 2 rodadas seguidas verdes, e na main também oscila no "aviso: Bia te passou").
+- Caches ascensao-v63 / ascensao-u-v75.
+
 ## 26/11/2026 · PR #67 atualizado com a main (trens 1 e 2) e QA completo de novo
 
 - Merge da main (#66 a #79). Como o app do JV agora é o mesmo dos testadores, missão v2, troca de tarefa e modo simples entram nos dois; troca só aparece em tarefa gerada pelo perfil e o modo simples só liga para perfil criado do zero.
