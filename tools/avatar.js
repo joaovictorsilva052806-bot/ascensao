@@ -314,7 +314,7 @@ function avMaker(first){if(document.querySelector(".avmk"))return;const a=avSt()
   ft.append(rnd,cv,ok,sec);c.append(ft);m.append(c);document.body.append(m);document.body.classList.add("avmkon");show("rosto");sync();paint();}
 function avClsNameId(id){try{const x=CLS_REAL.concat(CLS_FANT).find(y=>y[0]===id);return x?x[1]:id;}catch(e){return id;}}
 // convite automático: quem nunca montou o avatar (inclusive quem já joga) vê o criador uma vez, sem perder nada
-function avBusy(){return [...document.querySelectorAll(".sysmodal,.mssheet")].some(m=>!m.hidden&&m.getClientRects().length)||($("levelup")&&!$("levelup").hidden)||(()=>{const o=$("onb");return !!(o&&!o.hidden&&o.offsetParent);})();}
+function avBusy(){return document.body.classList.contains("insm")||[...document.querySelectorAll(".sysmodal,.mssheet,.smsheet")].some(m=>!m.hidden&&m.getClientRects().length)||($("levelup")&&!$("levelup").hidden)||(()=>{const o=$("onb");return !!(o&&!o.hidden&&o.offsetParent);})();}
 let avAskT=null,avAsked=false;
 // automação (testes) não recebe os convites automáticos; gente de verdade recebe
 function avAskNow(){try{if(avAsked||!cfg||cfg.blank||navigator.webdriver)return;if(avSt().ok||prog.avAsk){avAsked=true;clsNotice();return;}if(avBusy()){avAskSoon(4000);return;}avAsked=true;avMaker(true);}catch(e){}}
@@ -338,6 +338,7 @@ function clsApply(cl,dress){const r=rpgState();const st=clsCan();if(!st.ok){toas
   if(old){r.past=(r.past||[]).concat([{id:old.id,name:old.name,style:old.style,d:todayKey()}]).slice(-6);if(st.use==="tk")r.ctk=Math.max(0,(r.ctk||0)-1);r.clast=todayKey();}
   else{r.ct0=Date.now();}
   r.cls=cl;r.evo=lv>=20?2:lv>=10?1:0;r.seen=null;r.cg=1;if(dress){const a=avSt();a.o=0;a.hw=0;a.it=0;}save();render();try{avPost(true);}catch(e){}
+  if(!old){toast("⚔️ Classe definida: "+clsName(cl,lv)+". "+STATS[cl.stat]+" sobe 1,5x mais rápido.");return true;} // 1ª escolha: sem mais uma tela no primeiro acesso
   sysPop(old?"CLASSE TROCADA":"CLASSE DEFINIDA",clsName(cl,lv),"Afinidade: "+STATS[cl.stat]+" sobe 1,5x mais rápido."+(old?" Seu XP e nível continuam os mesmos. Agora você é ex-"+old.name+".":""));return true;}
 function clsPrev(id,sz){try{const o=avParse(avCode());o.cls=AV_CLS.includes(id)?id:"x";o.o=0;o.hw=0;o.it=0;return avSvg(o,sz);}catch(e){return "";}}
 let clsGalOpen=false;
@@ -422,3 +423,10 @@ function avPost(force){if(typeof RK_POST==="undefined"||ageNow()==="kid"||!(prog
   const v=["P",me,sq,avZapWeek(),avCode(),todayKey().replace(/-/g,""),at,(typeof rkTok==="function"?rkTok():"")].join("|");
   try{fetch(RK_POST,{method:"POST",mode:"no-cors",keepalive:true,body:new URLSearchParams({"entry.807978446":v})}).catch(()=>{});}catch(e){}}
 if(typeof sendRank==="function"){const _sr=sendRank;sendRank=function(){_sr.apply(this,arguments);try{avPost();}catch(e){}};}
+// ---- LGPD: perfil antigo sem faixa de idade que estava no ranking: pede um apelido (o nome real não sai mais) ----
+function lgNickAsk(){try{if(typeof AGE_UNK_MINOR==="undefined"||!AGE_UNK_MINOR||navigator.webdriver)return;if(!cfg||cfg.blank||(cfg.profile&&cfg.profile.age))return;
+  if(!(prog.rank&&prog.rank.on)||cleanNick(prog.rank.nick))return;if(sessionStorage.getItem("asc-lgnick"))return;if([...document.querySelectorAll(".sysmodal,.smsheet,.levelup:not([hidden])")].some(x=>!x.hidden&&x.getClientRects().length)){setTimeout(lgNickAsk,3000);return;}sessionStorage.setItem("asc-lgnick","1");
+  sysPop("RANKING","Escolha um apelido","Para proteger sua privacidade, o ranking agora mostra só apelidos para quem não informou a idade. Escolha o seu para voltar a aparecer.",()=>{setTimeout(()=>{try{const t=document.querySelector('#tabbar [data-go="amigos"]');if(t)t.click();else goTab("prog");
+    setTimeout(()=>{const rp=$("rankPanel");if(rp&&rp.classList.contains("fold")&&!rp.classList.contains("open")){const h=rp.querySelector(":scope>.fhd");if(h)h.click();}
+      const n=$("rkNick");if(n){n.scrollIntoView({block:"center"});setTimeout(()=>n.focus(),120);}},200);}catch(e){}},250);},"Escolher apelido");}catch(e){}}
+setTimeout(lgNickAsk,4000);

@@ -10,7 +10,7 @@ function shieldAuto(){if(!cfg||cfg.blank||($("onb")&&!$("onb").hidden))return;co
   for(let i=0;i<3;i++){const k=dkey(d);if(stAct(k)||isRest(k))break;gap.push(k);d.setDate(d.getDate()-1);}
   s.chk=tk;if(!gap.length||gap.length>2){save();return;}
   const before=stRun(d);if(!before){save();return;}
-  if(gap.length>s.n){save();if(before>=3)sysPop("NOVA SEQUÊNCIA","Recomeço, sem culpa","Sua sequência de "+before+" dias parou, e tudo bem: o seu XP e o seu nível continuam. Hoje é o dia 1 de novo. Uma tarefa já acende o fogo.",null,"Bora");return;}
+  if(gap.length>s.n){save();if(before>=3)sysPop("NOVA SEQUÊNCIA","Recomeço, sem culpa","Sua sequência de "+before+(before===1?" dia":" dias")+" parou, e tudo bem: o seu XP e o seu nível continuam. Hoje é o dia 1 de novo. Uma tarefa já acende o fogo.",null,"Bora");return;}
   for(const k of gap)s.used[k]=1;s.n-=gap.length;save();render();
   sysPop("ESCUDO ATIVADO","🛡️ Sequência salva: "+streakDays()+(streakDays()===1?" dia":" dias"),(gap.length>1?"Dois dias ficaram":"Ontem ficou")+" sem tarefa e o escudo segurou o fogo sozinho. Faça 1 tarefa hoje para ela seguir. Escudos restantes: "+s.n+".",null,"Valeu, Sistema");}
 const ST_TXT={1:["Sequência iniciada 🔥","Dia 1. Volte amanhã e vira 2. Uma tarefa por dia já mantém o fogo aceso."],
@@ -33,4 +33,4 @@ function stPerfect(){if(!cfg||cfg.blank)return;const s=shieldSt();const tk=today
 function stInfo(){const s=shieldSt();const n=streakDays();
   sysPop("SEQUÊNCIA","🔥 "+n+(n===1?" dia":" dias")+" · 🛡️ "+s.n,"1 tarefa por dia mantém o fogo (o mínimo vale). Se um dia passar em branco, um escudo salva a sequência sozinho. Você ganha 1 escudo a cada marco de 7, 14, 30 dias e guarda até "+ST_MAX+".",null,"Entendi");}
 {const _sl=sysLine;sysLine=function(){const t=_sl();if(!stRisk())return t;const ms=mainsFor(new Date()).filter(q=>!(prog.log[todayKey()]||[]).some(e=>e.q===q.id));const nx=ms[0];
-  return "🔥 Sua sequência de "+streakDays()+" dias está em risco. "+(nx?"1 tarefa salva: "+(nx.minTitle||nx.title)+".":"Uma tarefa qualquer salva.")+(shieldSt().n?" Se não der, o escudo segura.":"");};}
+  return "🔥 Sua sequência de "+streakDays()+(streakDays()===1?" dia":" dias")+" está em risco. "+(nx?"1 tarefa salva: "+(nx.minTitle||nx.title)+".":"Uma tarefa qualquer salva.")+(shieldSt().n?" Se não der, o escudo segura.":"");};}

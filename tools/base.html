@@ -709,7 +709,7 @@ const icsDT=x=>x.getFullYear()+String(x.getMonth()+1).padStart(2,"0")+String(x.g
 const icsEsc=s=>String(s).replace(/[\;,]/g,m=>"\\"+m).replace(/\n/g,"\\n");
 function buildICS(){const L=["BEGIN:VCALENDAR","VERSION:2.0","PRODID:-//Ascensao//PT-BR","CALSCALE:GREGORIAN","METHOD:PUBLISH"];const st=icsDT(new Date());
   remPlan().forEach((r,i)=>{const s=nextDate(r.h,r.d),e=new Date(s.getTime()+10*60000);
-    L.push("BEGIN:VEVENT","UID:asc-r-"+String(r.t).normalize("NFD").replace(/[^\w]+/g,"-").toLowerCase().slice(0,40)+"@ascensao","DTSTAMP:"+st,"DTSTART:"+icsDT(s),"DTEND:"+icsDT(e),"RRULE:FREQ=WEEKLY;BYDAY="+r.d.map(x=>BYD[x]).join(","),"SUMMARY:"+icsEsc(r.t),"DESCRIPTION:"+icsEsc(r.n+"\n"+location.href.split("#")[0]),
+    L.push("BEGIN:VEVENT","UID:asc-r-"+String(r.t).normalize("NFD").replace(/[\u0300-\u036f]/g,"").replace(/[^\w]+/g,"-").replace(/^-+|-+$/g,"").toLowerCase().slice(0,40)+"@ascensao","DTSTAMP:"+st,"DTSTART:"+icsDT(s),"DTEND:"+icsDT(e),"RRULE:FREQ=WEEKLY;BYDAY="+r.d.map(x=>BYD[x]).join(","),"SUMMARY:"+icsEsc(r.t),"DESCRIPTION:"+icsEsc(r.n+"\n"+location.href.split("#")[0]),
       "BEGIN:VALARM","ACTION:DISPLAY","DESCRIPTION:"+icsEsc(r.t),"TRIGGER:PT0M","END:VALARM","END:VEVENT");});
   L.push("END:VCALENDAR");return L.join("\r\n");}
 function gcalLink(r){const s=nextDate(r.h,r.d),e=new Date(s.getTime()+10*60000);

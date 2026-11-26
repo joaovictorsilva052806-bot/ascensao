@@ -31,7 +31,7 @@ set(csv([['K','Bia','Teste','fda-'+HM,'20261125']]));await poke(p);await p.waitF
 let st=await P(p);ok('aceite da Bia chega',st.fd&&st.fd.s==='on'&&st.fd.w==='Bia',JSON.stringify(st.fd));
 await p.clock.runFor(Math.max(0,at-await p.evaluate(()=>Date.now()))+6000);await p.waitForTimeout(300);st=await P(p);
 ok('no horário o bloco começa sozinho',st.focus&&st.focus.end&&st.focus.fd===1&&await p.isVisible('#froom'),JSON.stringify(st.focus));
-ok('contagem compartilhada na sala',/Bia/.test(await p.textContent('#fdBadge')));
+{const bt=await p.textContent('#fdBadge');ok('contagem compartilhada na sala, sem "começa em" com o bloco rodando',/Bia/.test(bt)&&!/começa em/.test(bt),bt);}
 await p.screenshot({path:'qa/shots-foco-dupla.png'});
 await p.clock.runFor(25*60000+3000);await p.waitForTimeout(600);st=await P(p);
 ok('terminou: avisa a Bia',posts.some(x=>x.includes('K|Teste|Bia|fdk-'+HM)));ok('ainda sem bônus (falta a Bia)',!(st.log['2026-11-25']||[]).some(e=>e.q==='fd:2026-11-25'));

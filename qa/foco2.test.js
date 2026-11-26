@@ -18,6 +18,7 @@ for(const [nome,dev] of [['iPhone',devices['iPhone 13']],['Android',devices['Pix
   await p.goto(B+'/comecar/');await p.clock.runFor(3000);await tab(p,'foco');await p.waitForTimeout(200);
   // 1) missão do Sistema e tempos
   const mis=await p.$eval('#fzTop .fzmis',e=>e.textContent).catch(()=>'');ok(nome+': botão focar na missão do Sistema',/FOCAR NA MISSÃO/.test(mis)&&/estudo/i.test(mis),mis);
+  ok(nome+': seletor já na missão do Sistema',await p.$eval('#focusQuest',e=>e.value)==='m1');
   ok(nome+': tempos 15 e 50 min',(await p.$$eval('#fzBox .fzdur button',b=>b.map(x=>x.textContent).join(','))).includes('15 min,50 min'));
   // 5) mapa de calor com o histórico antigo
   const cells=await p.$$eval('#fzHeat .fzc[title]',c=>c.map(x=>x.title+'|'+x.className));ok(nome+': mapa com 28 dias',cells.length===28,String(cells.length));
@@ -39,9 +40,17 @@ for(const [nome,dev] of [['iPhone',devices['iPhone 13']],['Android',devices['Pix
   await p.screenshot({path:'qa/shots-foco-sala-'+nome+'.png'});
   // fim do bloco: relatório
   await p.clock.runFor(21*60000);await p.waitForTimeout(1500);await p.clock.runFor(2000);await p.waitForTimeout(300);
+  // avisos do fim do bloco (tempo cumprido, atributo, marco) vêm antes; o usuário aceita cada um e só então chega o relatório
+  let avisos=0;for(let i=0;i<8;i++){const ix=await p.evaluate(()=>[...document.querySelectorAll('.sysmodal:not([hidden]) button.go,.levelup:not([hidden]) button')].findIndex(b=>{if(!b.getClientRects().length)return false;const r=b.getBoundingClientRect();const h=document.elementFromPoint(r.x+r.width/2,r.y+r.height/2);return h&&(h===b||b.contains(h));}));
+    if(ix<0){if(await p.isVisible('#fzRef'))break;await p.clock.runFor(700);await p.waitForTimeout(120);continue;}
+    ok(nome+': relatório espera o aviso '+(avisos+1),!(await p.isVisible('#fzRef')));avisos++;
+    await p.locator('.sysmodal:not([hidden]) button.go,.levelup:not([hidden]) button').nth(ix).click();await p.clock.runFor(700);await p.waitForTimeout(120);}
   ok(nome+': relatório no fim do bloco',await p.isVisible('#fzRef')&&/RELATÓRIO/.test(await p.textContent('#fzRef')));
+  ok(nome+': relatório sozinho na tela (avisos antes)',await p.evaluate(()=>![...document.querySelectorAll('.sysmodal:not([hidden]),.levelup:not([hidden])')].some(e=>e.getClientRects().length)));
   ok(nome+': registrar só depois de escolher',await p.$eval('#fzRef .smgo',e=>e.disabled));
   await p.screenshot({path:'qa/shots-foco-relatorio-'+nome+'.png'});
+  await p.keyboard.press('Escape');await p.waitForTimeout(100);ok(nome+': Esc fecha o relatório',await p.$eval('#fzRef',e=>e.hidden));
+  await p.evaluate(()=>{document.getElementById('fzRef').hidden=false;});
   await p.click('#fzRef .fzrate button:has-text("Fluxo")');await p.click('#fzRef .fzstat button:has-text("Mente")');await p.click('#fzRef .smgo');await p.waitForTimeout(300);
   let o=await P(p);const L=o.log[TK]||[];
   ok(nome+': +3 XP no atributo escolhido',L.some(e=>/^fr:/.test(e.q)&&e.xp===3&&e.stat==='mente'),JSON.stringify(L.map(e=>e.q)));
