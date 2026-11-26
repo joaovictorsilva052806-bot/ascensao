@@ -12,9 +12,9 @@ async function drain(p){for(let k=0;k<2;k++){for(let i=0;i<10;i++){const m=p.loc
 (async()=>{const b=await chromium.launch();
 async function open(route,pre,prog,time,o={}){const ctx=await b.newContext({viewport:o.vp||{width:390,height:844},reducedMotion:o.rm||'no-preference'});const p=await ctx.newPage();const errs=[];
   p.on('pageerror',e=>errs.push(e.message));p.on('console',m=>{if(m.type()==='error'&&!/Failed to load resource|ERR_|navigator.vibrate/.test(m.text()))errs.push(m.text())});
-  await p.clock.install({time:new Date(time)});await p.goto(U+route);
+  await p.clock.install({time:new Date(time)});await p.goto(U+route+'__seed__');
   await p.evaluate(([c,o,pre])=>{localStorage.setItem(pre+'-cfg',JSON.stringify(c));localStorage.setItem(pre+'-prog',JSON.stringify(o));localStorage.setItem(pre+'-season','2');localStorage.setItem('asc-u-perm','1');localStorage.setItem('asc-u-intro','1');},[o.cfg||CFG,prog,pre]);
-  await p.reload();await p.waitForTimeout(1200);await drain(p);return {ctx,p,errs};}
+  await p.goto(U+route);await p.waitForTimeout(1200);await drain(p);return {ctx,p,errs};}
 const LS=(p,pre)=>p.evaluate(k=>JSON.parse(localStorage.getItem(k)),pre+'-prog');
 const CF=(p,pre)=>p.evaluate(k=>JSON.parse(localStorage.getItem(k)),pre+'-cfg');
 const tap=async(p,sel)=>{await p.locator(sel).first().dispatchEvent('click');await p.waitForTimeout(80);};

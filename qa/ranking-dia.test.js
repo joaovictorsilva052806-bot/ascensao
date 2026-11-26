@@ -18,11 +18,11 @@ async function open(o){const ctx=await b.newContext({viewport:o.vp||{width:390,h
   p.on('pageerror',e=>errs.push(e.message));p.on('console',m=>{if(m.type()==='error'&&!/Failed to load resource|ERR_|navigator.vibrate/.test(m.text()))errs.push(m.text())});
   await ctx.route(/fonts\.(googleapis|gstatic)/,r=>r.abort());
   await ctx.route('https://docs.google.com/**',r=>{if(r.request().method()==='POST'){posts.push(decodeURIComponent((r.request().postData()||'').replace(/\+/g,' ')));return r.fulfill({status:200,body:''});}return r.fulfill({status:200,contentType:'text/csv',body});});
-  await p.clock.install({time:new Date(o.time||'2026-11-25T14:00:00')});await p.goto(U+(o.root?'':'comecar/'));
+  await p.clock.install({time:new Date(o.time||'2026-11-25T14:00:00')});await p.goto(U+(o.root?'':'comecar/')+'__seed__');
   const K=o.root?{cfg:'ascensao-cfg',prog:'ascensao-prog',dia:'ascensao-dia'}:{cfg:'asc-u-cfg',prog:'asc-u-prog',dia:'asc-u-dia'};
   await p.evaluate(([c,g,d,K,root])=>{localStorage.setItem(K.cfg,JSON.stringify(c));localStorage.setItem(K.prog,JSON.stringify(g));if(d)localStorage.setItem(K.dia,JSON.stringify(d));
     for(const k of root?['ascensao-season','ascensao-perm','asc-u-intro']:['asc-u-season','asc-u-perm','asc-u-intro'])localStorage.setItem(k,k.endsWith('season')?'2':'1');},[CFG,o.prog||base(),o.dia===undefined?YDAY:o.dia,K,!!o.root]);
-  await p.reload();await p.waitForTimeout(1500);await drain(p);
+  await p.goto(U+(o.root?'':'comecar/'));await p.waitForTimeout(1500);await drain(p);
   return {ctx,p,errs,posts,K,set:v=>{body=v;}};}
 const amigos=async p=>{await p.locator('#tabbar [data-go="amigos"]').dispatchEvent('click');await p.waitForTimeout(700);};
 const names=p=>p.$$eval('#tmPanel .tmlist li:not(.tmzone) .tmtx b',x=>x.map(e=>e.textContent));

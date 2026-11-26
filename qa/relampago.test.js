@@ -12,9 +12,9 @@ async function drain(p){for(let k=0;k<2;k++){for(let i=0;i<10;i++){const m=p.loc
 for(const rm of [false,true]){const ctx=await b.newContext({viewport:{width:390,height:844},reducedMotion:rm?'reduce':'no-preference'});const p=await ctx.newPage();const errs=[];const tag=rm?' (reduce-motion)':'';
   p.on('pageerror',e=>errs.push(e.message));p.on('console',m=>{if(m.type()==='error'&&!/Failed to load resource|ERR_|navigator.vibrate/.test(m.text()))errs.push(m.text())});
   await ctx.route('https://docs.google.com/**',r=>r.fulfill({status:200,body:''}));
-  await p.clock.install({time:new Date('2026-11-25T14:00:00')});await p.goto(U);
+  await p.clock.install({time:new Date('2026-11-25T14:00:00')});await p.goto(U+'__seed__');
   await p.evaluate(([c,o])=>{localStorage.setItem('asc-u-cfg',JSON.stringify(c));localStorage.setItem('asc-u-prog',JSON.stringify(o));localStorage.setItem('asc-u-season','2');localStorage.setItem('asc-u-perm','1');localStorage.setItem('asc-u-intro','1');localStorage.setItem('asc-u-tele',JSON.stringify({asked:1}));},[CFG,PROG]);
-  await p.reload();await p.waitForTimeout(1500);await drain(p);
+  await p.goto(U);await p.waitForTimeout(1500);await drain(p);
   const cards=p.locator('#zapPanel .zapc');ok('3 desafios na aba Hoje'+tag,await cards.count()===3,String(await cards.count()));
   // abre o 1º desafio de contagem (n>1); se não houver no dia, o 1º qualquer
   const idx=await p.evaluate(()=>{const t=[...document.querySelectorAll('#zapPanel .zapc .tt')].map(e=>e.textContent);const i=t.findIndex(x=>/^\d+ /.test(x)&&!/^1 /.test(x));return i<0?0:i;});
