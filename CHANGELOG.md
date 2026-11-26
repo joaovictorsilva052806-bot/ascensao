@@ -3,6 +3,12 @@
 Formato: [Keep a Changelog](https://keepachangelog.com/pt-BR/1.1.0/). Versões: [SemVer](https://semver.org/lang/pt-BR/) (`MAIOR.MENOR.CORREÇÃO`).
 Regra de ouro de toda versão: o progresso salvo no aparelho nunca é apagado nem renomeado.
 
+## Estudo (26/11/2026, dentro da 1.0)
+
+### Novo
+- Estudo na aba Foco: Hoje com 3 tarefas, bloco de 25 min com pausa, prazos com alerta, flashcards com revisão espaçada, horas complementares e respeito ao horário do treino e do sono.
+- Grava `prog.st` e os flashcards numa chave própria do aparelho. Caches `ascensao-v83` / `ascensao-u-v95`.
+
 ## Forja (26/11/2026, dentro da 1.0)
 
 ### Novo
