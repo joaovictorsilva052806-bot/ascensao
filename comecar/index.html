@@ -1382,6 +1382,9 @@ body.infz .sysmodal:not([hidden]),body.infz .levelup:not([hidden]){z-index:90}
 .fjback,.fjgoal{color:var(--gold)}
 .fjhr{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
 .fjhr input{min-height:40px;padding:6px 10px;border-radius:8px;border:1px solid var(--line);background:#0a1222;color:var(--fg);font:inherit}
+.fjdor{min-height:44px;width:100%;border-color:var(--gold);color:var(--gold)}
+.fjwalk{min-height:44px;width:100%;text-align:left}
+.fjwt{font-size:2.2rem}
 .lemb .lembchips{display:flex;flex-wrap:wrap;gap:8px;justify-content:center}
 .lemb .lembchip{min-width:56px;min-height:44px;padding:8px 14px;border-radius:999px;border:1px solid var(--line);background:#0a1222;color:var(--fg);font:inherit;font-weight:600;cursor:pointer}
 .lemb .lembchip.on{border-color:var(--accent);background:rgba(0,212,255,.16);color:var(--glow);box-shadow:0 0 0 1px var(--accent)}
@@ -6155,6 +6158,9 @@ const FJ_SETS=3,FJ_LO=8,FJ_HI=12,FJ_SLO=20,FJ_SHI=45,FJ_SSTEP=5,FJ_REST=90,FJ_RE
 const FJ_XP={full:40,ruim:20,lv:30,sem:25};
 const FJ_DN=["seg","ter","qua","qui","sex","sáb","dom"];
 const FJ_SAFE="Pare na hora se sentir dor ou aperto no peito, coração disparado ou batendo irregular, tontura, falta de ar fora do normal ou visão turva. Sente, beba água e procure atendimento se não passar. Tem algum problema de saúde ou usa remédio contínuo? Converse com um profissional de saúde antes de começar. Este app não substitui orientação médica.";
+const FJ_WALK=20,FJ_WALK_MIN=10; // caminhada: meta 20 min, conta a partir de 10 (regra do Desafio Forja 30)
+const FJ_TALK="Ritmo em que dá para conversar, mas não para cantar. Tênis confortável, água e lugar seguro.";
+const FJ_DOR="Parou certo. Dor é sinal para parar, não para insistir. Descanse hoje. Se for dor no peito, falta de ar, tontura ou se não passar, procure atendimento.";
 const FJ_RIR="Pare quando ainda daria para fazer mais 2 ou 3. Nada de série até a falha.";
 let fjPrev=null,fjView=null,fjTick=null,fjOffers=[],fjRes=null,fjSetup={},fjWant=false,fjUp="";
 function fjEl(tag,cls,txt){const e=document.createElement(tag);if(cls)e.className=cls;if(txt!=null)e.textContent=txt;return e;}
@@ -6164,11 +6170,12 @@ function fjS(){let f=prog.forja;if(!f||typeof f!=="object"||Array.isArray(f))f=p
   if(!f.lv||typeof f.lv!=="object")f.lv={};for(const k in FJ_MOV){const v=Math.floor(+f.lv[k]);f.lv[k]=v>=1&&v<=5?v:1;}
   if(!f.last||typeof f.last!=="object")f.last={};if(!Array.isArray(f.ses))f.ses=[];
   if(!Array.isArray(f.dias)||!f.dias.length)f.dias=[0,2,4];
+  if(f.walk&&(typeof f.walk!=="object"||f.walk.d!==todayKey()||!(+f.walk.t0>0)))f.walk=null; // caminhada de outro dia não volta
   if(f.cur&&(typeof f.cur!=="object"||f.cur.d!==todayKey()||!FJ_TR[f.cur.tipo]))f.cur=null; // treino de outro dia não volta
   return f;}
 const fjDow=()=>(new Date().getDay()+6)%7;
 const fjSec=m=>!!FJ_MOV[m].s;
-function fjNext(f){const l=f.ses[f.ses.length-1];return l&&l.tipo==="A"?"B":"A";}
+function fjNext(f){let l=null;for(let i=f.ses.length-1;i>=0;i--){const x=f.ses[i];if(x&&(x.tipo==="A"||x.tipo==="B")){l=x;break;}}return l&&l.tipo==="A"?"B":"A";}
 function fjTodayE(){return (prog.log[todayKey()]||[]).find(e=>e.q==="forja:"+todayKey());}
 // último dia de treino marcado (até 6 dias atrás) que passou sem treino, contado só depois do 1º treino
 function fjMissed(f){if(!f.ses.length)return "";const first=f.ses[0].d;const done=new Set(f.ses.map(s=>s.d));
@@ -6187,19 +6194,22 @@ function fjOpen(ruim){const f=fjS();let m=$("fjSheet");
   if(!m){m=fjEl("div","fjsheet");m.id="fjSheet";m.setAttribute("role","dialog");m.setAttribute("aria-modal","true");m.setAttribute("aria-label","Treino do Forja");document.body.append(m);}
   fjPrev=document.activeElement;m.hidden=false;document.body.classList.add("inforja","inmission");
   if(f.cur)fjView="run";
+  else if(f.walk)fjView="walk";
   else if(!f.ok){fjView="safe";fjWant=!!ruim;}
   else if(!f.pt&&!f.ses.length){fjView="setup";fjWant=!!ruim;}
   else{fjStart(!!ruim);return;}
   fjRender();}
 function fjClose(){const m=$("fjSheet");const was=m&&!m.hidden;if(m)m.hidden=true;document.body.classList.remove("inforja","inmission");if(was&&fjPrev&&fjPrev.isConnected)try{fjPrev.focus();}catch(e){}clearInterval(fjTick);fjTick=null;fjView=null;fjUI();}
+function fjWalk(){const f=fjS();if(f.cur){fjOpen();return;}
+  if(!f.walk){f.walk={d:todayKey(),t0:Date.now()};save();}fjOpen();}
 function fjStart(ruim){const f=fjS();fjWant=false;
   f.cur={d:todayKey(),tipo:fjNext(f),ruim:ruim?1:0,i:0,sets:{},t0:Date.now(),rest:0,v:null};save();fjView="run";fjRender();fjUI();}
 function fjRender(){const m=$("fjSheet");if(!m||m.hidden)return;const ae0=document.activeElement;const keep=ae0&&m.contains(ae0)&&ae0.id?ae0.id:"";m.textContent="";const f=fjS();
   const c=fjEl("div","fjcard");const top=fjEl("div","fjtop");
-  top.append(fjEl("span","fjtag","[ SISTEMA ] FORJA"+(f.cur?" · TREINO "+f.cur.tipo+(f.cur.ruim?" · DIA RUIM":""):"")),fjBtn("link","Minimizar ⌄",fjClose,"fjMin"));c.append(top);
-  if(fjView==="safe")fjSafeV(c,f);else if(fjView==="setup")fjSetupV(c,f);else if(fjView==="done")fjDoneV(c,f);else if(f.cur)fjRunV(c,f);else{fjClose();return;}
+  top.append(fjEl("span","fjtag","[ SISTEMA ] FORJA"+(fjView==="walk"?" · CAMINHADA":f.cur?" · TREINO "+f.cur.tipo+(f.cur.ruim?" · DIA RUIM":""):"")),fjBtn("link","Minimizar ⌄",fjClose,"fjMin"));c.append(top);
+  if(fjView==="safe")fjSafeV(c,f);else if(fjView==="setup")fjSetupV(c,f);else if(fjView==="done")fjDoneV(c,f);else if(fjView==="walk"&&f.walk)fjWalkV(c,f);else if(f.cur)fjRunV(c,f);else{fjClose();return;}
   const ft=fjEl("details","fjstop");ft.append(fjEl("summary",null,"⚠ Quando parar"),fjEl("p","sm",FJ_SAFE));if(fjView!=="safe")c.append(ft);
-  m.append(c);if(fjView==="run")fjRestUI();
+  m.append(c);if(fjView==="run")fjRestUI();if(fjView==="walk")fjWalkUI();
   // foco no botão principal (leitor de tela e teclado), sem roubar o foco de quem está no − / +
   const k=keep&&document.getElementById(keep);if(k&&m.contains(k)){try{k.focus({preventScroll:true});}catch(e){}return;}
   const ae=document.activeElement;if(!ae||!m.contains(ae)||!ae.isConnected){const g=m.querySelector(".fjbig")||m.querySelector("button");if(g)try{g.focus({preventScroll:true});}catch(e){}}}
@@ -6240,7 +6250,28 @@ function fjRunV(c,f){const cu=f.cur,ex=FJ_TR[cu.tipo],m=ex[cu.i],M=FJ_MOV[m],lv=
   const nav=fjEl("div","row fjnav");
   if(cu.i<ex.length-1)nav.append(fjBtn("link","Pular exercício",()=>{cu.i++;cu.v=null;save();fjRender();},"fjSkip"));
   if(Object.values(cu.sets).some(a=>a&&a.length))nav.append(fjBtn("link","Terminar agora",()=>fjFinish(),"fjEnd"));
-  c.append(nav);}
+  c.append(nav);
+  c.append(fjBtn("ghost fjdor","✋ Senti dor, parei",()=>{cu.dor=1;fjFinish();},"fjDor"));}
+// caminhada: timer que continua mesmo com o app fechado (f.walk.t0); conta a partir de FJ_WALK_MIN
+function fjWalkV(c,f){c.append(fjEl("h3",null,"Caminhada de "+FJ_WALK+" min"));c.append(fjEl("div","sm fjhow",FJ_TALK));
+  const t=fjEl("div","fjval fjwt");t.id="fjWalkT";t.setAttribute("role","timer");c.append(t);const s=fjEl("div","fjrest");s.id="fjWalkS";c.append(s);
+  c.append(fjBtn("go fjbig","✓ Terminei a caminhada",()=>fjWalkEnd(0),"fjWalkEnd"));
+  const nav=fjEl("div","row fjnav");nav.append(fjBtn("link","Cancelar caminhada",()=>{f.walk=null;save();fjClose();},"fjWalkX"),fjBtn("link","✋ Senti dor, parei",()=>fjWalkEnd(1),"fjWalkDor"));c.append(nav);}
+function fjWalkMin(f){return f.walk?Math.max(0,(Date.now()-f.walk.t0)/60000):0;}
+function fjWalkUI(){const el=$("fjWalkT"),st=$("fjWalkS"),f=prog.forja;if(!el||!f||!f.walk){clearInterval(fjTick);fjTick=null;return;}const ms=Date.now()-f.walk.t0,mn=ms/60000;
+  el.textContent=fmt(ms)+" / "+FJ_WALK+":00";const left=Math.ceil(FJ_WALK_MIN-mn);if(st){st.textContent=mn>=FJ_WALK?"Meta de "+FJ_WALK+" min batida. Pode terminar.":mn>=FJ_WALK_MIN?"Já conta. Continue até os "+FJ_WALK+" min se der.":"Conta a partir de "+FJ_WALK_MIN+" min · faltam "+left+" min";st.className="fjrest"+(mn>=FJ_WALK_MIN?" on":"");}
+  if(!fjTick)fjTick=setInterval(fjWalkUI,1000);}
+function fjWalkEnd(dor){const f=fjS();if(!f.walk)return;const mn=fjWalkMin(f);
+  if(!dor&&mn<FJ_WALK_MIN){toast("A caminhada conta a partir de "+FJ_WALK_MIN+" min. Faltam "+Math.ceil(FJ_WALK_MIN-mn)+" min.");return;}
+  const tk=todayKey();f.ses.push({d:tk,tipo:"C",min:Math.max(1,Math.round(mn)),r:1,...(dor?{dor:1}:{})});if(f.ses.length>400)f.ses=f.ses.slice(-400);f.walk=null;clearInterval(fjTick);fjTick=null;
+  fjRes={tipo:"C",walk:1,dor:dor?1:0,min:Math.max(1,Math.round(mn)),xp:fjDayXP(tk,FJ_XP.ruim,"min"),sets:[]};fjOffers=[];fjView="done";fjRender();fjUI();}
+// XP do dia do Forja (forja:<dia>), uma vez por dia; marca a quest de treino do perfil sem XP dobrado. Devolve o XP que entrou agora.
+function fjDayXP(tk,xp,kind){const L=prog.log[tk]=prog.log[tk]||[];const iso=new Date().toISOString();
+  if(todaysQuests().some(q=>q.id==="s_treino")&&!L.some(e=>e.q==="s_treino"))L.push({q:"s_treino",kind,xp:0,stat:"corpo",bonus:0,t:iso});
+  const key="forja:"+tk,had=L.find(e=>e.q===key);
+  if(!had){addXP({q:key,kind,xp,stat:"corpo",bonus:0,t:iso},"");return xp;}
+  if((had.xp||0)<xp){const d=xp-(had.xp||0);had.xp=xp;had.kind=kind;save();render();return d;}
+  save();render();return 0;}
 function fjLog(){const f=fjS(),cu=f.cur;if(!cu)return;const ex=FJ_TR[cu.tipo],m=ex[cu.i],n=fjNSets(cu);
   const a=cu.sets[m]=(cu.sets[m]||[]);a.push(Math.max(0,Math.round(+cu.v||0)));cu.v=null;try{haptic(12);}catch(e){}
   if(a.length>=n){if(cu.i>=ex.length-1){save();fjFinish();return;}cu.i++;}
@@ -6250,34 +6281,31 @@ function fjRestUI(){const el=$("fjRest");const cu=prog.forja&&prog.forja.cur;if(
   if(left>0){el.textContent="Descanso "+fmt(left)+" · respira e bebe água";el.className="fjrest on";if(!fjTick)fjTick=setInterval(fjRestUI,1000);}
   else{if(cu.rest){cu.rest=0;try{haptic([20,60,20]);}catch(e){}}el.textContent="";el.className="fjrest";clearInterval(fjTick);fjTick=null;}}
 function fjFinish(){const f=fjS(),cu=f.cur;if(!cu)return;const tk=todayKey();const ex=FJ_TR[cu.tipo];
-  const any=ex.some(m=>(cu.sets[m]||[]).length);if(!any){f.cur=null;save();fjClose();return;}
-  const full=!cu.ruim&&ex.every(m=>(cu.sets[m]||[]).length>=FJ_SETS);
+  const any=ex.some(m=>(cu.sets[m]||[]).length);if(!any&&!cu.dor){f.cur=null;save();fjClose();return;}
+  const full=!cu.ruim&&!cu.dor&&ex.every(m=>(cu.sets[m]||[]).length>=FJ_SETS);
   fjOffers=[];
   const dl={};
   for(const m of ex){const a=cu.sets[m]||[];if(!a.length)continue;const pv=f.last[m];const had=Array.isArray(pv)&&pv.length;
     if(had&&pv.length===Math.min(a.length,FJ_SETS))dl[m]=a.slice(0,FJ_SETS).reduce((x,y)=>x+y,0)-pv.reduce((x,y)=>x+(+y||0),0);
-    if(!(cu.ruim&&had))f.last[m]=a.slice(0,FJ_SETS); // dia ruim não rebaixa o alvo do próximo treino
-    if(!cu.ruim&&a.length>=FJ_SETS&&a.every(v=>v>=fjTop(m))&&f.lv[m]<5)fjOffers.push(m);}
-  f.ses.push({d:tk,tipo:cu.tipo,min:Math.max(1,Math.round((Date.now()-cu.t0)/60000)),r:full?0:1});if(f.ses.length>400)f.ses=f.ses.slice(-400);
+    if(!((cu.ruim||cu.dor)&&had))f.last[m]=a.slice(0,FJ_SETS); // dia ruim ou dor não rebaixa o alvo do próximo treino
+    if(!cu.ruim&&!cu.dor&&a.length>=FJ_SETS&&a.every(v=>v>=fjTop(m))&&f.lv[m]<5)fjOffers.push(m);}
+  f.ses.push({d:tk,tipo:cu.tipo,min:Math.max(1,Math.round((Date.now()-cu.t0)/60000)),r:full?0:1,...(cu.ruim?{ruim:1}:{}),...(cu.dor?{dor:1}:{})});if(f.ses.length>400)f.ses=f.ses.slice(-400);
   f.cur=null;clearInterval(fjTick);fjTick=null;
   // a quest de treino do perfil fica marcada (sem XP dobrado: o XP do treino vem do Forja)
-  const L=prog.log[tk]=prog.log[tk]||[];const iso=new Date().toISOString();
-  if(todaysQuests().some(q=>q.id==="s_treino")&&!L.some(e=>e.q==="s_treino"))L.push({q:"s_treino",kind:full?"full":"min",xp:0,stat:"corpo",bonus:0,t:iso});
-  const key="forja:"+tk,xp=full?FJ_XP.full:FJ_XP.ruim,had=L.find(e=>e.q===key);
-  fjRes={tipo:cu.tipo,full,xp:0,dl,sets:ex.map(m=>[m,cu.sets[m]||[]])};
-  if(!had){fjRes.xp=xp;addXP({q:key,kind:full?"full":"min",xp,stat:"corpo",bonus:0,t:iso},"");}
-  else if((had.xp||0)<xp){fjRes.xp=xp-(had.xp||0);had.xp=xp;had.kind="full";save();render();}
-  else{save();render();}
+  const iso=new Date().toISOString();
+  fjRes={tipo:cu.tipo,full,dor:cu.dor?1:0,xp:0,dl,sets:ex.map(m=>[m,cu.sets[m]||[]])};
+  fjRes.xp=fjDayXP(tk,full?FJ_XP.full:FJ_XP.ruim,full?"full":"min");
   // semana forjada: 3 dias de treino na mesma semana
   const ws=weekStart(tk),wk=fjWeekDays(f,ws);
   if(wk>=3&&!entries().some(e=>e.q==="forja:sem:"+ws)){fjRes.sem=1;addXP({q:"forja:sem:"+ws,kind:"full",xp:FJ_XP.sem,stat:"corpo",bonus:0,t:iso},"");}
   if(fjAco(f)&&typeof unlockSec==="function")setTimeout(()=>{try{unlockSec("s_aco");}catch(e){}},400);
   fjView="done";const m=$("fjSheet");if(!m||m.hidden)fjOpenDone();else fjRender();fjUI();}
 function fjOpenDone(){const m=$("fjSheet");if(m){m.hidden=false;document.body.classList.add("inforja","inmission");fjRender();}}
-function fjWeekDays(f,ws){return new Set(f.ses.filter(s=>s&&s.d&&weekStart(s.d)===ws).map(s=>s.d)).size;}
+function fjWeekDays(f,ws){return new Set(f.ses.filter(s=>s&&s.d&&s.tipo!=="C"&&weekStart(s.d)===ws).map(s=>s.d)).size;}
 function fjAco(f){const d=new Date();for(let w=0;w<4;w++){const x=new Date(d);x.setDate(x.getDate()-7*w);if(fjWeekDays(f,weekStart(dkey(x)))<3)return false;}return true;}
 function fjDoneV(c,f){const r=fjRes||{};
-  c.append(fjEl("h3",null,r.full?"Treino "+r.tipo+" forjado 🔥":"Mínimo feito. Sequência protegida 🛡️"));
+  c.append(fjEl("h3",null,r.dor?"Dia contado. Cuide-se 🛡️":r.walk?"Caminhada feita: "+r.min+" min 🚶":r.full?"Treino "+r.tipo+" forjado 🔥":"Mínimo feito. Sequência protegida 🛡️"));
+  if(r.dor)c.append(fjEl("blockquote","fjsafe",FJ_DOR));
   c.append(fjEl("div","fjxp",r.xp?"+"+r.xp+" XP"+(r.sem?" · +"+FJ_XP.sem+" Semana forjada":""):"Treino registrado. O XP do Forja de hoje já tinha entrado."));
   const ul=fjEl("ul","sm fjsum");for(const [m,a] of r.sets||[])if(a.length)ul.append(fjEl("li",null,FJ_MOV[m].n+": "+a.join(" / ")+" "+fjUnit(m)+(r.dl&&r.dl[m]>0?" (↑ +"+r.dl[m]+" vs. a última vez)":"")));c.append(ul);
   const up=Object.values(r.dl||{}).filter(v=>v>0).length;if(up)c.append(fjEl("div","sm fjok","Você melhorou em "+up+(up>1?" movimentos":" movimento")+" desde a última vez."));
@@ -6324,15 +6352,18 @@ function fjCard(){let p=$("fjCard");const q=$("quests");const anchor=q&&q.closes
   const hd=fjEl("div","qhead");hd.append(fjEl("h2",null,"🔥 Forja"));
   const ed=fjBtn("link fjdl",f.dias.map(d=>FJ_DN[d]).join(" · ")+(fjHora(f)?" · "+fjHora(f):"")+" ✎",()=>{fjEdit=!fjEdit;fjCard();},"fjDaysBtn");ed.setAttribute("aria-label","Dias de treino: "+f.dias.map(d=>FJ_DN[d]).join(", ")+". Toque para mudar");ed.setAttribute("aria-expanded",fjEdit?"true":"false");hd.append(ed);p.append(hd);
   if(fjEdit){fjDays(p);fjHoraIn(p);}
+  if(f.walk&&!cu){p.append(fjEl("div","sm","Caminhada em andamento · "+Math.floor(fjWalkMin(f))+" min"));p.append(fjBtn("go fjbig","Continuar caminhada",()=>fjOpen(),"fjResume"));return;}
   if(cu){p.append(fjEl("div","sm","Treino "+cu.tipo+" em andamento · exercício "+(cu.i+1)+" de "+FJ_TR[cu.tipo].length));p.append(fjBtn("go fjbig","Continuar treino",()=>fjOpen(),"fjResume"));return;}
-  if(feito){p.append(fjEl("div","sm fjok","Treino de hoje feito ✓ · próximo: Treino "+t+(fjNextDay(f)?" ("+fjNextDay(f)+")":"")));return;}
+  if(feito){const hj=f.ses.filter(s=>s&&s.d===todayKey()),so=hj.length&&hj.every(s=>s.tipo==="C");p.append(fjEl("div","sm fjok",(so?"Caminhada de hoje feita ✓":"Treino de hoje feito ✓")+" · próximo: Treino "+t+(fjNextDay(f)?" ("+fjNextDay(f)+")":"")));return;}
   const wk=fjWeekDays(f,weekStart(todayKey())),ms=fjMissed(f);
   if(dia){p.append(fjEl("div","sm fjline","Treino "+t+" · 5 exercícios · ~30 min"));
     if(ms)p.append(fjEl("div","sm fjback","Faltou "+(ms==="ontem"?"ontem":"na "+ms)+"? Normal. Um dia não quebra o hábito; o que pesa é faltar dois seguidos. Hoje vale até o Dia ruim."));
     else if(wk===2)p.append(fjEl("div","sm fjgoal","2 de 3 treinos na semana. Falta 1 para a Semana forjada (+"+FJ_XP.sem+" XP)."));
-    const row=fjEl("div","row fjrow");row.append(fjBtn("go","Começar",()=>fjOpen(false),"fjStart"),fjBtn("ghost","Dia ruim (10 min)",()=>fjOpen(true),"fjRuim"));p.append(row);}
+    const row=fjEl("div","row fjrow");row.append(fjBtn("go","Começar",()=>fjOpen(false),"fjStart"),fjBtn("ghost","Dia ruim (10 min)",()=>fjOpen(true),"fjRuim"));p.append(row);
+    p.append(fjBtn("link fjwalk","🚶 Hoje só uma caminhada de "+FJ_WALK+" min",fjWalk,"fjWalk"));}
   else{p.append(fjEl("div","sm muted","Hoje é descanso. Próximo: Treino "+t+(fjNextDay(f)?" ("+fjNextDay(f)+")":"")+"."));
-    const row=fjEl("div","row fjrow");row.append(fjBtn("ghost","Treinar mesmo assim",()=>fjOpen(false),"fjStart"),fjBtn("link","Dia ruim (10 min)",()=>fjOpen(true),"fjRuim"));p.append(row);}}
+    const row=fjEl("div","row fjrow");row.append(fjBtn("ghost","Treinar mesmo assim",()=>fjOpen(false),"fjStart"),fjBtn("link","Dia ruim (10 min)",()=>fjOpen(true),"fjRuim"));p.append(row);
+    p.append(fjBtn("link fjwalk","🚶 Caminhada de "+FJ_WALK+" min",fjWalk,"fjWalk"));}}
 // ---------- Mais: Forja, meus níveis ----------
 function fjPanel(){let p=$("fjPanel");const first=document.querySelector('.wrap>section[data-tab="mais"]');if(!first)return;
   if(!p){p=fjEl("section","panel fjlv");p.id="fjPanel";p.dataset.tab="mais";p.append(fjEl("h2",null,"🔥 Forja: meus níveis"));const b=fjEl("div","fjbody");b.id="fjBody";p.append(b);first.before(p);}
@@ -6347,6 +6378,14 @@ function fjPanel(){let p=$("fjPanel");const first=document.querySelector('.wrap>
   const pl=fjEl("div","row");pl.append(fjBtn("ghost",f.pil===true?"Tirar as quests dos 4 pilares":"Colocar as quests dos 4 pilares em Hoje",()=>fjPil(f.pil!==true),"fjPilT"));b.append(pl);
   const ws=weekStart(todayKey());b.append(fjEl("div","sm muted","Esta semana: "+fjWeekDays(f,ws)+" de 3 treinos · total: "+f.ses.length+" treinos"));
   const st=fjEl("details","fjstop");st.append(fjEl("summary",null,"⚠ Quando parar"),fjEl("p","sm",FJ_SAFE));b.append(st);}
+// ---------- leitura para outros módulos (Desafio Forja 30): só lê, nunca grava ----------
+// fjDia("AAAA-MM-DD"): "dor" | "treino" | "ruim" | "caminhada" | null (o mais forte do dia)
+function fjDia(d){const f=prog&&prog.forja;if(!f||!Array.isArray(f.ses))return null;const hj=f.ses.filter(s=>s&&s.d===d);if(!hj.length)return null;
+  if(hj.some(s=>s.dor))return "dor";if(hj.some(s=>s.tipo!=="C"&&!s.ruim))return "treino";if(hj.some(s=>s.tipo!=="C"))return "ruim";return "caminhada";}
+// fjNivelSubiu("AAAA-MM-DD"): true se algum movimento subiu de nível no Forja nesse dia ou depois
+function fjNivelSubiu(desde){try{return entries().some(e=>/^forja:lv:/.test(e.q)&&String(e.date)>=String(desde));}catch(e){return false;}}
+// os módulos daqui de dentro chamam fjDia/fjNivelSubiu direto; o teste e o console leem por window.ascForja (só leitura)
+try{window.ascForja=Object.freeze({dia:fjDia,nivelSubiu:fjNivelSubiu});}catch(e){}
 function fjUI(){try{fjCard();fjPanel();}catch(e){}}
 // conquista oculta "Aço" (tools/secret.js): 4 semanas seguidas com 3 treinos
 if(typeof SEC!=="undefined"&&Array.isArray(SEC)&&!SEC.some(s=>s[0]==="s_aco"))SEC.push(["s_aco","⚙️","Aço","Forjado no Aço","Quatro semanas sem deixar a forja apagar.","4 semanas seguidas com 3 treinos. Isso já não é fase, é hábito: o ciclo de parar foi quebrado.",40]);
