@@ -3,6 +3,13 @@
 Formato: [Keep a Changelog](https://keepachangelog.com/pt-BR/1.1.0/). Versões: [SemVer](https://semver.org/lang/pt-BR/) (`MAIOR.MENOR.CORREÇÃO`).
 Regra de ouro de toda versão: o progresso salvo no aparelho nunca é apagado nem renomeado.
 
+## Turma Parceiro, 18+ (rascunho, 27/11/2026)
+
+### Adicionado
+- Mais › Turma Parceiro: treinador ou academia cria o link "Desafio 30 · Nome" e vê um painel só com números da turma (participantes, ativos hoje, % que treinou na semana, top 3 de quem marcou). Com menos de 3 participantes, ativos e % ficam ocultos.
+- Convite do parceiro em Hoje: só 18+; entrar começa o Desafio Forja 30. Do aparelho sai só "treinou hoje: sim/não".
+- Página `/parceiros/` (WhatsApp escondido até o número ser aprovado). Prêmio do parceiro desligado. Só adiciona `prog.parc` e `prog.parcD`. Caches `ascensao-v109` / `ascensao-u-v121`.
+
 ## Cache novo para quem pegou a versão do "+XP" (27/11/2026, dentro da 1.0)
 
 ### Corrigido

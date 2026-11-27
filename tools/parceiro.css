@@ -1,0 +1,31 @@
+/* ---- Turma Parceiro (tools/parceiro.*) ---- */
+.ptcard,.ptpanel{display:grid;gap:10px}
+.ptcard h2,.ptpanel h2{margin:0}
+.ptcard .tag{font:600 .66rem/1 ui-monospace,Menlo,Consolas,monospace;letter-spacing:.22em;color:var(--glow,#6fb1ff)}
+.ptlead{margin:0;font-weight:600}
+.ptlist{margin:0;padding-left:18px;display:grid;gap:4px}
+.ptcard label.chk,.ptpanel label.chk{display:flex;align-items:center;gap:10px;min-height:44px;font-size:.86rem}
+.ptcard label.chk input,.ptpanel label.chk input{width:22px;height:22px;flex:none}
+.ptmsg{color:var(--gold);min-height:1.2em}
+.ptcard .row button,.ptpanel .row button,.ptform>.go{min-height:44px}
+.ptbar{height:10px;border-radius:999px;background:#0a1222;border:1px solid var(--line);overflow:hidden}
+.ptbar i{display:block;height:100%;background:linear-gradient(90deg,var(--accent),var(--glow,#6fb1ff))}
+@media (prefers-reduced-motion:no-preference){.ptbar i{transition:width .5s ease-out}}
+.ptpr{margin:0;color:var(--gold)}
+.ptout,.ptend,.ptinfo{justify-self:start;min-height:44px;display:inline-flex;align-items:center}
+.ptform{display:grid;gap:8px}
+.ptlbl{display:grid;gap:4px;font-size:.84rem;color:var(--muted)}
+.ptname{width:100%;box-sizing:border-box;min-height:44px;padding:10px 12px;border-radius:8px;border:1px solid var(--line);background:#0a1222;color:var(--fg);font:inherit}
+.ptmeta,.ptsel{display:flex;flex-wrap:wrap;gap:8px}
+.ptmeta button,.ptchip{min-height:44px;padding:0 14px;border-radius:999px;border:1px solid var(--line);background:#0a1222;color:var(--fg);font:inherit;cursor:pointer}
+.ptmeta button.on,.ptchip.on{border-color:var(--accent);background:color-mix(in srgb,var(--accent) 22%,#0a1222);font-weight:700}
+.ptdash{display:grid;gap:8px}
+.ptdash h3{margin:0}
+.pttiles{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px}
+.pttile{display:grid;gap:2px;padding:10px 8px;border:1px solid var(--line);border-radius:10px;background:#0a1222;text-align:center}
+.pttile b{font-size:1.4rem;line-height:1.1}
+.pttile span{font-size:.72rem;color:var(--muted)}
+.pttop{list-style:none;margin:0;padding:0;display:grid;gap:6px}
+.pttop li{display:flex;align-items:center;gap:8px;min-height:36px}
+.pttop li b{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.ptmore summary{min-height:44px;display:flex;align-items:center;cursor:pointer;color:var(--glow,#6fb1ff)}

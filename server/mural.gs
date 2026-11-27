@@ -44,6 +44,7 @@ function doPost(e) {
     if (a === "report") return mOut_(mReport_(nick, uid, String(b.id || "")));
     if (a === "hall") return mOut_(mHall_(nick, uid, age, b));     // Hall da Fama do Desafio Forja 30 (tools/ouro.js)
     if (a === "hlist") return mOut_(mHList_(nick));
+    if (/^pt-/.test(a)) return mOut_(ptRoute_(nick, uid, age, b));  // Turma Parceiro (tools/parceiro.js), só 18+: seção PARCEIRO no fim
     return mOut_({ ok: false, err: "acao" });
   } catch (err) {
     return mOut_({ ok: false, err: "erro" });
@@ -165,7 +166,7 @@ function mReport_(nick, uid, id) { var fr = mFriends_(nick); var r, d, hide; var
       "\nA foto fica na planilha privada do mural (aba fotos, id " + r.id + ") e some sozinha em 7 dias."); } catch (e) {}
   return { ok: true }; }
 // --- gatilho diário: apaga de verdade o que passou de 7 dias ---
-function muralLimpa() { try { hallLimpa(); } catch (e) {} mLock_(function () { var sh = mTab_(); var all = mRows_(); for (var i = all.length - 1; i >= 0; i--) { var r = all[i];
+function muralLimpa() { try { hallLimpa(); } catch (e) {} try { ptLimpa(); } catch (e) {} mLock_(function () { var sh = mTab_(); var all = mRows_(); for (var i = all.length - 1; i >= 0; i--) { var r = all[i];
   if (!mFresh_(r.data)) { try { mFotoDel_(r.id); } catch (e) {} sh.deleteRow(r._row); } } }); }
 function muralInstalaGatilho() { ScriptApp.newTrigger("muralLimpa").timeBased().everyDays(1).atHour(4).create(); }
 // --- Hall da Fama (Desafio Forja 30): mesmas regras do Mural ---
@@ -283,3 +284,106 @@ function pwGone_(ids) { if (!Array.isArray(ids)) return { ok: false, err: "ids" 
   return mLock_(function () { var sh = pwTab_(); var rows = pwRows_(); var n = 0;
     for (var i = rows.length - 1; i >= 0; i--) if (set[rows[i].id]) { sh.deleteRow(rows[i]._row); n++; }
     return { ok: true, n: n }; }); }
+
+// ===== PARCEIRO — Turma Parceiro: um treinador ou academia roda o Desafio 30 com alunos ADULTOS (tools/parceiro.js).
+// Mesmo doPost, mesmo token e mesmo registro de faixa do mural. Só "adult" passa (14-17, ≤13 e sem idade: "idade").
+// O que fica guardado (planilha PRIVADA do mural, nunca a pública do ranking):
+//   aba "parceiro": codigo | nome do parceiro | dono (uid) | criado (ms) | meta (dias) | premio | -
+//   aba "pmembros": codigo | uid | apelido (SÓ se a pessoa marcou o top 3) | entrou (ms) | dias {"AAAA-MM-DD":1 treinou | 0 só abriu}
+//   Nada de texto livre do aluno, foto, dor, corpo ou saúde. "Treinou" é 1 bit por dia; os dias ficam só 35 dias.
+// O dono só recebe AGREGADOS (pt-stat): participantes, ativos hoje, % que treinou na semana e top 3 de quem marcou.
+// Com menos de PT_MIN participantes, ativos e % voltam vazios (com 1 ou 2 alunos o número apontaria a pessoa).
+// Prêmio do parceiro: DESLIGADO (PT_PREMIO=false) até o parecer do ATLAS (Lei 5.768/71, art. 3º, II). Desligado, o servidor nem guarda.
+var PT_PREMIO = false;
+var PT_TAB = "parceiro", PT_MTAB = "pmembros";
+var PT_COLS = ["codigo", "nome", "dono", "criado", "meta", "premio", "x"];
+var PT_MCOLS = ["codigo", "uid", "apelido", "entrou", "dias"];
+var PT_MAX_DONO = 3, PT_MAX_MEMB = 300, PT_MIN = 3, PT_KEEP = 35, PT_IDLE = 60, PT_TZ = "America/Sao_Paulo";
+var PT_METAS = [20, 25, 30];
+function ptTab_(n, cols) { var ss = mStore_(); var sh = ss.getSheetByName(n); if (!sh) { sh = ss.insertSheet(n); sh.appendRow(cols); } return sh; }
+function ptRows_(n, cols) { var v = ptTab_(n, cols).getDataRange().getValues(); var out = [];
+  for (var i = 1; i < v.length; i++) { var r = {}; for (var j = 0; j < cols.length; j++) r[cols[j]] = v[i][j]; r._row = i + 1; out.push(r); } return out; }
+function ptToday_() { return Utilities.formatDate(new Date(), PT_TZ, "yyyy-MM-dd"); }
+function ptDay_(ms) { return Utilities.formatDate(new Date(ms), PT_TZ, "yyyy-MM-dd"); }
+// segunda-feira da semana de um dia AAAA-MM-DD (conta feita em UTC sobre a data já no fuso de São Paulo)
+function ptWeek_(k) { var p = k.split("-"); var d = new Date(Date.UTC(+p[0], +p[1] - 1, +p[2])); d.setUTCDate(d.getUTCDate() - (d.getUTCDay() + 6) % 7); return d.toISOString().slice(0, 10); }
+// nome do parceiro: até 30 letras, sem telefone, e-mail, @, link ou código (não vira canal de contato)
+function ptName_(s) { var t = mClean_(s, 30).replace(/\s+/g, " ");
+  if (!t || /\d{4,}|@|https?:|www\.|\.com|[{}\[\]=]/i.test(t)) return ""; return t; }
+function ptCode_(c) { c = String(c || ""); return /^p[a-z0-9]{10}$/.test(c) ? c : ""; }
+function ptFind_(c) { var all = ptRows_(PT_TAB, PT_COLS); for (var i = 0; i < all.length; i++) if (all[i].codigo === c) return all[i]; return null; }
+function ptMembers_(c) { return ptRows_(PT_MTAB, PT_MCOLS).filter(function (r) { return r.codigo === c; }); }
+function ptPub_(t, n) { var o = { ok: true, c: t.codigo, pn: t.nome, m: Number(t.meta) || 20, n: n }; if (PT_PREMIO && t.premio) o.pr = String(t.premio); return o; }
+function ptRoute_(nick, uid, age, b) {
+  if (age !== "adult") return { ok: false, err: "idade" };
+  var a = String(b.a || "");
+  if (!mRate_("pt:" + uid, 40)) return { ok: false, err: "limite" };
+  if (a === "pt-new") return ptNew_(uid, b);
+  var c = ptCode_(b.c); if (!c) return { ok: false, err: "codigo" };
+  if (a === "pt-info") { var t = ptFind_(c); if (!t) return { ok: false, err: "codigo" }; return ptPub_(t, ptMembers_(c).length); }
+  if (a === "pt-join") return ptJoin_(nick, uid, c, b);
+  if (a === "pt-day") return ptDayMark_(uid, c, b);
+  if (a === "pt-top") return ptTop_(nick, uid, c, b);
+  if (a === "pt-out") return ptOut_(uid, c);
+  if (a === "pt-stat") return ptStat_(uid, c);
+  if (a === "pt-end") return ptEnd_(uid, c);
+  return { ok: false, err: "acao" };
+}
+function ptNew_(uid, b) {
+  var nome = ptName_(b.pn); if (!nome) return { ok: false, err: "nome" };
+  var meta = PT_METAS.indexOf(Math.floor(+b.m || 20)) >= 0 ? Math.floor(+b.m || 20) : 20;
+  var premio = PT_PREMIO ? ptName_(b.pr) : "";
+  return mLock_(function () {
+    var mine = ptRows_(PT_TAB, PT_COLS).filter(function (r) { return r.dono === uid; });
+    if (mine.length >= PT_MAX_DONO) return { ok: false, err: "limite" };
+    var c = "p" + Utilities.getUuid().replace(/-/g, "").slice(0, 10).toLowerCase();
+    ptTab_(PT_TAB, PT_COLS).appendRow([c, nome, uid, Date.now(), meta, premio, ""]);
+    return { ok: true, c: c, pn: nome, m: meta };
+  });
+}
+function ptJoin_(nick, uid, c, b) { return mLock_(function () {
+  var t = ptFind_(c); if (!t) return { ok: false, err: "codigo" };
+  var sh = ptTab_(PT_MTAB, PT_MCOLS); var all = ptRows_(PT_MTAB, PT_MCOLS); var same = null;
+  // 1 turma de parceiro por vez: entrar numa nova tira da antiga
+  for (var i = all.length - 1; i >= 0; i--) { if (all[i].uid !== uid) continue; if (all[i].codigo === c) same = all[i]; else sh.deleteRow(all[i]._row); }
+  var ap = +b.top === 1 ? mClean_(nick, 16) : "";
+  if (same) { same = ptMembers_(c).filter(function (r) { return r.uid === uid; })[0]; if (same) sh.getRange(same._row, 3).setValue(ap); return ptPub_(t, ptMembers_(c).length); }
+  if (ptMembers_(c).length >= PT_MAX_MEMB) return { ok: false, err: "cheia" };
+  var d = {}; d[ptToday_()] = 0;
+  sh.appendRow([c, uid, ap, Date.now(), JSON.stringify(d)]);
+  return ptPub_(t, ptMembers_(c).length);
+}); }
+function ptMine_(uid, c) { return ptMembers_(c).filter(function (r) { return r.uid === uid; })[0] || null; }
+// o dia é sempre o de hoje no servidor (o app não escolhe a data); 1 = treinou, 0 = só abriu. Treinou nunca volta para 0.
+function ptDayMark_(uid, c, b) { return mLock_(function () {
+  var r = ptMine_(uid, c); if (!r) return { ok: false, err: "fora" };
+  var d = mJ_(r.dias, {}); var t = ptToday_(); var f = +b.f === 1 ? 1 : 0; d[t] = Math.max(+d[t] || 0, f);
+  var keys = Object.keys(d).sort(); while (keys.length > PT_KEEP) delete d[keys.shift()];
+  ptTab_(PT_MTAB, PT_MCOLS).getRange(r._row, 5).setValue(JSON.stringify(d)); return { ok: true };
+}); }
+function ptTop_(nick, uid, c, b) { return mLock_(function () { var r = ptMine_(uid, c); if (!r) return { ok: false, err: "fora" };
+  ptTab_(PT_MTAB, PT_MCOLS).getRange(r._row, 3).setValue(+b.top === 1 ? mClean_(nick, 16) : ""); return { ok: true }; }); }
+function ptOut_(uid, c) { return mLock_(function () { var r = ptMine_(uid, c); if (r) ptTab_(PT_MTAB, PT_MCOLS).deleteRow(r._row); return { ok: true }; }); }
+// painel do parceiro: só o dono, só agregados
+function ptStat_(uid, c) {
+  var t = ptFind_(c); if (!t || t.dono !== uid) return { ok: false, err: "dono" };
+  var M = ptMembers_(c); var n = M.length; var hoje = ptToday_(); var ws = ptWeek_(hoje); var a = 0, w = 0; var top = [];
+  M.forEach(function (r) { var d = mJ_(r.dias, {}); if (d[hoje] != null) a++;
+    var k = 0, wk = 0; for (var x in d) { if (+d[x] !== 1) continue; k++; if (x >= ws && x <= hoje) wk = 1; }
+    w += wk; if (r.apelido) top.push({ a: String(r.apelido), k: k }); });
+  top.sort(function (x, y) { return y.k - x.k; });
+  var o = ptPub_(t, n); o.hoje = n >= PT_MIN ? a : null; o.sem = n >= PT_MIN ? Math.round(100 * w / n) : null; o.top = top.slice(0, 3); o.min = PT_MIN;
+  return o;
+}
+// encerrar: apaga a turma e as linhas de todos os participantes
+function ptEnd_(uid, c) { return mLock_(function () { var t = ptFind_(c); if (!t || t.dono !== uid) return { ok: false, err: "dono" };
+  var sh = ptTab_(PT_MTAB, PT_MCOLS); var all = ptRows_(PT_MTAB, PT_MCOLS); for (var i = all.length - 1; i >= 0; i--) if (all[i].codigo === c) sh.deleteRow(all[i]._row);
+  ptTab_(PT_TAB, PT_COLS).deleteRow(t._row); return { ok: true }; }); }
+// gatilho diário (junto do muralLimpa): participante sem abrir há 60 dias sai; turma vazia com mais de 60 dias some
+function ptLimpa() { mLock_(function () {
+  var lim = ptDay_(Date.now() - PT_IDLE * 864e5); var sh = ptTab_(PT_MTAB, PT_MCOLS); var all = ptRows_(PT_MTAB, PT_MCOLS); var vivos = {};
+  for (var i = all.length - 1; i >= 0; i--) { var r = all[i]; var ks = Object.keys(mJ_(r.dias, {})).sort(); var last = ks.length ? ks[ks.length - 1] : ptDay_(Number(r.entrou));
+    if (last < lim) sh.deleteRow(r._row); else vivos[r.codigo] = 1; }
+  var ts = ptTab_(PT_TAB, PT_COLS); var T = ptRows_(PT_TAB, PT_COLS);
+  for (var j = T.length - 1; j >= 0; j--) if (!vivos[T[j].codigo] && Date.now() - Number(T[j].criado) > PT_IDLE * 864e5) ts.deleteRow(T[j]._row);
+}); }

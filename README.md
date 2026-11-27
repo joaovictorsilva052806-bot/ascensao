@@ -98,6 +98,16 @@ Grava só `prog.st`. XP novo: `st:t:<id>` (+10, entregue no prazo) e `st:c:<dia>
 
 Grava só `prog.ouro` (inteiro), `prog.ouroX` (com `mig`) e `prog.f30`. Teste: `node qa/ouro.test.js`.
 
+## Turma Parceiro (18+, rascunho)
+
+`tools/parceiro.js` e `tools/parceiro.css` (nos dois geradores) + seção PARCEIRO do `server/mural.gs` (ações `pt-*`): um treinador ou academia cria em Mais um link "Desafio 30 · Nome" (`/comecar/?pt=CÓDIGO&pn=NOME`) e roda o Desafio Forja 30 com alunos adultos. Página de 1 tela: `/parceiros/` (WhatsApp escondido até o número ser aprovado).
+
+- Só 18+ pela trava `ad18()` (14-17, até 13 e sem idade no /comecar/ veem "só para maiores de 18" e nada sai); o servidor confere de novo pela faixa registrada (`mAge_`).
+- Do aluno sai só o código da turma e, por dia, "treinou: sim/não" (Forja ou dia do Desafio). Apelido só com o top 3 marcado. Nada de tarefa, foto, dor ou saúde.
+- O parceiro vê só agregados: participantes, ativos hoje, % que treinou na semana e top 3 opt-in. Com menos de 3 participantes, ativos e % voltam vazios.
+- Prêmio do parceiro desligado (`PT_PREMIO=false` no app e no servidor) até o parecer jurídico.
+- Grava só `prog.parc` e `prog.parcD`; o link pendente fica em `asc-u-parc-link`. Testes: `node qa/parceiro-servidor.test.js` e `node qa/parceiro.test.js`.
+
 ## Resumo do beta (Modo Criador)
 
 `tools/painel.js` e `tools/painel.css` (só na aba Criador do app do JV, via `gen.py --root`): números agregados em cima das abas privadas que o painel já lê (testadores, ativos hoje e em 7 dias, volta no dia 2 e no dia 8, missões feitas, feedbacks, funil e ativos por dia). Colunas achadas pelo nome do cabeçalho. Não envia nada; guarda no aparelho do criador só a contagem diária em `ascensao-painel-hist`. Teste: `node qa/painel.test.js`. Integração com a EVA: `docs/integracao-eva.md`.
