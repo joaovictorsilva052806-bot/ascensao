@@ -16,23 +16,25 @@ async function open(route,pre,cfg,prog,list,o={}){const ctx=await b.newContext({
   await p.goto(U+route);await p.waitForTimeout(1300);
   await p.evaluate(()=>document.querySelectorAll('.sysmodal').forEach(m=>m.remove()));
   return {ctx,p,errs};}
+const goLn=p=>p.evaluate(()=>{const e=document.getElementById('lnPanel');const t=e?e.dataset.tab:'foco';const b=document.querySelector('#tabbar [data-go="'+t+'"]');if(b)b.click();}).then(()=>p.waitForTimeout(250));
 const tab=(p,t)=>p.evaluate(t=>{const b=document.querySelector('#tabbar [data-go="'+t+'"]');if(b)b.click();},t).then(()=>p.waitForTimeout(250));
 const vis=(p,id)=>p.evaluate(id=>{const e=document.getElementById(id);return !!e&&!e.hidden&&e.getClientRects().length>0;},id);
 for(const [route,pre] of [['comecar/','asc-u'],['','ascensao']]){const tag=route?'/comecar/':'/';
   for(const [nm,age,o] of [['até 13','kid',{}],['14-17','teen',{}],['18+ com parent','young',{tele:{parent:1}}]].concat(route?[['sem idade (/comecar/)',null,{}]]:[])){
-    let {ctx,p}=await open(route,pre,CFG(age),P(),[M()],o);await tab(p,'foco');ok(tag+' '+nm+': não vê Missões Lendárias',!(await vis(p,'lnPanel'))&&!(await p.locator('text=Missões Lendárias').count()));await ctx.close();}
+    let {ctx,p}=await open(route,pre,CFG(age),P(),[M()],o);await goLn(p);ok(tag+' '+nm+': não vê Missões Lendárias',!(await vis(p,'lnPanel'))&&!(await p.locator('text=Missões Lendárias').count()));await ctx.close();}
   // lista vazia ou missão incompleta / link http: some
   for(const [nm,list] of [['lista vazia',[]],['sem passos',[M({passos:[]})]],['link http',[M({link:'http://exemplo.com/'})]]]){
-    let {ctx,p}=await open(route,pre,CFG('adult'),P(),list);await tab(p,'foco');ok(tag+' '+nm+': área some',!(await vis(p,'lnPanel'))&&!(await vis(p,'lnTease')));await ctx.close();}
+    let {ctx,p}=await open(route,pre,CFG('adult'),P(),list);await goLn(p);ok(tag+' '+nm+': área some',!(await vis(p,'lnPanel'))&&!(await vis(p,'lnTease')));await ctx.close();}
   // missão de teste: 18+ comum não vê
-  {let {ctx,p}=await open(route,pre,CFG('adult'),P(),[M({teste:true})]);await tab(p,'foco');ok(tag+' missão "teste" fora do Modo Criador: não aparece',!(await vis(p,'lnPanel')));await ctx.close();}
+  {let {ctx,p}=await open(route,pre,CFG('adult'),P(),[M({teste:true})]);await goLn(p);ok(tag+' missão "teste" fora do Modo Criador: não aparece',!(await vis(p,'lnPanel')));await ctx.close();}
   let {ctx,p,errs}=await open(route,pre,CFG('adult'),P(),[M(),M({id:'parc2',titulo:'Segunda missão',passos:['Um passo só']})]);
   ok(tag+' Hoje: chamada lendária visível com 2 missões',await vis(p,'lnTease')&&/2 missões que pagam/.test(await p.textContent('#lnTease')));
   await p.click('#lnTease button');await p.waitForTimeout(300);
-  ok(tag+' chamada leva para a aba Foco com a área visível',await p.evaluate(()=>document.body.dataset.tab==='foco')&&await vis(p,'lnPanel'));
-  ok(tag+' área fica antes das Tasks que pagam',await p.evaluate(()=>{const a=document.getElementById('lnPanel'),t=document.getElementById('tpPanel');return !t||!!(a.compareDocumentPosition(t)&Node.DOCUMENT_POSITION_FOLLOWING);}));
+  ok(tag+' chamada leva para a aba Lendárias com a área visível',await p.evaluate(()=>document.body.dataset.tab==='lenda'&&document.getElementById('lnPanel').dataset.tab==='lenda')&&await vis(p,'lnPanel'));
+  ok(tag+' área fica no topo, antes das Tasks Lendárias',await p.evaluate(()=>{const a=document.getElementById('lnPanel'),t=document.getElementById('tpPanel');return !t||!!(a.compareDocumentPosition(t)&Node.DOCUMENT_POSITION_FOLLOWING);}));
   const txt=await p.textContent('#lnPanel');
   ok(tag+' selo "Publicidade · parceiro" e tag LENDÁRIA visíveis sem clique',await p.locator('#lnPanel .lnad').first().isVisible()&&await p.locator('#lnPanel .lnrar').first().isVisible()&&txt.includes('Publicidade · parceiro'));
+  ok(tag+' sem link de indicação: sem aviso de comissão',!/comissão/.test(txt));
   ok(tag+' sem promessa de ganho e com aviso de 18+',/Sem promessa de ganho/.test(txt)&&/exige 18\+/.test(txt)&&!/renda garantida|garantid/i.test(txt));
   const a=await p.$eval('#lnPanel .lncard[data-ln="parc1"] .lnlink',e=>[e.href,e.target,e.rel]);
   ok(tag+' link do parceiro em aba nova com rel sponsored',a[0]==='https://exemplo.com/a'&&a[1]==='_blank'&&/sponsored/.test(a[2])&&/noopener/.test(a[2]),JSON.stringify(a));
@@ -51,20 +53,23 @@ for(const [route,pre] of [['comecar/','asc-u'],['','ascensao']]){const tag=route
   await tab(p,'hoje');ok(tag+' chamada em Hoje conta só a que falta',/1 missão que paga/.test(await p.textContent('#lnTease')));
   ok(tag+' console limpo',errs.length===0,errs.join(' | '));await ctx.close();
   // conta nova (1 dia): sem Ouro
-  {const c=CFG('adult');c.startDate='2026-11-27';let {ctx,p}=await open(route,pre,c,P({ouroX:{t0:'2026-11-27',d:{},got:{},buy:{},h:[],mig:{d:'2026-11-27',c:0}}}),[M({passos:['Só um']})]);await tab(p,'foco');
+  {const c=CFG('adult');c.startDate='2026-11-27';let {ctx,p}=await open(route,pre,c,P({ouroX:{t0:'2026-11-27',d:{},got:{},buy:{},h:[],mig:{d:'2026-11-27',c:0}}}),[M({passos:['Só um']})]);await goLn(p);
     ok(tag+' conta de 1 dia: avisa a trava do Ouro',(await p.textContent('#lnPanel')).includes('4º dia'));
     await p.click('#lnPanel summary.lnsteps,#lnPanel .lnsteps summary');await p.click('#lnPanel .lnbtn[data-i="0"]');await p.waitForTimeout(300);
     const s2=await LS(p,pre+'-prog');ok(tag+' conta de 1 dia: concluir não dá Ouro',!(s2.ouro>0)&&!!s2.lend.parc1.f,JSON.stringify(s2.lend));await ctx.close();}
   for(const vp of [{width:320,height:640},{width:1280,height:800}]){({ctx,p,errs}=await open(route,pre,CFG('adult'),P(),[M()],{vp,rm:'reduce'}));
     const tease=await p.evaluate(()=>{const b=document.querySelector('#lnTease button');return b&&getComputedStyle(b).animationName;});
-    await tab(p,'foco');await p.click('#lnPanel .lnsteps summary');await p.waitForTimeout(150);
+    await goLn(p);await p.click('#lnPanel .lnsteps summary');await p.waitForTimeout(150);
     const anim=await p.evaluate(()=>getComputedStyle(document.querySelector('#lnPanel .lncard'),'::after').animationName);
     ok(tag+' '+vp.width+'px + reduce-motion: sem animação, sem rolagem lateral, toques de 44 px',tease==='none'&&anim==='none'&&await p.evaluate(()=>document.documentElement.scrollWidth<=innerWidth+1&&[...document.querySelectorAll('#lnPanel .lnbtn,#lnPanel .lnlink,#lnPanel .lnreg,#lnPanel summary')].every(e=>e.getBoundingClientRect().height>=44))&&errs.length===0,[tease,anim,errs.join('|')].join(' · '));await ctx.close();}
 }
 // Modo Criador (só existe na raiz): a missão "teste" aparece com o aviso, mesmo para 18+
-{let {ctx,p,errs}=await open('','ascensao',CFG('adult'),P(),[M({id:'cuponomia',teste:true,parceiro:'Cuponomia'})],{creator:true});await tab(p,'foco');
-  ok('/ Modo Criador: missão "teste" aparece com "TESTE · só você vê"',await vis(p,'lnPanel')&&(await p.textContent('#lnPanel')).includes('TESTE · só você vê'));await ctx.close();}
+{let {ctx,p,errs}=await open('','ascensao',CFG('adult'),P(),[M({id:'cuponomia',teste:true,indicacao:true,parceiro:'Cuponomia'})],{creator:true});await goLn(p);
+  ok('/ Modo Criador: missão "teste" aparece com "TESTE · só você vê"',await vis(p,'lnPanel')&&(await p.textContent('#lnPanel')).includes('TESTE · só você vê'));
+  ok('/ link de indicação do criador: aviso de comissão visível',(await p.textContent('#lnPanel')).includes('o criador ganha uma comissão da Cuponomia'));await ctx.close();}
+{let {ctx,p}=await open('','ascensao',CFG('teen'),P(),[M({teste:true})],{creator:true});await goLn(p);
+  ok('/ Modo Criador sem a aba Lendárias (perfil 14-17): área cai na aba Foco',await vis(p,'lnPanel')&&await p.evaluate(()=>document.getElementById('lnPanel').dataset.tab==='foco'));await ctx.close();}
 // o arquivo do repositório: Cuponomia como teste (só o criador vê) e válido
 {const j=JSON.parse(require('fs').readFileSync(__dirname+'/../missoes-lendarias.json','utf8'));const c=(j.missoes||[]).find(m=>m.id==='cuponomia');
-  ok('repositório: Cuponomia está como teste e com link https',!!c&&c.teste===true&&/^https:\/\//.test(c.link)&&c.passos.length>0);}
+  ok('repositório: Cuponomia está como teste e com link https',!!c&&c.teste===true&&c.indicacao===true&&/^https:\/\//.test(c.link)&&c.passos.length>0);}
 await b.close();console.log(R.join('\n'));const f=R.filter(x=>x.startsWith('FAIL')).length;console.log(f?f+' FALHA(S)':'TODOS PASSARAM ('+R.length+')');process.exit(f?1:0);})();

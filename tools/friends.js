@@ -39,7 +39,7 @@ function frCompare(n){const a=frMe(),b=frRow(n);const m=frEl("div","sysmodal");m
   const tb=frEl("div","frstats");for(const [l,k] of rows){const x=a[k]==null?0:+a[k],y=b[k]==null?0:+b[k];const r=frEl("div","frst");
     const l1=frEl("span","v"+(x>y?" win":""),String(x));const l2=frEl("span","v"+(y>x?" win":""),b[k]==null?"–":String(y));r.append(l1,frEl("span","l",l),l2);tb.append(r);}c.append(tb);
   const dx=(b.xp||0)-a.xp;c.append(frEl("p","sm frmsg",b.xp==null?n+" ainda não pontuou nesta semana.":dx>0?"Faltam "+(dx+1)+" XP para você passar "+n+" nesta semana. Um desafio relâmpago dá 10.":dx<0?"Você está "+(-dx)+" XP à frente de "+n+". Segura a liderança.":"Empatados. O próximo XP decide."));
-  const row=frEl("div","row");const x=frEl("button","go","Fechar");x.type="button";x.addEventListener("click",()=>m.remove());row.append(x);c.append(row);m.append(c);document.body.append(m);setTimeout(()=>x.focus(),60);}
+  const row=frEl("div","row");const x=frEl("button","go","Fechar");x.type="button";x.dataset.esc="1";x.addEventListener("click",()=>m.remove());row.append(x);c.append(row);m.append(c);document.body.append(m);setTimeout(()=>x.focus(),60);}
 let frAdd=false;
 function frUI(){let p=$("frPanel");const anchor=$("sqPanel")||$("rankPanel");if(!anchor)return;
   if(!p){p=frEl("section","panel frp");p.id="frPanel";p.dataset.tab="prog";const rp=$("rankPanel");(rp||anchor).after(p);}
