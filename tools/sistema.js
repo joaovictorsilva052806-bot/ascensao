@@ -29,8 +29,9 @@ function smRecClaim(){if(!smRecNeeded()||smRecDone())return false;const y=smDay(
 function smCands(){const now=Date.now(),s=smSt(),e=smEnergy();
   let L=todaysQuests().filter(q=>!smDone(q)&&smLocked(q)==null&&!((s.snz[q.id]||0)>now)&&!/^(s_fech|q_fech)$/.test(q.id));
   if(e==="baixa"){const m=L.filter(q=>q.main);if(m.length)L=m;}
-  const w=q=>(q.main?0:q.once?1:2)*100+(e==="baixa"?(q.xp||0):0);
-  return L.sort((a,b)=>w(a)-w(b));}
+  const cur=slotNow(),wk=slotWakeHour()&&L.some(q=>!slotHeavy(q));
+  const w=q=>(wk&&slotHeavy(q)?100000:0)+slotRank(q,cur)*1000+(q.main?0:q.once?1:2)*100+(e==="baixa"?(q.xp||0):0);
+  return L.map((q,i)=>[q,i]).sort((a,b)=>w(a[0])-w(b[0])||a[1]-b[1]).map(x=>x[0]);}
 let smIdx=0,smQ=null,smIv=null,smEnd=0;
 function smPick(){const L=smCands();if(!L.length)return null;smIdx=smIdx%L.length;return L[smIdx];}
 // ---- tela ----

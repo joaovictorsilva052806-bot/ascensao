@@ -1858,6 +1858,8 @@ section[data-hbg]>:not(.hrbg){position:relative;z-index:1}
       <label>Área<select id="edStat"><option value="foco">Foco</option><option value="mente">Mente</option><option value="corpo">Corpo</option><option value="vendas">Metas</option></select></label></div>
       <label class="chk"><input type="checkbox" id="edMain"> Principal (no máximo 3 por dia)</label>
       <div class="dsel" id="edDays"></div>
+      <div class="sm muted" id="edSlotL">Melhor período</div>
+      <div class="dsel" id="edSlot" role="group" aria-labelledby="edSlotL"></div>
       <div class="row"><button class="go" type="submit">Salvar</button><button class="ghost" type="button" id="edCancel">Cancelar</button><button class="link danger" type="button" id="edDel">Apagar</button></div>
     </form>
   </section>
@@ -2016,7 +2018,7 @@ function render(){
   const done=prog.log[tk]||[];
   const qEl=$("quests"); qEl.textContent="";
   const dow=(dt.getDay()+6)%7; // 0=seg
-  const list=((cfg&&cfg.quests)||[]).filter(q=>visibleToday(q,dow,tk)).sort((a,b)=>(b.main?2:b.once?1:0)-(a.main?2:a.once?1:0)).concat(prog.extra[tk]||[]);
+  const list0=((cfg&&cfg.quests)||[]).filter(q=>visibleToday(q,dow,tk));const list=slotSort(list0).concat(prog.extra[tk]||[]);
   if(!list.length){const e=document.createElement("div");e.className="empty";e.textContent=cfg?"Nenhuma quest para hoje. Adicione uma quest rápida abaixo, ou toque em Refazer meu perfil.":"Responda o perfil para montar suas quests. Enquanto isso, adicione uma quest rápida abaixo.";qEl.append(e);}
   let dayxp=0;for(const e of done)dayxp+=(e.xp||0)+(e.bonus||0);
   const nFeitas=done.filter(e=>!/^(ach|checkin|tip|dun|boss|sq|adm|hook|volta):/.test(String(e.q))).length;
@@ -2600,6 +2602,33 @@ function stAlert(){const host=document.querySelector('section[data-tab="hoje"].p
 {const _sr=render;render=function(){_sr.apply(this,arguments);try{const p=$("stPanel"),ae=document.activeElement;
   // fora da aba Foco só o alerta de prazo é atualizado (o painel é refeito ao abrir a aba)
   if(document.body.dataset.tab!=="foco"||(p&&ae&&p.contains(ae)&&/INPUT|TEXTAREA|SELECT/.test(ae.tagName))){stS();stAlert();return;}stRender();}catch(e){}};}
+
+// ---- ordem pela hora do dia (spec EVA 27/11, issue #22): manhã/tarde/noite pela rotina do jogador ----
+// quest.slot = manha|tarde|noite|livre (campo novo, opcional). Sem slot: deduz pelo ifThen/título, sem regravar a config.
+const SLOTS=["manha","tarde","noite"];
+function slotHm(t,d){const m=/^(\d{1,2}):(\d{2})/.exec(t||"");return m?(+m[1])*60+(+m[2]):d;}
+function slotRoutine(){const P=(typeof cfg!=="undefined"&&cfg&&cfg.profile)||{};return {wake:slotHm(P.wake,420),sleep:slotHm(P.sleep,1380)};}
+function slotOfMin(m,r){r=r||slotRoutine();
+  if(m>=r.wake&&m<720)return "manha";if(m>=720&&m<1080)return "tarde";if(m>=1080)return "noite";
+  // madrugada: antes do horário de dormir (quem dorme depois da meia-noite) ainda é noite; senão já conta como manhã
+  return m<Math.max(240,r.sleep<r.wake?r.sleep:0)?"noite":"manha";}
+function slotNow(d){d=d||new Date();return slotOfMin(d.getHours()*60+d.getMinutes());}
+function slotGuessText(t){t=String(t||"").toLowerCase();if(!t)return "";
+  if(/antes do almo/.test(t))return "manha";
+  if(/jantar|dormir|deitar|noite|carregar à noite|carregador fora da cama|na cama/.test(t))return "noite";
+  if(/almo[çc]|tarde|sol baixar/.test(t))return "tarde";
+  if(/acord|alarme|caf[ée]|(^|[^a])manh[ãa]|levant/.test(t))return "manha";
+  const h=/(?:às|\(|\b)(\d{1,2})h(\d{2})?\b/.exec(t);if(h){const m=(+h[1])*60+(+(h[2]||0));return m<720?(m<240?"noite":"manha"):m<1080?"tarde":"noite";}
+  return "";}
+function qSlot(q){if(!q)return "livre";if(SLOTS.includes(q.slot)||q.slot==="livre")return q.slot;return slotGuessText(q.ifThen)||slotGuessText(q.title)||"livre";}
+// 0 = período atual, 1 = livre, 2-3 = próximos períodos, 9 = período que já passou (vai para o fim, sem castigo)
+function slotRank(q,cur){cur=cur||slotNow();const s=qSlot(q);if(s==="livre")return 1;const i=SLOTS.indexOf(cur),j=SLOTS.indexOf(s);
+  if(j===i)return 0;if(j>i)return 1+(j-i);return 9;}
+function slotMainRank(q){return q.main?0:q.once?1:2;}
+function slotSort(L,cur){cur=cur||slotNow();return L.map((q,i)=>[q,i]).sort((a,b)=>(slotRank(a[0],cur)*10+slotMainRank(a[0]))-(slotRank(b[0],cur)*10+slotMainRank(b[0]))||a[1]-b[1]).map(x=>x[0]);}
+// 1ª hora depois de acordar: o Sistema não abre com estudo ou trabalho pesado
+function slotHeavy(q){return !!q&&(/^(s_rev|s_bloco|s_foco|s_carr|s_meta|q_estudo)$/.test(q.id)||((q.stat==="mente"||q.stat==="vendas")&&(q.xp||0)>=30));}
+function slotWakeHour(d){d=d||new Date();const r=slotRoutine(),m=d.getHours()*60+d.getMinutes();return m>=r.wake&&m<r.wake+60;}
 // ---------- Perfil e geração de quests (onboarding) ----------
 const DN=["seg","ter","qua","qui","sex","sáb","dom"];
 const FOCI=[["estudos","Estudos"],["sono","Dormir melhor"],["corpo","Saúde e corpo"],["carreira","Carreira"],["dinheiro","Dinheiro"],["relac","Pessoas que amo"],["casa","Casa em ordem"],["remedio","Remédios no horário"],["agua","Beber água"],["tela","Menos tempo de tela"],["leitura","Ler mais"]];
@@ -2710,6 +2739,8 @@ function buildCfg(a){const Q=[];let n=0;const add=q=>{q.id=q.id||("g"+(++n));Q.p
   // garante pelo menos 2 principais além do fechamento, seguindo a ordem dos focos
   let mains=Q.filter(q=>q.main).length;for(const q of Q){if(mains>=3)break;if(!q.main&&!q.once&&!q.days){q.main=true;mains++;}}
   const rk=q=>q.id==="s_remed"?0:q.id==="s_fech"?2:1;Q.sort((x,y)=>rk(x)-rk(y));
+  // período do dia de cada tarefa (campo novo `slot`; tools/slot.js): manhã/tarde/noite pelo gatilho "quando/depois"
+  for(const q of Q)if(!q.slot&&typeof slotGuessText==="function"){const g=slotGuessText(q.ifThen)||slotGuessText(q.title);if(g)q.slot=g;}
   const c={version:1,name:a.name||"Você",startDate:todayKey(),profile:a,faith:!!a.faith,quests:Q};
   if(studyIds.length)c.boss={name:"Constância nos estudos",deadline:"Renasce toda segunda",hp:10,fullHit:3,minHit:1,reward:80,questIds:studyIds,hint:"Cada revisão ou bloco de estudo tira 3 de vida; o mínimo tira 1."};
   else{const mi=Q.filter(q=>q.main&&q.id!=="s_fech").map(q=>q.id);if(mi.length)c.boss={name:"Constância da semana",deadline:"Renasce toda segunda",hp:30,fullHit:3,minHit:1,reward:80,questIds:mi,hint:"Cada tarefa principal feita tira 3 de vida; o mínimo tira 1."};}
@@ -2944,14 +2975,19 @@ function edOpen(id){const q=id?(cfg.quests||[]).find(x=>x.id===id):{title:"",xp:
   $("edTitle").value=q.title||"";$("edMin").value=q.minTitle||"";$("edIf").value=q.ifThen||"";$("edXp").value=String([10,15,20,25,30,40].reduce((a,v)=>Math.abs(v-(q.xp||15))<Math.abs(a-(q.xp||15))?v:a,15));
   $("edStat").value=q.stat||"foco";$("edMain").checked=!!q.main;$("edMain").disabled=!!q.once;
   toggles("edDays",ED_DN.map((l,i)=>[String(i),l]),(q.days||[0,1,2,3,4,5,6]).map(String));$("edDays").hidden=!!q.once;
+  edSlotUI(q.slot||"");
   $("edDel").hidden=!id;$("edDel").textContent="Apagar";$("edDel").dataset.arm="";$("edForm").hidden=false;$("edList").hidden=true;$("edTitle").focus();}
 function edClose(){$("edForm").hidden=true;$("edList").hidden=false;edCur=null;renderEd();}
+// período (tools/slot.js): 1 escolha; "Automático" segue o "Quando fazer"
+function edSlotUI(v){const box=$("edSlot");box.textContent="";for(const [k,l] of [["","Automático"],["manha","Manhã"],["tarde","Tarde"],["noite","Noite"],["livre","Qualquer hora"]]){const b=document.createElement("button");b.type="button";b.textContent=l;b.dataset.v=k;
+  const on=k===v;b.classList.toggle("on",on);b.setAttribute("aria-pressed",on?"true":"false");b.addEventListener("click",()=>edSlotUI(k));box.append(b);}}
+function edSlotVal(){const b=$("edSlot").querySelector(".on");return b?b.dataset.v:"";}
 $("edNew").addEventListener("click",()=>edOpen(null));$("edCancel").addEventListener("click",edClose);
 $("edForm").addEventListener("submit",ev=>{ev.preventDefault();const t=$("edTitle").value.trim();if(!t)return;
   let full=false;const Q=(cfg.quests||[]).slice();let q=edCur?Q.find(x=>x.id===edCur):null;const wasMain=!!(q&&q.main);
   if(!q){q={id:"u"+Date.now().toString(36)};Q.push(q);}
   q.title=t;const mt=$("edMin").value.trim(),it=$("edIf").value.trim();if(mt)q.minTitle=mt;else delete q.minTitle;if(it)q.ifThen=it;else delete q.ifThen;
-  q.xp=Number($("edXp").value)||15;q.stat=$("edStat").value;
+  q.xp=Number($("edXp").value)||15;q.stat=$("edStat").value;const sl=edSlotVal();if(sl)q.slot=sl;else delete q.slot;
   if(!q.once){const days=picked("edDays").map(Number).sort();if(!days.length){toast("Escolha pelo menos um dia.");return;}if(days.length<7)q.days=days;else delete q.days;
     let main=$("edMain").checked;if(main&&!wasMain&&Q.filter(x=>x.main&&x!==q).length>=3){full=true;main=false;}if(main)q.main=true;else delete q.main;
     // mudou quem é principal: a contagem de dívida recomeça hoje, para não cobrar o passado
@@ -4612,7 +4648,7 @@ function qtTidy(){const box=$("quests");if(!box)return;let nextMoved=false;
 {const _r=render;render=function(){_r.apply(this,arguments);try{qtTidy();}catch(e){}};}
 // mensagem do [SISTEMA]: aponta para a primeira tarefa liberada, com o título curto
 if(typeof sysLine==="function"){const _sl=sysLine;sysLine=function(){const t=_sl();try{const dt=new Date();const done=prog.log[todayKey()]||[];
-  const left=mainsFor(dt).filter(q=>!done.some(e=>e.q===q.id));if(!left.length)return t;const nx=left[0];const ok=left.find(q=>qtLocked(q)==null);
+  const left=mainsFor(dt).filter(q=>!done.some(e=>e.q===q.id));if(!left.length)return t;const nx=left[0];const ok=(typeof slotSort==="function"?slotSort(left):left).find(q=>qtLocked(q)==null);
   const nm=q=>qtShort(q)||q.title;
   if(t.includes("Próxima missão: "+nx.title)){if(ok)return t.replace("Próxima missão: "+nx.title,"Próxima missão: "+nm(ok));const lk=qtLocked(nx);return t.replace("Próxima missão: "+nx.title+".","Próxima missão libera às "+lk+"h: "+nm(nx)+".");}
   if(t.includes("Sugestão: "+(nx.minTitle||nx.title))&&ok&&ok!==nx)return t.replace("Sugestão: "+(nx.minTitle||nx.title),"Sugestão: "+(ok.minTitle||nm(ok)));}catch(e){}return t;};}
@@ -5861,8 +5897,9 @@ function smRecClaim(){if(!smRecNeeded()||smRecDone())return false;const y=smDay(
 function smCands(){const now=Date.now(),s=smSt(),e=smEnergy();
   let L=todaysQuests().filter(q=>!smDone(q)&&smLocked(q)==null&&!((s.snz[q.id]||0)>now)&&!/^(s_fech|q_fech)$/.test(q.id));
   if(e==="baixa"){const m=L.filter(q=>q.main);if(m.length)L=m;}
-  const w=q=>(q.main?0:q.once?1:2)*100+(e==="baixa"?(q.xp||0):0);
-  return L.sort((a,b)=>w(a)-w(b));}
+  const cur=slotNow(),wk=slotWakeHour()&&L.some(q=>!slotHeavy(q));
+  const w=q=>(wk&&slotHeavy(q)?100000:0)+slotRank(q,cur)*1000+(q.main?0:q.once?1:2)*100+(e==="baixa"?(q.xp||0):0);
+  return L.map((q,i)=>[q,i]).sort((a,b)=>w(a[0])-w(b[0])||a[1]-b[1]).map(x=>x[0]);}
 let smIdx=0,smQ=null,smIv=null,smEnd=0;
 function smPick(){const L=smCands();if(!L.length)return null;smIdx=smIdx%L.length;return L[smIdx];}
 // ---- tela ----
