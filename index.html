@@ -768,6 +768,7 @@ body[data-tab=amigos] #frPanel .frlist{display:none}
 .tmlist li{position:relative}
 .dyup{position:absolute;top:-9px;right:10px;padding:1px 8px;border-radius:999px;border:1px solid var(--good);background:#0a1222;font-family:var(--f-mono);font-size:.72rem;color:var(--good);letter-spacing:.06em}
 .zaprival{margin-top:6px}
+.tmempty .tmnick{min-height:44px;align-self:center}
 /* ---- Card de jogador + convite + destaque (tools/card.js) ---- */
 .cdmodal .cdcard{position:relative;max-width:360px;padding:16px 16px 14px;border:2px solid var(--cd);border-radius:16px;background:radial-gradient(120% 70% at 50% 0%,color-mix(in srgb,var(--cd) 28%,transparent),transparent 60%),linear-gradient(180deg,#0c1628,#060b15);box-shadow:0 0 0 1px rgba(255,255,255,.04) inset,0 0 34px color-mix(in srgb,var(--cd) 35%,transparent);text-align:center}
 .cdtop{display:flex;justify-content:space-between;align-items:center;gap:8px}
@@ -4541,13 +4542,15 @@ function frCheck(){const me=rankName();if(!me)return;const f=frSt();let ch=false
   if($("frModal")||$("sqiModal")||[...document.querySelectorAll(".sysmodal")].some(x=>x.getClientRects().length)||document.body.classList.contains("inmission"))return;
   const inc=sqInvRows.filter(r=>r.k==="F"&&frN(r.b)===frN(me)&&r.a&&!frHas(r.a)&&!f.seen["f:"+frN(r.a)]&&sqiFresh(r.d));
   const td=todayKey();if(!f.ask||f.ask.d!==td)f.ask={d:td,n:0};
-  if(inc.length&&f.ask.n<3){f.ask.n++;save();frAsk(inc[inc.length-1].a);}}
+  if(inc.length&&f.ask.n<3){f.ask.n++;save();const a=inc[inc.length-1].a;
+    // espera o cdInbox/gtInbox (assíncronos: conferem a assinatura do link) para não pedir amizade de quem já entrou pelo link
+    setTimeout(()=>{if(!frHas(a)&&!$("frModal"))frAsk(a);},1500);}}
 function frAsk(n){const f=frSt();const m=frEl("div","sysmodal");m.id="frModal";m.setAttribute("role","dialog");m.setAttribute("aria-modal","true");const c=frEl("div","card");
   const av=frEl("div","fravbig");av.innerHTML=frAv((sqPub[frN(n)]||{}).av,84);
   c.append(frEl("div","tag","[ SISTEMA ] PEDIDO DE AMIZADE"),av,frEl("h3",null,n+" quer ser seu amigo"),frEl("p","sm","Amigos se comparam lado a lado: XP da semana, nível, sequência e desafios."));
   const row=frEl("div","row");const ok=frEl("button","go","Aceitar");ok.type="button";const no=frEl("button","ghost","Agora não");no.type="button";row.append(ok,no);c.append(row);
   const close=()=>{f.seen["f:"+frN(n)]=1;save();m.remove();setTimeout(frCheck,400);};
-  ok.addEventListener("click",()=>{if(!frHas(n))f.l.push(n);delete f.pend[n];sqiPost(["G",rankName(),n,"",sqiDk()]);try{haptic([15,40,15]);}catch(e){}toast(n+" agora é seu amigo.");close();});
+  ok.addEventListener("click",()=>{if(frHas(n)){close();return;}f.l.push(n);delete f.pend[n];sqiPost(["G",rankName(),n,"",sqiDk()]);try{haptic([15,40,15]);}catch(e){}toast(n+" agora é seu amigo.");close();});
   no.addEventListener("click",close);m.append(c);document.body.append(m);setTimeout(()=>ok.focus(),60);}
 // comparação lado a lado
 function frCompare(n){const a=frMe(),b=frRow(n);const m=frEl("div","sysmodal");m.setAttribute("role","dialog");m.setAttribute("aria-modal","true");const c=frEl("div","card frcmp");
@@ -4779,7 +4782,9 @@ function tmUI(){const p=tmPlace();if(!p)return;if(tmKid()||!cfg||cfg.blank){p.hi
   if(s.view==="hoje"){const box=tmEl("div","dybox");const rv=typeof dyRival==="function"?dyRival():null;box.append(tmEl("div","dyriv",rv?rv.txt:"Ranking de hoje: zera à meia-noite. Cada XP de hoje conta."));
     const nt=dyNote();if(nt)box.append(tmEl("div","sm muted",nt));box.append(dyNtfBtn());p.append(box);}
   if(s.view==="turma"&&!gr.length){const e=tmEl("div","tmempty");e.append(tmEl("p",null,"Sua turma ainda está vazia. Chame alguém para jogar com você."));
-    const b=tmEl("button","go","+ Adicionar amigo");b.type="button";b.addEventListener("click",()=>{try{frAdd=true;frUI();}catch(e){}setTimeout(()=>{const f=$("frPanel");if(!f)return;if(f.classList.contains("fold")&&!f.classList.contains("open")){const h=f.querySelector(":scope>.fhd");if(h)h.click();}f.scrollIntoView({block:"start",behavior:matchMedia("(prefers-reduced-motion: reduce)").matches?"auto":"smooth"});const i=f.querySelector("input");if(i)setTimeout(()=>i.focus(),80);},0);});e.append(b);p.append(e);}
+    // turma vazia: o botão principal manda o LINK da turma (mesmo dos botões Copiar link/WhatsApp); por apelido fica como opção secundária
+    if(typeof cdInvite==="function"&&tmOn()&&!(typeof tmKid==="function"&&tmKid())&&rankName()){const iv=tmEl("button","go tminv","📨 Mandar o link da turma");iv.type="button";iv.addEventListener("click",()=>cdInvite());e.append(iv);}
+    const b=tmEl("button",e.querySelector(".tminv")?"link tmnick":"go",e.querySelector(".tminv")?"ou adicionar por apelido":"+ Adicionar amigo");b.type="button";b.addEventListener("click",()=>{try{frAdd=true;frUI();}catch(e){}setTimeout(()=>{const f=$("frPanel");if(!f)return;if(f.classList.contains("fold")&&!f.classList.contains("open")){const h=f.querySelector(":scope>.fhd");if(h)h.click();}f.scrollIntoView({block:"start",behavior:matchMedia("(prefers-reduced-motion: reduce)").matches?"auto":"smooth"});const i=f.querySelector("input");if(i)setTimeout(()=>i.focus(),80);},0);});e.append(b);p.append(e);}
   if(rankRows&&typeof rankErr!=="undefined"&&rankErr){const w=tmEl("div","sm muted tmoff","Sem conexão · mostrando a última lista. Toque para tentar de novo.");w.setAttribute("role","button");w.tabIndex=0;w.style.cursor="pointer";w.addEventListener("click",()=>{rankErr=false;try{tmUI();}catch(e){}loadRank();});const f0=p.firstElementChild;if(f0)f0.after(w);else p.append(w);}
   if(!rankRows){const w=tmEl("div","sm muted",(typeof rankErr!=="undefined"&&rankErr)?"Sem conexão com o ranking. Toque aqui para tentar de novo.":"Carregando a turma…");if(typeof rankErr!=="undefined"&&rankErr){w.style.cursor="pointer";w.addEventListener("click",()=>{rankErr=false;try{tmUI();}catch(e){}loadRank();});}p.append(w);}
   const ol=tmEl("ol","tmlist");L.slice(0,300).forEach((r,i)=>{const li=tmEl("li",(r.me?"me ":"")+(i<3&&L.length>=2?"up":""));
@@ -6861,8 +6866,8 @@ function clTurma(inv,go){if(!inv||!inv.t||typeof gtSt!=="function"||typeof gtCle
   if(!t){t={id:"t"+Date.now().toString(36),n,e:"⭐",c:"",m:[]};g.l.push(t);}
   if(!t.m.some(x=>gtN(x)===gtN(inv.a)))t.m.push(inv.a);
   try{localStorage.removeItem("asc-amigo-t");}catch(e){}save();try{tmUI();}catch(e){}return t.n;}
-// 1) aviso no link aberto fora do app instalado (o card.js já tirou os parâmetros da barra; a URL original fica no navigation entry)
-(function(){try{if(clStandalone())return;const nav=(performance.getEntriesByType&&performance.getEntriesByType("navigation")[0])||{};
+// 1) aviso no link aberto fora do app instalado (roda depois do cfg carregar: menor de 14 não vê; o card.js já tirou os parâmetros da barra; a URL original fica no navigation entry)
+setTimeout(function(){try{if(clStandalone())return;if(typeof tmKid==="function"&&tmKid())return;const nav=(performance.getEntriesByType&&performance.getEntriesByType("navigation")[0])||{};
   const inv=clParse(nav.name||"");if(!inv)return;const box=clEl("div","clbar");box.id="clBar";box.setAttribute("role","region");box.setAttribute("aria-label","Convite de "+inv.a);
   box.append(clEl("b",null,"🤝 Convite de "+inv.a+(inv.t?" · turma "+inv.t:"")));
   box.append(clEl("span","sm","Já tem o Ascension instalado? Copie o convite, abra o app e cole em Amigos → Recebeu um convite?"));
@@ -6871,7 +6876,7 @@ function clTurma(inv,go){if(!inv||!inv.t||typeof gtSt!=="function"||typeof gtCle
     if(!ok){try{const i=document.createElement("textarea");i.value=u;document.body.append(i);i.select();ok=document.execCommand("copy");i.remove();}catch(e){}}
     cp.textContent=ok?"Copiado ✓":"Copie o link da conversa";toast(ok?"Convite copiado. Abra o app e cole em Amigos.":"Não deu para copiar. Copie o link na conversa e cole no app.");});
   const x=clEl("button","link","Não tenho o app");x.type="button";x.addEventListener("click",()=>box.remove());row.append(cp,x);box.append(row);
-  document.body.append(box);}catch(e){}})();
+  document.body.append(box);}catch(e){}},0);
 // 2) "Recebeu um convite?" na aba Amigos (fim do painel da Turma). O painel é redesenhado a cada sincronização:
 //    a caixa volta no mesmo estado (aberta, texto digitado, mensagem) e nada some enquanto a pessoa digita.
 let clOpen=false,clVal="",clMsg="";
