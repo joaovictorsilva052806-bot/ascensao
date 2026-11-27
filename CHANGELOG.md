@@ -3,6 +3,11 @@
 Formato: [Keep a Changelog](https://keepachangelog.com/pt-BR/1.1.0/). Versões: [SemVer](https://semver.org/lang/pt-BR/) (`MAIOR.MENOR.CORREÇÃO`).
 Regra de ouro de toda versão: o progresso salvo no aparelho nunca é apagado nem renomeado.
 
+## Cache novo para quem pegou a versão do "+XP" (27/11/2026, dentro da 1.0)
+
+### Corrigido
+- O "+XP" separado (#180) e a Missão Criador (#179) saíram com o mesmo nome de cache (`ascensao-v105`). Quem abriu o app entre os dois ficaria sem a Missão. Caches `ascensao-v106` / `ascensao-u-v118`.
+
 ## Missão Criador, fase 1 no painel Criador (27/11/2026, dentro da 1.0)
 
 ### Adicionado
