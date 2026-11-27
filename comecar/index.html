@@ -1587,6 +1587,32 @@ button.pill.ouro[hidden]{display:none}
 .rdlist{display:grid;gap:8px}
 .rddone{margin:0;color:var(--good)}
 .rdnote{margin:0;color:var(--muted);border-left:3px solid var(--line);padding-left:8px}
+/* ---- Missões do Mestre 18+ (tools/mestre.*) ---- */
+.mmpanel{display:grid;gap:10px}
+.mmcard{display:grid;gap:6px;padding:10px 12px;border:1px solid var(--line);border-radius:10px;background:#0a1222}
+.mmcard.ok{opacity:.8}
+.mmad{justify-self:start;font-family:var(--f-mono);font-size:.72rem;letter-spacing:.06em;color:#0b0f17;background:var(--gold);border-radius:4px;padding:2px 6px}
+.mmp{font-size:1.05rem}
+.mmcard p{margin:0;line-height:1.4}
+.mmc{color:var(--muted)}
+.mmmestre{color:var(--gold);border-left:3px solid var(--gold);padding-left:8px}
+.mmrow{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
+.mmlink,.mmreg,.mmfiz{min-height:44px;display:inline-flex;align-items:center;justify-content:center}
+a.mmlink{padding:0 14px;border-radius:8px;text-decoration:none;font-weight:600;color:var(--glow);border:1px solid var(--glow);background:rgba(0,212,255,.08)}
+.mmreg{color:var(--glow);padding:0 6px}
+.mmfiz{justify-self:start}
+.mmfiz.mmlock{opacity:.6}
+/* ---- Arsenal do Herói: vitrine de afiliados 18+ (tools/arsenal.*) ---- */
+.afpanel{display:grid;gap:10px}
+.afh{margin:6px 0 0;font-size:.95rem}
+.afgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:8px}
+.afitem{display:grid;gap:6px;align-content:start;padding:10px 12px;border:1px solid var(--line);border-radius:10px;background:#0a1222}
+.afitem .aft{font-size:1rem;line-height:1.3}
+.afitem .afa{color:var(--muted)}
+.afitem .aff{margin:0;line-height:1.4}
+.afseal{justify-self:start;font-size:.78rem;line-height:1.35;color:#0b0f17;background:var(--gold);border-radius:4px;padding:3px 6px}
+a.aflink{justify-self:start;min-height:44px;display:inline-flex;align-items:center;padding:0 14px;border-radius:8px;text-decoration:none;font-weight:600;color:var(--glow);border:1px solid var(--glow);background:rgba(0,212,255,.08)}
+.afnote{margin:0}
 </style></head><body>
 
 <div class="hudtop"><span>ASCENSION<i>//</i>SISTEMA ONLINE</span><span class="mono" id="clock">--:--</span></div>
@@ -7546,6 +7572,89 @@ function rdPay(){const v=rdVer();if(!v||typeof orGive!=="function"||typeof orRea
   if(L.every(m=>r[v][m[0]])&&!got["pr:fim:"+v])orGive("pr:fim:"+v,RD_G.fim,"Trilha completa");}
 {const _r=render;render=function(){_r.apply(this,arguments);try{rdRender();}catch(e){}clearTimeout(rdPay._t);rdPay._t=setTimeout(()=>{try{rdPay();}catch(e){}},900);};}
 setTimeout(()=>{try{rdRender();}catch(e){}},60);
+
+// ---------- Missões do Mestre (só 18+): spec da EVA 7205176627, trava de idade de 7216423824 ----------
+// Cartões de parceiros com regulamento próprio. A lista vem de missoes-mestre.json (na raiz do site), para trocar parceiro,
+// valor ou link sem trem novo. Missão sem todos os campos preenchidos (ou com link que não é https) não aparece; lista vazia = seção some.
+// Só para 18+ pela trava de tools/idade.js (sem idade = menor no /comecar/; 7 dias depois de ter sido menor; some com parent).
+// "Fiz" é autodeclarado: +80 de Ouro uma vez por missão, travado nos 3 primeiros dias de conta. Opcional: quem não faz não perde nada.
+// Nada sai do aparelho além do toque no link do parceiro. Só ADICIONA prog.mestre = {id: dia}.
+const MM_G=80,MM_KEY="asc-u-mestre-cfg";
+let mmList=null,mmTry=0;
+function mmEl(t,c,x){const e=document.createElement(t);if(c)e.className=c;if(x!=null)e.textContent=x;return e;}
+function mmSt(){let m=prog.mestre;if(!m||typeof m!=="object"||Array.isArray(m))m=prog.mestre={};return m;}
+const mmHttps=u=>{try{const x=new URL(String(u||""));return x.protocol==="https:"?x.href:"";}catch(e){return "";}};
+function mmClean(j){const L=j&&Array.isArray(j.missoes)?j.missoes:[];const out=[];
+  for(const m of L){if(!m||typeof m!=="object")continue;const id=String(m.id||"").replace(/[^a-z0-9_-]/gi,"").slice(0,24),parceiro=String(m.parceiro||"").trim().slice(0,40),
+    ganho=String(m.ganho||"").trim().slice(0,80),cond=String(m.cond||"").trim().slice(0,140),mestre=Math.round(+m.mestre*100)/100,link=mmHttps(m.link),regras=mmHttps(m.regras);
+    if(id&&parceiro&&ganho&&cond&&mestre>0&&link&&regras)out.push({id,parceiro,ganho,cond,mestre,link,regras});}
+  return out;}
+function mmUrl(){return (location.pathname.indexOf("/comecar/")>=0?"../":"")+"missoes-mestre.json";}
+function mmLoad(){if(mmList||mmTry>2)return;mmTry++;
+  try{const c=JSON.parse(localStorage.getItem(MM_KEY)||"null");if(c)mmList=mmClean(c);}catch(e){}
+  try{fetch(mmUrl(),{cache:"no-cache"}).then(r=>r.ok?r.json():null).then(j=>{if(!j)return;mmList=mmClean(j);try{localStorage.setItem(MM_KEY,JSON.stringify(j));}catch(e){}mmRender();}).catch(()=>{});}catch(e){}}
+const mmBRL=v=>"R$ "+v.toFixed(2).replace(".",",").replace(",00","");
+function mmDone(m){const s=mmSt();if(s[m.id])return;if(!adGoldOk()){toast("O Ouro das Missões do Mestre libera no 4º dia de conta.");return;}
+  s[m.id]=todayKey();save();let g=0;try{g=orGive("mm:"+m.id,MM_G,"Missão do Mestre");}catch(e){}
+  toast("✓ "+m.parceiro+(g?" · +"+g+" 🪙":" · o Ouro entra quando couber no teto do dia"));mmRender();}
+function mmRender(){let p=$("mmPanel");const ok=typeof ad18==="function"&&ad18()&&typeof orGive==="function";
+  if(ok&&!mmList)mmLoad();
+  const L=ok&&mmList?mmList:[];if(!L.length){if(p)p.hidden=true;return;}
+  if(!p){const anchor=$("orPanel")||$("bxCol")||document.querySelector('.wrap>section[data-tab="prog"]');if(!anchor)return;p=mmEl("section","panel mmpanel");p.id="mmPanel";p.dataset.tab="prog";anchor.after(p);}
+  p.hidden=false;const s=mmSt();const gold=adGoldOk();p.textContent="";
+  const hd=mmEl("div","qhead");hd.append(mmEl("h2",null,"🎖️ Missões do Mestre"),mmEl("span","sm mono",L.filter(m=>s[m.id]).length+"/"+L.length));p.append(hd);
+  p.append(mmEl("div","sm muted","Missões opcionais de parceiros, só para 18+. Quem não faz não perde nada. Cada uma tem regulamento próprio do parceiro."));
+  for(const m of L){const done=!!s[m.id];const c=mmEl("div","mmcard"+(done?" ok":""));c.dataset.mm=m.id;
+    c.append(mmEl("span","mmad","Publicidade · indicação"),mmEl("b","mmp",(done?"✓ ":"")+m.parceiro),mmEl("p","mmg","Você ganha: "+m.ganho),mmEl("p","sm mmc","Para liberar: "+m.cond));
+    c.append(mmEl("p","mmmestre","O Mestre também ganha "+mmBRL(m.mestre)+" se você concluir."));
+    const row=mmEl("div","mmrow");const a=mmEl("a","mmlink","Abrir no "+m.parceiro+" ↗");a.href=m.link;a.target="_blank";a.rel="sponsored noopener noreferrer";
+    const r=mmEl("a","mmreg","Regulamento ↗");r.href=m.regras;r.target="_blank";r.rel="noopener noreferrer";row.append(a,r);c.append(row);
+    const b=mmEl("button",done?"ghost mmfiz":"mmfiz"+(gold?"":" mmlock"),done?"Feita":gold?"Fiz · +"+MM_G+" 🪙":"Ouro libera no 4º dia de conta");b.type="button";
+    if(done)b.disabled=true;else b.addEventListener("click",()=>mmDone(m));b.setAttribute("aria-label",done?m.parceiro+": feita":"Marcar como feita: "+m.parceiro);c.append(b);p.append(c);}
+  p.append(mmEl("p","sm muted mmlaw","Idade autodeclarada: o parceiro exige 18+ no cadastro dele. "+OR_LAW));}
+{const _r=render;render=function(){_r.apply(this,arguments);try{mmRender();}catch(e){}};}
+setTimeout(()=>{try{mmRender();}catch(e){}},80);
+
+// ---------- Arsenal do Herói: vitrine de afiliados (só 18+), pedido da EVA 7219654001 + parecer do ATLAS (7221075738) ----------
+// Só para 18+ pela trava de tools/idade.js. Mesma lista fixa para todo mundo: sem recomendação personalizada e sem rastreio próprio.
+// Selo de publicidade visível sem clique ao lado de cada link (CONAR 2026 + CDC art. 36). Nada sai do aparelho além do toque no link.
+// AFIL vazio = a vitrine não aparece. O JV preenche as tags quando abrir as contas (é público no site: tag de afiliado não é segredo).
+// Itens por módulo: Estudo (10 livros do ATLAS) e Forja (lista do ARES, ainda vazia: o grupo some). Não grava nada no progresso.
+const AFIL={amz:'',ml:''};
+const AF_SEAL="Publicidade · link de afiliado: o criador do app ganha comissão se você comprar";
+// [título, autor, 1 frase honesta, busca na loja, link do Mercado Livre (opcional, gerado pelo JV)]
+const AF_ITEMS={
+ estudo:[
+  ["Hábitos Atômicos","James Clear","Mostra como hábitos pequenos se somam, com passos práticos para começar bem pequeno.","Hábitos Atômicos James Clear"],
+  ["O Poder do Hábito","Charles Duhigg","Explica o ciclo deixa, rotina e recompensa que existe por trás dos hábitos.","O Poder do Hábito Charles Duhigg"],
+  ["Trabalho Focado","Cal Newport","Defende blocos longos sem distração para o trabalho que exige concentração.","Trabalho Focado Cal Newport"],
+  ["Mindset","Carol S. Dweck","Compara a mentalidade fixa com a de crescimento e o que isso muda no jeito de aprender.","Mindset Carol Dweck"],
+  ["Garra","Angela Duckworth","Sobre persistência e interesse de longo prazo, com as pesquisas da autora.","Garra Angela Duckworth"],
+  ["Essencialismo","Greg McKeown","Ajuda a dizer não ao que não importa para fazer bem o que importa.","Essencialismo Greg McKeown"],
+  ["A Arte de Fazer Acontecer (GTD)","David Allen","O método GTD: tirar tudo da cabeça e organizar em listas de próximas ações.","A Arte de Fazer Acontecer David Allen"],
+  ["Rápido e Devagar","Daniel Kahneman","Os dois modos de pensar e os atalhos que levam a erros de julgamento. Leitura mais densa.","Rápido e Devagar Kahneman"],
+  ["Mentes Inquietas","Ana Beatriz Barbosa Silva","Livro de divulgação sobre TDAH. Não substitui a avaliação de um profissional de saúde.","Mentes Inquietas Ana Beatriz Barbosa Silva"],
+  ["Como Fazer Amigos e Influenciar Pessoas","Dale Carnegie","Clássico sobre conversa e relacionamento, com dicas simples do dia a dia.","Como Fazer Amigos e Influenciar Pessoas Dale Carnegie"]],
+ forja:[]};
+const AF_GROUPS=[["forja","⚒️ Forja"],["estudo","📚 Estudo"]];
+function afEl(t,c,x){const e=document.createElement(t);if(c)e.className=c;if(x!=null)e.textContent=x;return e;}
+const afTag=v=>String(v||"").trim().replace(/[^A-Za-z0-9_-]/g,"").slice(0,40);
+function afLink(it){const amz=afTag(AFIL.amz);if(amz&&it[3])return "https://www.amazon.com.br/s?k="+encodeURIComponent(it[3])+"&tag="+encodeURIComponent(amz);
+  if(afTag(AFIL.ml)&&it[4]){try{const u=new URL(it[4]);if(u.protocol==="https:")return u.href;}catch(e){}}return "";}
+function afOn(){return (!!afTag(AFIL.amz)||!!afTag(AFIL.ml))&&typeof ad18==="function"&&ad18();}
+function afRender(){let p=$("afPanel");const groups=afOn()?AF_GROUPS.map(([k,n])=>[n,(AF_ITEMS[k]||[]).map(it=>[it,afLink(it)]).filter(x=>x[1])]).filter(g=>g[1].length):[];
+  if(!groups.length){if(p)p.hidden=true;return;}
+  if(!p){const ms=document.querySelectorAll('.wrap>section[data-tab="mais"]:not(#afPanel)');const anchor=ms[ms.length-1];if(!anchor)return;p=afEl("section","panel afpanel");p.id="afPanel";p.dataset.tab="mais";anchor.after(p);}
+  p.hidden=false;p.textContent="";const hd=afEl("div","qhead");hd.append(afEl("h2",null,"🛡️ Arsenal do Herói"),afEl("span","sm mono","publicidade"));p.append(hd);
+  p.append(afEl("div","sm muted","Livros e equipamentos que o time indica, a mesma lista para todo mundo. Comprar é opcional e não muda nada no jogo."));
+  for(const [n,L] of groups){p.append(afEl("h3","afh",n));const g=afEl("div","afgrid");
+    for(const [it,url] of L){const c=afEl("div","afitem");c.append(afEl("b","aft",it[0]),afEl("span","sm afa",it[1]),afEl("p","aff",it[2]));
+      const a=afEl("a","aflink","Ver na loja ↗");a.href=url;a.target="_blank";a.rel="sponsored noopener noreferrer";a.setAttribute("aria-label","Ver "+it[0]+" na loja. "+AF_SEAL);
+      c.append(afEl("span","afseal",AF_SEAL),a);g.append(c);}
+    p.append(g);}
+  p.append(afEl("p","sm muted afnote","O preço e a compra são da loja. O app não sabe o que você comprou e não guarda nada disso."));}
+{const _r=render;render=function(){_r.apply(this,arguments);try{afRender();}catch(e){}};}
+setTimeout(()=>{try{afRender();}catch(e){}},90);
 
 let saveTimer=null, SYNC="";
 try{SYNC=localStorage.getItem("asc-u-sync")||"";}catch(e){}

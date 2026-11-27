@@ -1,5 +1,12 @@
 # Relatório de QA (ATENA)
 
+## 27/11/2026 · Missões do Mestre 18+ e Arsenal do Herói (frentes 3 e 4, rascunho)
+
+- Missões do Mestre (aba Progresso): lista em missoes-mestre.json (no repositório só os 3 parceiros, sem valor nem link = seção some). Missão só aparece com todos os campos e links https. Selo "Publicidade · indicação" e "O Mestre também ganha R$ X se você concluir." em cada cartão. "Fiz" +80 de Ouro uma vez, travado nos 3 primeiros dias de conta. Só 18+ pela trava de tools/idade.js. Dados: só `prog.mestre`.
+- Arsenal do Herói (aba Mais): `AFIL={amz:'',ml:''}` vazio = some. 10 livros do ATLAS no grupo Estudo; Forja vazia até a lista do ARES. Selo "Publicidade · link de afiliado: o criador do app ganha comissão se você comprar" ao lado de cada link, rel sponsored, mesma lista para todos, não grava nada.
+- Termos: seções novas das Missões do Mestre e do Arsenal.
+- Testes: qa/mestre.test.js 50/50, qa/arsenal.test.js 34/34, qa/renda.test.js 48/48. Achado no caminho: `arPanel`/`arEl` já existiam na Arena; o Arsenal usa o prefixo `af`.
+
 ## 27/11/2026 · Trilha Primeira Renda + trava de idade 18+ (frente 2, rascunho)
 
 - Novo: painel "💼 Primeira Renda" na aba Foco com a spec do ATLAS (#22, 7221245467). 14-17 vê "Primeiro passo profissional" (só informação); 18+ vê "Primeiro freela"; até 13 e sem idade no /comecar/ não veem nada. 1 missão em destaque, o resto numa linha. +20 de Ouro por missão e +50 ao fechar (Ouro que não cabe no teto do dia entra no dia seguinte).
