@@ -13,6 +13,8 @@ const ST_CK="asc-u-stcards";let stCards=null;
 function stC(){if(stCards)return stCards;try{stCards=JSON.parse(localStorage.getItem(ST_CK)||"[]");}catch(e){stCards=null;}if(!Array.isArray(stCards))stCards=[];return stCards;}
 function stCSave(){try{localStorage.setItem(ST_CK,JSON.stringify(stC()));}catch(e){toast("Sem espaço no aparelho para mais cards.");}}
 function stEl(t,c,x){const e=document.createElement(t);if(c)e.className=c;if(x!=null)e.textContent=x;return e;}
+// botão travado: continua tocável (o toque explica o porquê), mas com cara de desligado
+function stOff(b){b.setAttribute("aria-disabled","true");b.classList.add("stoff");}
 function stBtn(txt,cls,fn,lab){const b=stEl("button",cls||"ghost",txt);b.type="button";b.dataset.fk=txt;if(lab)b.setAttribute("aria-label",lab);b.addEventListener("click",fn);return b;}
 function stId(){return Date.now().toString(36)+Math.random().toString(36).slice(2,6);}
 function stAdd(k,n){const [y,m,d]=k.split("-").map(Number);const x=new Date(y,m-1,d);x.setDate(x.getDate()+n);return dkey(x);}
@@ -43,6 +45,8 @@ function stGoal(){const g=+stS().cfg.blocks||4;return Math.max(1,stTrainDay()?g-
 function stHM(min){return pad(Math.floor(min/60)%24)+":"+pad(min%60);}
 // ---- timer: usa o foco que já existe; ao terminar, pergunta como foi ----
 function stStart(t){const s=stS();if(prog.focus&&prog.focus.end){toast("Já tem um bloco rodando.");return;}
+  // #138: no horário do treino nenhum botão liga bloco de estudo (nem o "Começar esta" das outras tarefas)
+  const bk=stBlocked();if(bk&&bk.why==="treino"){toast("Hora do treino. Estudo volta às "+stHM(bk.back)+".");return;}
   s.cur=t.id;s.pause=null;const sel=$("focusQuest");if(sel){try{fillFocusSelect();}catch(e){}sel.value="";}
   startFocus(25);s.curEnd=prog.focus&&prog.focus.end;save();stRender();}
 function stAfterBlock(id){const s=stS(),tk=todayKey();s.blk[tk]=(s.blk[tk]||0)+1;const t=s.tasks.find(x=>x.id===id);
@@ -119,10 +123,10 @@ function stRender(){const p=stPanel();if(!p)return;const s=stS(),tk=todayKey();
     row.append(stEl("div","sm muted",meta.join(" · ")));
     if(i===0){const r=stEl("div","row");
       if(run&&s.cur===t.id)r.append(stEl("span","sm stgo","⏱ Bloco rodando no timer acima"));
-      else{const b=stBtn("▶ Começar 25 min","go",()=>stStart(t),"Começar 25 minutos em "+t.t);if(bl&&bl.why==="treino")b.disabled=true;r.append(b);
+      else{const b=stBtn("▶ Começar 25 min","go",()=>stStart(t),"Começar 25 minutos em "+t.t);if(bl&&bl.why==="treino")stOff(b);r.append(b);
         r.append(stBtn("Não consigo agora","ghost",()=>stSnooze(t)));}
       row.append(r);}
-    else{const r=stEl("div","row");r.append(stBtn("Começar esta","ghost",()=>stStart(t)),stBtn("✓ Entreguei","ghost",()=>stDone(t),"Marcar "+t.t+" como entregue"));row.append(r);}
+    else{const r=stEl("div","row");const cb=stBtn("Começar esta","ghost",()=>stStart(t));if(bl&&bl.why==="treino")stOff(cb);r.append(cb,stBtn("✓ Entreguei","ghost",()=>stDone(t),"Marcar "+t.t+" como entregue"));row.append(r);}
     p.append(row);});
   if(all.length>3)p.append(stEl("div","sm muted","+ "+(all.length-3)+" na fila. Uma coisa de cada vez."));
   // 5) nova tarefa / prazo
@@ -133,9 +137,10 @@ function stRender(){const p=stPanel();if(!p)return;const s=stS(),tk=todayKey();
     f.append(stBtn("Salvar","go",()=>{const v=ti.value.trim();if(!v){ti.focus();return;}s.tasks.push({id:stId(),t:v,disc:di.value.trim(),type:ty.value,due:du.value||null,w:+w.value,blocks:+bk.value});
       save();stRender();toast("Salvo. Alerta a 7, 3 e 1 dia do prazo.");}));d.append(f);p.append(d);}
   // 6) prazos (todos, com alerta)
-  {const pend=s.tasks.filter(t=>!t.done&&t.due).sort((a,b)=>a.due<b.due?-1:1);
+  // tarefa sem data também entra (no fim, "sem data"): era a única sem ✕ e ficava presa no Hoje (#137)
+  {const pend=s.tasks.filter(t=>!t.done).sort((a,b)=>!a.due?(!b.due?0:1):!b.due?-1:a.due<b.due?-1:a.due>b.due?1:0);
     if(pend.length){const d=stDetails("📅 Prazos ("+pend.length+")",keep.due);d.dataset.k="due";const ul=stEl("ul","stlist");
-      for(const t of pend){const dd=stDays(t.due);const li=stEl("li",dd<0?"late":dd<=7?"hot":"");li.append(stEl("span",null,(t.type==="adm"?"📌 ":"")+t.t),stEl("span","sm mono",stWhen(dd)));
+      for(const t of pend){const dd=stDays(t.due);const li=stEl("li",dd==null?"":dd<0?"late":dd<=7?"hot":"");li.append(stEl("span",null,(t.type==="adm"?"📌 ":"")+t.t),stEl("span","sm mono",stWhen(dd)));
         const x=stBtn("✕","ghost stx",()=>{if(x.dataset.sure){s.tasks=s.tasks.filter(y=>y.id!==t.id);save();stRender();toast("Apagado: "+t.t);return;}
           x.dataset.sure="1";x.textContent="Apagar?";x.setAttribute("aria-label","Toque de novo para apagar "+t.t);setTimeout(()=>{if(x.isConnected){delete x.dataset.sure;x.textContent="✕";x.setAttribute("aria-label","Apagar "+t.t);}},3000);},"Apagar "+t.t);li.append(x);ul.append(li);}
       d.append(ul);p.append(d);}}
@@ -186,7 +191,7 @@ function stRender(){const p=stPanel();if(!p)return;const s=stS(),tk=todayKey();
     f.append(stBtn("Salvar","go",()=>{c.blocks=+bk.value;const h=th.value===""?null:Math.max(0,Math.min(23,+th.value));
       c.train=h==null||!sel.size?false:{days:[...sel].sort(),hour:h,dur:60};c.sleep=sl.value===""?null:Math.max(0,Math.min(23,+sl.value));save();stRender();toast("Ritmo salvo.");}));
     d.append(f);p.append(d);}
-  if(fk){const t=p.querySelector('[data-fk="'+CSS.escape(fk)+'"]')||p.querySelector("button.go:not([disabled])");if(t)t.focus({preventScroll:true});}
+  if(fk){const t=p.querySelector('[data-fk="'+CSS.escape(fk)+'"]')||p.querySelector("button.go:not([disabled]):not([aria-disabled=true])");if(t)t.focus({preventScroll:true});}
   stAlert();}
 function stAnswer(ok){if(!stRev)return;const c=stRev.q.shift();const real=stC().find(x=>x.id===c.id);if(real)stGrade(real,ok);stRev.n++;stRev.show=false;stCSave();stCardXP();
   if(!stRev.q.length){const n=stRev.tot;stRev=null;toast("Revisão feita: "+n+" cards.");}stRender();}
