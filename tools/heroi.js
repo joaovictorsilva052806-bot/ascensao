@@ -46,7 +46,7 @@ function hrBody(box){box.textContent="";const lv=hrLv();let xp=0;try{xp=totalXP(
     if(k){const pa=AT_PAS[k.pas];inf.append(hrEl("span","sm muted","Classe: "+AT_BY[k.p][1]+" "+AT_BY[k.p][2]+" ★ · "+AT_BY[k.s][1]+" "+AT_BY[k.s][2]+" ☆"+(pa?" · ✨ "+pa[0]:"")));}
     else inf.append(hrEl("span","sm muted","Escolha uma classe para ganhar bônus e uma habilidade passiva."));
     inf.append(hrEl("span","hrgo","Ver todos ›"));at.append(rd,inf);ok=true;}catch(e){}
-  if(ok){at.addEventListener("click",()=>{goTab("prog");setTimeout(()=>{const p=$("atPanel");if(p)p.scrollIntoView({block:"start"});},60);});box.append(at);}
+  if(ok){at.addEventListener("click",()=>{goTab("prog");setTimeout(()=>{const p=$("atPanel");if(!p)return;if(p.classList.contains("fold")&&!p.classList.contains("open")){const h=p.querySelector(":scope>.fhd");if(h)h.click();}p.scrollIntoView({block:"start"});},60);});box.append(at);}
   // 3. título
   const tt=hrTitles();const now=hrTitleNow();const tr=hrEl("div","hrrow");tr.append(hrEl("span","hrlb","🏷️ Título"));
   const tv=hrEl("div","hrchips");

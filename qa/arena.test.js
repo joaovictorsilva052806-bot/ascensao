@@ -21,6 +21,7 @@ async function open(prog,time,dev){const ctx=await b.newContext(dev||{viewport:{
   await p.evaluate(([c,o,k])=>{localStorage.setItem(k+'cfg',JSON.stringify(c));localStorage.setItem(k+'prog',JSON.stringify(o));localStorage.setItem(k+'season','2');localStorage.setItem(k+'perm','1');localStorage.setItem(k+'intro','1');localStorage.setItem(k+'tele','{"asked":1}');},[CFG,prog,K]);
   await p.goto(U);await p.waitForTimeout(1800);await drain(p);return {ctx,p,errs};}
 const st=p=>p.evaluate(k=>JSON.parse(localStorage.getItem(k+'prog')),K);
+const abre=async(p,id)=>{await p.evaluate(id=>{const s=document.getElementById(id);if(s&&s.classList.contains('fold')&&!s.classList.contains('open')){s.scrollIntoView({block:'start'});s.querySelector(':scope>.fhd').click();}},id);await p.waitForTimeout(300);}; // painel recolhido (telas enxutas): abre com 1 toque no título
 const prog=async p=>{await p.locator('#tabbar [data-go="prog"]').dispatchEvent('click');await p.waitForTimeout(500);};
 // 1: painel da arena com os números dos atributos; fôlego = 1 + tarefas de hoje
 let {ctx,p,errs}=await open(base({log:Object.assign(JSON.parse(JSON.stringify(LOG)),{'2026-11-25':[{q:'q3',kind:'full',xp:10,stat:'corpo',bonus:0,t:'x'}]})}),'2026-11-25T10:00:00');
@@ -32,7 +33,7 @@ ok('fôlego = 1 + 1 tarefa = 2',(await p.locator('#arPanel .ardots i.on').count(
 ok('vida sai da Vitalidade (20 + 4 x nível)',await p.evaluate(()=>arQA.hero().hp===20+4*arQA.lv().vital));
 await p.locator('#arPanel').screenshot({path:OUT+'/arena-painel.png'});
 // 2: meta de leitura: escolher 10/dia, somar 6 + 5 = meta batida (XP numa entrada só, em Intelecto/Sabedoria)
-await p.locator('#lrPanel .lrgoals button',{hasText:'10 págs'}).click();await p.waitForTimeout(200);
+await abre(p,'lrPanel');await p.locator('#lrPanel .lrgoals button',{hasText:'10 págs'}).click();await p.waitForTimeout(200);
 await p.locator('#lrPanel .lradd button',{hasText:'+5'}).click();await p.waitForTimeout(300);await drain(p);
 let s=await st(p);let e=s.log['2026-11-25'].find(x=>x.q==='ler:2026-11-25');
 ok('5 páginas = 2 XP',e&&e.xp===2,JSON.stringify(e));
@@ -53,7 +54,7 @@ ok('livro terminado: aviso e +20',await p.locator('.sysmodal:visible',{hasText:'
 ok('livro na estante e XP salvo',s.read.books.length===1&&s.log['2026-11-25'].some(x=>x.q==='ler:livro:1'&&x.xp===20));
 ok('Arena ganha +1 Arcano com a meta de leitura',await p.evaluate(()=>arQA.hero().arc===3));
 // 3: batalha
-await p.locator('#arGo').click();await p.waitForTimeout(400);
+await abre(p,'arPanel');await p.locator('#arGo').click();await p.waitForTimeout(400);
 ok('tela de batalha abre',await p.locator('#arModal').isVisible());
 ok('4 ações grandes (>= 56px)',await p.evaluate(()=>[...document.querySelectorAll('#arActs .aract')].length===4&&[...document.querySelectorAll('#arActs .aract')].every(b=>b.getBoundingClientRect().height>=56)));
 s=await st(p);ok('fôlego gasto ao entrar',s.arena.day['2026-11-25']===1);
@@ -74,7 +75,7 @@ ok('console limpo (1)',errs.length===0,errs.join(' | '));await ctx.close();
 // 4: sem fôlego: botão desliga; derrota dá conselho de vida real
 ({ctx,p,errs}=await open(base({arena:{fl:12,day:{'2026-11-25':0}},energy:{'2026-11-25':'baixa'}}),'2026-11-25T10:00:00'));await prog(p);
 ok('bateria baixa avisa e corta a vida',/Bateria baixa/.test(await p.textContent('#arPanel'))&&await p.evaluate(()=>arQA.hero().hp===Math.round((20+4*arQA.lv().vital)*.8)));
-await p.locator('#arGo').click();await p.waitForTimeout(300);
+await abre(p,'arPanel');await p.locator('#arGo').click();await p.waitForTimeout(300);
 for(let i=0;i<40&&!(await p.locator('#arModal .arres').count());i++){await p.waitForFunction(()=>document.querySelector('#arModal .arres')||[...document.querySelectorAll('#arActs .aract')].some(b=>!b.disabled),null,{timeout:4000});
   if(await p.locator('#arModal .arres').count())break;await p.locator('#arActs .aract[data-k="g"]').click();await p.waitForTimeout(150);}
 await p.waitForSelector('#arModal .arres',{timeout:5000});
@@ -89,7 +90,7 @@ ok('console limpo (2)',errs.length===0,errs.join(' | '));await ctx.close();
 // 5: Android e iPhone pequeno: sem rolagem lateral, ações visíveis sem rolar
 for(const [nm,dev] of [['Android',devices['Pixel 7']],['iPhone SE',devices['iPhone SE']]]){({ctx,p,errs}=await open(base(),'2026-11-25T10:00:00',dev));await prog(p);
   ok(nm+': sem rolagem lateral',!(await p.evaluate(()=>document.documentElement.scrollWidth>innerWidth+1)));
-  await p.locator('#arGo').click();await p.waitForTimeout(400);
+  await abre(p,'arPanel');await p.locator('#arGo').click();await p.waitForTimeout(400);
   ok(nm+': ações cabem na tela',await p.evaluate(()=>[...document.querySelectorAll('#arActs .aract')].every(b=>b.getBoundingClientRect().bottom<=innerHeight+1)));
   await p.screenshot({path:OUT+'/arena-batalha-'+nm.replace(' ','')+'.png'});
   ok(nm+': console limpo',errs.length===0,errs.join(' | '));await ctx.close();}

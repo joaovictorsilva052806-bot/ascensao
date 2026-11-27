@@ -11,6 +11,7 @@ const base=()=>({log:{'2026-11-24':[{q:'q1',kind:'full',xp:20,stat:'corpo',bonus
   rpg:{cls:{id:'guerreiro',style:'fant',name:'Guerreiro',stat:'corpo'},seen:{foco:1,vendas:1,mente:1,corpo:1}},velho:'fica',
   read:{goal:10,d:{[T]:10},book:{t:'O Hobbit',tot:300,pg:10},books:[{t:'Duna',d:'2026-11-01'}]}});
 async function drain(p){for(let i=0;i<12;i++){const m=p.locator('.sysmodal:visible:not(#clsModal) button.go, .levelup:visible button.go');if(!(await m.count()))return;await m.first().dispatchEvent('click');await p.waitForTimeout(200);}}
+const abre=async(p,id)=>{await p.evaluate(id=>{const s=document.getElementById(id);if(s&&s.classList.contains('fold')&&!s.classList.contains('open')){s.scrollIntoView({block:'start'});s.querySelector(':scope>.fhd').click();}},id);await p.waitForTimeout(300);}; // painel recolhido (telas enxutas): abre com 1 toque no título
 (async()=>{const b=await chromium.launch();
 for(const ROOT of [false,true])for(const rm of ['no-preference','reduce']){
   const U='http://localhost:8000/'+(ROOT?'':'comecar/'),K=ROOT?'ascensao-':'asc-u-',tag=(ROOT?'raiz':'comecar')+(rm==='reduce'?' rm':'');
@@ -24,6 +25,7 @@ for(const ROOT of [false,true])for(const rm of ['no-preference','reduce']){
   await p.goto(U);await p.waitForTimeout(1800);await drain(p);
   const st=()=>p.evaluate(k=>JSON.parse(localStorage.getItem(k+'prog')),K);
   await p.locator('#tabbar [data-go="prog"]').dispatchEvent('click');await p.waitForTimeout(500);await drain(p);
+  await abre(p,'lrPanel');
   const sw=p.locator('#lrPanel .lrbook button',{hasText:'Trocar'});
   ok(tag+': livro atual aparece',/O Hobbit/.test(await p.textContent('#lrPanel'))&&/10\/300/.test(await p.textContent('#lrPanel')));
   await sw.click();await p.waitForTimeout(300);
