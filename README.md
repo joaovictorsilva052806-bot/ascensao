@@ -102,15 +102,18 @@ Grava só `prog.ouro` (inteiro), `prog.ouroX` (com `mig`) e `prog.f30`. Teste: `
 
 `tools/painel.js` e `tools/painel.css` (só na aba Criador do app do JV, via `gen.py --root`): números agregados em cima das abas privadas que o painel já lê (testadores, ativos hoje e em 7 dias, volta no dia 2 e no dia 8, missões feitas, feedbacks, funil e ativos por dia). Colunas achadas pelo nome do cabeçalho. Não envia nada; guarda no aparelho do criador só a contagem diária em `ascensao-painel-hist`. Teste: `node qa/painel.test.js`. Integração com a EVA: `docs/integracao-eva.md`.
 
-## Missão Criador (Modo Criador, fase 1)
+## Missão Criador (aba Progresso)
 
-`tools/cm.js` e `tools/cm.css` (só na aba Criador do app do JV, via `gen.py --root`): uma missão por semana (segunda a domingo) sobre um problema real da cidade, em 5 etapas de no máximo 1 por dia: Observar (foto ou 1-2 frases), Medir (número, unidade e fonte), Gargalo (categoria + por quê), Propor (até 400 letras, tipo e custo) e Testar (o que uma pessoa afetada disse, sem nome e com o aceite dela). Tema fixo pela semana do ano, 10 temas, troca 1x por semana. "Voltar a um problema anterior" mede de novo um problema que já fechou.
+`tools/cm.js` e `tools/cm.css` (entram nos dois geradores; seção `#cmPanel` na aba Progresso, para todos, mesmas regras; aparece depois do perfil): uma missão por semana (segunda a domingo) sobre um problema real da cidade, em 5 etapas de no máximo 1 por dia: Observar (foto ou 1-2 frases), Medir (número, unidade e fonte), Gargalo (categoria + por quê), Propor (até 400 letras, tipo e custo) e Testar (o que uma pessoa afetada disse, sem nome e com o aceite dela). Tema fixo pela semana do ano, 10 temas, troca 1x por semana. "Voltar a um problema anterior" mede de novo um problema que já fechou.
 
 - XP `cm:<semana>:<etapa>` (20/20/30/40/60). Ouro pelo `orGive` (teto do dia): `cm:<semana>` +60 com 5/5; `cm2:<semana>` +20 se a volta teve número novo. Sem espaço no teto, tenta de novo na próxima abertura. 4 semanas completas: título `cm_t_arq`; 10: moldura `cm_f_planta` (nunca no baú).
 - Grava só `prog.cm` (`wk`, `tema`, `troca`, `s`, `hist` com até 52 semanas, sem texto livre). A foto passa pelo `muShrink` (sem EXIF) e fica em `ascensao-cm-foto`, fora do progresso: nunca vai para a planilha. Ao fechar a semana vira miniatura; some depois de 8 semanas.
-- Texto com telefone, e-mail, `@usuario`, CEP ou endereço é recusado. Funil anônimo `cm1`/`cm5`/`cmv2` (o aparelho do criador não envia).
+- Foto só para 14+ com idade conhecida (até 13 e sem idade no /comecar/ fazem só com texto). A chave da foto é `asc-u-cm-foto` no /comecar/ e `ascensao-cm-foto` na raiz.
+- Texto com telefone, e-mail, `@usuario`, CEP ou endereço é recusado. Funil anônimo `cm1`/`cm5`/`cmv2`, só com o opt-in que já existe (o aparelho do criador não envia).
 
 Teste: `node qa/cm.test.js`.
+
+Galeria da turma (fase 3, mesmas regras do Mural): a partir da etapa 4, "🌍 Mostrar na galeria da turma" manda foto (opcional), tema, número, gargalo, proposta e cidade (opcional, só o nome) para o `server/mural.gs` (ações `cm`, `cmlist`, `cmreact`, `cmrep`, `cmdel`). A etapa 5 nunca vai. 14+ com ranking e amigo confirmado; 14-17 só com o responsável (o aceite do Mural); até 13 nunca. Só amigos confirmados veem, 1 post por semana, só reações 💡 🔧 📏, 2 denúncias escondem (1 se for de 14-17), some em 30 dias. Sem Ouro por galeria. Grava só `prog.cm.pub`. No painel Criador, "Missão Criador · turma" traz agregados (tema × gargalo × cidade com 3+ posts, solução mais proposta, ideia mais reagida sem nome), a fila de denunciados (Manter/Apagar) e quem aceitou conversar (só 18+). Chave: propriedade `cm:adm` do script = a mesma chave do painel. Testes: `node qa/cm-galeria.test.js` e `node qa/cm-servidor.test.js`.
 
 ## Reinstalação do app pessoal
 

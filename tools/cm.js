@@ -1,5 +1,6 @@
 // ---------- Missão Criador: um problema real da cidade por semana, em 5 etapas (spec da EVA, #22 comentário 7223690564) ----------
-// Fase 1: só no painel Criador (crPanel). Uma etapa por dia; a seguinte libera no dia seguinte. Tema pela semana do ano (sem sorteio), troca 1x por semana.
+// Fase 3 (no fim do arquivo): galeria da turma com as regras do Mural + agregados no painel do criador.
+// Fase 2: aberta a todos na aba Progresso, mesmas regras (decisão do JV de 26/11). Até 13 anos faz sem foto; sem idade no /comecar/ conta como menor. Uma etapa por dia; a seguinte libera no dia seguinte. Tema pela semana do ano (sem sorteio), troca 1x por semana.
 // XP por etapa 20/20/30/40/60 (chave cm:<semana>:<n>). Ouro pelo orGive (teto do dia): semana completa +60 (cm:<semana>),
 // "voltei ao mesmo problema" com número novo +20 ao fechar a semana (cm2:<semana>). 4 semanas completas: título; 10: moldura.
 // Dados: só ADICIONA prog.cm. A foto NUNCA entra no prog (logo nunca vai para a planilha): fica em asc-u-cm-foto, no aparelho,
@@ -36,7 +37,8 @@ function cmClean(t,max){return String(t||"").replace(/\s+/g," ").trim().slice(0,
 // recusa texto com dado que identifica alguém (o texto sobe para a planilha do criador)
 function cmPII(t){const s=String(t||"");return /\S+@\S+\.\S+/.test(s)||/(^|\s)@[\w.]{2,}/.test(s)||/\b\d{5}-\d{3}\b/.test(s)||/\(?\b\d{2}\)?\s?9?\d{4}[-\s]\d{4}\b/.test(s)||/\b\d{10,11}\b/.test(s)
   ||/\b(rua|r\.|av\.?|avenida|travessa|tv\.|alameda|estrada|rodovia)\s+[^,.;\n]{2,40}?(,\s*|\s+)(n[º°o.]?\s*)?\d{1,5}\b/i.test(s);}
-function cmKid(){try{return typeof ageNow==="function"&&ageNow()==="kid";}catch(e){return false;}}
+// foto só para 14+ com idade conhecida (no /comecar/, sem idade = menor de 14 para a foto)
+function cmFotoOk(){try{const a=typeof ageNow==="function"?ageNow():"";if(a)return a!=="kid";return typeof AGE_UNK_MINOR!=="undefined"&&!AGE_UNK_MINOR;}catch(e){return false;}}
 function cmImgs(){try{const o=JSON.parse(localStorage.getItem(CM_KEY_IMG)||"{}");return o&&typeof o==="object"&&!Array.isArray(o)?o:{};}catch(e){return {};}}
 function cmImgsSet(o){try{localStorage.setItem(CM_KEY_IMG,JSON.stringify(o));return true;}catch(e){return false;}}
 // estado: cria prog.cm só quando a pessoa abre a missão; vira a semana sozinho (a anterior vai para o histórico, sem texto livre)
@@ -83,7 +85,7 @@ let cmErr="",cmPhoto="";
 function cmFail(t){const f=document.querySelector("#cmBox form");if(!f){cmErr=t;cmRender();return;}let e=f.querySelector(".cmerr");if(!e){e=cmEl("div","cmerr");e.setAttribute("role","alert");f.querySelector(".cmgo").before(e);}e.textContent=t;}
 function cmSubmit(n,f){cmErr="";const ee=f.querySelector(".cmerr");if(ee)ee.remove();const g=id=>{const e=f.querySelector("#"+id);return e?(e.type==="checkbox"?e.checked:e.value):"";};const pick=nm=>{const e=f.querySelector('input[name="'+nm+'"]:checked');return e?e.value:"";};
   const PII="Tire telefone, e-mail, @, CEP ou endereço do texto. Nada que identifique alguém.";
-  if(n===1){const txt=cmClean(g("cmTxt"),280);const img=!!cmPhoto;
+  if(n===1){const txt=cmClean(g("cmTxt"),280);const img=!!cmPhoto&&cmFotoOk();
     if(!img&&txt.length<30)return cmFail("Escreva pelo menos 30 letras ou mande uma foto.");
     if(img&&!g("cmSafe"))return cmFail("Confirme que a foto não tem rosto, placa, número de casa nem uniforme de escola.");
     if(cmPII(txt))return cmFail(PII);
@@ -106,7 +108,7 @@ function cmArea(ph,max,lbl){const t=cmEl("textarea","cmta");t.id="cmTxt";t.maxLe
 function cmCheck(id,txt){const l=cmEl("label","cmck");const i=cmEl("input");i.type="checkbox";i.id=id;l.append(i,cmEl("span",null,txt));return l;}
 function cmForm(c,n){const f=cmEl("form","cmform");f.noValidate=true;const T=CM_T[c.tema];
   f.append(cmEl("h3","cmh","Etapa "+n+" · "+CM_STEP[n][0]),cmEl("div","sm",CM_STEP[n][1]));
-  if(n===1){if(!cmKid()){const fl=cmEl("label","cmfile");const i=cmEl("input");i.type="file";i.accept="image/*";i.id="cmFile";
+  if(n===1){if(cmFotoOk()){const fl=cmEl("label","cmfile");const i=cmEl("input");i.type="file";i.accept="image/*";i.id="cmFile";
       const pv=cmEl("img","cmprev");pv.alt="Prévia da foto";pv.hidden=!cmPhoto;if(cmPhoto)pv.src=cmPhoto;
       i.addEventListener("change",async()=>{const fi=i.files&&i.files[0];if(!fi)return;try{if(typeof muShrink!=="function")throw 0;cmPhoto=await muShrink(fi);pv.src=cmPhoto;pv.hidden=false;cmErr="";}catch(e){cmPhoto="";pv.hidden=true;toast("Não deu para usar essa foto. Tente outra ou escreva.");}});
       fl.append(cmEl("span",null,"📷 Foto (opcional)"),i);f.append(fl,pv,cmCheck("cmSafe","Sem rosto, placa, número de casa ou uniforme de escola"));}
@@ -128,11 +130,14 @@ function cmBackTo(c){const L=c.hist.filter(h=>h.ok&&h.n!=null&&h.wk!==c.wk).slic
   for(const h of L){const t=CM_T[h.tema]||CM_T[0];g.append(cmBtn("cmchip",t[0]+" "+t[1]+" · "+h.n+" "+(h.u||""),()=>{c.tema=h.tema;c.v2of=h.wk;save();cmUI.back=false;cmRender();toast("Voltando ao problema de "+t[1]+".");}));}
   box.append(g,cmBtn("link","Cancelar",()=>{cmUI.back=false;cmRender();}));return box;}
 const cmUI={swap:false,back:false};
-function cmBox(){let b=$("cmBox");if(b)return b;const p=$("crPanel");if(!p)return null;b=cmEl("div","cmbox");b.id="cmBox";
-  const hd=p.querySelector(".qhead");const ref=hd&&hd.nextElementSibling;if(ref)ref.after(b);else p.append(b);return b;}
-function cmRender(){cmLast=cmSig();const b=cmBox();if(!b)return;if(typeof crOn==="function"&&!crOn()){b.hidden=true;return;}b.hidden=false;
+function cmReady(){const hid=id=>{const e=$(id);return !e||e.hidden;};return !!(cfg&&!cfg.blank&&cfg.quests&&cfg.quests.length)&&hid("quick")&&hid("onb")&&!document.body.classList.contains("onboarding");}
+// mora na aba Progresso, logo depois do Ouro (ou da Coleção), para todo mundo
+function cmBox(){let b=$("cmBox");if(b)return b;const anchor=$("orPanel")||$("bxCol")||document.querySelector('.wrap>section[data-tab="prog"]');if(!anchor)return null;
+  const sec=cmEl("section","panel cmpanel");sec.id="cmPanel";sec.dataset.tab="prog";const hd=cmEl("div","qhead");hd.append(cmEl("h2",null,"🛠️ Missão Criador"),cmEl("span","sm mono"));hd.lastChild.id="cmCnt";
+  b=cmEl("div","cmbox");b.id="cmBox";sec.append(hd,b);anchor.after(sec);return b;}
+function cmRender(){cmLast=cmSig();if(!cmReady()){const p=$("cmPanel");if(p)p.hidden=true;return;}const b=cmBox();if(!b)return;$("cmPanel").hidden=false;
   const c=cmSt(),T=CM_T[c.tema]||CM_T[0],d=cmDone(c),nx=cmNext(c);b.textContent="";
-  const hd=cmEl("div","cmhd");hd.append(cmEl("h3","crh","🛠️ Missão Criador"),cmEl("span","sm mono",d+"/5"));b.append(hd);
+  const cn=$("cmCnt");if(cn)cn.textContent=d===5?"5/5 ✓":d+"/5"+(nx.ok?"":" · amanhã");
   const card=cmEl("div","cmcard"+(d===5?" ok":""));
   card.append(cmEl("b","cmtit","Tema "+T[0]+" "+T[1]+" · "+(d===5?"semana completa ✓":"etapa "+Math.min(5,d+1)+" de 5")));
   const dots=cmEl("div","cmdots");dots.setAttribute("aria-hidden","true");for(let i=1;i<=5;i++)dots.append(cmEl("span","cmdot"+(i<=d?" on":i===nx.n&&nx.ok?" now":"")));card.append(dots);
@@ -146,6 +151,7 @@ function cmRender(){cmLast=cmSig();const b=cmBox();if(!b)return;if(typeof crOn==
       if(row.childNodes.length)card.append(row);}}
   else{card.append(cmEl("div","cmwait","✓ Etapa de hoje feita. A etapa "+nx.n+" ("+CM_STEP[nx.n][0]+") libera amanhã."));
     if(cmUI.swap)card.append(cmSwap(c));else if(!c.troca)card.append(cmBtn("link","Trocar tema (1x por semana)",()=>{cmUI.swap=true;cmRender();}));}
+  {const sr=cmShareRow(c);if(sr)card.append(sr);}
   card.append(cmEl("div","sm cmaviso","⚠️ "+CM_AVISO));b.append(card);
   // histórico curto + prêmios
   const n=cmOk(),h=c.hist.filter(x=>x.wk!==c.wk).slice(0,5);const foot=cmEl("div","sm muted cmfoot");
@@ -153,10 +159,80 @@ function cmRender(){cmLast=cmSig();const b=cmBox();if(!b)return;if(typeof crOn==
   if(h.length){const ul=cmEl("ul","cmhist");const im=cmImgs();for(const x of h){const t=CM_T[x.tema]||CM_T[0];const li=cmEl("li",x.ok?"ok":"");
       if(im[x.wk]){const i=cmEl("img","cmth");i.src=im[x.wk];i.alt="";li.append(i);}
       li.append(cmEl("span",null,(x.ok?"✓ ":"· ")+x.wk.slice(5)+" "+t[0]+" "+t[1]+(x.n!=null?" · "+x.n+" "+(x.u||""):"")+(x.v2of?" ↩":"")));ul.append(li);}foot.append(ul);}
-  b.append(foot);}
+  b.append(foot);try{cmGalUI();cmGalLoad();}catch(e){}}
+// ---------- Fase 3: galeria da turma (regras do Mural: 14+, 14-17 com responsável, só amigos confirmados, servidor confere tudo) ----------
+// Vai: foto (opcional) + tema + número + gargalo + proposta. A etapa 5 NUNCA vai. Só reações 💡 🔧 📏, sem comentário. 1 post por semana.
+// Ouro nenhum por reação ou galeria. Só ADICIONA prog.cm.pub = semana publicada.
+const CM_RX=[["💡","ideia boa"],["🔧","dá pra fazer"],["📏","mediu bem"]];
+const CM_GERR={repetido:"Você já mostrou a missão desta semana.",dados:"Tire telefone, e-mail, @, CEP ou endereço do texto.",amigo:"Precisa de pelo menos 1 amigo confirmado.",idade:"Confirme sua faixa de idade no Mural primeiro.",curto:"Termine as etapas 3 e 4 antes.",limite:"Muitas tentativas. Tente daqui a pouco."};
+function cmShareOk(){try{return typeof muPhotoOn==="function"&&muPhotoOn();}catch(e){return false;}}
+let cmGal=null,cmGalAt=0,cmGalBusy=false,cmRep="";
+function cmGalLoad(force){if(!cmShareOk()||cmGalBusy)return;const s=typeof muSt==="function"?muSt():{};if(!s.ok||s.reg!==muBand())return;if(!force&&Date.now()-cmGalAt<45000)return;
+  cmGalBusy=true;cmGalAt=Date.now();muApi("cmlist").then(j=>{cmGal=Array.isArray(j.posts)?j.posts:[];}).catch(()=>{}).finally(()=>{cmGalBusy=false;cmGalUI();});}
+function cmCompose(){const c=cmSt();if(cmDone(c)<4||c.pub===c.wk||!cmShareOk())return;const s=muSt();if(!s.ok||s.reg!==muBand())return muConsent(()=>cmCompose());
+  const T=CM_T[c.tema]||CM_T[0],S=c.s;const im=cmImgs()[c.wk]||"";const adult=muBand()==="adult";
+  const m=cmEl("div","sysmodal cmmodal");m.id="cmModal";m.setAttribute("role","dialog");m.setAttribute("aria-modal","true");m.setAttribute("aria-label","Mostrar na galeria da turma");const card=cmEl("div","card");
+  card.append(cmEl("div","systag","GALERIA DA TURMA"),cmEl("h3",null,"Mostrar sua missão aos amigos"),cmEl("div","sm muted","Só amigos confirmados veem. Some em 30 dias. A etapa 5 (o que a pessoa disse) não vai."));
+  const pv=cmEl("div","cmgcard");if(im){const i=cmEl("img","cmgimg");i.src=im;i.alt="Sua foto da missão";pv.append(i);}
+  pv.append(cmEl("b",null,T[0]+" "+T[1]+" · "+S[2].n+" "+S[2].u),cmEl("p","sm",(CM_CAT.find(x=>x[0]===S[3].cat)||["",""])[1]+": "+S[3].txt),cmEl("p","sm","💡 "+S[4].txt));card.append(pv);
+  let useImg=null;if(im){useImg=cmCheck("cmGImg","Incluir a foto");useImg.querySelector("input").checked=true;card.append(useImg);}
+  const mun=cmEl("input","cmin");mun.id="cmMun";mun.maxLength=40;mun.placeholder="Cidade (opcional, só o nome)";mun.setAttribute("aria-label","Cidade, opcional");card.append(mun);
+  const safe=cmCheck("cmGSafe","Sem rosto, placa, número da casa, uniforme ou nome de escola");card.append(safe);
+  let ct=null;if(adult){ct=cmCheck("cmGCt","Aceito que o criador do app me chame para conversar sobre esta ideia (opcional)");card.append(ct);}
+  const err=cmEl("div","cmerr");err.setAttribute("role","alert");card.append(err);
+  const row=cmEl("div","row");const go=cmBtn("go","Mostrar aos amigos",async()=>{err.textContent="";
+    if(!safe.querySelector("input").checked){err.textContent="Confirme que não tem rosto, placa, número da casa, uniforme ou nome de escola.";return;}
+    const mv=cmClean(mun.value,40);if(/\d|@/.test(mv)||cmPII(mv)){err.textContent="Na cidade, só o nome (sem número, rua ou @).";return;}
+    if(cmPII(S[3].txt)||cmPII(S[4].txt)){err.textContent=CM_GERR.dados;return;}
+    go.disabled=true;const o={wk:c.wk,tema:c.tema,num:S[2].n,u:S[2].u,cat:S[3].cat,tipo:S[4].tipo,custo:S[4].custo,g:S[3].txt,p:S[4].txt,mun:mv};
+    if(useImg&&useImg.querySelector("input").checked&&/^data:image\/jpeg;base64,/.test(im))o.img=im;if(ct&&ct.querySelector("input").checked)o.ct=1;
+    try{await muApi("cm",o);c.pub=c.wk;save();m.remove();toast("Na galeria da turma. Só seus amigos veem.");cmGalLoad(true);cmRender();}
+    catch(e){go.disabled=false;const k=String(e&&e.message||"");if(k==="repetido"){c.pub=c.wk;save();}err.textContent=CM_GERR[k]||"Não deu agora. Tente de novo.";}});
+  row.append(go,cmBtn("ghost","Agora não",()=>m.remove()));card.append(row);m.append(card);document.body.append(m);try{go.focus();}catch(e){}}
+async function cmGAct(a,o,msg){try{await muApi(a,o);if(msg)toast(msg);}catch(e){toast("Não deu agora. Tente de novo.");}cmGalLoad(true);}
+function cmGalUI(){const box=$("cmBox");if(!box)return;let g=$("cmGal");const on=cmShareOk();
+  if(!on){if(g)g.remove();return;}
+  if(!g){g=cmEl("div","cmgal");g.id="cmGal";box.after(g);}g.textContent="";
+  g.append(cmEl("h3","cmh","🌍 Galeria da turma"),cmEl("div","sm muted","Missões dos seus amigos confirmados, dos últimos 30 dias. Reaja; não tem comentário."));
+  const L=(cmGal||[]).filter(p=>!(typeof muIsBlk==="function"&&muIsBlk(p.a)));
+  if(cmGal===null){g.append(cmEl("div","sm muted","Carregando…"));return;}
+  if(!L.length){g.append(cmEl("div","sm muted","Ninguém mostrou ainda. Feche as etapas 1 a 4 e seja o primeiro."));return;}
+  for(const p of L){const T=CM_T[p.tema]||CM_T[0];const cd=cmEl("div","cmgcard");cd.dataset.cm=p.id;
+    if(typeof p.img==="string"&&/^data:image\/jpeg;base64,[A-Za-z0-9+/=]+$/.test(p.img)){const i=cmEl("img","cmgimg");i.src=p.img;i.alt="Foto da missão de "+p.a;i.loading="lazy";cd.append(i);}
+    cd.append(cmEl("b",null,T[0]+" "+T[1]+" · "+p.n+" "+String(p.u||"")),cmEl("div","sm muted",String(p.a||"")+" · "+(typeof muAgo==="function"?muAgo(p.d):"")));
+    cd.append(cmEl("p","sm",((CM_CAT.find(x=>x[0]===p.cat)||["","Gargalo"])[1])+": "+String(p.g||"")),cmEl("p","sm","💡 "+String(p.p||"")),
+      cmEl("div","sm muted",((CM_TIPO.find(x=>x[0]===p.tipo)||["",""])[1])+" · custo "+((CM_CUSTO.find(x=>x[0]===p.custo)||["",""])[1]).toLowerCase()));
+    const rr=cmEl("div","cmrx");for(const [e,lb] of CM_RX){const n=(p.r&&+p.r[e])||0,mine=!!(p.my&&p.my[e]);const b=cmBtn("cmrxb"+(mine?" on":""),e+" "+n,()=>cmGAct("cmreact",{id:p.id,e}));
+      b.setAttribute("aria-pressed",mine?"true":"false");b.setAttribute("aria-label",lb+": "+n);b.title=lb;rr.append(b);}
+    if(p.me)rr.append(cmBtn("link","Apagar",()=>cmGAct("cmdel",{id:p.id},"Apagado da galeria.")));
+    else rr.append(cmBtn("link",cmRep===p.id?"Toque de novo para denunciar":"⚑ Denunciar",()=>{if(cmRep!==p.id){cmRep=p.id;cmGalUI();return;}cmRep="";cmGAct("cmrep",{id:p.id},"Denúncia enviada. O post sumiu para você.");}));
+    cd.append(rr);g.append(cd);}}
+// botão de mostrar: no cartão da missão, a partir da etapa 4 feita
+function cmShareRow(c){if(!cmShareOk()||cmDone(c)<4)return null;const r=cmEl("div","row cmrow");
+  if(c.pub===c.wk)r.append(cmEl("span","sm cmwait","✓ Na galeria da turma"));else r.append(cmBtn("ghost","🌍 Mostrar na galeria da turma",cmCompose));return r;}
+// ---------- painel do criador: agregados e fila de denúncias (chave do painel; nada de foto, nome ou texto livre nos agregados) ----------
+function cmAdmKey(){try{return (JSON.parse(localStorage.getItem("ascensao-painel")||"{}")||{}).k||"";}catch(e){return "";}}
+async function cmAdmCall(o){const r=await fetch(MURAL_URL,{method:"POST",body:JSON.stringify(Object.assign({k:cmAdmKey()},o)),credentials:"omit",redirect:"follow"});const j=await r.json();if(!j||j.ok===false)throw new Error((j&&j.err)||"erro");return j;}
+function cmAdmUI(j,msg){const pn=$("crPanel");if(!pn)return;let b=$("cmAdm");if(!b){b=cmEl("div","cmadm");b.id="cmAdm";const anchor=$("bpSum");if(anchor)anchor.after(b);else pn.append(b);}b.textContent="";
+  b.append(cmEl("h3","crh","🛠️ Missão Criador · turma"));
+  if(!j){b.append(cmEl("div","sm muted",msg||"Agregados da galeria: temas, gargalos e a ideia mais reagida. Sem foto, sem nome."),cmBtn("ghost","Carregar",cmAdmLoad));return;}
+  const cats=Object.entries(j.cats||{}).sort((a,c)=>c[1]-a[1]).slice(0,3).map(([k,n])=>((CM_CAT.find(x=>x[0]===k)||["",k])[1])+" ("+n+")");
+  const tp=Object.entries(j.tipos||{}).sort((a,c)=>c[1]-a[1])[0];
+  b.append(cmEl("div","sm",(j.total||0)+" missões nos últimos 30 dias."),cmEl("div","sm","Top gargalos: "+(cats.join(" · ")||"nenhum")),cmEl("div","sm","Solução mais proposta: "+(tp?((CM_TIPO.find(x=>x[0]===tp[0])||["",tp[0]])[1])+" ("+tp[1]+")":"nenhuma")));
+  const gr=(j.grade||[]).slice().sort((a,c)=>c.n-a.n).slice(0,8);if(gr.length){const ul=cmEl("ul","cmhist");for(const x of gr){const T=CM_T[x.tema]||CM_T[0];ul.append(cmEl("li",null,T[0]+" "+T[1]+" × "+((CM_CAT.find(y=>y[0]===x.cat)||["",x.cat])[1])+(x.mun?" · "+x.mun:"")+": "+x.n));}b.append(ul);}
+  if(j.top){const T=CM_T[j.top.tema]||CM_T[0];b.append(cmEl("div","sm","🏅 Ideia mais reagida ("+j.top.r+"): "+T[0]+" "+T[1]),cmEl("p","sm cmq","“"+String(j.top.p||"")+"”"));}
+  b.append(cmEl("div","sm cmh","Denunciados ("+(j.fila||[]).length+")"));
+  for(const f of (j.fila||[])){const T=CM_T[f.tema]||CM_T[0];const d=cmEl("div","cmgcard");d.append(cmEl("b",null,T[0]+" "+T[1]+" · "+f.d+" denúncia(s)"+(f.esc?" · escondido":"")),cmEl("p","sm",String(f.g||"")),cmEl("p","sm",String(f.p||"")));
+    const r=cmEl("div","row");r.append(cmBtn("ghost","Manter",()=>cmAdmMod(f.id,"ok")),cmBtn("link","Apagar",()=>cmAdmMod(f.id,"del")));d.append(r);b.append(d);}
+  b.append(cmEl("div","sm cmh","Querem levar a ideia adiante (18+, com aceite): "+(j.contato||[]).length));
+  for(const x of (j.contato||[])){const T=CM_T[x.tema]||CM_T[0];b.append(cmEl("div","sm",String(x.a||"")+" · "+T[0]+" "+T[1]+": "+String(x.p||"")));}
+  b.append(cmBtn("ghost","Atualizar",cmAdmLoad));}
+async function cmAdmLoad(){if(!cmAdmKey()||typeof MURAL_URL==="undefined"||!MURAL_URL)return cmAdmUI(null,"Sem a chave do painel neste aparelho.");cmAdmUI(null,"Carregando…");
+  try{cmAdmUI(await cmAdmCall({a:"cm-adm"}));}catch(e){const k=String(e&&e.message||"");cmAdmUI(null,k==="chave"?"O servidor ainda não tem a chave (cm:adm). Veja o passo a passo no PR.":"Não deu agora. Tente de novo.");}}
+async function cmAdmMod(id,op){try{await cmAdmCall({a:"cm-adm-mod",id,op});toast(op==="del"?"Apagado.":"Mantido e devolvido.");}catch(e){toast("Não deu agora.");}cmAdmLoad();}
 cmHook();
 // render() do app roda toda hora: só redesenha a missão quando o estado muda (senão apagaria o que a pessoa está digitando)
-function cmSig(){const c=prog.cm||{};let on=true;try{on=typeof crOn!=="function"||crOn();}catch(e){}return [on,todayKey(),c.wk,c.tema,c.troca,c.v2of,JSON.stringify(c.s||{}).length,(c.hist||[]).length].join("|");}
+function cmSig(){const c=prog.cm||{};return [cmReady(),cmFotoOk(),cmShareOk(),c.pub,todayKey(),c.wk,c.tema,c.troca,c.v2of,JSON.stringify(c.s||{}).length,(c.hist||[]).length].join("|");}
 let cmLast="";
 {const _r=render;render=function(){_r.apply(this,arguments);try{if(prog.cm)cmPay();const g=cmSig();if(g!==cmLast||!$("cmBox"))cmRender();}catch(e){}};}
-setTimeout(()=>{try{cmHook();if(prog.cm)cmPay();cmRender();}catch(e){}},90);
+setTimeout(()=>{try{cmHook();if(prog.cm)cmPay();cmRender();if($("crPanel"))cmAdmUI(null);}catch(e){}},90);
