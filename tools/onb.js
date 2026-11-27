@@ -108,6 +108,8 @@ function buildCfg(a){const Q=[];let n=0;const add=q=>{q.id=q.id||("g"+(++n));Q.p
   // garante pelo menos 2 principais além do fechamento, seguindo a ordem dos focos
   let mains=Q.filter(q=>q.main).length;for(const q of Q){if(mains>=3)break;if(!q.main&&!q.once&&!q.days){q.main=true;mains++;}}
   const rk=q=>q.id==="s_remed"?0:q.id==="s_fech"?2:1;Q.sort((x,y)=>rk(x)-rk(y));
+  // período do dia de cada tarefa (campo novo `slot`; tools/slot.js): manhã/tarde/noite pelo gatilho "quando/depois"
+  for(const q of Q)if(!q.slot&&typeof slotGuessText==="function"){const g=slotGuessText(q.ifThen)||slotGuessText(q.title);if(g)q.slot=g;}
   const c={version:1,name:a.name||"Você",startDate:todayKey(),profile:a,faith:!!a.faith,quests:Q};
   if(studyIds.length)c.boss={name:"Constância nos estudos",deadline:"Renasce toda segunda",hp:10,fullHit:3,minHit:1,reward:80,questIds:studyIds,hint:"Cada revisão ou bloco de estudo tira 3 de vida; o mínimo tira 1."};
   else{const mi=Q.filter(q=>q.main&&q.id!=="s_fech").map(q=>q.id);if(mi.length)c.boss={name:"Constância da semana",deadline:"Renasce toda segunda",hp:30,fullHit:3,minHit:1,reward:80,questIds:mi,hint:"Cada tarefa principal feita tira 3 de vida; o mínimo tira 1."};}

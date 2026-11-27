@@ -15,6 +15,8 @@ rep('document.addEventListener("visibilitychange",()=>{if(!document.hidden)focus
 # estudo na aba Foco: Hoje com 3 tarefas, prazos com alerta, flashcards e horas complementares (tools/estudo.*; aqui em cima para não colidir com os PRs que mexem no fim deste arquivo)
 rep('</style></head>',R('estudo.css')+'</style></head>')
 rep('\nlet saveTimer=null, SYNC="";','\n'+R('estudo.js')+'\nlet saveTimer=null, SYNC="";')
+# ordem pela hora do dia e pela rotina (tools/slot.js; usado no render() e no smCands() do Modo Sistema)
+rep('\nlet saveTimer=null, SYNC="";','\n'+R('slot.js')+'\nlet saveTimer=null, SYNC="";')
 rep('<title>Ascension</title>','<title>Ascension</title>')
 rep('<h2>Quests de hoje</h2>','<h2>Tarefas de hoje</h2>')
 if not ROOT: rep('href="icon-180.png"','href="../icon-180.png"');rep('<link rel="icon" href="icon-192.png">','<link rel="icon" href="../icon-192.png">')
