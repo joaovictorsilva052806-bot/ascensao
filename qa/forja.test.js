@@ -164,13 +164,17 @@ for(const [route,pre] of [['comecar/','asc-u'],['','ascensao']]){const tag=route
   // I: tela acesa (Wake Lock) só com o treino ou a caminhada abertos
   const WL=()=>{window.__wl={req:0,on:0};Object.defineProperty(navigator,'wakeLock',{configurable:true,value:{request:async()=>{__wl.req++;__wl.on++;const ls=[];return {addEventListener:(e,f)=>ls.push(f),release:async()=>{__wl.on--;ls.forEach(f=>f());}};}}});};
   ({ctx,p,errs}=await open(route,pre,P({gd:{off:1},forja:FJ({ses:[{d:'2026-11-23',tipo:'A',min:30,r:0}]})}),'2026-11-25T18:00:00',{init:WL}));
-  const wl=()=>p.evaluate(()=>window.__wl.on);
+  let wl=()=>p.evaluate(()=>window.__wl.on);
   ok(tag+' I: tela livre fora do treino',await wl()===0);
   await tap(p,'#fjStart');await p.waitForTimeout(150);ok(tag+' I: treino aberto segura a tela',await wl()===1);
   await tap(p,'#fjPlus');await tap(p,'#fjSet');await p.waitForTimeout(150);ok(tag+' I: um pedido só durante o treino',await p.evaluate(()=>window.__wl.req)===1&&await wl()===1);
   await tap(p,'#fjMin');await p.waitForTimeout(150);ok(tag+' I: minimizar solta a tela',await wl()===0);
   await tap(p,'#fjResume');await p.waitForTimeout(150);ok(tag+' I: voltar ao treino segura de novo',await wl()===1);
   await tap(p,'#fjDor');await p.waitForTimeout(150);ok(tag+' I: tela final solta a tela',await wl()===0);
-  await tap(p,'#fjClose');await tap(p,'#fjWalk').catch(()=>{});
+  await tap(p,'#fjClose');await p.waitForTimeout(150);ok(tag+' I: fechar deixa a tela livre',await wl()===0);
+  ok(tag+' I: console limpo',errs.length===0,errs.join(' | '));await ctx.close();
+  ({ctx,p,errs}=await open(route,pre,P({gd:{off:1},forja:FJ({ses:[{d:'2026-11-23',tipo:'A',min:30,r:0}]})}),'2026-11-25T18:00:00',{init:WL}));
+  await tap(p,'#fjWalk');await p.waitForTimeout(150);ok(tag+' I: caminhada segura a tela',await wl()===1);
+  await tap(p,'#fjMin');await p.waitForTimeout(150);ok(tag+' I: minimizar a caminhada solta a tela',await wl()===0);
   ok(tag+' I: console limpo',errs.length===0,errs.join(' | '));await ctx.close();}
 await b.close();console.log(R.join('\n'));process.exit(R.some(x=>x.startsWith('FAIL'))?1:0);})();
