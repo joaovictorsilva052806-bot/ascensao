@@ -1,0 +1,15 @@
+/* ---- Missões do Mestre 18+ (tools/mestre.*) ---- */
+.mmpanel{display:grid;gap:10px}
+.mmcard{display:grid;gap:6px;padding:10px 12px;border:1px solid var(--line);border-radius:10px;background:#0a1222}
+.mmcard.ok{opacity:.8}
+.mmad{justify-self:start;font-family:var(--f-mono);font-size:.72rem;letter-spacing:.06em;color:#0b0f17;background:var(--gold);border-radius:4px;padding:2px 6px}
+.mmp{font-size:1.05rem}
+.mmcard p{margin:0;line-height:1.4}
+.mmc{color:var(--muted)}
+.mmmestre{color:var(--gold);border-left:3px solid var(--gold);padding-left:8px}
+.mmrow{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
+.mmlink,.mmreg,.mmfiz{min-height:44px;display:inline-flex;align-items:center;justify-content:center}
+a.mmlink{padding:0 14px;border-radius:8px;text-decoration:none;font-weight:600;color:var(--glow);border:1px solid var(--glow);background:rgba(0,212,255,.08)}
+.mmreg{color:var(--glow);padding:0 6px}
+.mmfiz{justify-self:start}
+.mmfiz.mmlock{opacity:.6}
