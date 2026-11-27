@@ -4,10 +4,10 @@
 // Segredos só por variável de ambiente (GitHub Secrets). Nunca imprime endpoint, chave nem resposta crua: só contagens.
 import webpush from "web-push";
 const URL_ = process.env.PUSH_URL || "https://script.google.com/macros/s/AKfycbwI3tDbLa7qYH2_oLn8kQAHuLrn-NXrtOjLEMXEcjdn_NsjW3UM7QAJE9hvQg_47isJbA/exec";
-const PUB = process.env.VAPID_PUBLIC || "BEUNNLfc8c6_-Swq-qK_XNpdMNSa9tusQqPFdFlgk02xU4lMW4TlRiQLOPDz302Ncory9a_kXW4ik3X72qF51CQ";
+const PUB = process.env.VAPID_PUBLIC || ""; // a mesma chave pública do tools/push.js (VAPID_FIXA)
 const { VAPID_PRIVATE = "", LEMB_KEY = "" } = process.env;
 const VAPID_SUBJECT = process.env.VAPID_SUBJECT || "mailto:ascension.app.contato@gmail.com";
-if (!VAPID_PRIVATE || !LEMB_KEY) { console.log("Segredos ainda não configurados: nada a fazer."); process.exit(0); }
+if (!PUB || !VAPID_PRIVATE || !LEMB_KEY) { console.log("Segredos ainda não configurados: nada a fazer."); process.exit(0); }
 webpush.setVapidDetails(VAPID_SUBJECT, PUB, VAPID_PRIVATE);
 const MSGS = ["O Sistema te chama: sua missão de hoje está esperando.", "Uma missão pequena hoje já conta. Bora?", "Sua sequência está te esperando. 1 tarefa e pronto."];
 async function call(body) {
