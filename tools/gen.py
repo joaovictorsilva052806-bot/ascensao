@@ -15,6 +15,8 @@ rep('document.addEventListener("visibilitychange",()=>{if(!document.hidden)focus
 # estudo na aba Foco: Hoje com 3 tarefas, prazos com alerta, flashcards e horas complementares (tools/estudo.*; aqui em cima para não colidir com os PRs que mexem no fim deste arquivo)
 rep('</style></head>',R('estudo.css')+'</style></head>')
 rep('\nlet saveTimer=null, SYNC="";','\n'+R('estudo.js')+'\nlet saveTimer=null, SYNC="";')
+# ordem pela hora do dia e pela rotina (tools/slot.js; usado no render() e no smCands() do Modo Sistema)
+rep('\nlet saveTimer=null, SYNC="";','\n'+R('slot.js')+'\nlet saveTimer=null, SYNC="";')
 rep('<title>Ascension</title>','<title>Ascension</title>')
 rep('<h2>Quests de hoje</h2>','<h2>Tarefas de hoje</h2>')
 if not ROOT: rep('href="icon-180.png"','href="../icon-180.png"');s=s.replace('href="icons/splash/','href="../icons/splash/');rep('<link rel="icon" href="icon-192.png">','<link rel="icon" href="../icon-192.png">')
@@ -192,6 +194,9 @@ rep('\nlet saveTimer=null, SYNC="";','\n'+R('colar.js')+'\nlet saveTimer=null, S
 # aviso diário com o app fechado (Web Push sem conta nova): opt-in depois do "sim" do lembrete, Mais > Lembretes (tools/push.*, server/push.gs, sw-push.js)
 rep('</style></head>',R('push.css')+'</style></head>')
 rep('\nlet saveTimer=null, SYNC="";','\n'+R('push.js')+'\nlet saveTimer=null, SYNC="";')
+# Ouro local + Loja do Ouro + Desafio Forja 30 + Hall da Fama (tools/ouro.*): só adiciona prog.ouro, prog.ouroX e prog.f30
+rep('</style></head>',R('ouro.css')+'</style></head>')
+rep('\nlet saveTimer=null, SYNC="";','\n'+R('ouro.js')+'\nlet saveTimer=null, SYNC="";')
 if not ROOT: open('comecar/index.html','w').write(s)
 pass
 

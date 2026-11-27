@@ -10,14 +10,19 @@ function edOpen(id){const q=id?(cfg.quests||[]).find(x=>x.id===id):{title:"",xp:
   $("edTitle").value=q.title||"";$("edMin").value=q.minTitle||"";$("edIf").value=q.ifThen||"";$("edXp").value=String([10,15,20,25,30,40].reduce((a,v)=>Math.abs(v-(q.xp||15))<Math.abs(a-(q.xp||15))?v:a,15));
   $("edStat").value=q.stat||"foco";$("edMain").checked=!!q.main;$("edMain").disabled=!!q.once;
   toggles("edDays",ED_DN.map((l,i)=>[String(i),l]),(q.days||[0,1,2,3,4,5,6]).map(String));$("edDays").hidden=!!q.once;
+  edSlotUI(q.slot||"");
   $("edDel").hidden=!id;$("edDel").textContent="Apagar";$("edDel").dataset.arm="";$("edForm").hidden=false;$("edList").hidden=true;$("edTitle").focus();}
 function edClose(){$("edForm").hidden=true;$("edList").hidden=false;edCur=null;renderEd();}
+// período (tools/slot.js): 1 escolha; "Automático" segue o "Quando fazer"
+function edSlotUI(v){const box=$("edSlot");box.textContent="";for(const [k,l] of [["","Automático"],["manha","Manhã"],["tarde","Tarde"],["noite","Noite"],["livre","Qualquer hora"]]){const b=document.createElement("button");b.type="button";b.textContent=l;b.dataset.v=k;
+  const on=k===v;b.classList.toggle("on",on);b.setAttribute("aria-pressed",on?"true":"false");b.addEventListener("click",()=>edSlotUI(k));box.append(b);}}
+function edSlotVal(){const b=$("edSlot").querySelector(".on");return b?b.dataset.v:"";}
 $("edNew").addEventListener("click",()=>edOpen(null));$("edCancel").addEventListener("click",edClose);
 $("edForm").addEventListener("submit",ev=>{ev.preventDefault();const t=$("edTitle").value.trim();if(!t)return;
   let full=false;const Q=(cfg.quests||[]).slice();let q=edCur?Q.find(x=>x.id===edCur):null;const wasMain=!!(q&&q.main);
   if(!q){q={id:"u"+Date.now().toString(36)};Q.push(q);}
   q.title=t;const mt=$("edMin").value.trim(),it=$("edIf").value.trim();if(mt)q.minTitle=mt;else delete q.minTitle;if(it)q.ifThen=it;else delete q.ifThen;
-  q.xp=Number($("edXp").value)||15;q.stat=$("edStat").value;
+  q.xp=Number($("edXp").value)||15;q.stat=$("edStat").value;const sl=edSlotVal();if(sl)q.slot=sl;else delete q.slot;
   if(!q.once){const days=picked("edDays").map(Number).sort();if(!days.length){toast("Escolha pelo menos um dia.");return;}if(days.length<7)q.days=days;else delete q.days;
     let main=$("edMain").checked;if(main&&!wasMain&&Q.filter(x=>x.main&&x!==q).length>=3){full=true;main=false;}if(main)q.main=true;else delete q.main;
     // mudou quem é principal: a contagem de dívida recomeça hoje, para não cobrar o passado
