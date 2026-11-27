@@ -108,7 +108,11 @@ for(const [route,pre] of [['comecar/','asc-u'],['','ascensao']]){const tag=route
   await ctx.close();
   // G: 19 dias + caminhada = desafio cumprido: título, +100, Hall do aparelho; bônus de nível (+50) uma vez
   const d19={};for(let i=0;i<19;i++){const x=new Date(2026,10,5+i);d19[x.toISOString().slice(0,10)]='c';}
-  ({ctx,p,errs}=await open(route,pre,P({forja:FJ({lv:{push:2}}),f30:{s:'2026-11-05',d:d19,lv0:6}}),TT));await p.waitForTimeout(600);st=await LS(p,pre);
+  // G0: nível que subiu só pelo « Sim » do ajuste rápido (sem forja:lv:*) não dá o bônus
+  ({ctx,p,errs}=await open(route,pre,P({forja:FJ({lv:{push:3,pull:3}}),f30:{s:'2026-11-05',d:Object.assign({},d19),lv0:6}}),TT));await p.waitForTimeout(600);st=await LS(p,pre);
+  ok(tag+' G0: ajuste rápido não conta como subir de nível',!st.f30.lvb&&!(st.ouro>0),JSON.stringify({o:st.ouro,f:st.f30.lvb}));await ctx.close();
+  const g=P({forja:FJ({lv:{push:2}}),f30:{s:'2026-11-05',d:d19,lv0:6}});g.log['2026-11-20'].push({q:'forja:lv:push:2',kind:'full',xp:0,stat:'corpo',bonus:0,t:'2026-11-20T10:00:00'}); // subida dentro do desafio, num dia que já tinha atividade
+  ({ctx,p,errs}=await open(route,pre,g,TT));await p.waitForTimeout(600);st=await LS(p,pre);
   ok(tag+' G: subiu 1 nível no mês = +50 e « Acima de Ontem »',st.ouro===50&&st.f30.lvb===1&&st.chest.titles.some(t=>t.id==='o_t_acima'),JSON.stringify({o:st.ouro,f:st.f30.lvb}));
   await drain(p);await tap(p,'#fjWalk');await p.clock.fastForward(20*60000+2000);await p.waitForTimeout(1200);await tap(p,'#fjWalkEnd');await p.waitForTimeout(800);await tap(p,'#fjClose');await p.waitForTimeout(1500);
   ok(tag+' G: janela de desafio cumprido',await p.locator('.sysmodal').filter({hasText:'Cumprido: 20 dias'}).count()===1);

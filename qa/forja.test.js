@@ -156,6 +156,7 @@ for(const [route,pre] of [['comecar/','asc-u'],['','ascensao']]){const tag=route
   ok(tag+' H2: botão de dor com 44 px',await p.evaluate(()=>document.getElementById('fjDor').getBoundingClientRect().height>=44));
   await tap(p,'#fjDor');st=await LS(p,pre);
   ok(tag+' H2: dor conta o dia (+20) mesmo sem série',(day(st,'2026-11-25').find(e=>e.q==='forja:2026-11-25')||{}).xp===20&&st.forja.ses.at(-1).dor===1&&!st.forja.cur);
+  ok(tag+' H2: treino parado por dor não troca A/B',(await p.textContent('#fjSheet')).includes('Próximo: Treino B'),await p.textContent('#fjSheet'));
   ok(tag+' H2: dor não mexe no alvo',JSON.stringify(st.forja.last)==='{"pull":[10,10,10]}');
   ok(tag+' H2: tela final orienta a parar e procurar ajuda',(await p.textContent('#fjSheet')).includes('procure atendimento'));
   ok(tag+' H2: fjDia lê dor; fjNivelSubiu sem subida',await p.evaluate(()=>ascForja.dia('2026-11-25')+','+ascForja.nivelSubiu('2026-11-01'))==='dor,false');

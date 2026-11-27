@@ -42,7 +42,8 @@ function fjS(){let f=prog.forja;if(!f||typeof f!=="object"||Array.isArray(f))f=p
   return f;}
 const fjDow=()=>(new Date().getDay()+6)%7;
 const fjSec=m=>!!FJ_MOV[m].s;
-function fjNext(f){let l=null;for(let i=f.ses.length-1;i>=0;i--){const x=f.ses[i];if(x&&(x.tipo==="A"||x.tipo==="B")){l=x;break;}}return l&&l.tipo==="A"?"B":"A";}
+// próximo treino: alterna A/B; caminhada e treino parado por dor não contam (o próximo repete o que ficou pela metade)
+function fjNext(f){let l=null;for(let i=f.ses.length-1;i>=0;i--){const x=f.ses[i];if(x&&(x.tipo==="A"||x.tipo==="B")&&!x.dor){l=x;break;}}return l&&l.tipo==="A"?"B":"A";}
 function fjTodayE(){return (prog.log[todayKey()]||[]).find(e=>e.q==="forja:"+todayKey());}
 // último dia de treino marcado (até 6 dias atrás) que passou sem treino, contado só depois do 1º treino
 function fjMissed(f){if(!f.ses.length)return "";const first=f.ses[0].d;const done=new Set(f.ses.map(s=>s.d));
