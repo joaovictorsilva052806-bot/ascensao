@@ -6296,9 +6296,17 @@ function fjOpen(ruim){const f=fjS();let m=$("fjSheet");
   else if(!f.pt&&!f.ses.length){fjView="setup";fjWant=!!ruim;}
   else{fjStart(!!ruim);return;}
   fjRender();}
-function fjClose(){const m=$("fjSheet");const was=m&&!m.hidden;if(was)fjShutAt=Date.now();if(m)m.hidden=true;document.body.classList.remove("inforja","inmission");if(was&&fjPrev&&fjPrev.isConnected)try{fjPrev.focus();}catch(e){}clearInterval(fjTick);fjTick=null;fjView=null;fjUI();}
+function fjClose(){const m=$("fjSheet");const was=m&&!m.hidden;if(was)fjShutAt=Date.now();if(m)m.hidden=true;document.body.classList.remove("inforja","inmission");if(was&&fjPrev&&fjPrev.isConnected)try{fjPrev.focus();}catch(e){}clearInterval(fjTick);fjTick=null;fjView=null;fjWake(false);fjUI();}
 function fjWalk(){const f=fjS();if(f.cur){fjOpen();return;}
   if(!f.walk){f.walk={d:todayKey(),t0:Date.now()};save();}fjOpen();}
+// tela acesa durante o treino e a caminhada (Wake Lock). Onde não existir, nada muda.
+let fjWL=null,fjWLp=false;
+async function fjWake(on){try{if(on){if(fjWL||fjWLp||!navigator.wakeLock||document.visibilityState!=="visible")return;fjWLp=true;
+    const w=await navigator.wakeLock.request("screen");fjWLp=false;const m=$("fjSheet");
+    if(!m||m.hidden||(fjView!=="run"&&fjView!=="walk")){try{await w.release();}catch(e){}return;}
+    fjWL=w;w.addEventListener("release",()=>{if(fjWL===w)fjWL=null;});}
+  else if(fjWL){const w=fjWL;fjWL=null;await w.release();}}catch(e){fjWLp=false;}}
+document.addEventListener("visibilitychange",()=>{if(document.visibilityState!=="visible")return;const m=$("fjSheet");if(m&&!m.hidden&&(fjView==="run"||fjView==="walk"))fjWake(true);});
 function fjStart(ruim){const f=fjS();fjWant=false;
   f.cur={d:todayKey(),tipo:fjNext(f),ruim:ruim?1:0,i:0,sets:{},t0:Date.now(),rest:0,v:null};save();fjView="run";fjRender();fjUI();}
 function fjRender(){const m=$("fjSheet");if(!m||m.hidden)return;const ae0=document.activeElement;const keep=ae0&&m.contains(ae0)&&ae0.id?ae0.id:"";m.textContent="";const f=fjS();
@@ -6306,7 +6314,7 @@ function fjRender(){const m=$("fjSheet");if(!m||m.hidden)return;const ae0=docume
   top.append(fjEl("span","fjtag","[ SISTEMA ] FORJA"+(fjView==="walk"?" · CAMINHADA":f.cur?" · TREINO "+f.cur.tipo+(f.cur.ruim?" · DIA RUIM":""):"")),fjBtn("link","Minimizar ⌄",fjClose,"fjMin"));c.append(top);
   if(fjView==="safe")fjSafeV(c,f);else if(fjView==="setup")fjSetupV(c,f);else if(fjView==="done")fjDoneV(c,f);else if(fjView==="walk"&&f.walk)fjWalkV(c,f);else if(f.cur)fjRunV(c,f);else{fjClose();return;}
   const ft=fjEl("details","fjstop");ft.append(fjEl("summary",null,"⚠ Quando parar"),fjEl("p","sm",FJ_SAFE));if(fjView!=="safe")c.append(ft);
-  m.append(c);if(fjView==="run")fjRestUI();if(fjView==="walk")fjWalkUI();
+  m.append(c);if(fjView==="run")fjRestUI();if(fjView==="walk")fjWalkUI();fjWake(fjView==="run"||fjView==="walk");
   // foco no botão principal (leitor de tela e teclado), sem roubar o foco de quem está no − / +
   const k=keep&&document.getElementById(keep);if(k&&m.contains(k)){try{k.focus({preventScroll:true});}catch(e){}return;}
   const ae=document.activeElement;if(!ae||!m.contains(ae)||!ae.isConnected){const g=m.querySelector(".fjbig")||m.querySelector("button");if(g)try{g.focus({preventScroll:true});}catch(e){}}}
