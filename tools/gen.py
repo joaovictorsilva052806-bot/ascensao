@@ -241,6 +241,9 @@ if ROOT:
     rep('</style></head>',R('metas.css')+'</style></head>')
     rep('\nlet saveTimer=null, SYNC="";','\n'+R('metas.js')+'\nlet saveTimer=null, SYNC="";')
     rep('setTimeout(dailyCheckin,600);crApply();crRender();','setTimeout(dailyCheckin,600);crApply();crRender();mtRender();')
+    # Cobrar com Pix no Criador (tools/pix.*): chave e cobranças só no aparelho (ascensao-pix), QR e BR Code gerados aqui
+    rep('</style></head>',R('pix.css')+'</style></head>')
+    rep('\nlet saveTimer=null, SYNC="";','\n'+R('pix.js')+'\nlet saveTimer=null, SYNC="";')
     # Missão Criador, fase 1 (tools/cm.*): só no painel Criador; só adiciona prog.cm (foto fica fora do prog, em ascensao-cm-foto)
     rep('</style></head>',R('cm.css')+'</style></head>')
     rep('\nlet saveTimer=null, SYNC="";','\n'+R('cm.js').replace('"asc-u-','"ascensao-')+'\nlet saveTimer=null, SYNC="";')
