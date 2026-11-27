@@ -1658,7 +1658,7 @@ button.pill.ouro[hidden]{display:none}
 
   <section data-tab="hoje" class="panel tip" id="newsCard" hidden>
     <h2>✨ Novidades no app</h2>
-    <ul class="sm news"><li><b>Novo:</b> escolha sua <b>classe</b> (vida real ou fantasia). Ela evolui nos níveis 10 e 20.</li><li>Cada atributo tem nível próprio e <b>habilidades</b> para desbloquear (em Progresso).</li><li><b>Baú de recompensas:</b> 10 XP = 1 moeda, troque por prêmios que você escolhe.</li><li><b>Treino do Sistema:</b> uma dica de 20 segundos por dia, +5 XP.</li><li>Quer ajudar a testar? Em Mais > Teste do app, você liga o envio anônimo.</li></ul>
+    <ul class="sm news"><li><b>Novo:</b> escolha sua <b>classe</b> (vida real ou fantasia). Ela evolui nos níveis 10 e 20.</li><li>Cada atributo tem nível próprio e <b>habilidades</b> para desbloquear (em Progresso).</li><li><b>Ouro:</b> uma moeda só para a Loja e para os prêmios que você escolhe no Baú.</li><li><b>Treino do Sistema:</b> uma dica de 20 segundos por dia, +5 XP.</li><li>Quer ajudar a testar? Em Mais > Teste do app, você liga o envio anônimo.</li></ul>
     <div class="sm muted">Atualize seu perfil para ganhar as tarefas novas. Seu XP, sequência e histórico continuam.</div>
     <div class="row"><button class="go" type="button" id="newsRedo">Atualizar meu perfil</button><button class="ghost" type="button" id="newsIntro">Ver apresentação</button></div>
     <button class="link" type="button" id="newsClose">Agora não</button>
@@ -7097,7 +7097,7 @@ function orGive(key,v,why){const x=orX();if(x.got[key])return 0;const tk=todayKe
   if(!g)return 0;x.got[key]=tk;x.d[tk]=today+g;prog.ouro=orBal()+g;x.h.unshift({d:tk,v:g,w:String(why||"").slice(0,40)});x.h=x.h.slice(0,30);
   const old=orBack(45);for(const k in x.d)if(k<old)delete x.d[k];for(const k in x.got)if(/^dia:/.test(k)&&k.slice(4)<old)delete x.got[k];
   save();orFx(g,why);return g;}
-function orSpend(id,cost,why){const x=orX();if(orBal()<cost)return false;prog.ouro=orBal()-cost;x.buy[id]=todayKey();x.h.unshift({d:todayKey(),v:-cost,w:String(why||"").slice(0,40)});x.h=x.h.slice(0,30);save();return true;}
+function orSpend(id,cost,why){const x=orX();if(orBal()<cost)return false;prog.ouro=orBal()-cost;if(OR_SHOP.some(it=>it.id===id))x.buy[id]=todayKey();x.h.unshift({d:todayKey(),v:-cost,w:String(why||"").slice(0,40)});x.h=x.h.slice(0,30);save();return true;}
 // moedinha que sobe da pílula (sem movimento com reduce-motion: só o texto)
 function orFx(g,why){orPill();const p=$("ouroPill");try{haptic([10,30,10]);}catch(e){}
   let f=$("orFx");if(!f){f=orEl("div","orfx");f.id="orFx";f.setAttribute("role","status");f.setAttribute("aria-live","polite");document.body.append(f);}
@@ -7131,7 +7131,7 @@ function orShieldN(){try{return shieldSt().n;}catch(e){return 0;}}
 function orShieldMax(){return typeof ST_MAX==="number"?ST_MAX:2;}
 let orArm="";
 function orBuy(it){if(orArm!==it.id){orArm=it.id;orShop();return;}orArm="";
-  if(it.k==="s"){if(orShieldN()>=orShieldMax()){toast("Você já guarda o máximo de escudos.");orShop();return;}if(!orSpend(it.id+":"+todayKey(),it.p,it.n)){orShop();return;}
+  if(it.k==="s"){if(orShieldN()>=orShieldMax()){toast("Você já guarda o máximo de escudos.");orShop();return;}if(!orSpend(it.id,it.p,it.n)){orShop();return;}
     const s=shieldSt();s.n++;save();toast("🛡️ Escudo guardado. Agora: "+s.n+".");try{render();}catch(e){}orShop();return;}
   if(orOwn(it.id)){orShop();return;}if(!orSpend(it.id,it.p,it.n)){toast("Falta Ouro para esse item.");orShop();return;}
   orHook();if(it.k==="t"){try{bxGiveTitle(it.id,it.n,"loja");}catch(e){}}else if(it.k==="f"){try{const c=bxSt();if(!c.frames.includes(it.id))c.frames.push(it.id);save();}catch(e){}}
@@ -7150,7 +7150,7 @@ function orShop(){const m=$("orModal");if(!m)return;const keep=document.activeEl
   c.append(orEl("div","tag","[ SISTEMA ] LOJA DO OURO"));const h=orEl("h3","orbal","🪙 "+bal+" de Ouro");h.id="orTitle";c.append(h);
   const today=+orX().d[todayKey()]||0;c.append(orEl("div","sm muted","Hoje: +"+today+" de "+OR_CAP+" possíveis."));
   const how=orEl("details","orhow");how.append(orEl("summary",null,"Como ganhar Ouro"));const ul=orEl("ul","sm");
-  for(const t of ["Dia com as tarefas principais feitas: +"+OR_G.dia,"Semana sem quebrar a sequência: +"+OR_G.sem,"Chefão derrotado: +"+OR_G.tb,"Desafio Forja 30 cumprido: +"+OR_G.f30+" e título","Subir 1 nível no Forja durante o desafio: +"+OR_G.f30lv])ul.append(orEl("li",null,t));
+  for(const t of ["Dia com as tarefas principais feitas: +"+OR_G.dia,"Semana sem quebrar a sequência: +"+OR_G.sem,"Chefão derrotado: +"+OR_G.tb,"Desafio Forja 30 cumprido: +"+OR_G.f30+" e título","Subir 1 nível no Forja durante o desafio: +"+OR_G.f30lv,"Seu Ouro também paga as recompensas da vida real do Baú (Progresso)"])ul.append(orEl("li",null,t));
   how.append(ul);c.append(how);
   const groups=[["f","Molduras"],["b","Fundos do cartão"],["t","Títulos raros"],["s","Proteção"]];
   for(const [k,nm] of groups){c.append(orEl("h4","orh",nm));const g=orEl("div","orgrid");
@@ -7290,6 +7290,38 @@ document.addEventListener("click",e=>{const b=e.target.closest&&e.target.closest
 {const _rp=renderPills;renderPills=function(){_rp.apply(this,arguments);try{orPill();}catch(e){}};}
 {const _r=render;render=function(){_r.apply(this,arguments);try{orHook();orPill();orPanel();hlUI();}catch(e){}clearTimeout(orScan._t);orScan._t=setTimeout(()=>{try{orScan();}catch(e){}},400);};}
 setTimeout(()=>{try{orHook();orPill();orPanel();hlUI();orScan();}catch(e){}},0);
+// ---------- Uma moeda só: as moedas do Baú de recompensas viram Ouro (27/11) ----------
+// Antes: 10 XP = 1 moeda no Baú (prêmios da vida real) e Ouro na Loja. Duas moedas confundem; agora tudo é Ouro.
+// Migração 1 vez por aparelho: BACKUP do progresso em "<prefixo>-prog-preouro" ANTES; sem backup, não migra.
+// Só ADICIONA: o saldo de moedas (XP/10 menos o gasto) entra em prog.ouro e fica registrado em prog.ouroX.mig = {d, c}.
+// Nada é apagado: prog.rpg.spent e as recompensas continuam iguais. Caminho de volta: orUnmerge() (Mais > Ajustes) tira
+// o que entrou e volta o Baú para moedas; o backup também fica no aparelho.
+const OR_BK="asc-u-prog-preouro";
+function orMerged(){const m=orX().mig;return !!(m&&typeof m==="object"&&!m.off);}
+function orMerge(){if(!orReady())return;const x=orX();if(x.mig)return;let c=0;try{c=Math.max(0,coinsEarned()-rpgState().spent);}catch(e){return;}
+  try{localStorage.setItem(OR_BK,JSON.stringify(prog));if(!localStorage.getItem(OR_BK))return;}catch(e){return;}
+  x.mig={d:todayKey(),c};if(c>0){prog.ouro=orBal()+c;x.h.unshift({d:todayKey(),v:c,w:"Moedas do Baú viraram Ouro"});x.h=x.h.slice(0,30);}save();orChest();orPill();
+  // como a tela de Novidades (tools/versao.js): não abre em navegador automatizado, para não travar os testes da qa/
+  if(c>0&&!navigator.webdriver)sysPop("UMA MOEDA SÓ","Suas "+c+" moedas viraram 🪙 "+c+" de Ouro","Agora é tudo Ouro: o Baú de recompensas e a Loja usam o mesmo saldo. Nada se perdeu.",null,"Entendi");}
+function orUnmerge(){const x=orX();const m=x.mig;if(!m||m.off)return;const back=Math.min(orBal(),+m.c||0);prog.ouro=orBal()-back;m.off=todayKey();
+  if(back){x.h.unshift({d:todayKey(),v:-back,w:"Ouro voltou a ser moedas"});x.h=x.h.slice(0,30);}save();try{render();}catch(e){}toast("Baú de volta às moedas. O Ouro ganho em tarefas continua.");}
+// Baú de recompensas com Ouro (mesma lista, mesmos preços)
+function orChest(){if(!orMerged())return;const r=rpgState();const k=$("coins"),cl=$("chestList");if(!k||!cl)return;const bal=orBal();
+  k.textContent="🪙 "+bal+" de Ouro";const tip=k.closest("section")&&k.closest("section").querySelector("p.sm.muted");
+  if(tip)tip.textContent="Seu Ouro também compra recompensas que você mesmo escolhe. Recompensa planejada não é culpa, é combustível.";
+  const ci=$("chestC");if(ci){ci.placeholder="Ouro";ci.setAttribute("aria-label","Preço em Ouro");}
+  cl.textContent="";r.rew.forEach((w,i)=>{const row=orEl("div","chest");row.append(orEl("span",null,w.t),orEl("b","mono",w.c+" 🪙"));
+    const bt=orBtn(bal>=w.c?"go":"ghost","Resgatar",()=>{if(!orSpend("rew:"+todayKey()+":"+i,w.c,w.t)){toast("Faltam "+(w.c-orBal())+" de Ouro. Bora numa tarefa.");return;}
+      try{render();}catch(e){}sysPop("RECOMPENSA","Aproveite: "+w.t,"Você ganhou isso. Curta sem culpa e volte com energia.");});
+    const del=orBtn("link","✕",()=>{rpgState().rew.splice(i,1);save();try{render();}catch(e){}});del.setAttribute("aria-label","Remover recompensa");row.append(bt,del);cl.append(row);});}
+// botão de volta em Mais > Ajustes (só para quem já migrou)
+function orUndoUI(){const w=$("wipe");if(!w)return;let b=$("orUnmerge");const m=orX().mig;
+  if(!m||m.off||!(+m.c>0)){if(b)b.hidden=true;return;}
+  if(!b){const row=orEl("div","row");b=orBtn("link","Voltar o Baú para moedas",()=>{if(!b.dataset.arm){b.dataset.arm=1;b.textContent="Toque de novo: tira "+Math.min(orBal(),+m.c)+" de Ouro e volta as moedas";setTimeout(()=>{if(b.isConnected){delete b.dataset.arm;b.textContent="Voltar o Baú para moedas";}},5000);return;}orUnmerge();},"orUnmerge");row.append(b);(w.closest(".row")||w).after(row);}
+  b.hidden=false;}
+if(typeof renderRPG==="function"){const _rr=renderRPG;renderRPG=function(){_rr.apply(this,arguments);try{orChest();}catch(e){}};}
+{const _r=render;render=function(){_r.apply(this,arguments);try{orUndoUI();}catch(e){}clearTimeout(orMerge._t);orMerge._t=setTimeout(()=>{try{orMerge();}catch(e){}},600);};}
+setTimeout(()=>{try{orMerge();orChest();orUndoUI();}catch(e){}},50);
 
 let saveTimer=null, SYNC="";
 try{SYNC=localStorage.getItem("asc-u-sync")||"";}catch(e){}

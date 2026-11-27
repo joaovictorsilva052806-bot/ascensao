@@ -94,7 +94,9 @@ Grava só `prog.st`. XP novo: `st:t:<id>` (+10, entregue no prazo) e `st:c:<dia>
 - **Desafio Forja 30**: 20 de 30 dias, 1 por data; treino do Forja com 10 min de timer (força até 4x por semana), caminhada de 20 min ou "Senti dor, parei"; 2 folgas por semana na sequência. Cumprir: +100, título e Hall da Fama. Subir 1 nível na escada no mês: +50. Até 13 anos não vê; 14-17 vê a regra de só peso do corpo.
 - **Hall da turma**: ações `hall`/`hlist` no `server/mural.gs` (token, faixa, 14-17 com `par`, só amigos). Sem a republicação, mostra só o do aparelho.
 
-Grava só `prog.ouro` (inteiro), `prog.ouroX` e `prog.f30`. Teste: `node qa/ouro.test.js`.
+- **Uma moeda só:** as moedas do Baú de recompensas viram Ouro 1 vez (saldo XP/10 menos o gasto), com backup em `*-prog-preouro` antes. Depois disso o Baú resgata com Ouro. Volta: "Voltar o Baú para moedas" em Mais > Ajustes (`orUnmerge`).
+
+Grava só `prog.ouro` (inteiro), `prog.ouroX` (com `mig`) e `prog.f30`. Teste: `node qa/ouro.test.js`.
 
 ## Resumo do beta (Modo Criador)
 
