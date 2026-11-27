@@ -9,3 +9,9 @@
 .afseal{justify-self:start;font-size:.78rem;line-height:1.35;color:#0b0f17;background:var(--gold);border-radius:4px;padding:3px 6px}
 a.aflink{justify-self:start;min-height:44px;display:inline-flex;align-items:center;padding:0 14px;border-radius:8px;text-decoration:none;font-weight:600;color:var(--glow);border:1px solid var(--glow);background:rgba(0,212,255,.08)}
 .afnote{margin:0}
+.afdica{display:grid;gap:8px}
+.afdica .afitem{background:#0a1222}
+.afrow{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
+.afrow .ghost{min-height:44px}
+.afdica .link,.afgo{min-height:44px;text-align:left}
+.afapoio{display:grid;gap:6px;padding:10px 12px;border:1px dashed var(--line);border-radius:10px}
