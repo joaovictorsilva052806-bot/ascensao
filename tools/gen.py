@@ -206,6 +206,9 @@ rep('\nlet saveTimer=null, SYNC="";','\n'+R('tasks.js')+'\nlet saveTimer=null, S
 # Cartas do Sistema (tools/misterio.*): mistério sem sorteio, carta revelada por conquista, prêmio fixo 1 vez; só adiciona prog.myst
 rep('</style></head>',R('misterio.css')+'</style></head>')
 rep('\nlet saveTimer=null, SYNC="";','\n'+R('misterio.js')+'\nlet saveTimer=null, SYNC="";')
+# Missões Lendárias 18+ (tools/lendaria.*; lista em missoes-lendarias.json): área das tasks que pagam na aba Foco + chamada em Hoje; só adiciona prog.lend
+rep('</style></head>',R('lendaria.css')+'</style></head>')
+rep('\nlet saveTimer=null, SYNC="";','\n'+R('lendaria.js')+'\nlet saveTimer=null, SYNC="";')
 # Missões do Mestre 18+ na aba Progresso (tools/mestre.*; lista em missoes-mestre.json): só adiciona prog.mestre
 rep('</style></head>',R('mestre.css')+'</style></head>')
 rep('\nlet saveTimer=null, SYNC="";','\n'+R('mestre.js')+'\nlet saveTimer=null, SYNC="";')
@@ -218,6 +221,9 @@ rep('\nlet saveTimer=null, SYNC="";','\n'+R('arsenal.js')+'\nlet saveTimer=null,
 # Pedido de avaliação (tools/aval.*): só com o beta ligado, depois de uma conquista, 1x a cada 30 dias, sem recompensa; estado em asc-u-aval
 rep('</style></head>',R('aval.css')+'</style></head>')
 rep('\nlet saveTimer=null, SYNC="";','\n'+R('aval.js')+'\nlet saveTimer=null, SYNC="";')
+# Indique a Bellardi 18+ em Mais (tools/indique.*): INDIQUE_WA vazio = some; não grava nada e não envia dado do indicado
+rep('</style></head>',R('indique.css')+'</style></head>')
+rep('\nlet saveTimer=null, SYNC="";','\n'+R('indique.js')+'\nlet saveTimer=null, SYNC="";')
 if not ROOT: open('comecar/index.html','w').write(s)
 pass
 
