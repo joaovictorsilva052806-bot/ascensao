@@ -10,7 +10,7 @@ async function drain(p){let t=[],vaz=0;for(let r=0;r<8&&vaz<2;r++){const x=await
 async function drain1(p){const t=[];for(let i=0;i<10;i++){const m=p.locator('.sysmodal button.go');if(await m.count()){t.push(await p.locator('.sysmodal h3').first().textContent());await m.first().dispatchEvent('click');await p.waitForTimeout(150);continue;}if(await p.locator('#levelup').isVisible()){await p.locator('#luClose').dispatchEvent('click');continue;}await p.waitForTimeout(250);if(!(await p.locator('.sysmodal button.go').count()))break;}return t;}
 const b0=()=>chromium.launch();
 (async()=>{const b=await b0();
-async function open(route,pre,prog,time,rm){const ctx=await b.newContext({viewport:{width:390,height:844},reducedMotion:rm||'no-preference'});const p=await ctx.newPage();const errs=[];
+async function open(route,pre,prog,time,rm){const ctx=await b.newContext({viewport:{width:390,height:844},reducedMotion:rm||'no-preference'});await ctx.addInitScript(()=>{if(!localStorage.getItem('asc-u-tele'))localStorage.setItem('asc-u-tele','{"asked":1}');});const p=await ctx.newPage();const errs=[];
   p.on('pageerror',e=>errs.push(e.message));p.on('console',m=>{if(m.type()==='error'&&!/Failed to load resource|ERR_|navigator.vibrate/.test(m.text()))errs.push(m.text())});
   await p.clock.install({time:new Date(time)});await p.goto(U+'privacidade/'); // semeia fora do app: o save() da página viva não regrava por cima
   await p.evaluate(([c,o,pre])=>{localStorage.setItem(pre+'-cfg',JSON.stringify(c));localStorage.setItem(pre+'-prog',JSON.stringify(o));localStorage.setItem(pre+'-season','2');localStorage.setItem('asc-u-perm','1');localStorage.setItem('asc-u-intro','1');},[CFG,prog,pre]);
