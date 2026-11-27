@@ -1,7 +1,7 @@
 // Cartas do Sistema (tools/misterio.*): mistério sem sorteio. Carta "???" revelada por conquista, prêmio fixo (Ouro + XP) 1 vez,
 // nada comprável, sinal da semana (até 12 palavras) em Hoje no máximo 1 vez por dia, save antigo não perde nada; raiz e /comecar/.
 // Rode com: python3 -m http.server 8003 --bind 127.0.0.1 & PORT=8003 node qa/misterio.test.js
-const {chromium}=require('playwright');const fs=require('fs');const U='http://localhost:'+(process.env.PORT||8003)+'/';
+const {chromium}=require('playwright');const fs=require('fs');const U='http://localhost:'+(process.env.PORT||8000)+'/';
 const R=[];const ok=(n,c,x)=>R.push((c?'PASS ':'FAIL ')+n+(x&&!c?' · '+x:''));
 const CFG=age=>({version:3,name:'Teste',startDate:'2026-11-01',profile:{age},quests:[{id:'q1',title:'Ler 10 min',xp:10,stat:'mente',main:true}]});
 const E=q=>({q,kind:'full',xp:10,stat:'mente',bonus:0,t:'2026-11-20T10:00:00.000Z'});

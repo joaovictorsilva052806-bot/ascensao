@@ -1,7 +1,7 @@
 // Pedido de avaliação (tools/aval.*): convite leve depois de uma conquista, só com o beta anônimo ligado,
 // nunca no 1º dia, 1x a cada 30 dias, some depois de 2 "Agora não", nunca dá XP/Ouro; raiz e /comecar/.
 // Rode com: python3 -m http.server 8002 --bind 127.0.0.1 & PORT=8002 node qa/aval.test.js
-const {chromium}=require('playwright');const U='http://localhost:'+(process.env.PORT||8002)+'/';
+const {chromium}=require('playwright');const U='http://localhost:'+(process.env.PORT||8000)+'/';
 const R=[];const ok=(n,c,x)=>R.push((c?'PASS ':'FAIL ')+n+(x&&!c?' · '+x:''));
 const SHOTS=process.env.SHOTS||'';
 const CFG=age=>({version:3,name:'Teste',startDate:'2026-11-01',profile:age==null?{}:{age},quests:[
