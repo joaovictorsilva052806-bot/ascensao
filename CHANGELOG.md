@@ -3,6 +3,13 @@
 Formato: [Keep a Changelog](https://keepachangelog.com/pt-BR/1.1.0/). Versões: [SemVer](https://semver.org/lang/pt-BR/) (`MAIOR.MENOR.CORREÇÃO`).
 Regra de ouro de toda versão: o progresso salvo no aparelho nunca é apagado nem renomeado.
 
+## Forja: uma janela por vez e toque de 44 px (27/11/2026, dentro da 1.0)
+
+### Corrigido
+- No 1º treino de um jogador novo, a Galeria de classes não abre mais por cima do treino nem junto com o "Sequência iniciada": espera o Forja fechar e os avisos passarem (#135). Trocar de classe pela pílula continua na hora.
+- "⚠ Quando parar" com área de toque de 44 px (#136).
+- Nada novo é salvo. Caches `ascensao-v97` / `ascensao-u-v109`.
+
 ## Uma moeda só (27/11/2026, dentro da 1.0)
 
 ### Mudou

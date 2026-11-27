@@ -1357,7 +1357,7 @@ body.infz .sysmodal:not([hidden]),body.infz .levelup:not([hidden]){z-index:90}
 .fjrest{font-family:var(--f-mono);font-size:.9rem;color:var(--muted);min-height:1.3em;text-align:center}
 .fjrest.on{color:var(--glow)}
 .fjnav{justify-content:space-between}
-.fjstop summary{cursor:pointer;color:var(--gold);min-height:32px;font-size:.85rem}
+.fjstop summary{cursor:pointer;color:var(--gold);min-height:44px;box-sizing:border-box;padding:12px 0;font-size:.85rem}
 .fjstop p{margin:6px 0 0}
 .fjsafe{margin:0;padding:12px;border-left:3px solid var(--gold);background:rgba(255,190,80,.06);line-height:1.45}
 .fjpt{display:grid;gap:8px}
@@ -6333,7 +6333,7 @@ function fjOpen(ruim){const f=fjS();let m=$("fjSheet");
   else if(!f.pt&&!f.ses.length){fjView="setup";fjWant=!!ruim;}
   else{fjStart(!!ruim);return;}
   fjRender();}
-function fjClose(){const m=$("fjSheet");const was=m&&!m.hidden;if(m)m.hidden=true;document.body.classList.remove("inforja","inmission");if(was&&fjPrev&&fjPrev.isConnected)try{fjPrev.focus();}catch(e){}clearInterval(fjTick);fjTick=null;fjView=null;fjUI();}
+function fjClose(){const m=$("fjSheet");const was=m&&!m.hidden;if(was)fjShutAt=Date.now();if(m)m.hidden=true;document.body.classList.remove("inforja","inmission");if(was&&fjPrev&&fjPrev.isConnected)try{fjPrev.focus();}catch(e){}clearInterval(fjTick);fjTick=null;fjView=null;fjUI();}
 function fjStart(ruim){const f=fjS();fjWant=false;
   f.cur={d:todayKey(),tipo:fjNext(f),ruim:ruim?1:0,i:0,sets:{},t0:Date.now(),rest:0,v:null};save();fjView="run";fjRender();fjUI();}
 function fjRender(){const m=$("fjSheet");if(!m||m.hidden)return;const ae0=document.activeElement;const keep=ae0&&m.contains(ae0)&&ae0.id?ae0.id:"";m.textContent="";const f=fjS();
@@ -6495,6 +6495,12 @@ if(typeof SEC!=="undefined"&&Array.isArray(SEC)&&!SEC.some(s=>s[0]==="s_aco"))SE
 // ▶ na quest de treino do perfil abre o Forja no lugar do timer genérico
 if(typeof msOpen==="function"){const _mo=msOpen;msOpen=function(q){if(q&&q.id==="s_treino"){fjOpen(false);return;}return _mo.apply(this,arguments);};}
 {const _r=render;render=function(){try{fjEnsure();}catch(e){}_r.apply(this,arguments);fjUI();};}
+// uma janela por vez (#135): com o Forja aberto, a galeria de classes automática espera ele fechar e os avisos da vitória passarem.
+// Trocar de classe pela pílula (openCls.force) continua abrindo na hora.
+let fjClsT=0,fjShutAt=0; // só segura a galeria por causa do Forja: aberto, ou fechado há menos de 10 s com aviso na tela
+setTimeout(()=>{if(typeof openCls!=="function")return;const _oc=openCls;openCls=function(){try{if(!openCls.force){const fs=$("fjSheet");
+  const busy=(fs&&!fs.hidden)||Date.now()-fjShutAt<10000&&((typeof sysQ!=="undefined"&&sysQ.length)||[...document.querySelectorAll(".sysmodal,.levelup")].some(m=>!m.hidden&&m.getClientRects().length));
+  if(busy){clearTimeout(fjClsT);fjClsT=setTimeout(()=>{try{openCls();}catch(e){}},1500);return;}}}catch(e){}return _oc.apply(this,arguments);};},0);
 document.addEventListener("keydown",e=>{const m=$("fjSheet");if(!m||m.hidden)return;if(e.key==="Escape"){fjClose();return;}
   if(e.key==="Tab"){const f=[...m.querySelectorAll("button,summary,[tabindex]")].filter(x=>!x.disabled&&x.getClientRects().length);if(!f.length)return;
     const i=f.indexOf(document.activeElement);if(e.shiftKey&&i<=0){e.preventDefault();f[f.length-1].focus();}else if(!e.shiftKey&&(i<0||i===f.length-1)){e.preventDefault();f[0].focus();}}});
