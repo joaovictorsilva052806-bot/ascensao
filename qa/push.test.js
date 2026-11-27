@@ -16,6 +16,7 @@ async function drain(p){for(let i=0;i<12;i++){const m=p.locator('.sysmodal:visib
 // o "push" do navegador de mentira: guarda o que o app pede
 const FAKE=perm=>`(()=>{const PERM=${JSON.stringify(perm)};window.__pw={sub:null,unsub:0,subs:0};window.PushManager=function(){};
   const mk=()=>({endpoint:'https://fcm.googleapis.com/fcm/send/teste-'+(++window.__pw.subs),toJSON(){return {endpoint:this.endpoint,keys:{p256dh:'B'+'x'.repeat(86),auth:'a'.repeat(22)}};},unsubscribe(){window.__pw.unsub++;window.__pw.sub=null;return Promise.resolve(true);}});
+  try{const ep=localStorage.getItem('__pwsub');if(ep)window.__pw.sub={endpoint:ep,toJSON(){return {endpoint:ep,keys:{p256dh:'B'+'x'.repeat(86),auth:'a'.repeat(22)}};},unsubscribe(){window.__pw.unsub++;window.__pw.sub=null;return Promise.resolve(true);}};}catch(e){} // inscrição que já existia (antes do boot)
   const pm={getSubscription:()=>Promise.resolve(window.__pw.sub),subscribe:o=>{window.__pw.opts=!!(o&&o.userVisibleOnly&&o.applicationServerKey&&o.applicationServerKey.length===65);window.__pw.sub=mk();return Promise.resolve(window.__pw.sub);}};
   try{Object.defineProperty(navigator,'serviceWorker',{configurable:true,value:{ready:Promise.resolve({pushManager:pm}),addEventListener(){},register(){return Promise.resolve({});},getRegistration(){return Promise.resolve(null);}}});}catch(e){}
   window.Notification=function(){};let cur=PERM==='granted'&&localStorage.getItem('__pwperm')?'granted':'default';
@@ -72,8 +73,8 @@ for(const [route,pre] of [['comecar/','asc-u'],['','ascensao']]){const T=(route|
   // G) "visto" 1x por dia
   {const [ctx,p]=await abre(b,{route,pre});await lembSim(p);await p.click('#pwYes');await p.waitForTimeout(600);
     await p.evaluate(pre=>{const s=JSON.parse(localStorage.getItem(pre+'-push'));s.seen='2026-01-01';localStorage.setItem(pre+'-push',JSON.stringify(s));},pre);
-    const sub=await p.evaluate(()=>window.__pw.sub&&window.__pw.sub.endpoint);await p.close();
-    const [,p2]=await abre(b,{route,pre,keep:ctx});await p2.evaluate(ep=>{window.__pw.sub={endpoint:ep,toJSON(){return {endpoint:ep,keys:{p256dh:'B'+'x'.repeat(86),auth:'a'.repeat(22)}};},unsubscribe(){return Promise.resolve(true);}};},sub);
+    await p.evaluate(()=>localStorage.setItem('__pwsub',window.__pw.sub.endpoint));await p.close();
+    const [,p2]=await abre(b,{route,pre,keep:ctx});
     await p2.waitForTimeout(2500);ok(T+'G: abriu o app: manda pw-seen',p2.posts.filter(x=>x.a==='pw-seen').length===1,p2.posts.map(x=>x.a).join(','));
     await p2.evaluate(()=>{document.dispatchEvent(new Event('visibilitychange'));});await p2.waitForTimeout(500);
     ok(T+'G: só 1x por dia',p2.posts.filter(x=>x.a==='pw-seen').length===1);ok(T+'G: console limpo',!p2.errs.length,p2.errs.join(' | '));await ctx.close();}
