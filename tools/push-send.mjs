@@ -1,5 +1,5 @@
 // push-send.mjs — robô do aviso diário (roda no GitHub Actions, .github/workflows/lembrete-push.yml).
-// 1) Pede ao Apps Script (server/push.gs) a lista da vez ("pw-due", com LEMB_KEY): quem já passou da hora hoje e ainda não abriu o app.
+// 1) Pede ao Apps Script (server/mural.gs, seção PUSH) a lista da vez ("pw-due", com LEMB_KEY): quem já passou da hora hoje e ainda não abriu o app.
 // 2) Manda 1 Web Push para cada um (VAPID). 3) Avisa ao Apps Script quais inscrições morreram (404/410) para apagar.
 // Segredos só por variável de ambiente (GitHub Secrets). Nunca imprime endpoint, chave nem resposta crua: só contagens.
 import webpush from "web-push";
