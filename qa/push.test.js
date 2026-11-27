@@ -22,11 +22,14 @@ const FAKE=perm=>`(()=>{const PERM=${JSON.stringify(perm)};window.__pw={sub:null
   window.Notification=function(){};let cur=PERM==='granted'&&localStorage.getItem('__pwperm')?'granted':'default';
   Object.defineProperty(Notification,'permission',{get:()=>cur});Notification.requestPermission=()=>{cur=PERM;if(PERM==='granted')localStorage.setItem('__pwperm','1');return Promise.resolve(PERM);};
   window.open=()=>null;})();`;
-async function abre(b,{route='comecar/',pre='asc-u',age='adult',rank=true,dev='Android',w=390,perm='granted',keep=null}={}){
+async function abre(b,{route='comecar/',pre='asc-u',age='adult',rank=true,dev='Android',w=390,perm='granted',keep=null,srv=true}={}){
   const ctx=keep||await b.newContext({viewport:{width:w,height:844},reducedMotion:'reduce',userAgent:UA[dev],isMobile:true,hasTouch:true,acceptDownloads:true});
-  const p=await ctx.newPage();p.errs=[];p.posts=[];
+  const p=await ctx.newPage();p.errs=[];p.posts=[];p.pings=[];p.srv=srv;
   p.on('pageerror',e=>p.errs.push(e.message));p.on('console',m=>{if(m.type()==='error'&&!/Failed to load resource|ERR_|navigator.vibrate/.test(m.text()))p.errs.push(m.text())});
-  await p.route('https://script.google.com/**',r=>{const d=r.request().postData()||'';try{p.posts.push(JSON.parse(d));}catch(e){}return r.fulfill({status:200,contentType:'application/json',body:'{"ok":true,"posts":[]}'});});
+  await p.route('https://script.google.com/**',r=>{const d=r.request().postData()||'';let j={};try{j=JSON.parse(d);}catch(e){}
+    // pw-ping: o servidor já tem o server/push.gs? (p.srv=false imita o Apps Script antigo, que não conhece a ação)
+    if(j.a==='pw-ping'){p.pings.push(j);return r.fulfill({status:200,contentType:'application/json',body:p.srv?'{"ok":true,"pw":1}':'{"ok":false,"err":"acao"}'});}
+    p.posts.push(j);return r.fulfill({status:200,contentType:'application/json',body:'{"ok":true,"posts":[]}'});});
   await p.route(/^https?:\/\/(?!localhost|127\.0\.0\.1|script\.google\.com)/,r=>r.abort());
   if(!keep){await p.goto(U+'privacidade/');
     await p.evaluate(([c,o,pre])=>{localStorage.clear();localStorage.setItem(pre+'-cfg',JSON.stringify(c));localStorage.setItem(pre+'-prog',JSON.stringify(o));localStorage.setItem(pre+'-season','2');
@@ -83,7 +86,7 @@ for(const [route,pre] of [['comecar/','asc-u'],['','ascensao']]){const T=(route|
     if(route===''&&tag.includes('idade desconhecida'))continue; // raiz = app do criador (adulto por definição)
     const [ctx,p]=await abre(b,{route,pre,...o});await lembSim(p);
     ok(T+tag+': sem oferta',!(await vis(p,'#pwOffer')));await mais(p);ok(T+tag+': sem botão em Mais',!(await vis(p,'#pwOn')));
-    ok(T+tag+': nada sai',!p.posts.some(x=>/^pw|reg/.test(x.a)));ok(T+tag+': console limpo',!p.errs.length,p.errs.join(' | '));await ctx.close();}
+    ok(T+tag+': nada sai',!p.posts.some(x=>/^pw|reg/.test(x.a))&&!p.pings.length,p.pings.length+' pings');ok(T+tag+': console limpo',!p.errs.length,p.errs.join(' | '));await ctx.close();}
   // D) 14-17 só com o responsável
   if(route){const [ctx,p]=await abre(b,{route,pre,age:'teen'});await lembSim(p);
     ok(T+'D: 14-17 vê a caixa do responsável',await vis(p,'#pwPar'));await p.click('#pwYes');await p.waitForTimeout(300);
@@ -91,10 +94,22 @@ for(const [route,pre] of [['comecar/','asc-u'],['','ascensao']]){const T=(route|
     await p.check('#pwPar');await p.click('#pwYes');await p.waitForTimeout(700);
     const r=p.posts.find(x=>x.a==='reg')||{};ok(T+'D: marcou: reg teen com responsável',r.band==='teen'&&r.par===1,JSON.stringify(r));
     ok(T+'D: e inscreve',p.posts.some(x=>x.a==='pw-sub'));ok(T+'D: console limpo',!p.errs.length,p.errs.join(' | '));await ctx.close();}
-  // K) sem chave pública no código: desligado para todo mundo
+  // K) chave pública de produção no código (JV liberou em 27/11): sem chave de teste, o app usa a do código, válida (65 bytes, começa com 0x04)
   {const [ctx,p]=await abre(b,{route,pre});await p.evaluate(()=>localStorage.removeItem('asc-push-vapid'));await p.reload();await p.waitForTimeout(1500);await drain(p);
-    await lembSim(p);ok(T+'K: sem chave pública: sem oferta',!(await vis(p,'#pwOffer')));await mais(p);ok(T+'K: sem chave pública: sem botão em Mais',!(await vis(p,'#pwOn')));
-    ok(T+'K: nada sai',!p.posts.some(x=>/^pw|reg/.test(x.a)));await ctx.close();}
+    const src=require('fs').readFileSync(__dirname+'/../tools/push.js','utf8');const m=/const VAPID_FIXA="([^"]*)"/.exec(src);const raw=m?Buffer.from(m[1],'base64url'):Buffer.alloc(0);
+    ok(T+'K: chave pública do código tem 65 bytes (P-256 sem compressão)',raw.length===65&&raw[0]===4,String(raw.length));
+    await lembSim(p);ok(T+'K: com a chave do código, a oferta aparece',await vis(p,'#pwOffer'));
+    ok(T+'K: nada sai antes do toque',!p.posts.some(x=>/^pw/.test(x.a)));await ctx.close();}
+  // L) Apps Script ainda sem o server/push.gs: ninguém vê a oferta nem o botão (nada de "não deu para ligar"); a pergunta não leva nome nem token
+  {const [ctx,p]=await abre(b,{route,pre,srv:false});await lembSim(p);await p.waitForTimeout(800);
+    ok(T+'L: servidor sem push: sem oferta',!(await vis(p,'#pwOffer')));await mais(p);ok(T+'L: servidor sem push: sem botão em Mais',!(await vis(p,'#pwOn')));
+    ok(T+'L: perguntou ao servidor (pw-ping) sem nome nem token',p.pings.length>=1&&p.pings.every(x=>Object.keys(x).join()==='a'),JSON.stringify(p.pings));
+    ok(T+'L: nada de inscrição',!p.posts.some(x=>/^pw|reg/.test(x.a)));
+    const sv=await p.evaluate(pre=>JSON.parse(localStorage.getItem(pre+'-push')||'{}').sv,pre);ok(T+'L: guarda o "não" por 1 hora',sv&&sv.ok===0&&sv.t>0,JSON.stringify(sv));
+    // depois que o JV cola o push.gs: a próxima checagem (1 h depois) libera
+    p.srv=true;await p.evaluate(pre=>{const k=pre+'-push';const o=JSON.parse(localStorage.getItem(k)||'{}');o.sv.t=Date.now()-3700e3;localStorage.setItem(k,JSON.stringify(o));},pre);
+    await p.reload();await p.waitForTimeout(1500);await drain(p);await mais(p);await p.waitForTimeout(800);await mais(p);
+    ok(T+'L: servidor pronto: botão aparece em Mais',await vis(p,'#pwOn'));ok(T+'L: console limpo',!p.errs.length,p.errs.join(' | '));await ctx.close();}
   // J) 320 px
   {const [ctx,p]=await abre(b,{route,pre,w:320});await lembSim(p);
     const r=await p.evaluate(()=>{const c=document.querySelector('#pwOffer .card').getBoundingClientRect();const bs=[...document.querySelectorAll('#pwOffer button')].map(x=>x.getBoundingClientRect());

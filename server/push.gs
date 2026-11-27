@@ -25,6 +25,7 @@ var PW_HOSTS = /^https:\/\/(fcm\.googleapis\.com|android\.googleapis\.com|update
 
 function pwRoute_(b) {
   var a = String(b.a || "");
+  if (a === "pw-ping") return { ok: true, pw: 1 };            // o app pergunta se o aviso já está ligado aqui (sem nome nem token)
   if (a === "pw-due" || a === "pw-gone") {                 // robô do GitHub Actions
     if (!pwKeyOk_(String(b.k || ""))) return { ok: false, err: "chave" };
     return a === "pw-due" ? pwDue_() : pwGone_(b.ids);

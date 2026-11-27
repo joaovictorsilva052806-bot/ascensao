@@ -6614,6 +6614,27 @@ setTimeout(fjUI,0);
     // foco no chip escolhido (antes do foco automático das janelas do Sistema, que iria para o botão principal)
     const f=chips.find(b=>b.classList.contains("on"))||chips[0];try{f.focus({preventScroll:true});}catch(e){}}
   window.lembOffer=open;
+  // Momento da oferta (fase 1): sozinha, logo depois da 1ª tarefa do dia 1 e uma vez no dia 2 (dias com tarefa de verdade).
+  // Quem já disse "sim" não vê mais. Depois do dia 2 só pelo cartão ou por Mais > Lembretes. Espera as janelas do Sistema fecharem.
+  const SYSTIP=KEY.indexOf("ascensao")===0?"ascensao-systip":"ascensao-systip";
+  function real(k,e){if(!e||(e.kind!=="full"&&e.kind!=="min"))return false;if(e.q==="q_mit")return true;
+    return ((cfg&&cfg.quests)||[]).some(q=>q.id===e.q)||((prog.extra&&prog.extra[k])||[]).some(q=>q.id===e.q);}
+  function diaN(){const tk=todayKey();const log=(prog&&prog.log)||{};
+    const ds=Object.keys(log).filter(k=>k<=tk&&(log[k]||[]).some(e=>real(k,e))).sort();
+    return ds[ds.length-1]===tk?ds.length:0;}
+  const busy=()=>{let q=0;try{q=sysQ.length;}catch(e){}const b=document.body.classList;if(q>0||b.contains("inmission")||b.contains("inroom")||b.contains("infz")||document.getElementById("lembOffer"))return true;
+    // qualquer janela aberta (Sistema, level-up, relatório do foco, folhas): espera
+    return [...document.querySelectorAll(".sysmodal:not([hidden]),#levelup:not([hidden]),[aria-modal='true']:not([hidden]),#fzRef:not([hidden])")].some(m=>m.getClientRects().length);};
+  let tries=0,tmr=0,calm=0; // calm: a tela precisa ficar livre por 2 checagens seguidas (o baú do dia abre logo depois da fila do Sistema)
+  function auto(){tmr=0;try{if(!cfg||cfg.blank)return;const s=rd();if(s.r==="sim")return;let st="";try{st=localStorage.getItem(SYSTIP)||"";}catch(e){}if(st==="1")return;
+    const n=diaN();if(n!==1&&n!==2)return;const a=s.a||{};if(a[n])return;if(n===2&&a[1]===todayKey())return;
+    if(busy()){calm=0;if(++tries<40)tmr=setTimeout(auto,1500);return;}
+    if(!calm){calm=1;tmr=setTimeout(auto,1200);return;}calm=0;tries=0;
+    a[n]=todayKey();wr({a});
+    open(ok=>{try{localStorage.setItem(SYSTIP,ok?"1":"0");}catch(e){}const t=document.getElementById("sysTip");if(t)t.hidden=true;});}catch(e){}}
+  const later=ms=>{if(!tmr)tmr=setTimeout(auto,ms);};
+  document.addEventListener("click",()=>{tries=0;later(1600);});
+  setTimeout(()=>later(0),2500);
   // Mais > Lembretes: sempre dá para (re)escolher o horário
   const cal=document.getElementById("calPanel");
   if(cal&&!document.getElementById("lembMais")){const b=document.createElement("button");b.type="button";b.className="ghost";b.id="lembMais";b.textContent="⏰ Aviso diário do Sistema (1 evento)";
@@ -7089,7 +7110,7 @@ setTimeout(()=>{try{clUI();}catch(e){}},0);
   const KEY="ascensao-push",LEMB="ascensao-lemb";
   // chave PÚBLICA VAPID (a privada fica só em GitHub Secrets). Vazia = aviso no celular desligado (ninguém vê a oferta).
   // Teste com outra chave: localStorage "asc-push-vapid" (só no próprio aparelho).
-  const VAPID_FIXA="";
+  const VAPID_FIXA="BDcNBzx_o8wholMvtDEJgLzCdxqQR8T7aRwW-it_semHYxGAMa3y_Nf68vz-qtBww3rae2KoG0hms1ClEwlxJXY";
   const VAPID=(()=>{try{const t=localStorage.getItem("asc-push-vapid")||"";if(/^B[A-Za-z0-9_-]{86}$/.test(t))return t;}catch(e){}return VAPID_FIXA;})();
   const URL_=()=>typeof MURAL_URL==="string"?MURAL_URL:"";
   const rd=k=>{try{return JSON.parse(localStorage.getItem(k)||"null")||{};}catch(e){return {};}};
@@ -7104,6 +7125,14 @@ setTimeout(()=>{try{clUI();}catch(e){}},0);
     return a==="teen"?"teen":(a==="young"||a==="adult"||a==="senior")?"adult":"";}
   const tok=()=>{try{return typeof rkTok==="function"?rkTok():"";}catch(e){return "";}};
   const nick=()=>{try{return typeof rankName==="function"?rankName():"";}catch(e){return "";}};
+  // o servidor já sabe fazer aviso? (o JV cola o server/push.gs uma vez). Sem isso, ninguém vê a oferta (nada de "não deu para ligar").
+  // Pergunta "pw-ping" sem nome nem token; guarda a resposta: sim vale o dia, não vale 1 hora.
+  let SRV=null,srvP=null;
+  function srvCheck(){const v=st().sv||{};const ag=Date.now()-(+v.t||0);
+    if(v.ok&&v.d===hoje()){SRV=true;return Promise.resolve(true);}if(v.t&&!v.ok&&ag<3600e3){SRV=false;return Promise.resolve(false);}
+    if(srvP)return srvP;
+    srvP=fetch(URL_(),{method:"POST",body:JSON.stringify({a:"pw-ping"}),credentials:"omit",redirect:"follow"}).then(r=>r.json()).then(j=>!!(j&&j.ok&&j.pw)).catch(()=>false)
+      .then(ok=>{SRV=ok;wr({sv:{ok:ok?1:0,d:hoje(),t:Date.now()}});srvP=null;return ok;});return srvP;}
   function eligible(){return !!VAPID&&supported()&&!!URL_()&&!!band()&&!!(typeof prog!=="undefined"&&prog.rank&&prog.rank.on)&&!!nick()&&!!tok();}
   async function api(a,o){const r=await fetch(URL_(),{method:"POST",body:JSON.stringify(Object.assign({a,n:nick(),tk:tok()},o||{})),credentials:"omit",redirect:"follow"});
     const j=await r.json();if(!j||j.ok===false)throw new Error((j&&j.err)||"erro");return j;}
@@ -7121,7 +7150,7 @@ setTimeout(()=>{try{clUI();}catch(e){}},0);
     wr({on:0,ep:"",off:hoje()});ui();if(!quiet)say("Avisos no celular desligados. Nada fica guardado.");}
   // --- janela de opt-in ---
   function close(m,back){m.remove();document.removeEventListener("keydown",m._k,true);if(back&&back.isConnected)try{back.focus({preventScroll:true});}catch(e){}}
-  function offer(){if(document.getElementById("pwOffer")||!eligible())return;const back=document.activeElement;const teen=band()==="teen";const h=hora()||"19:00";
+  function offer(){if(document.getElementById("pwOffer")||!eligible())return;if(SRV!==true){srvCheck().then(ok=>{if(ok)offer();});return;}const back=document.activeElement;const teen=band()==="teen";const h=hora()||"19:00";
     const E=(t,c,x)=>{const e=document.createElement(t);if(c)e.className=c;if(x!=null)e.textContent=x;return e;};
     const m=E("div","sysmodal pw");m.id="pwOffer";m.setAttribute("role","dialog");m.setAttribute("aria-modal","true");m.setAttribute("aria-labelledby","pwT");
     const c=E("div","card");const h3=E("h3",null,"🔔 Quer o aviso direto no celular?");h3.id="pwT";
@@ -7145,7 +7174,8 @@ setTimeout(()=>{try{clUI();}catch(e){}},0);
   window.pwOffer=offer;
   // --- Mais > Lembretes: estado e liga/desliga ---
   function ui(){const cal=document.getElementById("calPanel");if(!cal)return;let w=document.getElementById("pwMais");
-    const s=st();const show=s.on||eligible();if(!show){if(w)w.remove();return;}
+    const s=st();const el=!s.on&&eligible();const show=s.on||(el&&SRV===true);
+    if(!show){if(w)w.remove();if(el&&SRV===null)srvCheck().then(ok=>{if(ok)ui();});return;}
     if(!w){w=document.createElement("div");w.id="pwMais";w.className="pwmais";const ref=document.getElementById("lembMais");if(ref)ref.after(w);else cal.append(w);}
     w.textContent="";const b=document.createElement("button");b.type="button";
     if(s.on){const t=document.createElement("div");t.className="sm";t.textContent="🔔 Aviso no celular ligado: "+(s.h||"").replace(":","h")+", só se você ainda não abriu o app.";
@@ -7342,17 +7372,29 @@ function f30Said(r,what){if(r==="ok"){const f=f30St();toast("🏆 Dia "+f30Count
 function f30Dor(pre){const r=pre||f30Mark("dor");const safe=typeof FJ_SAFE==="string"?FJ_SAFE:"Se a dor não passar, procure atendimento.";
   sysPop("PAROU NA HORA CERTA",r==="ok"?"Dia contado no Desafio ✓":"Parar foi a escolha certa","Dor é sinal para parar, não para insistir. "+safe,null,"Entendi");}
 // "Senti dor, parei" também dentro do treino do Forja
-if(typeof fjRunV==="function"){const _rv=fjRunV;fjRunV=function(c,f){_rv.apply(this,arguments);if(!f30On())return;
+if(typeof fjRunV==="function"){const _rv=fjRunV;fjRunV=function(c,f){_rv.apply(this,arguments);if(!f30On()||c.querySelector("#fjDor"))return; // a Forja já tem o « Senti dor, parei » (#166): um botão só
   c.append(fjBtn("link f30dor","🤕 Senti dor, parei",()=>{const cu=prog.forja&&prog.forja.cur;const any=cu&&Object.values(cu.sets||{}).some(a=>a&&a.length);
     const r=f30Mark("dor");if(any){fjFinish();fjClose();}else{if(prog.forja)prog.forja.cur=null;save();fjClose();}f30Dor(r||"x");},"f30Dor"));};}
 // treino do Forja terminado: conta se o timer passou de 10 min
 let f30Last="";
 if(typeof fjFinish==="function"){const _ff=fjFinish;fjFinish=function(){const cu=prog.forja&&prog.forja.cur;const ms=cu?Date.now()-(+cu.t0||Date.now()):0,ruim=cu&&cu.ruim;
-  const any=cu&&FJ_TR[cu.tipo]&&FJ_TR[cu.tipo].some(m=>(cu.sets[m]||[]).length);f30Last="";if(any&&f30On()){
+  const any=cu&&FJ_TR[cu.tipo]&&FJ_TR[cu.tipo].some(m=>(cu.sets[m]||[]).length);f30Last="";
+  if(cu&&cu.dor&&f30On())f30Last=f30St().d[todayKey()]?"dup":(f30Mark("dor")==="ok"?"dor":"");else if(any&&f30On()){
     if(f30St().d[todayKey()])f30Last="dup";else if(ms<F30_MINMS)f30Last="short:"+Math.ceil((F30_MINMS-ms)/60000);else f30Last=f30Mark(ruim?"r":"f");}
   _ff.apply(this,arguments);};}
+// caminhada da Forja (#166): no Desafio vale com 20 min; "Senti dor, parei" na caminhada conta o dia
+let f30WArm=0;
+if(typeof fjWalkEnd==="function"){const _we=fjWalkEnd;fjWalkEnd=function(dor){const w=prog.forja&&prog.forja.walk;const ms=w?Date.now()-(+w.t0||Date.now()):0;
+  const ends=w&&(dor||ms>=FJ_WALK_MIN*60000);f30Last="";
+  if(ends&&f30On()){if(f30St().d[todayKey()])f30Last="dup";else if(dor)f30Last=f30Mark("dor")==="ok"?"dor":"";
+    else if(ms<F30_WALKMS){const left=Math.ceil((F30_WALKMS-ms)/60000);
+      if(!(f30WArm&&Date.now()-f30WArm<6000)){f30WArm=Date.now();toast("No Desafio, a caminhada vale com 20 min. Faltam "+left+" min. Toque de novo para encerrar assim mesmo.");return;}
+      f30Last="walk:"+left;}
+    else f30Last=f30Mark("c");}
+  f30WArm=0;
+  return _we.apply(this,arguments);};}
 if(typeof fjDoneV==="function"){const _dv=fjDoneV;fjDoneV=function(c,f){_dv.apply(this,arguments);if(!f30Last)return;const F=f30St();let t="";
-  if(f30Last==="ok")t="🏆 Desafio Forja 30: dia "+f30Count(F)+" de "+F30_GOAL+" ✓";else if(f30Last==="cap")t="🏆 A força já contou "+F30_STR+"x nesta semana. Hoje, caminhada de 20 min vale o dia.";
+  if(f30Last==="ok"||f30Last==="dor")t="🏆 Desafio Forja 30: dia "+f30Count(F)+" de "+F30_GOAL+" ✓";else if(f30Last.startsWith("walk:"))t="🏆 No Desafio, a caminhada vale com 20 min. Faltaram "+f30Last.slice(5)+" min.";else if(f30Last==="cap")t="🏆 A força já contou "+F30_STR+"x nesta semana. Hoje, caminhada de 20 min vale o dia.";
   else if(f30Last.startsWith("short:"))t="🏆 No Desafio, o dia vale com 10 min de treino. Faltaram "+f30Last.slice(6)+" min: dá para completar com a caminhada de 20 min.";
   if(t){const l=orEl("div","sm f30line",t);const cl=c.querySelector("#fjClose");cl?cl.before(l):c.append(l);}};}
 function f30Box(p,full){const f=f30St();const box=orEl("div","f30box");box.id=full?"f30BoxP":"f30Box";
@@ -7368,7 +7410,7 @@ function f30Box(p,full){const f=f30St();const box=orEl("div","f30box");box.id=fu
   const fi=orEl("i");fi.style.width=Math.round(100*Math.min(n,F30_GOAL)/F30_GOAL)+"%";bar.append(fi);box.append(bar);
   const left=F30_GOAL-n,rest=F30_LEN-i+(done?0:1);
   box.append(orEl("div","sm muted",(done?"Hoje contou ✓ · ":"")+"Sequência: "+run.n+(run.n===1?" dia":" dias")+" · folgas na semana: "+run.off+" de "+F30_OFF+(left>rest?" · a meta não cabe mais nos dias que faltam, mas cada treino ainda vale":"")));
-  if(!done){const row=orEl("div","row f30row");if(f.walk&&f.walk.d===tk)row.append(orBtn("ghost","🚶 Caminhada em andamento",f30Walk,full?"f30WalkP":"f30WalkC"));else row.append(orBtn("ghost","🚶 Caminhada 20 min",f30Walk,full?"f30WalkP":"f30WalkC"));
+  if(!done){const row=orEl("div","row f30row");const fjw=typeof fjWalk==="function";if(f.walk&&f.walk.d===tk)row.append(orBtn("ghost","🚶 Caminhada em andamento",f30Walk,full?"f30WalkP":"f30WalkC"));else if(!fjw||full||!$("fjWalk"))row.append(orBtn("ghost","🚶 Caminhada 20 min",fjw?()=>fjWalk():f30Walk,full?"f30WalkP":"f30WalkC"));
     if(f30Str(f,tk)>=F30_STR)box.append(orEl("div","sm muted","A força já contou "+F30_STR+"x nesta semana: hoje vale a caminhada."));box.append(row);}
   if(full){const r=orEl("div","row");r.append(orBtn("link","Sair do desafio",()=>{const b=$("f30Quit");if(b&&!b.dataset.arm){b.dataset.arm=1;b.textContent="Toque de novo para sair (seu XP continua)";setTimeout(()=>{if(b.isConnected){delete b.dataset.arm;b.textContent="Sair do desafio";}},4000);return;}f30Quit();},"f30Quit"));box.append(r);}
   p.append(box);}

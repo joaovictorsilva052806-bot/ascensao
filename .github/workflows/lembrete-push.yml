@@ -29,6 +29,7 @@ jobs:
         run: npm install --no-save --no-audit --no-fund web-push@3.6.7
       - name: Mandar os avisos da vez
         env:
+          VAPID_PUBLIC: BDcNBzx_o8wholMvtDEJgLzCdxqQR8T7aRwW-it_semHYxGAMa3y_Nf68vz-qtBww3rae2KoG0hms1ClEwlxJXY
           VAPID_PRIVATE: ${{ secrets.VAPID_PRIVATE }}
           LEMB_KEY: ${{ secrets.LEMB_KEY }}
         run: |

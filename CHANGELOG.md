@@ -3,6 +3,13 @@
 Formato: [Keep a Changelog](https://keepachangelog.com/pt-BR/1.1.0/). Versões: [SemVer](https://semver.org/lang/pt-BR/) (`MAIOR.MENOR.CORREÇÃO`).
 Regra de ouro de toda versão: o progresso salvo no aparelho nunca é apagado nem renomeado.
 
+## Desafio Forja 30 com a caminhada e a dor da Forja (27/11/2026, dentro da 1.0)
+
+### Corrigido
+- Com o Desafio ativo, o card mostrava 2 botões de caminhada e o treino mostrava 2 "Senti dor, parei". Agora a Forja é dona dos dois e o Desafio só conta o dia.
+- "Senti dor, parei" da Forja (treino ou caminhada) conta o dia no Desafio. A caminhada da Forja conta no Desafio com 20 min; antes disso, o 1º toque em "Terminei" avisa quanto falta.
+- Caminhada do Desafio que já estava em andamento continua no timer antigo. Nada novo é salvo. Caches `ascensao-v99` / `ascensao-u-v111`.
+
 ## Forja: uma janela por vez e toque de 44 px (27/11/2026, dentro da 1.0)
 
 ### Corrigido

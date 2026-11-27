@@ -14,6 +14,8 @@ async function clear(p){for(let i=0;i<10;i++){const m=p.locator('.sysmodal butto
 (async()=>{const b=await chromium.launch();
  for(const vp of [{n:'iPhone',w:390,h:844},{n:'Android',w:412,h:915}]){
   const ctx=await b.newContext({viewport:{width:vp.w,height:vp.h}});const p=await ctx.newPage();const errs=[];
+  // a oferta do aviso diário (dia 1/2, tools/lemb.js) já respondida: o teste é das metas
+  await ctx.addInitScript(()=>{try{if(!localStorage.getItem('ascensao-lemb'))localStorage.setItem('ascensao-lemb','{"r":"nao","a":{"1":"x","2":"x"}}');}catch(e){}});
   p.on('pageerror',e=>errs.push(e.message));p.on('console',m=>{if(m.type()==='error'&&!/Failed to load resource|ERR_|navigator.vibrate/.test(m.text()))errs.push(m.text())});
   let last=null;await ctx.route('https://script.google.com/**',async r=>{const q=r.request();
     if(q.method()==='POST'){try{last=JSON.parse(q.postData()).progress;}catch(e){}return r.fulfill({status:200,contentType:'application/json',body:'{"ok":true}'});}
