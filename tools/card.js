@@ -32,7 +32,7 @@ function tmCard(n){const me=!n||tmN(n)===tmN(rankName());const d=me?cdMine():cdO
       const cp=cdEl("button","ghost","⚔️ Comparar");cp.type="button";cp.addEventListener("click",()=>{close();try{frCompare(d.n);}catch(e){}});row.append(cp);}
     else if(!frSt().pend[d.n]){const b=cdEl("button","go","+ Adicionar amigo");b.type="button";b.addEventListener("click",()=>{frRequest(d.n);close();});row.append(b);}}
   else{const b=cdEl("button","go","📨 Convidar amigo");b.type="button";b.addEventListener("click",()=>{close();cdInvite();});row.append(b);}
-  const x=cdEl("button","link cdclose","Fechar");x.type="button";x.addEventListener("click",close);c.append(row,x);
+  const x=cdEl("button","link cdclose","Fechar");x.type="button";x.dataset.esc="1";x.addEventListener("click",close);c.append(row,x);
   m.append(c);document.body.append(m);try{haptic([10]);}catch(e){}setTimeout(()=>x.focus(),60);}
 // --- convite pessoal ---
 // link fixo da turma: o mesmo link serve para quantas pessoas quiser (grupo do WhatsApp, Instagram etc.)
