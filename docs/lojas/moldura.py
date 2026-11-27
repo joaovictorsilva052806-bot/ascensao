@@ -1,5 +1,5 @@
 from PIL import Image,ImageDraw,ImageFont,ImageFilter
-CAP=[('1-hoje','Sua rotina vira um RPG','Quests, XP e nível de E a S'),('2-quests','Missões curtas, XP na hora','Toque em ▶ e o timer começa'),('3-foco','Foco de 25 minutos','Celular virado, XP entra sozinho'),('4-prog','Derrote o chefão da semana','Cada tarefa tira vida dele'),('5-amigos','Suba de liga com a turma','Ranking opcional, só apelido')]
+CAP=[('1-hoje','Sua rotina vira um RPG','Quests, XP e nível de E a S'),('2-quests','Missões curtas, XP na hora','Toque em ▶ e o timer começa'),('3-foco','Foco de 25 minutos','Celular virado, XP entra sozinho'),('4-prog','Evolua o seu personagem','Avatar, atributos e baú'),('5-amigos','Derrotem o chefão juntos','Turma e liga só com apelido')]
 F='/usr/share/fonts/opentype/inter/'
 def comp(src,W,H,title,sub,out):
     bg=Image.new('RGB',(W,H),(7,12,23));d=ImageDraw.Draw(bg)
@@ -21,7 +21,9 @@ def comp(src,W,H,title,sub,out):
     m=Image.new('L',(sw,sh),0);ImageDraw.Draw(m).rounded_rectangle((0,0,sw-1,sh+r),r,fill=255)
     fr=ImageDraw.Draw(bg);pad=int(W*0.012);fr.rounded_rectangle((x-pad,top-pad,x+sw+pad,H+r),r+pad,fill=(18,30,52),outline=(61,139,255),width=max(2,W//360))
     bg.paste(s,(x,top),m);bg.save(out,optimize=True)
-import sys
+import sys,os
+os.makedirs('docs/lojas/screenshots/iphone-65',exist_ok=True)
 for k,t,sub in CAP:
     comp(f'/tmp/asc-shots/android-{k}.png',1080,1920,t,sub,f'docs/lojas/screenshots/android/{k}.png')
-    comp(f'/tmp/asc-shots/iphone-{k}.png',1290,2796,t,sub,f'docs/lojas/screenshots/iphone/{k}.png')
+    comp(f'/tmp/asc-shots/iphone-{k}.png',1290,2796,t,sub,f'docs/lojas/screenshots/iphone/{k}.png')  # 6,9" (App Store aceita 1290x2796)
+    comp(f'/tmp/asc-shots/iphone-{k}.png',1284,2778,t,sub,f'docs/lojas/screenshots/iphone-65/{k}.png')  # 6,5"

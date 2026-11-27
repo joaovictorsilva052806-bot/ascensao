@@ -1,0 +1,17 @@
+{
+  "appId": "io.github.joaovictorsilva052806.ascension",
+  "appName": "Ascension",
+  "webDir": "www",
+  "backgroundColor": "#070c17",
+  "ios": {
+    "contentInset": "never",
+    "backgroundColor": "#070c17",
+    "limitsNavigationsToAppBoundDomains": false,
+    "preferredContentMode": "mobile"
+  },
+  "plugins": {
+    "CapacitorHttp": { "enabled": true },
+    "LocalNotifications": { "iconColor": "#3d8bff" },
+    "StatusBar": { "style": "DARK", "overlaysWebView": true }
+  }
+}

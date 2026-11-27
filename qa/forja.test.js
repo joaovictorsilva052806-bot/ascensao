@@ -37,6 +37,7 @@ for(const [route,pre] of [['comecar/','asc-u'],['','ascensao']]){const tag=route
   await p.focus('#fjPlus');await p.keyboard.press('Enter');await p.waitForTimeout(100);
   ok(tag+' A: Enter no + mantém o foco no + (não registra série)',await p.evaluate(()=>document.activeElement&&document.activeElement.id)==='fjPlus'&&(await p.textContent('#fjVal')).trim()==='9');
   await tap(p,'#fjMinus');
+  ok(tag+' A: "Quando parar" com 44 px de toque (#136)',await p.evaluate(()=>document.querySelector('#fjSheet .fjstop summary').getBoundingClientRect().height>=44));
   ok(tag+' A: alvo inicial 8 repetições',(await p.textContent('#fjVal')).trim()==='8');
   await tap(p,'#fjPlus');ok(tag+' A: + ajusta o número',(await p.textContent('#fjVal')).trim()==='9');
   await tap(p,'#fjSet');ok(tag+' A: descanso automático após a série',/Descanso 01:[23]\d/.test(await p.textContent('#fjRest')),await p.textContent('#fjRest'));
@@ -107,6 +108,19 @@ for(const [route,pre] of [['comecar/','asc-u'],['','ascensao']]){const tag=route
   ok(tag+' F: faltou 1 dia, mensagem sem culpa',(await p.textContent('#fjCard')).includes('Faltou na qua? Normal'),await p.textContent('#fjCard'));
   ok(tag+' F: card antes das tarefas no dia de treino',await p.evaluate(()=>{const c=document.getElementById('fjCard');return !!(c.nextElementSibling&&c.nextElementSibling.querySelector('#quests'));}));
   ok(tag+' F: console limpo',errs.length===0,errs.join(' | '));await ctx.close();
+  // G: jogador novo sem classe no dia 1: a galeria espera o Forja fechar e os avisos da vitória passarem, uma janela por vez (#135)
+  {const cfg=Object.assign({},CFG,{startDate:'2026-11-25'});const pg=P({forja:FJ(),log:{}});delete pg.rpg;
+  ({ctx,p,errs}=await open(route,pre,pg,'2026-11-25T10:00:00',{cfg}));}
+  const gal=()=>p.evaluate(()=>{const m=document.getElementById('clsModal');return !!(m&&!m.hidden&&m.getClientRects().length);});
+  ok(tag+' G: dia 1 sem vitória, galeria ainda fechada',!(await gal()));
+  await tap(p,'#fjStart');await sets(p,15);await p.clock.runFor(3000);
+  ok(tag+' G: galeria não abre com o Forja aberto',!(await gal()));
+  await tap(p,'#fjClose');let both=false,seen=false;
+  for(let i=0;i<30;i++){await p.clock.runFor(500);const st=await p.evaluate(()=>{const g=document.getElementById('clsModal');const gv=!!(g&&g.getClientRects().length);const o=[...document.querySelectorAll('.sysmodal,.levelup,#levelup')].filter(m=>m.id!=='clsModal'&&!m.hidden&&m.getClientRects().length).length;return {gv,o};});
+    if(st.gv&&st.o)both=true;if(st.gv)seen=true;
+    if(st.o&&!st.gv){const b=p.locator('.sysmodal:not(#clsModal) button.go');if(await b.count())await b.first().dispatchEvent('click');else if(await p.locator('#levelup').isVisible())await p.locator('#luClose').dispatchEvent('click');}}
+  ok(tag+' G: nunca duas janelas juntas',!both);ok(tag+' G: galeria abre depois dos avisos',seen);
+  ok(tag+' G: console limpo',errs.length===0,errs.join(' | '));await ctx.close();
   // E: celular sem rolagem lateral com o treino aberto + prog.forja quebrado não derruba o app
   ({ctx,p,errs}=await open(route,pre,P({forja:{lv:'x',last:null,ses:{},cur:{d:'2020-01-01',tipo:'Z'}}}),'2026-11-25T10:00:00'));
   ok(tag+' E: dado estranho em prog.forja não quebra',await p.locator('#fjCard').isVisible());

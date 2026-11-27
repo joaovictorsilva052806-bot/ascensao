@@ -42,6 +42,8 @@ function doPost(e) {
     if (a === "del") return mOut_(mDel_(nick, String(b.id || "")));
     if (a === "react") return mOut_(mReact_(nick, uid, String(b.id || ""), String(b.e || "")));
     if (a === "report") return mOut_(mReport_(nick, uid, String(b.id || "")));
+    if (a === "hall") return mOut_(mHall_(nick, uid, age, b));     // Hall da Fama do Desafio Forja 30 (tools/ouro.js)
+    if (a === "hlist") return mOut_(mHList_(nick));
     return mOut_({ ok: false, err: "acao" });
   } catch (err) {
     return mOut_({ ok: false, err: "erro" });
@@ -163,6 +165,32 @@ function mReport_(nick, uid, id) { var fr = mFriends_(nick); var r, d, hide; var
       "\nA foto fica na planilha privada do mural (aba fotos, id " + r.id + ") e some sozinha em 7 dias."); } catch (e) {}
   return { ok: true }; }
 // --- gatilho diário: apaga de verdade o que passou de 7 dias ---
-function muralLimpa() { mLock_(function () { var sh = mTab_(); var all = mRows_(); for (var i = all.length - 1; i >= 0; i--) { var r = all[i];
+function muralLimpa() { try { hallLimpa(); } catch (e) {} mLock_(function () { var sh = mTab_(); var all = mRows_(); for (var i = all.length - 1; i >= 0; i--) { var r = all[i];
   if (!mFresh_(r.data)) { try { mFotoDel_(r.id); } catch (e) {} sh.deleteRow(r._row); } } }); }
 function muralInstalaGatilho() { ScriptApp.newTrigger("muralLimpa").timeBased().everyDays(1).atHour(4).create(); }
+// --- Hall da Fama (Desafio Forja 30): mesmas regras do Mural ---
+// Só quem passou pelo token e pelo registro de faixa (14-17 com responsável) chega aqui. Nada de texto livre:
+// guarda apelido, nome de exibição, data, o desafio ("f30"), o início (AAAA-MM-DD) e quantos dias. Lista só o próprio e amigos confirmados.
+// 1 entrada por jogador por desafio; some sozinha em 365 dias (hallLimpa no mesmo gatilho do mural).
+var HL_TAB = "hall", HL_DAYS = 365, HL_COLS = ["id", "autor", "nome", "uid", "data", "desafio", "inicio", "dias", "faixa"];
+function hTab_() { var ss = mStore_(); var sh = ss.getSheetByName(HL_TAB); if (!sh) { sh = ss.insertSheet(HL_TAB); sh.appendRow(HL_COLS); } return sh; }
+function hRows_() { var v = hTab_().getDataRange().getValues(); var out = [];
+  for (var i = 1; i < v.length; i++) { var r = {}; for (var j = 0; j < HL_COLS.length; j++) r[HL_COLS[j]] = v[i][j]; r._row = i + 1; out.push(r); } return out; }
+function mHall_(nick, uid, age, b) {
+  if (String(b.c || "") !== "f30") return { ok: false, err: "desafio" };
+  var ini = String(b.s || ""); if (!/^\d{4}-\d{2}-\d{2}$/.test(ini)) return { ok: false, err: "data" };
+  var dias = Math.floor(+b.k || 0); if (dias < 20 || dias > 30) return { ok: false, err: "dias" };
+  if (!Object.keys(mFriends_(nick)).length) return { ok: false, err: "amigo" };
+  return mLock_(function () {
+    var dup = hRows_().some(function (r) { return r.uid === uid && String(r.inicio) === "i" + ini; });
+    if (!dup) hTab_().appendRow(["h" + Utilities.getUuid().replace(/-/g, "").slice(0, 15), nick, mClean_(b.n, 16), uid, Date.now(), "f30", "i" + ini, dias, age]);
+    return { ok: true };
+  });
+}
+function mHList_(nick) {
+  var fr = mFriends_(nick);
+  var rows = hRows_().filter(function (r) { return Date.now() - Number(r.data) < HL_DAYS * 864e5 && (r.autor === nick || fr[r.autor]); })
+    .sort(function (a, b) { return Number(b.data) - Number(a.data); }).slice(0, 30);
+  return { ok: true, hall: rows.map(function (r) { return { a: r.nome, d: new Date(Number(r.data)).toISOString(), c: r.desafio, n: Number(r.dias) || 0 }; }) };
+}
+function hallLimpa() { mLock_(function () { var sh = hTab_(); var all = hRows_(); for (var i = all.length - 1; i >= 0; i--) if (Date.now() - Number(all[i].data) >= HL_DAYS * 864e5) sh.deleteRow(all[i]._row); }); }

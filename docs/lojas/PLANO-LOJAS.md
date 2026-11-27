@@ -45,6 +45,8 @@ Recomendação: **A agora**.
 
 ## 3. iPhone: Capacitor
 
+> Kit pronto em `docs/lojas/APP-STORE.md` e `nativo/` (26/11/2026): projeto Capacitor, ponte nativa, compilação grátis no GitHub, ficha, prints, idade e privacidade.
+
 A Apple **recusa** app que só abre um site (diretriz 4.2, funcionalidade mínima). Para passar:
 
 1. **Arquivos dentro do pacote:** o Capacitor empacota o `/comecar/` em vez de carregar a URL. Atualização de conteúdo passa a exigir nova versão na loja (ou Capacitor Live Updates, depois).
@@ -67,9 +69,9 @@ O app aceita menores de 14 (só no aparelho). Nas lojas, declarar público "cria
 - [ ] Ícones e manifest 1.0 no ar (PR de ícones)
 - [ ] Tela "Novidades da 1.0" no ar
 - [ ] Sem erros de console nas rotas (`node qa/rotas.test.js`)
-- [ ] Bloquear usuário no Mural (obrigatório só para iOS)
+- [x] Bloquear usuário no Mural (obrigatório só para iOS)
 - [ ] Questionários de idade e segurança dos dados respondidos
-- [ ] Screenshots: `docs/lojas/screenshots/android` (1080×1920) e `iphone` (1290×2796, tamanho 6,7")
+- [x] Screenshots: `docs/lojas/screenshots/android` (1080×1920), `iphone` (1290×2796, slot 6,9") e `iphone-65` (1284×2778, 6,5")
 
 ## 6. Rumo ao top 100
 

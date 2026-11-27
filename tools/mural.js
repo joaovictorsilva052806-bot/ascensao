@@ -13,6 +13,9 @@ const MU_CAPS=["","Feito ✅","Mínimo cumprido","Dia difícil, fiz mesmo assim"
 const MU_STK=["⭐","🏆","🔥","💪","📚","🧠","🏃","🎯","🌙","✨","🦸","🐉","🎨","🎵","🥇","💧"];
 const MU_MAXB=70000;
 function muSt(){if(!prog.mural||typeof prog.mural!=="object")prog.mural={};const m=prog.mural;m.stk=m.stk||{};return m;}
+// bloqueio (diretriz 1.2 da App Store): só neste aparelho, em prog.mural.blk = ["apelido em minúsculas"]. Só ADICIONA o campo.
+function muBlk(){const b=(prog.mural&&Array.isArray(prog.mural.blk))?prog.mural.blk:[];return b;}
+function muIsBlk(a){return muBlk().includes(String(a||"").toLowerCase());}
 function muEl(t,cl,x){const e=document.createElement(t);if(cl)e.className=cl;if(x!=null)e.textContent=x;return e;}
 function muAge(){let a="";try{a=ageNow();}catch(e){}if(!a&&typeof crOn==="function")return "adult";return a;}
 function muKid(){return muAge()==="kid";}
@@ -102,9 +105,10 @@ function muUI(){let p=$("muPanel");const wrap=document.querySelector(".wrap");if
     for(const q of qs.slice(0,10)){const b=muEl("button","ghost mupick",q.title);b.type="button";b.addEventListener("click",()=>{m.remove();muCompose(q);});c.append(b);}
     const no=muEl("button","link","Cancelar");no.type="button";no.addEventListener("click",()=>m.remove());c.append(no);m.append(c);document.body.append(m);});p.append(add);
   if(muPosts===null){p.append(muEl("div","sm muted","Carregando o mural…"));return;}
-  if(!muPosts.length){p.append(muEl("div","sm muted mu0","Nenhuma foto nos últimos 7 dias. Seja o primeiro a provar uma tarefa."));return;}
+  const muVis=muPosts.filter(x=>!muIsBlk(x.a));
+  if(!muVis.length){p.append(muEl("div","sm muted mu0","Nenhuma foto nos últimos 7 dias. Seja o primeiro a provar uma tarefa."));muUnblk(p);return;}
   const me=String(rankName()||"").toLowerCase();const L=muEl("div","mulst");
-  for(const x of muPosts){if(!muImgOk(x.img))continue;const card=muEl("article","mupost");const top=muEl("div","mutop");
+  for(const x of muVis){if(!muImgOk(x.img))continue;const card=muEl("article","mupost");const top=muEl("div","mutop");
     const av=muEl("span","muav");try{av.innerHTML=frAv(((typeof sqPub!=="undefined"&&sqPub[String(x.a||"").toLowerCase()])||{}).av,32);}catch(e){}
     top.append(av,muEl("b",null,String(x.a||"").slice(0,16)),muEl("span","sm muted",muAgo(x.d)));card.append(top);
     const im=muEl("img","muimg");im.alt="Foto de prova de "+String(x.a||"");im.loading="lazy";im.src=x.img;card.append(im);
@@ -114,8 +118,14 @@ function muUI(){let p=$("muPanel");const wrap=document.querySelector(".wrap");if
     const own=String(x.a||"").toLowerCase()===me;const act=muEl("button","link muop",own?"Apagar":"Denunciar");act.type="button";
     act.addEventListener("click",()=>{if(own){if(confirm("Apagar esta foto do mural?")){muPosts=muPosts.filter(y=>y!==x);muUI();muAct("del",{id:x.id},"Foto apagada.");}}
       else if(confirm("Denunciar esta foto? Ela some para você e o criador do app é avisado.")){muPosts=muPosts.filter(y=>y!==x);muUI();muAct("report",{id:x.id},"Denúncia enviada. Obrigado.");}});
-    bar.append(act);card.append(bar);L.append(card);}
-  p.append(L);}
+    bar.append(act);
+    if(!own){const bk=muEl("button","link muop","Bloquear");bk.type="button";bk.setAttribute("aria-label","Bloquear "+String(x.a||"").slice(0,16));
+      bk.addEventListener("click",()=>{const nm=String(x.a||"").slice(0,16);if(!confirm("Bloquear "+nm+"? Você para de ver as fotos dessa pessoa no mural. Dá para desfazer no fim do mural."))return;
+        const s=muSt();s.blk=Array.isArray(s.blk)?s.blk:[];const k=String(x.a||"").toLowerCase();if(!s.blk.includes(k))s.blk.push(k);s.blk=s.blk.slice(-200);save();muUI();toast("Bloqueio feito: "+nm+". Você não vê mais as fotos dessa pessoa.");});bar.append(bk);}
+    card.append(bar);L.append(card);}
+  p.append(L);muUnblk(p);}
+function muUnblk(p){const n=muBlk().length;if(!n)return;const r=muEl("div","sm muted mublk");r.append(document.createTextNode((n===1?"1 pessoa bloqueada":n+" pessoas bloqueadas")+" · "));
+  const b=muEl("button","link","Desbloquear");b.type="button";b.addEventListener("click",()=>{if(!confirm("Voltar a ver as fotos de quem você bloqueou?"))return;muSt().blk=[];save();muUI();toast("Desbloqueado.");});r.append(b);p.append(r);}
 document.addEventListener("click",e=>{const b=e.target.closest&&e.target.closest('#tabbar [data-go="amigos"]');if(b)setTimeout(()=>{try{muLoad();}catch(x){}},0);},true);
 {const _r=render;render=function(){_r.apply(this,arguments);try{if(!$("muAlbum")||document.body.dataset.tab==="prog")muAlbumUI();}catch(e){}};}
 setTimeout(()=>{try{muAlbumUI();muUI();}catch(e){}},0);
