@@ -36,8 +36,12 @@ let smIdx=0,smQ=null,smIv=null,smEnd=0;
 function smPick(){const L=smCands();if(!L.length)return null;smIdx=smIdx%L.length;return L[smIdx];}
 // ---- tela ----
 function smSheet(){let m=$("smSheet");if(!m){m=smEl("div","smsheet");m.id="smSheet";m.setAttribute("role","dialog");m.setAttribute("aria-modal","true");m.setAttribute("aria-label","Missão do Sistema");document.body.append(m);}return m;}
-function smClose(){clearInterval(smIv);const m=$("smSheet");if(m)m.hidden=true;document.body.classList.remove("insm");smBar();}
-function smShell(tag){const m=smSheet();m.hidden=false;document.body.classList.add("insm");setTimeout(smGuardOn,0);m.textContent="";const c=smEl("div","smcard");c.append(smEl("div","smtag","[ SISTEMA ] "+tag));m.append(c);
+// foco: ao fechar, volta para quem abriu (ou para a barra do Sistema), em vez de cair no <body>
+let smPrev=null;
+function smClose(){clearInterval(smIv);const m=$("smSheet");const was=m&&!m.hidden;if(m)m.hidden=true;document.body.classList.remove("insm");smBar();
+  if(!was)return;const p=smPrev;smPrev=null;const ae=document.activeElement;if(ae&&ae!==document.body&&ae.isConnected&&!(m&&m.contains(ae)))return;
+  const t=p&&p.isConnected&&p.getClientRects().length?p:$("smBar");if(t)try{t.focus({preventScroll:true});}catch(e){}}
+function smShell(tag){const m=smSheet();if(m.hidden){const a=document.activeElement;smPrev=a&&a!==document.body&&!m.contains(a)?a:null;}m.hidden=false;document.body.classList.add("insm");setTimeout(smGuardOn,0);m.textContent="";const c=smEl("div","smcard");c.append(smEl("div","smtag","[ SISTEMA ] "+tag));m.append(c);
   const x=smEl("button","smx","✕");x.type="button";x.setAttribute("aria-label","Fechar e ver a lista");x.onclick=smClose;m.append(x);return c;}
 function smOpen(){smShow();}
 function smShow(){clearInterval(smIv);const s=smSt();

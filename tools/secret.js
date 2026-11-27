@@ -124,7 +124,7 @@ function secMount(){
     rk.addEventListener("contextmenu",e=>e.preventDefault());}
   const ck=$("clock");let ct=[];if(ck)ck.addEventListener("click",()=>{const t=Date.now();ct=ct.filter(x=>t-x<4000).concat([t]);if(ct.length>=7){ct=[];unlockSec("s_tempo");}});
   const KS=["ArrowUp","ArrowUp","ArrowDown","ArrowDown","ArrowLeft","ArrowRight","ArrowLeft","ArrowRight","b","a"];let ki=0;
-  document.addEventListener("keydown",e=>{if(e.key==="Escape"&&!$("secZen").hidden)zenClose();
+  document.addEventListener("keydown",e=>{const zz=$("secZen");if(e.key==="Escape"&&zz&&!zz.hidden)zenClose();
     const tg=e.target&&e.target.tagName;if(tg==="INPUT"||tg==="TEXTAREA")return;const k=e.key.length===1?e.key.toLowerCase():e.key;
     ki=k===KS[ki]?ki+1:(k===KS[0]?1:0);if(ki===KS.length){ki=0;unlockSec("s_classico");}});
   renderSec();secClock();setInterval(secClock,20000);document.addEventListener("visibilitychange",secClock);}
