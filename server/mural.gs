@@ -1,6 +1,6 @@
 // mural.gs — Mural da turma (fotos de prova, 14+, só amigos confirmados).
 // Encaixe: arquivo novo no projeto "Ascensão - avisos por e-mail" (gatilho do formulário). Publicar como web app:
-// executar como "Eu", acesso "Qualquer pessoa". Este é o único doPost do projeto.
+// executar como "Eu", acesso "Qualquer pessoa". Este é o único doPost do projeto (as ações "pw-…" vão para o server/push.gs).
 // Ajuste as 3 constantes de PLANILHA/ABA e, se preferir, troque mh_/mVinc_ pelas g_h/g_n/g_tok que já existem.
 //
 // Regras (o servidor confere tudo; o app só mostra):
@@ -27,6 +27,7 @@ function doPost(e) {
     if (!e || !e.postData || !e.postData.contents) return mOut_({ ok: false, err: "vazio" });
     if (e.postData.contents.length > MU_MAX_BODY) return mOut_({ ok: false, err: "grande" });
     var b = JSON.parse(e.postData.contents);
+    if (/^pw-/.test(String(b.a || "")) && typeof pwRoute_ === "function") return mOut_(pwRoute_(b)); // aviso diário (server/push.gs)
     var nick = String(b.n || "").trim().toLowerCase().slice(0, 16);
     if (!nick || !mRate_("mg", 600)) return mOut_({ ok: false, err: "limite" });
     var uid = mVinc_(nick, String(b.tk || ""));
