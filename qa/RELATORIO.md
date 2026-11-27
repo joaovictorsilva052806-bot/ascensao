@@ -4,7 +4,7 @@
 
 - Revisão: correção boa (embrulho do `openCls` só segura a galeria automática com o Forja aberto ou até 10 s depois com aviso na tela; `openCls.force` passa direto; convive com o adiamento do `noite.js`).
 - Achado: o teste G do PR passava mesmo sem a correção (removia o `#clsModal` do DOM e o `clsGalOpen` ficava preso em true). Reescrito: jogador novo no dia 1, treino completo, nunca duas janelas juntas e a galeria abre depois dos avisos. Sem a correção, 4 checks falham; com ela, 10/10.
-- Testes: qa/forja.test.js 130/130 (390x844, 1280x800, reduce-motion, perfil antigo sem `prog.forja`, raiz e /comecar/). Suíte inteira 68/69: push-send precisa do web-push (não instalado, sem relação); textos1 oscilou 1x sob carga e passou 3/3 sozinho. Cache v96 / u-v108.
+- Testes: qa/forja.test.js 130/130 (390x844, 1280x800, reduce-motion, perfil antigo sem `prog.forja`, raiz e /comecar/). Suíte inteira 68/69: push-send precisa do web-push (não instalado, sem relação); textos1 oscilou 1x sob carga e passou 3/3 sozinho. Cache v97 / u-v109.
 
 ## 27/11/2026 · Uma moeda só (moedas do Baú viram Ouro)
 
