@@ -206,6 +206,9 @@ rep('\nlet saveTimer=null, SYNC="";','\n'+R('mestre.js')+'\nlet saveTimer=null, 
 # Arsenal do Herói: vitrine de afiliados 18+ em Mais (tools/arsenal.*): AFIL vazio = some; não grava nada
 rep('</style></head>',R('arsenal.css')+'</style></head>')
 rep('\nlet saveTimer=null, SYNC="";','\n'+R('arsenal.js')+'\nlet saveTimer=null, SYNC="";')
+# Missão Criador, fase 2 (tools/cm.*): aba Progresso para todos, mesmas regras; só adiciona prog.cm (foto fora do prog, em asc-u-cm-foto)
+rep('</style></head>',R('cm.css')+'</style></head>')
+rep('\nlet saveTimer=null, SYNC="";','\n'+R('cm.js')+'\nlet saveTimer=null, SYNC="";')
 if not ROOT: open('comecar/index.html','w').write(s)
 pass
 
@@ -235,9 +238,6 @@ if ROOT:
     rep('</style></head>',R('metas.css')+'</style></head>')
     rep('\nlet saveTimer=null, SYNC="";','\n'+R('metas.js')+'\nlet saveTimer=null, SYNC="";')
     rep('setTimeout(dailyCheckin,600);crApply();crRender();','setTimeout(dailyCheckin,600);crApply();crRender();mtRender();')
-    # Missão Criador, fase 1 (tools/cm.*): só no painel Criador; só adiciona prog.cm (foto fica fora do prog, em ascensao-cm-foto)
-    rep('</style></head>',R('cm.css')+'</style></head>')
-    rep('\nlet saveTimer=null, SYNC="";','\n'+R('cm.js').replace('"asc-u-','"ascensao-')+'\nlet saveTimer=null, SYNC="";')
     # com planilha ligada, as tarefas vêm dela: nunca abrir o cadastro de pessoa nova
     rep('if(!cfg||cfg.blank||!cfg.quests||!cfg.quests.length)openOnb();','if((!cfg||cfg.blank||!cfg.quests||!cfg.quests.length)&&!(()=>{try{return localStorage.getItem("ascensao-sync");}catch(e){return "";}})())openOnb();')
     open(SP+'../index.html','w').write(s)

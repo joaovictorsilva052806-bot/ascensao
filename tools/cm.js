@@ -1,5 +1,5 @@
 // ---------- Missão Criador: um problema real da cidade por semana, em 5 etapas (spec da EVA, #22 comentário 7223690564) ----------
-// Fase 1: só no painel Criador (crPanel). Uma etapa por dia; a seguinte libera no dia seguinte. Tema pela semana do ano (sem sorteio), troca 1x por semana.
+// Fase 2: aberta a todos na aba Progresso, mesmas regras (decisão do JV de 26/11). Até 13 anos faz sem foto; sem idade no /comecar/ conta como menor. Uma etapa por dia; a seguinte libera no dia seguinte. Tema pela semana do ano (sem sorteio), troca 1x por semana.
 // XP por etapa 20/20/30/40/60 (chave cm:<semana>:<n>). Ouro pelo orGive (teto do dia): semana completa +60 (cm:<semana>),
 // "voltei ao mesmo problema" com número novo +20 ao fechar a semana (cm2:<semana>). 4 semanas completas: título; 10: moldura.
 // Dados: só ADICIONA prog.cm. A foto NUNCA entra no prog (logo nunca vai para a planilha): fica em asc-u-cm-foto, no aparelho,
@@ -36,7 +36,8 @@ function cmClean(t,max){return String(t||"").replace(/\s+/g," ").trim().slice(0,
 // recusa texto com dado que identifica alguém (o texto sobe para a planilha do criador)
 function cmPII(t){const s=String(t||"");return /\S+@\S+\.\S+/.test(s)||/(^|\s)@[\w.]{2,}/.test(s)||/\b\d{5}-\d{3}\b/.test(s)||/\(?\b\d{2}\)?\s?9?\d{4}[-\s]\d{4}\b/.test(s)||/\b\d{10,11}\b/.test(s)
   ||/\b(rua|r\.|av\.?|avenida|travessa|tv\.|alameda|estrada|rodovia)\s+[^,.;\n]{2,40}?(,\s*|\s+)(n[º°o.]?\s*)?\d{1,5}\b/i.test(s);}
-function cmKid(){try{return typeof ageNow==="function"&&ageNow()==="kid";}catch(e){return false;}}
+// foto só para 14+ com idade conhecida (no /comecar/, sem idade = menor de 14 para a foto)
+function cmFotoOk(){try{const a=typeof ageNow==="function"?ageNow():"";if(a)return a!=="kid";return typeof AGE_UNK_MINOR!=="undefined"&&!AGE_UNK_MINOR;}catch(e){return false;}}
 function cmImgs(){try{const o=JSON.parse(localStorage.getItem(CM_KEY_IMG)||"{}");return o&&typeof o==="object"&&!Array.isArray(o)?o:{};}catch(e){return {};}}
 function cmImgsSet(o){try{localStorage.setItem(CM_KEY_IMG,JSON.stringify(o));return true;}catch(e){return false;}}
 // estado: cria prog.cm só quando a pessoa abre a missão; vira a semana sozinho (a anterior vai para o histórico, sem texto livre)
@@ -83,7 +84,7 @@ let cmErr="",cmPhoto="";
 function cmFail(t){const f=document.querySelector("#cmBox form");if(!f){cmErr=t;cmRender();return;}let e=f.querySelector(".cmerr");if(!e){e=cmEl("div","cmerr");e.setAttribute("role","alert");f.querySelector(".cmgo").before(e);}e.textContent=t;}
 function cmSubmit(n,f){cmErr="";const ee=f.querySelector(".cmerr");if(ee)ee.remove();const g=id=>{const e=f.querySelector("#"+id);return e?(e.type==="checkbox"?e.checked:e.value):"";};const pick=nm=>{const e=f.querySelector('input[name="'+nm+'"]:checked');return e?e.value:"";};
   const PII="Tire telefone, e-mail, @, CEP ou endereço do texto. Nada que identifique alguém.";
-  if(n===1){const txt=cmClean(g("cmTxt"),280);const img=!!cmPhoto;
+  if(n===1){const txt=cmClean(g("cmTxt"),280);const img=!!cmPhoto&&cmFotoOk();
     if(!img&&txt.length<30)return cmFail("Escreva pelo menos 30 letras ou mande uma foto.");
     if(img&&!g("cmSafe"))return cmFail("Confirme que a foto não tem rosto, placa, número de casa nem uniforme de escola.");
     if(cmPII(txt))return cmFail(PII);
@@ -106,7 +107,7 @@ function cmArea(ph,max,lbl){const t=cmEl("textarea","cmta");t.id="cmTxt";t.maxLe
 function cmCheck(id,txt){const l=cmEl("label","cmck");const i=cmEl("input");i.type="checkbox";i.id=id;l.append(i,cmEl("span",null,txt));return l;}
 function cmForm(c,n){const f=cmEl("form","cmform");f.noValidate=true;const T=CM_T[c.tema];
   f.append(cmEl("h3","cmh","Etapa "+n+" · "+CM_STEP[n][0]),cmEl("div","sm",CM_STEP[n][1]));
-  if(n===1){if(!cmKid()){const fl=cmEl("label","cmfile");const i=cmEl("input");i.type="file";i.accept="image/*";i.id="cmFile";
+  if(n===1){if(cmFotoOk()){const fl=cmEl("label","cmfile");const i=cmEl("input");i.type="file";i.accept="image/*";i.id="cmFile";
       const pv=cmEl("img","cmprev");pv.alt="Prévia da foto";pv.hidden=!cmPhoto;if(cmPhoto)pv.src=cmPhoto;
       i.addEventListener("change",async()=>{const fi=i.files&&i.files[0];if(!fi)return;try{if(typeof muShrink!=="function")throw 0;cmPhoto=await muShrink(fi);pv.src=cmPhoto;pv.hidden=false;cmErr="";}catch(e){cmPhoto="";pv.hidden=true;toast("Não deu para usar essa foto. Tente outra ou escreva.");}});
       fl.append(cmEl("span",null,"📷 Foto (opcional)"),i);f.append(fl,pv,cmCheck("cmSafe","Sem rosto, placa, número de casa ou uniforme de escola"));}
@@ -128,11 +129,14 @@ function cmBackTo(c){const L=c.hist.filter(h=>h.ok&&h.n!=null&&h.wk!==c.wk).slic
   for(const h of L){const t=CM_T[h.tema]||CM_T[0];g.append(cmBtn("cmchip",t[0]+" "+t[1]+" · "+h.n+" "+(h.u||""),()=>{c.tema=h.tema;c.v2of=h.wk;save();cmUI.back=false;cmRender();toast("Voltando ao problema de "+t[1]+".");}));}
   box.append(g,cmBtn("link","Cancelar",()=>{cmUI.back=false;cmRender();}));return box;}
 const cmUI={swap:false,back:false};
-function cmBox(){let b=$("cmBox");if(b)return b;const p=$("crPanel");if(!p)return null;b=cmEl("div","cmbox");b.id="cmBox";
-  const hd=p.querySelector(".qhead");const ref=hd&&hd.nextElementSibling;if(ref)ref.after(b);else p.append(b);return b;}
-function cmRender(){cmLast=cmSig();const b=cmBox();if(!b)return;if(typeof crOn==="function"&&!crOn()){b.hidden=true;return;}b.hidden=false;
+function cmReady(){const hid=id=>{const e=$(id);return !e||e.hidden;};return !!(cfg&&!cfg.blank&&cfg.quests&&cfg.quests.length)&&hid("quick")&&hid("onb")&&!document.body.classList.contains("onboarding");}
+// mora na aba Progresso, logo depois do Ouro (ou da Coleção), para todo mundo
+function cmBox(){let b=$("cmBox");if(b)return b;const anchor=$("orPanel")||$("bxCol")||document.querySelector('.wrap>section[data-tab="prog"]');if(!anchor)return null;
+  const sec=cmEl("section","panel cmpanel");sec.id="cmPanel";sec.dataset.tab="prog";const hd=cmEl("div","qhead");hd.append(cmEl("h2",null,"🛠️ Missão Criador"),cmEl("span","sm mono"));hd.lastChild.id="cmCnt";
+  b=cmEl("div","cmbox");b.id="cmBox";sec.append(hd,b);anchor.after(sec);return b;}
+function cmRender(){cmLast=cmSig();if(!cmReady()){const p=$("cmPanel");if(p)p.hidden=true;return;}const b=cmBox();if(!b)return;$("cmPanel").hidden=false;
   const c=cmSt(),T=CM_T[c.tema]||CM_T[0],d=cmDone(c),nx=cmNext(c);b.textContent="";
-  const hd=cmEl("div","cmhd");hd.append(cmEl("h3","crh","🛠️ Missão Criador"),cmEl("span","sm mono",d+"/5"));b.append(hd);
+  const cn=$("cmCnt");if(cn)cn.textContent=d===5?"5/5 ✓":d+"/5"+(nx.ok?"":" · amanhã");
   const card=cmEl("div","cmcard"+(d===5?" ok":""));
   card.append(cmEl("b","cmtit","Tema "+T[0]+" "+T[1]+" · "+(d===5?"semana completa ✓":"etapa "+Math.min(5,d+1)+" de 5")));
   const dots=cmEl("div","cmdots");dots.setAttribute("aria-hidden","true");for(let i=1;i<=5;i++)dots.append(cmEl("span","cmdot"+(i<=d?" on":i===nx.n&&nx.ok?" now":"")));card.append(dots);
@@ -156,7 +160,7 @@ function cmRender(){cmLast=cmSig();const b=cmBox();if(!b)return;if(typeof crOn==
   b.append(foot);}
 cmHook();
 // render() do app roda toda hora: só redesenha a missão quando o estado muda (senão apagaria o que a pessoa está digitando)
-function cmSig(){const c=prog.cm||{};let on=true;try{on=typeof crOn!=="function"||crOn();}catch(e){}return [on,todayKey(),c.wk,c.tema,c.troca,c.v2of,JSON.stringify(c.s||{}).length,(c.hist||[]).length].join("|");}
+function cmSig(){const c=prog.cm||{};return [cmReady(),cmFotoOk(),todayKey(),c.wk,c.tema,c.troca,c.v2of,JSON.stringify(c.s||{}).length,(c.hist||[]).length].join("|");}
 let cmLast="";
 {const _r=render;render=function(){_r.apply(this,arguments);try{if(prog.cm)cmPay();const g=cmSig();if(g!==cmLast||!$("cmBox"))cmRender();}catch(e){}};}
 setTimeout(()=>{try{cmHook();if(prog.cm)cmPay();cmRender();}catch(e){}},90);

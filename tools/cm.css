@@ -1,7 +1,7 @@
 /* ---- Missão Criador (tools/cm.*) ---- */
 .cmbox{display:grid;gap:8px;margin:6px 0 4px}
 .cmhd{display:flex;align-items:baseline;justify-content:space-between;gap:8px}
-.cmhd .crh{margin:10px 0 0}
+.cmhd h2{margin:0}
 .cmcard{display:grid;gap:8px;padding:12px;border:1px solid var(--line);border-left:3px solid var(--glow);border-radius:10px;background:#0a1222}
 .cmcard.ok{border-left-color:var(--good)}
 .cmtit{font-size:1rem;line-height:1.35}
