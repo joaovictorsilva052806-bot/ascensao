@@ -29,7 +29,8 @@ async function abre(b,{route='comecar/',pre='asc-u',age='adult',rank=true,dev='A
   await p.route(/^https?:\/\/(?!localhost|127\.0\.0\.1|script\.google\.com)/,r=>r.abort());
   if(!keep){await p.goto(U+'privacidade/');
     await p.evaluate(([c,o,pre])=>{localStorage.clear();localStorage.setItem(pre+'-cfg',JSON.stringify(c));localStorage.setItem(pre+'-prog',JSON.stringify(o));localStorage.setItem(pre+'-season','2');
-      for(const [k,v] of [['perm','1'],['intro','1'],['news','99'],['tele','{"asked":1}']])localStorage.setItem(pre+'-'+k,v);},[CFG(age),PROG(rank,age),pre]);}
+      for(const [k,v] of [['perm','1'],['intro','1'],['news','99'],['tele','{"asked":1}']])localStorage.setItem(pre+'-'+k,v);
+      if(!window.__semChave)localStorage.setItem('asc-push-vapid','B'+'A'.repeat(86));},[CFG(age),PROG(rank,age),pre]);}
   await p.addInitScript(FAKE(perm));
   await p.goto(U+route);await p.waitForTimeout(1500);await drain(p);await p.waitForTimeout(800);await drain(p);
   await p.evaluate(()=>{for(const m of document.querySelectorAll('#tlModal'))m.remove();});
@@ -89,6 +90,10 @@ for(const [route,pre] of [['comecar/','asc-u'],['','ascensao']]){const T=(route|
     await p.check('#pwPar');await p.click('#pwYes');await p.waitForTimeout(700);
     const r=p.posts.find(x=>x.a==='reg')||{};ok(T+'D: marcou: reg teen com responsável',r.band==='teen'&&r.par===1,JSON.stringify(r));
     ok(T+'D: e inscreve',p.posts.some(x=>x.a==='pw-sub'));ok(T+'D: console limpo',!p.errs.length,p.errs.join(' | '));await ctx.close();}
+  // K) sem chave pública no código: desligado para todo mundo
+  {const [ctx,p]=await abre(b,{route,pre});await p.evaluate(()=>localStorage.removeItem('asc-push-vapid'));await p.reload();await p.waitForTimeout(1500);await drain(p);
+    await lembSim(p);ok(T+'K: sem chave pública: sem oferta',!(await vis(p,'#pwOffer')));await mais(p);ok(T+'K: sem chave pública: sem botão em Mais',!(await vis(p,'#pwOn')));
+    ok(T+'K: nada sai',!p.posts.some(x=>/^pw|reg/.test(x.a)));await ctx.close();}
   // J) 320 px
   {const [ctx,p]=await abre(b,{route,pre,w:320});await lembSim(p);
     const r=await p.evaluate(()=>{const c=document.querySelector('#pwOffer .card').getBoundingClientRect();const bs=[...document.querySelectorAll('#pwOffer button')].map(x=>x.getBoundingClientRect());

@@ -6870,7 +6870,10 @@ setTimeout(()=>{try{clUI();}catch(e){}},0);
 // Grava só "asc-u-push" (na raiz vira "ascensao-push"), fora do progresso.
 (function(){
   const KEY="asc-u-push",LEMB="asc-u-lemb";
-  const VAPID="BEUNNLfc8c6_-Swq-qK_XNpdMNSa9tusQqPFdFlgk02xU4lMW4TlRiQLOPDz302Ncory9a_kXW4ik3X72qF51CQ"; // chave PÚBLICA (a privada fica só em GitHub Secrets)
+  // chave PÚBLICA VAPID (a privada fica só em GitHub Secrets). Vazia = aviso no celular desligado (ninguém vê a oferta).
+  // Teste com outra chave: localStorage "asc-push-vapid" (só no próprio aparelho).
+  const VAPID_FIXA="";
+  const VAPID=(()=>{try{const t=localStorage.getItem("asc-push-vapid")||"";if(/^B[A-Za-z0-9_-]{86}$/.test(t))return t;}catch(e){}return VAPID_FIXA;})();
   const URL_=()=>typeof MURAL_URL==="string"?MURAL_URL:"";
   const rd=k=>{try{return JSON.parse(localStorage.getItem(k)||"null")||{};}catch(e){return {};}};
   const st=()=>rd(KEY),wr=o=>{try{localStorage.setItem(KEY,JSON.stringify(Object.assign(st(),o)));}catch(e){}};
@@ -6884,7 +6887,7 @@ setTimeout(()=>{try{clUI();}catch(e){}},0);
     return a==="teen"?"teen":(a==="young"||a==="adult"||a==="senior")?"adult":"";}
   const tok=()=>{try{return typeof rkTok==="function"?rkTok():"";}catch(e){return "";}};
   const nick=()=>{try{return typeof rankName==="function"?rankName():"";}catch(e){return "";}};
-  function eligible(){return supported()&&!!URL_()&&!!band()&&!!(typeof prog!=="undefined"&&prog.rank&&prog.rank.on)&&!!nick()&&!!tok();}
+  function eligible(){return !!VAPID&&supported()&&!!URL_()&&!!band()&&!!(typeof prog!=="undefined"&&prog.rank&&prog.rank.on)&&!!nick()&&!!tok();}
   async function api(a,o){const r=await fetch(URL_(),{method:"POST",body:JSON.stringify(Object.assign({a,n:nick(),tk:tok()},o||{})),credentials:"omit",redirect:"follow"});
     const j=await r.json();if(!j||j.ok===false)throw new Error((j&&j.err)||"erro");return j;}
   const b64u=s=>{const p="=".repeat((4-s.length%4)%4);const raw=atob((s+p).replace(/-/g,"+").replace(/_/g,"/"));return Uint8Array.from(raw,c=>c.charCodeAt(0));};
