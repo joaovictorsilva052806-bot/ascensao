@@ -1,5 +1,10 @@
 # Relatório de QA (ATENA)
 
+## 27/11/2026 · Loja do Ouro sem sorteio (ECA Digital, Lei 15.211/2025, art. 20)
+
+- Auditoria: nada com resultado aleatório se compra com Ouro. Loja = 8 itens de escolha direta (3 molduras, 2 fundos, 2 títulos, escudo), nome e preço na cara. Baú de recompensas = prêmios que o próprio jogador escreve, preço fixo. O Baú do dia (sorteio) é grátis por mérito e não tem caminho que gaste Ouro. Nenhuma mudança no app.
+- Trava nova: qa/loja-sem-sorteio.test.js (raiz e /comecar/, 390x844) compra cada item e resgata uma recompensa contando chamadas a Math.random/crypto.getRandomValues que nascem da compra (fora o enfeite visual: id de SVG e faíscas); confere o sorteio do Baú intacto e que chest.js não toca no Ouro. 18/18. Com um Math.random() injetado no orSpend, 2 falham (o teste pega).
+
 ## 27/11/2026 · Desafio Forja 30 conciliado com a caminhada e a dor da Forja (#166/#169)
 
 - Achado na main depois do #169: com o Desafio ativo, 2 botões de caminhada (timers separados) e 2 "Senti dor, parei"; a dor da Forja não contava no Desafio.
