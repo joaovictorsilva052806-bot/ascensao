@@ -1,5 +1,12 @@
 # Relatório de QA (ATENA)
 
+## 27/11/2026 · Trilha Primeira Renda + trava de idade 18+ (frente 2, rascunho)
+
+- Novo: painel "💼 Primeira Renda" na aba Foco com a spec do ATLAS (#22, 7221245467). 14-17 vê "Primeiro passo profissional" (só informação); 18+ vê "Primeiro freela"; até 13 e sem idade no /comecar/ não veem nada. 1 missão em destaque, o resto numa linha. +20 de Ouro por missão e +50 ao fechar (Ouro que não cabe no teto do dia entra no dia seguinte).
+- Trava 18+ (tools/idade.js, reaproveitada pelas frentes 3 e 4): sem idade = menor no /comecar/; quem já foi menor espera 7 dias para ver o 18+; autorização de responsável gravada segura a versão 14-17.
+- Dados: só `prog.renda` (dia de cada missão) e `prog.idade`. Nada do que o jogador escreve é pedido ou guardado.
+- Testes: novo qa/renda.test.js 48/48 (raiz e /comecar/, 390x844, 360 px, 1280x800, reduce-motion, perfil antigo, 7 dias, parent, teto do Ouro). Cache v100 / u-v112.
+
 ## 27/11/2026 · Loja do Ouro sem sorteio (ECA Digital, Lei 15.211/2025, art. 20)
 
 - Auditoria: nada com resultado aleatório se compra com Ouro. Loja = 8 itens de escolha direta (3 molduras, 2 fundos, 2 títulos, escudo), nome e preço na cara. Baú de recompensas = prêmios que o próprio jogador escreve, preço fixo. O Baú do dia (sorteio) é grátis por mérito e não tem caminho que gaste Ouro. Nenhuma mudança no app.

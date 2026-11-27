@@ -197,6 +197,9 @@ rep('\nlet saveTimer=null, SYNC="";','\n'+R('push.js')+'\nlet saveTimer=null, SY
 # Ouro local + Loja do Ouro + Desafio Forja 30 + Hall da Fama (tools/ouro.*): só adiciona prog.ouro, prog.ouroX e prog.f30
 rep('</style></head>',R('ouro.css')+'</style></head>')
 rep('\nlet saveTimer=null, SYNC="";','\n'+R('ouro.js')+'\nlet saveTimer=null, SYNC="";')
+# trava de idade 18+ (tools/idade.js) e trilha Primeira Renda na aba Foco (tools/renda.*): só adiciona prog.idade e prog.renda
+rep('</style></head>',R('renda.css')+'</style></head>')
+rep('\nlet saveTimer=null, SYNC="";','\n'+R('idade.js')+R('renda.js')+'\nlet saveTimer=null, SYNC="";')
 if not ROOT: open('comecar/index.html','w').write(s)
 pass
 

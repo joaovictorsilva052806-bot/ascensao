@@ -1,0 +1,17 @@
+/* ---- Trilha Primeira Renda (tools/renda.*) ---- */
+.rdpanel{display:grid;gap:10px}
+.rdbar{height:8px}
+.rdm{display:grid;gap:6px;padding:10px 12px;border:1px solid var(--line);border-radius:10px;background:#0a1222}
+.rdm.big{border-color:var(--glow);box-shadow:0 0 12px color-mix(in srgb,var(--glow) 25%,transparent)}
+.rdm.ok{opacity:.8}
+.rdm .rdt{font-size:1rem;margin:0;line-height:1.3}
+.rdm.big .rdt{font-size:1.1rem}
+.rdm .rdp{margin:0;line-height:1.45}
+.rdm .rdq{margin:0;color:var(--muted)}
+.rdsrc{color:var(--glow);min-height:44px;display:inline-flex;align-items:center;text-underline-offset:3px;word-break:break-word}
+.rdtip summary,.rdall summary{cursor:pointer;min-height:44px;display:flex;align-items:center;color:var(--glow)}
+.rdtip p{margin:0 0 6px}
+.rdbtn{min-height:44px;justify-self:start}
+.rdlist{display:grid;gap:8px}
+.rddone{margin:0;color:var(--good)}
+.rdnote{margin:0;color:var(--muted);border-left:3px solid var(--line);padding-left:8px}
