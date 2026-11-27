@@ -198,7 +198,8 @@ input:focus,select:focus,textarea:focus{outline:none;border-color:var(--accent)!
 .day.today{outline:none;box-shadow:0 0 0 1px var(--glow);animation:blink 2s infinite}
 .toast{animation:toastIn .35s var(--ease)}
 /* o aviso é só texto: toque passa para o que está embaixo (menos o botão Desfazer) */
-.toast{pointer-events:none}.toast button,.toast a{pointer-events:auto}
+.toast{pointer-events:none}
+.srlive{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);clip-path:inset(50%);white-space:nowrap}.toast button,.toast a{pointer-events:auto}
 @keyframes toastIn{from{opacity:0;transform:translate(-50%,12px)}to{opacity:1;transform:translate(-50%,0)}}
 .xpfloat{position:fixed;z-index:70;pointer-events:none;transform:translateX(-50%);white-space:nowrap;font-family:var(--f-hud);font-weight:700;font-size:1rem;color:#eaffff;text-shadow:0 0 10px var(--accent),0 0 20px var(--accent);animation:xpUp 1.1s var(--ease) forwards}
 .xpfloat.gold{color:#fff3cf;text-shadow:0 0 10px var(--gold),0 0 22px var(--gold)}
@@ -2154,7 +2155,7 @@ a.aflink{justify-self:start;min-height:44px;display:inline-flex;align-items:cent
   </div>
   <div class="froom-black" id="froomBlack" hidden>Toque para ver o tempo</div>
 </div>
-<div class="toast" id="toast" hidden></div>
+<div class="toast" id="toast" hidden></div><div class="srlive" id="toastSr" role="status" aria-live="polite" aria-atomic="true"></div>
 <div class="levelup" id="levelup" hidden><div class="card"><div class="sm muted">SUBIU DE NÍVEL</div><div class="big" id="luLevel">2</div><div id="luRank"></div><div class="sm muted" id="luMsg">Constância vence intensidade.</div><button class="go" type="button" id="luClose">Continuar</button></div></div>
 
 <script>
@@ -2283,7 +2284,9 @@ function render(){
     const c2=document.createElement("td");c2.className="mono";c2.textContent=v+" XP";tr.append(a2,b3,c2);tb.append(tr);});
 }
 
-function toast(msg){const t=$("toast");t.textContent=msg;t.hidden=false;clearTimeout(toast._t);toast._t=setTimeout(()=>t.hidden=true,2600);}
+function toast(msg){const t=$("toast");t.textContent=msg;t.hidden=false;clearTimeout(toast._t);toast._t=setTimeout(()=>t.hidden=true,2600);toastSr(msg);}
+// leitor de tela: o #toast aparece/some com hidden e não é região viva; o texto vai também para #toastSr (role=status, sempre no DOM)
+function toastSr(msg){const s=$("toastSr");if(!s)return;clearTimeout(toastSr._a);clearTimeout(toastSr._b);s.textContent="";toastSr._a=setTimeout(()=>{s.textContent=String(msg==null?"":msg);},50);toastSr._b=setTimeout(()=>{s.textContent="";},6000);}
 
 let lastPt=null;document.addEventListener("pointerdown",e=>{lastPt={x:e.clientX,y:e.clientY,el:e.target.closest(".quest")};},true);
 function fx(xp,gold){try{const ua=navigator.userActivation;if(navigator.vibrate&&(!ua||ua.hasBeenActive))navigator.vibrate(gold?[12,40,18]:12);}catch(e){}
