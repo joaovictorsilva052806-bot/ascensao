@@ -1,11 +1,11 @@
 # Compila o app do iPhone (Capacitor) para o simulador, SEM assinatura e sem conta Apple.
 # Prova que o pacote está de pé antes de pagar a conta Apple Developer. Grátis em repositório público.
-# Não publica nada em loja. Roda à mão (Actions → "iOS: compilar sem assinatura") ou quando nativo/ muda num PR.
+# Não publica nada em loja. Roda só à mão (Actions → "iOS: compilar sem assinatura → Run workflow").
+# Por que não roda em todo PR: em 26/11 os 2 disparos ficaram na fila do Mac e foram cancelados sem log,
+# e um check vermelho em todo PR do app seria ruído. Volta para PR quando uma rodada manual passar.
 name: "iOS: compilar sem assinatura"
 on:
   workflow_dispatch:
-  pull_request:
-    paths: ["nativo/**", "comecar/**", ".github/workflows/ios-teste.yml"]
 permissions:
   contents: read
 jobs:
