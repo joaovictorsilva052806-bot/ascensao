@@ -203,6 +203,9 @@ rep('\nlet saveTimer=null, SYNC="";','\n'+R('idade.js')+R('renda.js')+'\nlet sav
 # Tasks que pagam 18+ na aba Foco (tools/tasks.*): só adiciona prog.tp; Carteira real fica fora do prog, só no aparelho
 rep('</style></head>',R('tasks.css')+'</style></head>')
 rep('\nlet saveTimer=null, SYNC="";','\n'+R('tasks.js')+'\nlet saveTimer=null, SYNC="";')
+# Missões Lendárias 18+ (tools/lendaria.*; lista em missoes-lendarias.json): área das tasks que pagam na aba Foco + chamada em Hoje; só adiciona prog.lend
+rep('</style></head>',R('lendaria.css')+'</style></head>')
+rep('\nlet saveTimer=null, SYNC="";','\n'+R('lendaria.js')+'\nlet saveTimer=null, SYNC="";')
 # Missões do Mestre 18+ na aba Progresso (tools/mestre.*; lista em missoes-mestre.json): só adiciona prog.mestre
 rep('</style></head>',R('mestre.css')+'</style></head>')
 rep('\nlet saveTimer=null, SYNC="";','\n'+R('mestre.js')+'\nlet saveTimer=null, SYNC="";')

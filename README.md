@@ -29,6 +29,10 @@ Pontos de entrada no JS: `render()` desenha tudo; `toggle(quest, "full"|"min")` 
 - Retenção (só no Modo Criador, `tools/retencao.*`): D1/D3/D7 e funil perfil → 1ª missão (`7-quest`) → fechou o dia (`8-fechou-dia`), calculados no aparelho do JV a partir das linhas `A` (id aleatório + etapa + data). Não guarda nada. O app do criador não pede o aceite para ele mesmo nem envia linhas `A`. Teste: `node qa/retencao.test.js`.
 - CSP por `<meta>` (o GitHub Pages não deixa mudar cabeçalhos). Teste: `node qa/seguranca.test.js`.
 
+## Missões de Parceiros (lendárias, 18+)
+
+`tools/lendaria.js` e `tools/lendaria.css` (nos dois geradores): área com moldura de raridade lendária no topo da aba **Lendárias** (sem a aba, na **Foco**) e uma chamada de 1 toque em **Hoje**. A lista vem de `missoes-lendarias.json` (raiz): troque parceiro, passos ou link sem trem novo; missão incompleta ou com link que não é https não aparece; lista vazia = a área some. `"teste": true` = só o Modo Criador vê (para o JV testar antes de abrir a todos). Selo "Publicidade · parceiro" sempre visível, link com `rel="sponsored"`, só 18+ (`ad18`), +80 de Ouro uma vez por missão (`adGoldOk`), brilho desligado com reduce-motion. Grava só `prog.lend`. Teste: `node qa/lendaria.test.js`.
+
 ## Segredos
 
 `tools/secret.js` e `tools/secret.css` (entram nos dois geradores): 25 conquistas ocultas (8 delas são piscadelas de cultura pop: só a referência, com nomes e textos nossos, sem personagens, falas ou marcas) com títulos raros, Terminal do Sistema (em Mais) para códigos e Modo Zen. Grava só `prog.sec` e `prog.secTitle`; o XP entra como `ach:<id>`. Teste: `node qa/segredos.test.js` com o servidor local ligado.
