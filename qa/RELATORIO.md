@@ -1,5 +1,12 @@
 # Relatório de QA (ATENA)
 
+## 27/11/2026 · Missão Criador, fase 1 (painel Criador) · PR #179
+
+- Novo: missão semanal de 5 etapas na aba Criador (só no app do JV). Só adiciona `prog.cm`; a foto fica em `ascensao-cm-foto`, fora do progresso e da planilha.
+- `qa/cm.test.js` 52/52: 1 etapa por dia, XP 170 na semana, teto do Ouro (paga no dia seguinte), foto fora de todo POST, troca de tema 1x, filtro de telefone/endereço, virada da semana, volta ao problema (+20), título aos 4 e moldura aos 10, 360/1280 px, reduce-motion, toque ≥ 44 px.
+- Suíte inteira (75 arquivos, 4 em paralelo): 73 verdes. Falham também na main, sem relação com a mudança: `esquadrao-convite.test.js` (`st.squad` indefinido) e `push-send.test.mjs` (módulo `web-push` não instalado no sandbox). `mural`, `ranking-nome` e `runa` falharam só sob carga e passaram ao rodar de novo.
+- Prints iPhone 13 e Pixel 7 conferidos. Cache `ascensao-v105` / `ascensao-u-v117`.
+
 ## 27/11/2026 · Vitrine que rende: tag pelo afiliados.json, Dica da semana, atalhos e medição com opt-in
 
 - `afiliados.json` na raiz (amazon, mercadolivre, apoio): o JV liga a vitrine editando 1 arquivo, sem trem. Tag limpa (só letras, números, - e _), apoio só com https. O arquivo vence o `AFIL` do código; cópia em `asc-u-vitrine`, fora do progresso. Busca 1 vez por abertura (o service worker não sobrescreve).
