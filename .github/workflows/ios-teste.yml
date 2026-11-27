@@ -1,0 +1,35 @@
+# Compila o app do iPhone (Capacitor) para o simulador, SEM assinatura e sem conta Apple.
+# Prova que o pacote está de pé antes de pagar a conta Apple Developer. Grátis em repositório público.
+# Não publica nada em loja. Roda só à mão (Actions → "iOS: compilar sem assinatura → Run workflow").
+# Por que não roda em todo PR: em 26/11 os 2 disparos ficaram na fila do Mac e foram cancelados sem log,
+# e um check vermelho em todo PR do app seria ruído. Volta para PR quando uma rodada manual passar.
+name: "iOS: compilar sem assinatura"
+on:
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  simulador:
+    runs-on: macos-15
+    timeout-minutes: 30
+    defaults:
+      run:
+        working-directory: nativo
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - run: npm ci --no-audit --no-fund
+      - run: npm run sync
+      - name: Compilar para o simulador (sem assinatura)
+        run: |
+          xcodebuild -project ios/App/App.xcodeproj -scheme App -configuration Debug \
+            -sdk iphonesimulator -destination 'generic/platform=iOS Simulator' \
+            -derivedDataPath build CODE_SIGNING_ALLOWED=NO build | tail -40
+          test -d build/Build/Products/Debug-iphonesimulator/App.app
+      - uses: actions/upload-artifact@v4
+        with:
+          name: Ascension-simulador
+          path: nativo/build/Build/Products/Debug-iphonesimulator/App.app
+          retention-days: 7

@@ -28,6 +28,13 @@
 - Novo: Plataforma Escondida (9h45/21h45), A Carta Chegou (11 dias jogados), A Resposta (42 quests; código 42 mostra quanto falta), Medidor Estourou (>9000 XP; código 9000 mostra o medidor), Galáxia Distante (04/05), Código Clássico (setas + B A no teclado, ou código), Hora do Pi (3:14/15:14 e 14/03) e Toca do Coelho (código). Só a referência: nomes, títulos e textos nossos.
 - Dados: só `prog.sec`/`prog.secTitle`, como antes. Save antigo com segredos e título: nada some, contador vira N / 25.
 - Testes: qa/segredos.test.js 56/56 três vezes seguidas (390x844, 1280x800, reduce-motion, offline, /comecar/). O seed dos blocos novos grava a temporada antes de abrir o app (sem isso o "Novo despertar" zerava o save do teste). chefe-bau, rotas e segurança sem FAIL. Caches ascensao-v74 / ascensao-u-v86.
+## 26/11/2026 18h · Kit da App Store (PR #126 rascunho, espera o "pode publicar")
+
+- Auditoria do PWA no iPhone: as 11 telas de abertura (`icons/splash/`) existiam mas nenhuma página apontava para elas; ligadas no `<head>` da raiz e do /comecar/ (11/11 respondem 200). Manifest da raiz ganhou `id` (mesmo valor calculado hoje). Ícones, apple-touch-icon, standalone e offline já estavam ok.
+- Novo: "Bloquear" no Mural (diretriz 1.2 da Apple), só no aparelho, em `prog.mural.blk` (campo novo, nada apagado), com Desbloquear. Testado em 360 e 390 px (o botão quebra linha sem cortar).
+- Novo: `nativo/` (Capacitor 8, /comecar/ dentro do pacote, ponte nativa) e workflow que compila para o simulador sem assinatura. O site não muda.
+- **Placar:** suíte inteira em série 51/51 arquivos verdes (inclui `nativo` 14/14 e `mural` 24/24 com 6 casos novos); `rotas` 12/12 e `mural` refeitos depois do ajuste de CSS. Caches `ascensao-v77` / `ascensao-u-v89`.
+- 27/11 (ok do JV para publicar): main trazida 3 vezes para o PR. Suíte inteira em série 69/69 em cima do #163; depois do #164/#165, `mural`, `nativo`, `rotas`, `seguranca`, `ouro`, `alvo`, `classe`, `liga` e `sequencia` sem FAIL. Workflow do iPhone passou a rodar só à mão (2 disparos cancelados na fila do Mac, sem log). Caches `ascensao-v96` / `ascensao-u-v108`.
 
 ## 25/11/2026 23h · Retenção D1/D3/D7 e funil no Modo Criador (PR rascunho, espera o "pode publicar")
 
