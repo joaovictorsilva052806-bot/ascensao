@@ -1,0 +1,20 @@
+{
+  "_leia": "Missões Lendárias (tasks que pagam, 18+). Uma missão só aparece com id, parceiro, titulo, ganho, passos (1 a 6) e link https. \"teste\": true = só o Modo Criador do JV vê (para testar antes de abrir a todos); troque para false para liberar aos 18+. \"link\" pode ser o seu link de indicação (https). \"regras\" (https) é opcional. Lista vazia = a área some.",
+  "missoes": [
+    {
+      "id": "cuponomia",
+      "teste": true,
+      "parceiro": "Cuponomia",
+      "titulo": "Ative o cashback da Cuponomia",
+      "ganho": "Parte do valor das suas compras online volta para você como cashback. O valor muda por loja: confira no site antes de comprar.",
+      "passos": [
+        "Criar a sua conta grátis na Cuponomia pelo botão abaixo.",
+        "Escolher uma loja onde você já ia comprar e ver quanto de cashback ela dá.",
+        "Ativar o cashback na Cuponomia e fazer a compra pelo link dela.",
+        "Conferir o cashback aparecendo como pendente na sua conta."
+      ],
+      "link": "https://www.cuponomia.com.br/",
+      "regras": ""
+    }
+  ]
+}
