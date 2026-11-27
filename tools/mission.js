@@ -16,8 +16,14 @@ function msDone(q){return (prog.log[todayKey()]||[]).find(e=>e.q===q.id);}
 // ---- tela da missão ----
 function msOpen(q){msQ=q;let m=$("msSheet");
   if(!m){m=msEl("div","mssheet");m.id="msSheet";m.setAttribute("role","dialog");m.setAttribute("aria-modal","true");m.setAttribute("aria-label","Missão");document.body.append(m);}
-  m.hidden=false;document.body.classList.add("inmission");msRender();msChip();}
-function msClose(){const m=$("msSheet");if(m)m.hidden=true;document.body.classList.remove("inmission");msChip();}
+  const abriu=m.hidden||!m.childNodes.length;if(abriu){const a=document.activeElement;msPrev=a&&a!==document.body&&!m.contains(a)?a:null;}
+  m.hidden=false;document.body.classList.add("inmission");msRender();msChip();
+  // foco entra na janela (leitor de tela e teclado não ficam presos atrás dela)
+  if(abriu&&!m.hidden&&!m.contains(document.activeElement)){const f=[...m.querySelectorAll("button,input,select,textarea,[href]")].filter(e=>!e.disabled&&e.getClientRects().length);const b=f.find(e=>e.matches(".go"))||f[0];if(b)try{b.focus({preventScroll:true});}catch(e){}}}
+let msPrev=null;
+function msClose(){const m=$("msSheet");const was=m&&!m.hidden;if(m)m.hidden=true;document.body.classList.remove("inmission");msChip();
+  if(!was)return;const p=msPrev;msPrev=null;const ae=document.activeElement;if(ae&&ae!==document.body&&ae.isConnected&&!(m&&m.contains(ae)))return;
+  if(p&&p.isConnected&&p.getClientRects().length)try{p.focus({preventScroll:true});}catch(e){}}
 function msRender(){const m=$("msSheet");const q=msQ&&msFind(msQ.id);if(!m||!q){msClose();return;}m.textContent="";
   const c=msEl("div","mscard");
   const top=msEl("div","mstop");top.append(msEl("span","mstag","[ SISTEMA ] MISSÃO ATIVA"));const x=msEl("button","link","Minimizar ⌄");x.type="button";x.addEventListener("click",msClose);top.append(x);
