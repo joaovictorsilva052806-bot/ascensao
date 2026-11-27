@@ -2545,9 +2545,10 @@ function stRender(){const p=stPanel();if(!p)return;const s=stS(),tk=todayKey();
     f.append(stBtn("Salvar","go",()=>{const v=ti.value.trim();if(!v){ti.focus();return;}s.tasks.push({id:stId(),t:v,disc:di.value.trim(),type:ty.value,due:du.value||null,w:+w.value,blocks:+bk.value});
       save();stRender();toast("Salvo. Alerta a 7, 3 e 1 dia do prazo.");}));d.append(f);p.append(d);}
   // 6) prazos (todos, com alerta)
-  {const pend=s.tasks.filter(t=>!t.done&&t.due).sort((a,b)=>a.due<b.due?-1:1);
+  // tarefa sem data também entra (no fim, "sem data"): era a única sem ✕ e ficava presa no Hoje (#137)
+  {const pend=s.tasks.filter(t=>!t.done).sort((a,b)=>!a.due?(!b.due?0:1):!b.due?-1:a.due<b.due?-1:a.due>b.due?1:0);
     if(pend.length){const d=stDetails("📅 Prazos ("+pend.length+")",keep.due);d.dataset.k="due";const ul=stEl("ul","stlist");
-      for(const t of pend){const dd=stDays(t.due);const li=stEl("li",dd<0?"late":dd<=7?"hot":"");li.append(stEl("span",null,(t.type==="adm"?"📌 ":"")+t.t),stEl("span","sm mono",stWhen(dd)));
+      for(const t of pend){const dd=stDays(t.due);const li=stEl("li",dd==null?"":dd<0?"late":dd<=7?"hot":"");li.append(stEl("span",null,(t.type==="adm"?"📌 ":"")+t.t),stEl("span","sm mono",stWhen(dd)));
         const x=stBtn("✕","ghost stx",()=>{if(x.dataset.sure){s.tasks=s.tasks.filter(y=>y.id!==t.id);save();stRender();toast("Apagado: "+t.t);return;}
           x.dataset.sure="1";x.textContent="Apagar?";x.setAttribute("aria-label","Toque de novo para apagar "+t.t);setTimeout(()=>{if(x.isConnected){delete x.dataset.sure;x.textContent="✕";x.setAttribute("aria-label","Apagar "+t.t);}},3000);},"Apagar "+t.t);li.append(x);ul.append(li);}
       d.append(ul);p.append(d);}}
