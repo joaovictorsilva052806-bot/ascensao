@@ -1,0 +1,18 @@
+/* ---- Tasks que pagam 18+ (tools/tasks.*) ---- */
+.tppanel{display:grid;gap:10px}
+.tpm{border:1px solid var(--line);border-radius:10px;background:#0a1222;padding:0 12px}
+.tpm[open]{border-color:var(--glow);padding-bottom:10px}
+.tpm.ok{opacity:.85}
+.tpt{cursor:pointer;min-height:44px;display:flex;align-items:center;justify-content:space-between;gap:8px;font-weight:600}
+.tpsub,.tpwarn,.tpnote,.tpwtot{margin:0 0 8px;line-height:1.45}
+.tpwarn{border-left:3px solid var(--warn,#ffb020);padding-left:8px}
+.tpnote{color:var(--muted);border-left:3px solid var(--line);padding-left:8px}
+.tpsteps{margin:0 0 8px;padding-left:20px;display:grid;gap:6px}
+.tpbtn{min-height:44px;width:100%;text-align:left;white-space:normal;line-height:1.35;padding:8px 10px}
+.tplinks{display:flex;flex-wrap:wrap;gap:4px 12px;align-items:center;margin-bottom:6px}
+.tplink{color:var(--glow);min-height:44px;display:inline-flex;align-items:center;text-underline-offset:3px}
+.tpwallet summary{cursor:pointer;min-height:44px;display:flex;align-items:center;color:var(--glow)}
+.tpwf{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:8px}
+.tpwf select,.tpwf input{min-height:44px;flex:1 1 130px;min-width:0}
+.tpwadd,.tpwclr{min-height:44px}
+.tpwl{margin:0 0 8px;padding-left:18px}
