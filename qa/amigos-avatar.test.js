@@ -12,9 +12,10 @@ process.on('unhandledRejection',e=>{console.log(R.join('\n'));console.log('ERRO'
 async function open(route,pre,seed){const ctx=await b.newContext({viewport:{width:390,height:844}});const p=await ctx.newPage();const errs=[];
   p.on('pageerror',e=>errs.push(e.message));p.on('console',m=>{if(m.type()==='error'&&!/Failed to load resource|ERR_|navigator.vibrate/.test(m.text()))errs.push(m.text())});
   await p.route(/^https?:\/\/(?!localhost)/,r=>r.abort());
-  await p.clock.install({time:new Date('2026-11-26T10:00:00')});await p.goto(U+route);
-  if(seed)await p.evaluate(([c,o,pre])=>{localStorage.clear();localStorage.setItem(pre+'-cfg',JSON.stringify(c));localStorage.setItem(pre+'-prog',JSON.stringify(o));localStorage.setItem(pre+'-season','2');localStorage.setItem('asc-u-perm','1');localStorage.setItem('asc-u-intro','1');localStorage.setItem(pre+'-tele',JSON.stringify({asked:'2026-11-01'}));},[CFG,PROG(),pre]);
-  await p.reload();await p.waitForTimeout(1200);await calm(p);return {ctx,p,errs};}
+  await p.clock.install({time:new Date('2026-11-26T10:00:00')});
+  // semente gravada fora do app (mesma origem) e só depois abre o app: goto(app)→setItem→reload deixava o app regravar o save por cima sob carga
+  if(seed){const o=seed===true?PROG():seed;await p.goto(U+'__seed__');await p.evaluate(([c,o,pre])=>{localStorage.clear();localStorage.setItem(pre+'-cfg',JSON.stringify(c));localStorage.setItem(pre+'-prog',JSON.stringify(o));localStorage.setItem(pre+'-season','2');localStorage.setItem('asc-u-perm','1');localStorage.setItem('asc-u-intro','1');localStorage.setItem(pre+'-tele',JSON.stringify({asked:'2026-11-01'}));},[CFG,o,pre]);}
+  await p.goto(U+route);await p.waitForTimeout(1200);await calm(p);return {ctx,p,errs};}
 // fecha avisos do Sistema sem tocar no aceite do painel do criador
 async function calm(p){let quiet=0;for(let i=0;i<30&&quiet<4;i++){await p.evaluate(()=>{const t=document.getElementById('tlModal');if(t){const g=t.querySelector('button.ghost');g?g.click():t.remove();}});
   const m=p.locator('.sysmodal:not(.avmk):not(#tlModal) button.go');if(await m.count()){quiet=0;await m.first().dispatchEvent('click');await p.waitForTimeout(150);continue;}
@@ -83,10 +84,7 @@ for(const [route,pre] of [['comecar/','asc-u'],['','ascensao']]){const tag=route
   st=await LS(p,pre);ok(tag+' avatar ainda salvo depois de mexer em amigos',st.avatar.h===3&&st.avatar.ok===1);keep(st,tag,'final');
   ok(tag+' console limpo',errs.length===0,errs.join(' | '));await ctx.close();
   // ---------- Turma vazia: "+ Adicionar amigo" abre o painel recolhido e foca o campo ----------
-  ({ctx,p,errs}=await open(route,pre,false));
-  await p.evaluate(([c,pre])=>{const o={log:{},rpg:{cls:{id:'mago',style:'fant',name:'Mago'},cg:1},simple:{off:'2026-11-01'},rank:{on:true,nick:'Solo'},friends:{l:[],pend:{},seen:{}},tm:{view:'turma'}};
-    localStorage.clear();localStorage.setItem(pre+'-cfg',JSON.stringify(c));localStorage.setItem(pre+'-prog',JSON.stringify(o));localStorage.setItem(pre+'-season','2');localStorage.setItem('asc-u-perm','1');localStorage.setItem('asc-u-intro','1');localStorage.setItem(pre+'-tele',JSON.stringify({asked:1}));},[CFG,pre]);
-  await p.reload();await p.waitForTimeout(1200);await calm(p);await tab(p,'amigos');await p.waitForTimeout(300);
+  ({ctx,p,errs}=await open(route,pre,{log:{},rpg:{cls:{id:'mago',style:'fant',name:'Mago'},cg:1},simple:{off:'2026-11-01'},rank:{on:true,nick:'Solo'},friends:{l:[],pend:{},seen:{}},tm:{view:'turma'}}));await tab(p,'amigos');await p.waitForTimeout(300);
   const tmA=p.locator('#tmPanel .tmempty button.go');
   if(!(await tmA.count())){await p.locator('#tmPanel .tmseg button[data-v="turma"]').click();await p.waitForTimeout(300);}
   // com ranking ligado o botão principal manda o link (.tminv); "por apelido" (.tmnick) abre o painel de amigos
@@ -95,10 +93,7 @@ for(const [route,pre] of [['comecar/','asc-u'],['','ascensao']]){const tag=route
   ok(tag+' turma vazia: foco no campo do apelido',await p.evaluate(()=>document.activeElement&&document.activeElement.closest('#frPanel')&&document.activeElement.tagName==='INPUT'));
   ok(tag+' turma vazia: console limpo',errs.length===0,errs.join(' | '));await ctx.close();
   // ---------- Jogador antigo, sem avatar nem amigos: nada quebra e só ADICIONA campos ----------
-  ({ctx,p,errs}=await open(route,pre,false));
-  await p.evaluate(([c,pre])=>{const o={log:{'2026-11-20':[{q:'q1',kind:'full',xp:10,stat:'mente',bonus:0,t:'2026-11-20T10:00:00'}]},rpg:{cls:{id:'mago',style:'fant',name:'Mago'},cg:1},simple:{off:'2026-11-01'},velho:'fica',rank:{on:true,nick:'Velho'}};
-    localStorage.clear();localStorage.setItem(pre+'-cfg',JSON.stringify(c));localStorage.setItem(pre+'-prog',JSON.stringify(o));localStorage.setItem(pre+'-season','2');localStorage.setItem('asc-u-perm','1');localStorage.setItem('asc-u-intro','1');localStorage.setItem(pre+'-tele',JSON.stringify({asked:'2026-11-01'}));},[CFG,pre]);
-  await p.reload();await p.waitForTimeout(1200);await calm(p);await tab(p,'amigos');await p.waitForTimeout(300);await tab(p,'prog');await p.waitForTimeout(300);
+  ({ctx,p,errs}=await open(route,pre,{log:{'2026-11-20':[{q:'q1',kind:'full',xp:10,stat:'mente',bonus:0,t:'2026-11-20T10:00:00'}]},rpg:{cls:{id:'mago',style:'fant',name:'Mago'},cg:1},simple:{off:'2026-11-01'},velho:'fica',rank:{on:true,nick:'Velho'}}));await tab(p,'amigos');await p.waitForTimeout(300);await tab(p,'prog');await p.waitForTimeout(300);
   st=await LS(p,pre);ok(tag+' antigo: abre amigos e avatar sem erro',await p.locator('#avPanel').isVisible()&&errs.length===0,errs.join(' | '));
   ok(tag+' antigo: nada apagado',st.velho==='fica'&&st.log['2026-11-20']&&st.rpg.cls.id==='mago'&&st.rank.nick==='Velho',JSON.stringify(st).slice(0,200));
   await ctx.close();}
