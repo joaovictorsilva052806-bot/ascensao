@@ -212,6 +212,9 @@ rep('\nlet saveTimer=null, SYNC="";','\n'+R('sug.js')+'\nlet saveTimer=null, SYN
 # Arsenal do Herói: vitrine de afiliados 18+ em Mais (tools/arsenal.*): AFIL vazio = some; não grava nada
 rep('</style></head>',R('arsenal.css')+'</style></head>')
 rep('\nlet saveTimer=null, SYNC="";','\n'+R('arsenal.js')+'\nlet saveTimer=null, SYNC="";')
+# Pedido de avaliação (tools/aval.*): só com o beta ligado, depois de uma conquista, 1x a cada 30 dias, sem recompensa; estado em asc-u-aval
+rep('</style></head>',R('aval.css')+'</style></head>')
+rep('\nlet saveTimer=null, SYNC="";','\n'+R('aval.js')+'\nlet saveTimer=null, SYNC="";')
 if not ROOT: open('comecar/index.html','w').write(s)
 pass
 

@@ -152,3 +152,7 @@ Hoje o app é PWA (instala pelo navegador, grátis). Para entrar nas lojas depoi
 ## Cobrar com Pix (só no Criador)
 
 `tools/pix.js` e `tools/pix.css` (só no app da raiz, aba Criador): gera o Pix copia e cola (BR Code do Banco Central, com CRC16) e o QR Code no próprio aparelho, com valor e descrição, mais a mensagem pronta para o WhatsApp. Sem servidor, sem taxa de plataforma e sem dependência (o QR é escrito à mão: byte, correção M, versões 1 a 10). Chave Pix, nome e cobranças ficam só em `ascensao-pix`, fora do progresso, e nada vai para a rede. "Recebi" e "Apagar" pedem 2 toques; o recibo sai com a data real de emissão. Teste: `node qa/pix.test.js`.
+
+## Pedido de avaliação
+
+`tools/aval.js` e `tools/aval.css` (nos dois apps): depois de uma conquista (missão concluída com 3+ dias de uso ou Task que paga concluída), um cartão curto pede nota de 1 a 5 e um comentário opcional. Só aparece com o Teste do app (beta anônimo) ligado, 14 a 17 com responsável e nunca até 13; nunca no 1º dia de uso, no máximo 1 vez a cada 30 dias (90 depois de avaliar) e some de vez depois de 2 "Agora não". Não dá XP, Ouro nem item (avaliação não é trocada por recompensa). A nota sai pelo canal do beta (linha `B|id|aval|data|nota|motivo|comentário`), com e-mail, link, @perfil e telefone tirados do comentário. Estado só em `asc-u-aval` / `ascensao-aval`, fora do progresso. Teste: `PORT=8002 node qa/aval.test.js`.
