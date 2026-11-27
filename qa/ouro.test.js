@@ -6,7 +6,7 @@ const {chromium}=require('playwright');const U='http://localhost:8000/';const SP
 const R=[];const ok=(n,c,x)=>R.push((c?'PASS ':'FAIL ')+n+(x&&!c?' · '+x:''));
 const CFG={version:3,name:'Teste',startDate:'2026-11-01',quests:[{id:'q1',title:'Ler 10 min',xp:10,stat:'mente',main:true},{id:'q2',title:'Beber água',xp:5,stat:'corpo',main:true},{id:'s_treino',title:'Mexer o corpo 20 min',xp:25,stat:'corpo',minTitle:'5 min'}]};
 const E=(q,d,xp)=>({q,kind:'full',xp:xp||10,stat:'mente',bonus:0,t:d+'T10:00:00'});
-const P=(extra={})=>Object.assign({log:{'2026-11-20':[E('q1','2026-11-20')]},extra:{},faith:{},energy:{},mit:{},reviews:{},money:[],rest:{},ach:{a_first:'2026-11-01'},rpg:{cls:{id:'mago',style:'fant',name:'Mago'}},velho:'fica',shield:{n:1,used:{},ms:{1:'antes'},chk:'2026-11-27'}},extra);
+const P=(extra={})=>Object.assign({log:{'2026-11-20':[E('q1','2026-11-20')]},extra:{},faith:{},energy:{},mit:{},reviews:{},money:[],rest:{},ach:{a_first:'2026-11-01'},rpg:{cls:{id:'mago',style:'fant',name:'Mago'},spent:999},velho:'fica',shield:{n:1,used:{},ms:{1:'antes'},chk:'2026-11-27'}},extra);
 const FJ=(o={})=>Object.assign({ok:true,pt:1,pil:false,lv:{},last:{},ses:[{d:'2026-11-24',tipo:'B',min:30,r:0}],dias:[0,2,4]},o);
 async function drain(p){for(let k=0;k<2;k++){for(let i=0;i<10;i++){const m=p.locator('.sysmodal:not(#orModal):not(#f30Walk) button.go');if(await m.count()){await m.first().dispatchEvent('click');await p.waitForTimeout(150);continue;}
   if(await p.locator('#levelup').isVisible()){await p.locator('#luClose').dispatchEvent('click');continue;}await p.waitForTimeout(250);if(!(await m.count()))break;}await p.waitForTimeout(500);}}
@@ -116,6 +116,28 @@ for(const [route,pre] of [['comecar/','asc-u'],['','ascensao']]){const tag=route
   await p.screenshot({path:SP+'ouro-hoje-desk-'+(route?'u':'r')+'.png'});
   ok(tag+' I: console limpo',errs.length===0,errs.join(' | '));await ctx.close();
 }
+// K: uma moeda só: moedas do Baú viram Ouro 1 vez, com backup antes, Baú resgata com Ouro e há caminho de volta
+for(const [route,pre] of [['comecar/','asc-u'],['','ascensao']]){const tag=route?'/comecar/':'/';
+  const lg={};for(let d=10;d<=20;d++){const k='2026-11-'+d;lg[k]=[E('q1',k,100)];} // 1100 XP = 110 moedas; gastou 30 → 80
+  let {ctx,p,errs}=await open(route,pre,P({log:lg,ouro:20,ouroX:{t0:T,d:{},got:{},buy:{},h:[{d:T,v:20,w:'x'}]},rpg:{cls:{id:'mago',style:'fant',name:'Mago'},spent:30,rew:[{t:'Episódio da série',c:50}]}}),TT);
+  await p.waitForTimeout(800);const pop=await p.locator('.sysmodal').filter({hasText:'UMA MOEDA SÓ'}).count();await drain(p);let st=await LS(p,pre);
+  const bk=await p.evaluate(k=>JSON.parse(localStorage.getItem(k)||'null'),pre+'-prog-preouro');
+  const c=st.ouroX.mig&&st.ouroX.mig.c;
+  ok(tag+' K: backup antes da migração (sem a marca da migração)',bk&&bk.rpg.spent===30&&!(bk.ouroX&&bk.ouroX.mig)&&bk.ouro===20);
+  ok(tag+' K: moedas viraram Ouro 1 para 1 (no extrato)',c>=80&&st.ouro===20+c&&st.ouroX.h.some(h=>h.v===c&&/viraram Ouro/.test(h.w)),JSON.stringify({c,o:st.ouro,pop}));
+  ok(tag+' K: nada apagado (spent e recompensas iguais)',st.rpg.spent===30&&st.rpg.rew.length===1&&st.velho==='fica');
+  await p.locator('#tabbar [data-go="prog"]').dispatchEvent('click');await p.waitForTimeout(400);
+  ok(tag+' K: Baú mostra Ouro',(await p.textContent('#coins')).includes('de Ouro'),await p.textContent('#coins'));
+  await p.locator('#chestList button.go').first().dispatchEvent('click');await p.waitForTimeout(400);await drain(p);st=await LS(p,pre);
+  ok(tag+' K: resgatar desconta do Ouro',st.ouro===20+c-50&&st.rpg.spent===30,String(st.ouro));
+  await p.reload();await p.waitForTimeout(1500);await drain(p);st=await LS(p,pre);ok(tag+' K: migração não repete',st.ouro===20+c-50);
+  await p.locator('#tabbar [data-go="mais"]').dispatchEvent('click');await p.waitForTimeout(300);
+  ok(tag+' K: caminho de volta em Mais',await p.locator('#orUnmerge').count()===1);
+  await tap(p,'#orUnmerge');await tap(p,'#orUnmerge');st=await LS(p,pre);
+  ok(tag+' K: voltar tira o Ouro migrado e o Baú volta às moedas',st.ouro===Math.max(0,20+c-50-c)&&st.ouroX.mig.off===T,JSON.stringify({o:st.ouro,m:st.ouroX.mig}));
+  await p.locator('#tabbar [data-go="prog"]').dispatchEvent('click');await p.waitForTimeout(300);
+  ok(tag+' K: Baú em moedas de novo',(await p.textContent('#coins')).includes('moeda'));
+  ok(tag+' K: console limpo',errs.length===0,errs.join(' | '));await ctx.close();}
 // J: menor de 14 não vê o desafio
 {const cfg=Object.assign({},CFG,{profile:{age:'kid'}});let {ctx,p,errs}=await open('comecar/','asc-u',P({forja:FJ()}),TT,{cfg});
   ok('/comecar/ J: até 13 anos não vê o Desafio Forja 30',await p.locator('#fjCard').count()===0||!(await p.textContent('#fjCard')).includes('Desafio Forja 30'));await ctx.close();}

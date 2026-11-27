@@ -3,6 +3,12 @@
 Formato: [Keep a Changelog](https://keepachangelog.com/pt-BR/1.1.0/). Versões: [SemVer](https://semver.org/lang/pt-BR/) (`MAIOR.MENOR.CORREÇÃO`).
 Regra de ouro de toda versão: o progresso salvo no aparelho nunca é apagado nem renomeado.
 
+## Uma moeda só (27/11/2026, dentro da 1.0)
+
+### Mudou
+- As moedas do Baú de recompensas (10 XP = 1 moeda) viraram **Ouro**, 1 para 1, uma vez por aparelho. O Baú e a Loja usam o mesmo saldo.
+- Backup do progresso antes (`*-prog-preouro`). Só adiciona `prog.ouroX.mig`; `prog.rpg.spent` e as recompensas ficam iguais. Caminho de volta: Mais > Ajustes > "Voltar o Baú para moedas". Caches `ascensao-v95` / `ascensao-u-v107`.
+
 ## Ouro, Loja e Desafio Forja 30 (27/11/2026, dentro da 1.0)
 
 ### Novo

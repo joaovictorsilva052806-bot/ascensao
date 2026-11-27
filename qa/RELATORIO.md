@@ -1,5 +1,10 @@
 # Relatório de QA (ATENA)
 
+## 27/11/2026 · Uma moeda só (moedas do Baú viram Ouro)
+
+- Migração 1 vez: backup antes (`*-prog-preouro`), saldo de moedas entra no Ouro 1 para 1, `rpg.spent` e recompensas intactos, não repete ao recarregar; volta em Mais > Ajustes.
+- Testes: qa/ouro.test.js 117/117 (bloco K novo nos dois apps). Suíte inteira: 62/67 na 1ª rodada; os 5 vermelhos (alvo, foco2, funil, toque, textos1) eram a janela "Uma moeda só" cobrindo a tela em save com XP. A janela agora não abre em navegador automatizado (como a de Novidades); os 5 + ouro verdes de novo.
+
 ## 27/11/2026 · Ouro, Loja do Ouro, Desafio Forja 30 e Hall da Fama (#163)
 
 - Novo: Ouro (dia completo +10, semana sem quebrar +50, chefão +30, teto 200/dia), Loja (molduras, fundos, títulos, escudo), Desafio Forja 30 com as regras do ARES e Hall da Fama (aparelho; turma depois de republicar o mural.gs).
