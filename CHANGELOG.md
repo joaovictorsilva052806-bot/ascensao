@@ -3,6 +3,13 @@
 Formato: [Keep a Changelog](https://keepachangelog.com/pt-BR/1.1.0/). Versões: [SemVer](https://semver.org/lang/pt-BR/) (`MAIOR.MENOR.CORREÇÃO`).
 Regra de ouro de toda versão: o progresso salvo no aparelho nunca é apagado nem renomeado.
 
+## Missão Criador: galeria da turma e resumo para o criador (27/11/2026, dentro da 1.0)
+
+### Adicionado
+- "🌍 Mostrar na galeria da turma" a partir da etapa 4: só amigos confirmados veem, regras do Mural (14+, 14-17 com responsável, até 13 nunca). Só reações 💡 🔧 📏. A etapa 5 nunca sai do aparelho.
+- Servidor (`server/mural.gs`): filtro de telefone, CEP, e-mail, @ e endereço; 1 post por semana; 2 denúncias escondem; some em 30 dias.
+- Painel Criador: agregados sem foto e sem nome, fila de denunciados e quem aceitou conversar (só 18+). Só adiciona `prog.cm.pub`. Caches `ascensao-v108` / `ascensao-u-v120`.
+
 ## Missão Criador para todos, na aba Progresso (27/11/2026, dentro da 1.0)
 
 ### Adicionado

@@ -1668,6 +1668,18 @@ a.aflink{justify-self:start;min-height:44px;display:inline-flex;align-items:cent
 .cmth{width:36px;height:36px;border-radius:6px;object-fit:cover;flex:none}
 .cmbox,.cmbox>*,.cmcard>*,.cmform>*{min-width:0}
 .cmfile input{max-width:100%}
+/* fase 3: galeria da turma e agregados do criador */
+.cmgal{display:grid;gap:10px;margin-top:12px;min-width:0}
+.cmgcard{display:grid;gap:6px;padding:10px 12px;border:1px solid var(--line);border-radius:10px;background:#0a1222;min-width:0}
+.cmgcard p{margin:0;line-height:1.4;overflow-wrap:anywhere}
+.cmgimg{width:100%;max-height:260px;object-fit:cover;border-radius:8px}
+.cmrx{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
+.cmrxb{min-height:44px;min-width:56px;border-radius:22px;border:1px solid var(--line);background:#0d1526;color:var(--fg);font:inherit}
+.cmrxb.on{border-color:var(--glow);background:rgba(0,212,255,.14)}
+.cmrx .link{min-height:44px}
+.cmmodal .card{display:grid;gap:10px;max-height:88vh;overflow:auto}
+.cmadm{display:grid;gap:6px;margin:8px 0}
+.cmadm .ghost,.cmadm .link{min-height:44px}
 </style></head><body>
 
 <div class="hudtop"><span>ASCENSION<i>//</i>SISTEMA ONLINE</span><span class="mono" id="clock">--:--</span></div>
@@ -7786,6 +7798,7 @@ function afDica(groups){let p=$("afDica");const L=[];for(const [,g] of groups||[
 setTimeout(()=>{try{afRender();}catch(e){}},90);
 
 // ---------- Missão Criador: um problema real da cidade por semana, em 5 etapas (spec da EVA, #22 comentário 7223690564) ----------
+// Fase 3 (no fim do arquivo): galeria da turma com as regras do Mural + agregados no painel do criador.
 // Fase 2: aberta a todos na aba Progresso, mesmas regras (decisão do JV de 26/11). Até 13 anos faz sem foto; sem idade no /comecar/ conta como menor. Uma etapa por dia; a seguinte libera no dia seguinte. Tema pela semana do ano (sem sorteio), troca 1x por semana.
 // XP por etapa 20/20/30/40/60 (chave cm:<semana>:<n>). Ouro pelo orGive (teto do dia): semana completa +60 (cm:<semana>),
 // "voltei ao mesmo problema" com número novo +20 ao fechar a semana (cm2:<semana>). 4 semanas completas: título; 10: moldura.
@@ -7937,6 +7950,7 @@ function cmRender(){cmLast=cmSig();if(!cmReady()){const p=$("cmPanel");if(p)p.hi
       if(row.childNodes.length)card.append(row);}}
   else{card.append(cmEl("div","cmwait","✓ Etapa de hoje feita. A etapa "+nx.n+" ("+CM_STEP[nx.n][0]+") libera amanhã."));
     if(cmUI.swap)card.append(cmSwap(c));else if(!c.troca)card.append(cmBtn("link","Trocar tema (1x por semana)",()=>{cmUI.swap=true;cmRender();}));}
+  {const sr=cmShareRow(c);if(sr)card.append(sr);}
   card.append(cmEl("div","sm cmaviso","⚠️ "+CM_AVISO));b.append(card);
   // histórico curto + prêmios
   const n=cmOk(),h=c.hist.filter(x=>x.wk!==c.wk).slice(0,5);const foot=cmEl("div","sm muted cmfoot");
@@ -7944,13 +7958,83 @@ function cmRender(){cmLast=cmSig();if(!cmReady()){const p=$("cmPanel");if(p)p.hi
   if(h.length){const ul=cmEl("ul","cmhist");const im=cmImgs();for(const x of h){const t=CM_T[x.tema]||CM_T[0];const li=cmEl("li",x.ok?"ok":"");
       if(im[x.wk]){const i=cmEl("img","cmth");i.src=im[x.wk];i.alt="";li.append(i);}
       li.append(cmEl("span",null,(x.ok?"✓ ":"· ")+x.wk.slice(5)+" "+t[0]+" "+t[1]+(x.n!=null?" · "+x.n+" "+(x.u||""):"")+(x.v2of?" ↩":"")));ul.append(li);}foot.append(ul);}
-  b.append(foot);}
+  b.append(foot);try{cmGalUI();cmGalLoad();}catch(e){}}
+// ---------- Fase 3: galeria da turma (regras do Mural: 14+, 14-17 com responsável, só amigos confirmados, servidor confere tudo) ----------
+// Vai: foto (opcional) + tema + número + gargalo + proposta. A etapa 5 NUNCA vai. Só reações 💡 🔧 📏, sem comentário. 1 post por semana.
+// Ouro nenhum por reação ou galeria. Só ADICIONA prog.cm.pub = semana publicada.
+const CM_RX=[["💡","ideia boa"],["🔧","dá pra fazer"],["📏","mediu bem"]];
+const CM_GERR={repetido:"Você já mostrou a missão desta semana.",dados:"Tire telefone, e-mail, @, CEP ou endereço do texto.",amigo:"Precisa de pelo menos 1 amigo confirmado.",idade:"Confirme sua faixa de idade no Mural primeiro.",curto:"Termine as etapas 3 e 4 antes.",limite:"Muitas tentativas. Tente daqui a pouco."};
+function cmShareOk(){try{return typeof muPhotoOn==="function"&&muPhotoOn();}catch(e){return false;}}
+let cmGal=null,cmGalAt=0,cmGalBusy=false,cmRep="";
+function cmGalLoad(force){if(!cmShareOk()||cmGalBusy)return;const s=typeof muSt==="function"?muSt():{};if(!s.ok||s.reg!==muBand())return;if(!force&&Date.now()-cmGalAt<45000)return;
+  cmGalBusy=true;cmGalAt=Date.now();muApi("cmlist").then(j=>{cmGal=Array.isArray(j.posts)?j.posts:[];}).catch(()=>{}).finally(()=>{cmGalBusy=false;cmGalUI();});}
+function cmCompose(){const c=cmSt();if(cmDone(c)<4||c.pub===c.wk||!cmShareOk())return;const s=muSt();if(!s.ok||s.reg!==muBand())return muConsent(()=>cmCompose());
+  const T=CM_T[c.tema]||CM_T[0],S=c.s;const im=cmImgs()[c.wk]||"";const adult=muBand()==="adult";
+  const m=cmEl("div","sysmodal cmmodal");m.id="cmModal";m.setAttribute("role","dialog");m.setAttribute("aria-modal","true");m.setAttribute("aria-label","Mostrar na galeria da turma");const card=cmEl("div","card");
+  card.append(cmEl("div","systag","GALERIA DA TURMA"),cmEl("h3",null,"Mostrar sua missão aos amigos"),cmEl("div","sm muted","Só amigos confirmados veem. Some em 30 dias. A etapa 5 (o que a pessoa disse) não vai."));
+  const pv=cmEl("div","cmgcard");if(im){const i=cmEl("img","cmgimg");i.src=im;i.alt="Sua foto da missão";pv.append(i);}
+  pv.append(cmEl("b",null,T[0]+" "+T[1]+" · "+S[2].n+" "+S[2].u),cmEl("p","sm",(CM_CAT.find(x=>x[0]===S[3].cat)||["",""])[1]+": "+S[3].txt),cmEl("p","sm","💡 "+S[4].txt));card.append(pv);
+  let useImg=null;if(im){useImg=cmCheck("cmGImg","Incluir a foto");useImg.querySelector("input").checked=true;card.append(useImg);}
+  const mun=cmEl("input","cmin");mun.id="cmMun";mun.maxLength=40;mun.placeholder="Cidade (opcional, só o nome)";mun.setAttribute("aria-label","Cidade, opcional");card.append(mun);
+  const safe=cmCheck("cmGSafe","Sem rosto, placa, número da casa, uniforme ou nome de escola");card.append(safe);
+  let ct=null;if(adult){ct=cmCheck("cmGCt","Aceito que o criador do app me chame para conversar sobre esta ideia (opcional)");card.append(ct);}
+  const err=cmEl("div","cmerr");err.setAttribute("role","alert");card.append(err);
+  const row=cmEl("div","row");const go=cmBtn("go","Mostrar aos amigos",async()=>{err.textContent="";
+    if(!safe.querySelector("input").checked){err.textContent="Confirme que não tem rosto, placa, número da casa, uniforme ou nome de escola.";return;}
+    const mv=cmClean(mun.value,40);if(/\d|@/.test(mv)||cmPII(mv)){err.textContent="Na cidade, só o nome (sem número, rua ou @).";return;}
+    if(cmPII(S[3].txt)||cmPII(S[4].txt)){err.textContent=CM_GERR.dados;return;}
+    go.disabled=true;const o={wk:c.wk,tema:c.tema,num:S[2].n,u:S[2].u,cat:S[3].cat,tipo:S[4].tipo,custo:S[4].custo,g:S[3].txt,p:S[4].txt,mun:mv};
+    if(useImg&&useImg.querySelector("input").checked&&/^data:image\/jpeg;base64,/.test(im))o.img=im;if(ct&&ct.querySelector("input").checked)o.ct=1;
+    try{await muApi("cm",o);c.pub=c.wk;save();m.remove();toast("Na galeria da turma. Só seus amigos veem.");cmGalLoad(true);cmRender();}
+    catch(e){go.disabled=false;const k=String(e&&e.message||"");if(k==="repetido"){c.pub=c.wk;save();}err.textContent=CM_GERR[k]||"Não deu agora. Tente de novo.";}});
+  row.append(go,cmBtn("ghost","Agora não",()=>m.remove()));card.append(row);m.append(card);document.body.append(m);try{go.focus();}catch(e){}}
+async function cmGAct(a,o,msg){try{await muApi(a,o);if(msg)toast(msg);}catch(e){toast("Não deu agora. Tente de novo.");}cmGalLoad(true);}
+function cmGalUI(){const box=$("cmBox");if(!box)return;let g=$("cmGal");const on=cmShareOk();
+  if(!on){if(g)g.remove();return;}
+  if(!g){g=cmEl("div","cmgal");g.id="cmGal";box.after(g);}g.textContent="";
+  g.append(cmEl("h3","cmh","🌍 Galeria da turma"),cmEl("div","sm muted","Missões dos seus amigos confirmados, dos últimos 30 dias. Reaja; não tem comentário."));
+  const L=(cmGal||[]).filter(p=>!(typeof muIsBlk==="function"&&muIsBlk(p.a)));
+  if(cmGal===null){g.append(cmEl("div","sm muted","Carregando…"));return;}
+  if(!L.length){g.append(cmEl("div","sm muted","Ninguém mostrou ainda. Feche as etapas 1 a 4 e seja o primeiro."));return;}
+  for(const p of L){const T=CM_T[p.tema]||CM_T[0];const cd=cmEl("div","cmgcard");cd.dataset.cm=p.id;
+    if(typeof p.img==="string"&&/^data:image\/jpeg;base64,[A-Za-z0-9+/=]+$/.test(p.img)){const i=cmEl("img","cmgimg");i.src=p.img;i.alt="Foto da missão de "+p.a;i.loading="lazy";cd.append(i);}
+    cd.append(cmEl("b",null,T[0]+" "+T[1]+" · "+p.n+" "+String(p.u||"")),cmEl("div","sm muted",String(p.a||"")+" · "+(typeof muAgo==="function"?muAgo(p.d):"")));
+    cd.append(cmEl("p","sm",((CM_CAT.find(x=>x[0]===p.cat)||["","Gargalo"])[1])+": "+String(p.g||"")),cmEl("p","sm","💡 "+String(p.p||"")),
+      cmEl("div","sm muted",((CM_TIPO.find(x=>x[0]===p.tipo)||["",""])[1])+" · custo "+((CM_CUSTO.find(x=>x[0]===p.custo)||["",""])[1]).toLowerCase()));
+    const rr=cmEl("div","cmrx");for(const [e,lb] of CM_RX){const n=(p.r&&+p.r[e])||0,mine=!!(p.my&&p.my[e]);const b=cmBtn("cmrxb"+(mine?" on":""),e+" "+n,()=>cmGAct("cmreact",{id:p.id,e}));
+      b.setAttribute("aria-pressed",mine?"true":"false");b.setAttribute("aria-label",lb+": "+n);b.title=lb;rr.append(b);}
+    if(p.me)rr.append(cmBtn("link","Apagar",()=>cmGAct("cmdel",{id:p.id},"Apagado da galeria.")));
+    else rr.append(cmBtn("link",cmRep===p.id?"Toque de novo para denunciar":"⚑ Denunciar",()=>{if(cmRep!==p.id){cmRep=p.id;cmGalUI();return;}cmRep="";cmGAct("cmrep",{id:p.id},"Denúncia enviada. O post sumiu para você.");}));
+    cd.append(rr);g.append(cd);}}
+// botão de mostrar: no cartão da missão, a partir da etapa 4 feita
+function cmShareRow(c){if(!cmShareOk()||cmDone(c)<4)return null;const r=cmEl("div","row cmrow");
+  if(c.pub===c.wk)r.append(cmEl("span","sm cmwait","✓ Na galeria da turma"));else r.append(cmBtn("ghost","🌍 Mostrar na galeria da turma",cmCompose));return r;}
+// ---------- painel do criador: agregados e fila de denúncias (chave do painel; nada de foto, nome ou texto livre nos agregados) ----------
+function cmAdmKey(){try{return (JSON.parse(localStorage.getItem("ascensao-painel")||"{}")||{}).k||"";}catch(e){return "";}}
+async function cmAdmCall(o){const r=await fetch(MURAL_URL,{method:"POST",body:JSON.stringify(Object.assign({k:cmAdmKey()},o)),credentials:"omit",redirect:"follow"});const j=await r.json();if(!j||j.ok===false)throw new Error((j&&j.err)||"erro");return j;}
+function cmAdmUI(j,msg){const pn=$("crPanel");if(!pn)return;let b=$("cmAdm");if(!b){b=cmEl("div","cmadm");b.id="cmAdm";const anchor=$("bpSum");if(anchor)anchor.after(b);else pn.append(b);}b.textContent="";
+  b.append(cmEl("h3","crh","🛠️ Missão Criador · turma"));
+  if(!j){b.append(cmEl("div","sm muted",msg||"Agregados da galeria: temas, gargalos e a ideia mais reagida. Sem foto, sem nome."),cmBtn("ghost","Carregar",cmAdmLoad));return;}
+  const cats=Object.entries(j.cats||{}).sort((a,c)=>c[1]-a[1]).slice(0,3).map(([k,n])=>((CM_CAT.find(x=>x[0]===k)||["",k])[1])+" ("+n+")");
+  const tp=Object.entries(j.tipos||{}).sort((a,c)=>c[1]-a[1])[0];
+  b.append(cmEl("div","sm",(j.total||0)+" missões nos últimos 30 dias."),cmEl("div","sm","Top gargalos: "+(cats.join(" · ")||"nenhum")),cmEl("div","sm","Solução mais proposta: "+(tp?((CM_TIPO.find(x=>x[0]===tp[0])||["",tp[0]])[1])+" ("+tp[1]+")":"nenhuma")));
+  const gr=(j.grade||[]).slice().sort((a,c)=>c.n-a.n).slice(0,8);if(gr.length){const ul=cmEl("ul","cmhist");for(const x of gr){const T=CM_T[x.tema]||CM_T[0];ul.append(cmEl("li",null,T[0]+" "+T[1]+" × "+((CM_CAT.find(y=>y[0]===x.cat)||["",x.cat])[1])+(x.mun?" · "+x.mun:"")+": "+x.n));}b.append(ul);}
+  if(j.top){const T=CM_T[j.top.tema]||CM_T[0];b.append(cmEl("div","sm","🏅 Ideia mais reagida ("+j.top.r+"): "+T[0]+" "+T[1]),cmEl("p","sm cmq","“"+String(j.top.p||"")+"”"));}
+  b.append(cmEl("div","sm cmh","Denunciados ("+(j.fila||[]).length+")"));
+  for(const f of (j.fila||[])){const T=CM_T[f.tema]||CM_T[0];const d=cmEl("div","cmgcard");d.append(cmEl("b",null,T[0]+" "+T[1]+" · "+f.d+" denúncia(s)"+(f.esc?" · escondido":"")),cmEl("p","sm",String(f.g||"")),cmEl("p","sm",String(f.p||"")));
+    const r=cmEl("div","row");r.append(cmBtn("ghost","Manter",()=>cmAdmMod(f.id,"ok")),cmBtn("link","Apagar",()=>cmAdmMod(f.id,"del")));d.append(r);b.append(d);}
+  b.append(cmEl("div","sm cmh","Querem levar a ideia adiante (18+, com aceite): "+(j.contato||[]).length));
+  for(const x of (j.contato||[])){const T=CM_T[x.tema]||CM_T[0];b.append(cmEl("div","sm",String(x.a||"")+" · "+T[0]+" "+T[1]+": "+String(x.p||"")));}
+  b.append(cmBtn("ghost","Atualizar",cmAdmLoad));}
+async function cmAdmLoad(){if(!cmAdmKey()||typeof MURAL_URL==="undefined"||!MURAL_URL)return cmAdmUI(null,"Sem a chave do painel neste aparelho.");cmAdmUI(null,"Carregando…");
+  try{cmAdmUI(await cmAdmCall({a:"cm-adm"}));}catch(e){const k=String(e&&e.message||"");cmAdmUI(null,k==="chave"?"O servidor ainda não tem a chave (cm:adm). Veja o passo a passo no PR.":"Não deu agora. Tente de novo.");}}
+async function cmAdmMod(id,op){try{await cmAdmCall({a:"cm-adm-mod",id,op});toast(op==="del"?"Apagado.":"Mantido e devolvido.");}catch(e){toast("Não deu agora.");}cmAdmLoad();}
 cmHook();
 // render() do app roda toda hora: só redesenha a missão quando o estado muda (senão apagaria o que a pessoa está digitando)
-function cmSig(){const c=prog.cm||{};return [cmReady(),cmFotoOk(),todayKey(),c.wk,c.tema,c.troca,c.v2of,JSON.stringify(c.s||{}).length,(c.hist||[]).length].join("|");}
+function cmSig(){const c=prog.cm||{};return [cmReady(),cmFotoOk(),cmShareOk(),c.pub,todayKey(),c.wk,c.tema,c.troca,c.v2of,JSON.stringify(c.s||{}).length,(c.hist||[]).length].join("|");}
 let cmLast="";
 {const _r=render;render=function(){_r.apply(this,arguments);try{if(prog.cm)cmPay();const g=cmSig();if(g!==cmLast||!$("cmBox"))cmRender();}catch(e){}};}
-setTimeout(()=>{try{cmHook();if(prog.cm)cmPay();cmRender();}catch(e){}},90);
+setTimeout(()=>{try{cmHook();if(prog.cm)cmPay();cmRender();if($("crPanel"))cmAdmUI(null);}catch(e){}},90);
 
 let saveTimer=null, SYNC="";
 try{SYNC=localStorage.getItem("asc-u-sync")||"";}catch(e){}

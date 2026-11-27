@@ -113,6 +113,8 @@ Grava só `prog.ouro` (inteiro), `prog.ouroX` (com `mig`) e `prog.f30`. Teste: `
 
 Teste: `node qa/cm.test.js`.
 
+Galeria da turma (fase 3, mesmas regras do Mural): a partir da etapa 4, "🌍 Mostrar na galeria da turma" manda foto (opcional), tema, número, gargalo, proposta e cidade (opcional, só o nome) para o `server/mural.gs` (ações `cm`, `cmlist`, `cmreact`, `cmrep`, `cmdel`). A etapa 5 nunca vai. 14+ com ranking e amigo confirmado; 14-17 só com o responsável (o aceite do Mural); até 13 nunca. Só amigos confirmados veem, 1 post por semana, só reações 💡 🔧 📏, 2 denúncias escondem (1 se for de 14-17), some em 30 dias. Sem Ouro por galeria. Grava só `prog.cm.pub`. No painel Criador, "Missão Criador · turma" traz agregados (tema × gargalo × cidade com 3+ posts, solução mais proposta, ideia mais reagida sem nome), a fila de denunciados (Manter/Apagar) e quem aceitou conversar (só 18+). Chave: propriedade `cm:adm` do script = a mesma chave do painel. Testes: `node qa/cm-galeria.test.js` e `node qa/cm-servidor.test.js`.
+
 ## Reinstalação do app pessoal
 
 Na 1ª ligação da planilha num aparelho (link `#s=` ou colar o endereço), a planilha vence e o progresso local vira backup em `ascensao-prog-prelink`. Teste: `node qa/religar.test.js`.

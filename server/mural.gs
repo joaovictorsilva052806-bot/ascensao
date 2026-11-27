@@ -28,6 +28,7 @@ function doPost(e) {
     if (e.postData.contents.length > MU_MAX_BODY) return mOut_({ ok: false, err: "grande" });
     var b = JSON.parse(e.postData.contents);
     if (/^pw-/.test(String(b.a || "")) && typeof pwRoute_ === "function") return mOut_(pwRoute_(b)); // aviso diário (seção PUSH no fim)
+    if (/^cm-adm/.test(String(b.a || "")) && typeof cAdm_ === "function") return mOut_(cAdm_(b)); // painel do criador (seção MISSÃO CRIADOR)
     var nick = String(b.n || "").trim().toLowerCase().slice(0, 16);
     if (!nick || !mRate_("mg", 600)) return mOut_({ ok: false, err: "limite" });
     var uid = mVinc_(nick, String(b.tk || ""));
@@ -44,6 +45,11 @@ function doPost(e) {
     if (a === "report") return mOut_(mReport_(nick, uid, String(b.id || "")));
     if (a === "hall") return mOut_(mHall_(nick, uid, age, b));     // Hall da Fama do Desafio Forja 30 (tools/ouro.js)
     if (a === "hlist") return mOut_(mHList_(nick));
+    if (a === "cm") return mOut_(cPost_(nick, uid, age, b));        // galeria da Missão Criador (seção no fim do Hall)
+    if (a === "cmlist") return mOut_(cList_(nick, uid));
+    if (a === "cmdel") return mOut_(cDel_(nick, String(b.id || "")));
+    if (a === "cmreact") return mOut_(cReact_(nick, uid, String(b.id || ""), String(b.e || "")));
+    if (a === "cmrep") return mOut_(cReport_(nick, uid, String(b.id || "")));
     return mOut_({ ok: false, err: "acao" });
   } catch (err) {
     return mOut_({ ok: false, err: "erro" });
@@ -165,7 +171,7 @@ function mReport_(nick, uid, id) { var fr = mFriends_(nick); var r, d, hide; var
       "\nA foto fica na planilha privada do mural (aba fotos, id " + r.id + ") e some sozinha em 7 dias."); } catch (e) {}
   return { ok: true }; }
 // --- gatilho diário: apaga de verdade o que passou de 7 dias ---
-function muralLimpa() { try { hallLimpa(); } catch (e) {} mLock_(function () { var sh = mTab_(); var all = mRows_(); for (var i = all.length - 1; i >= 0; i--) { var r = all[i];
+function muralLimpa() { try { hallLimpa(); } catch (e) {} try { cmLimpa(); } catch (e) {} mLock_(function () { var sh = mTab_(); var all = mRows_(); for (var i = all.length - 1; i >= 0; i--) { var r = all[i];
   if (!mFresh_(r.data)) { try { mFotoDel_(r.id); } catch (e) {} sh.deleteRow(r._row); } } }); }
 function muralInstalaGatilho() { ScriptApp.newTrigger("muralLimpa").timeBased().everyDays(1).atHour(4).create(); }
 // --- Hall da Fama (Desafio Forja 30): mesmas regras do Mural ---
@@ -194,6 +200,98 @@ function mHList_(nick) {
   return { ok: true, hall: rows.map(function (r) { return { a: r.nome, d: new Date(Number(r.data)).toISOString(), c: r.desafio, n: Number(r.dias) || 0 }; }) };
 }
 function hallLimpa() { mLock_(function () { var sh = hTab_(); var all = hRows_(); for (var i = all.length - 1; i >= 0; i--) if (Date.now() - Number(all[i].data) >= HL_DAYS * 864e5) sh.deleteRow(all[i]._row); }); }
+
+// ===== MISSÃO CRIADOR — galeria da turma (tools/cm.js, spec da EVA #22 7223690564, itens 7 e 8) =====
+// Mesmas regras do Mural: token, faixa registrada (≤13 nunca registra; 14-17 só com responsável), só amigos confirmados veem.
+// 1 post por jogador por semana. Conteúdo: foto opcional + tema + número + gargalo + proposta (a etapa 5 nunca vem para cá).
+// Texto com telefone, CEP, e-mail, @usuario ou endereço: o post inteiro é recusado. Só reações 💡 🔧 📏, sem comentário.
+// 2 denúncias escondem para todos (1 se for de 14-17, como no Mural); some sozinho em 30 dias (cmLimpa no gatilho do mural).
+// Painel do criador (ações "cm-adm…"): só com a chave em Propriedades do script "cm:adm". Agregados sem foto, sem nome e sem texto,
+// município só com 3+ posts; fila de denunciados; "quero levar adiante" só de 18+ que marcaram o aceite.
+var CM_TAB = "cm", CM_DAYS = 30, CM_MAX_LIST = 20, CM_MIN_MUN = 3;
+var CM_REACT = ["💡", "🔧", "📏"], CM_CATS = ["dinheiro", "lei", "tecnica", "info", "gente"], CM_TIPOS = ["ciencia", "engenharia", "politica", "negocio"], CM_CUSTOS = ["zero", "100", "1000", "mais"];
+var CM_COLS = ["id", "autor", "nome", "uid", "data", "wk", "tema", "n", "u", "cat", "tipo", "custo", "gargalo", "proposta", "foto", "reacoes", "denuncias", "removido", "faixa", "mun", "contato"];
+function cTab_() { var ss = mStore_(); var sh = ss.getSheetByName(CM_TAB); if (!sh) { sh = ss.insertSheet(CM_TAB); sh.appendRow(CM_COLS); } return sh; }
+function cRows_() { var v = cTab_().getDataRange().getValues(); var out = [];
+  for (var i = 1; i < v.length; i++) { var r = {}; for (var j = 0; j < CM_COLS.length; j++) r[CM_COLS[j]] = v[i][j]; r._row = i + 1; out.push(r); } return out; }
+function cCol_(k) { return CM_COLS.indexOf(k) + 1; }
+function cFresh_(d) { return Date.now() - Number(d) < CM_DAYS * 864e5; }
+function cPII_(s) { s = String(s || ""); return /\S+@\S+\.\S+/.test(s) || /(^|\s)@[\w.]{2,}/.test(s) || /\b\d{5}-\d{3}\b/.test(s) || /\(?\b\d{2}\)?\s?9?\d{4}[-\s]\d{4}\b/.test(s) || /\b\d{10,11}\b/.test(s)
+  || /\b(rua|r\.|av\.?|avenida|travessa|tv\.|alameda|estrada|rodovia)\s+[^,.;\n]{2,40}?(,\s*|\s+)(n[º°o.]?\s*)?\d{1,5}\b/i.test(s); }
+function cPost_(nick, uid, age, b) {
+  var wk = String(b.wk || ""); if (!/^\d{4}-W\d{2}$/.test(wk)) return { ok: false, err: "semana" };
+  var tema = Math.floor(+b.tema); if (!(tema >= 0 && tema <= 9)) return { ok: false, err: "tema" };
+  var n = Number(b.num); if (!isFinite(n) || Math.abs(n) > 1e9) return { ok: false, err: "numero" };
+  var u = mClean_(b.u, 20), cat = String(b.cat || ""), tipo = String(b.tipo || ""), custo = String(b.custo || "");
+  if (CM_CATS.indexOf(cat) < 0 || CM_TIPOS.indexOf(tipo) < 0 || CM_CUSTOS.indexOf(custo) < 0) return { ok: false, err: "lista" };
+  var g = mClean_(b.g, 280), pr = mClean_(b.p, 400), mun = mClean_(b.mun, 40).replace(/[0-9@]/g, "").trim();
+  if (g.length < 30 || pr.length < 60 || !u) return { ok: false, err: "curto" };
+  if (cPII_(g) || cPII_(pr) || cPII_(u) || cPII_(mun)) return { ok: false, err: "dados" };
+  var img = String(b.img || ""), m = null;
+  if (img) { m = /^data:image\/jpeg;base64,([A-Za-z0-9+\/=]+)$/.exec(img); if (!m) return { ok: false, err: "tipo" };
+    var bytes = Utilities.base64Decode(m[1]); if (bytes.length > MU_MAX_IMG) return { ok: false, err: "grande" };
+    if ((bytes[0] & 255) !== 0xFF || (bytes[1] & 255) !== 0xD8 || (bytes[2] & 255) !== 0xFF) return { ok: false, err: "tipo" }; }
+  if (!Object.keys(mFriends_(nick)).length) return { ok: false, err: "amigo" };
+  return mLock_(function () {
+    if (cRows_().some(function (r) { return r.uid === uid && r.wk === wk; })) return { ok: false, err: "repetido" };
+    var id = "c" + Utilities.getUuid().replace(/-/g, "").slice(0, 15);
+    if (m) mFotoPut_(id, m[1]);
+    cTab_().appendRow([id, nick, mClean_(b.n, 16), uid, Date.now(), wk, tema, n, u, cat, tipo, custo, g, pr, m ? 1 : 0, "{}", "[]", "", age, mun, age === "adult" && +b.ct === 1 ? 1 : 0]);
+    return { ok: true, id: id };
+  });
+}
+function cList_(nick, uid) {
+  var fr = mFriends_(nick); var out = [];
+  cRows_().filter(function (r) { return !r.removido && cFresh_(r.data) && (r.autor === nick || fr[r.autor]) && mJ_(r.denuncias, []).indexOf(uid) < 0; })
+    .sort(function (a, b) { return Number(b.data) - Number(a.data); }).slice(0, CM_MAX_LIST).forEach(function (r) {
+      var img = ""; if (+r.foto) { try { var b64 = mFotoGet_(r.id); if (b64) img = "data:image/jpeg;base64," + b64; } catch (e) {} }
+      var rx = mJ_(r.reacoes, {}), cnt = {}, my = {}; CM_REACT.forEach(function (e) { var l = rx[e] || []; cnt[e] = l.length; my[e] = l.indexOf(uid) >= 0; });
+      out.push({ id: r.id, a: r.nome, me: r.autor === nick, d: new Date(Number(r.data)).toISOString(), wk: r.wk, tema: Number(r.tema), n: Number(r.n), u: r.u, cat: r.cat, tipo: r.tipo, custo: r.custo, g: r.gargalo, p: r.proposta, img: img, r: cnt, my: my }); });
+  return { ok: true, posts: out };
+}
+function cFind_(id) { var all = cRows_(); for (var i = 0; i < all.length; i++) if (all[i].id === id) return all[i]; return null; }
+function cDel_(nick, id) { return mLock_(function () { var r = cFind_(id); if (!r || r.autor !== nick) return { ok: false, err: "dono" };
+  if (+r.foto) { try { mFotoDel_(r.id); } catch (e) {} } cTab_().deleteRow(r._row); return { ok: true }; }); }
+function cReact_(nick, uid, id, e) { if (CM_REACT.indexOf(e) < 0) return { ok: false, err: "reacao" };
+  var fr = mFriends_(nick); return mLock_(function () { var r = cFind_(id); if (!r || r.removido || (r.autor !== nick && !fr[r.autor])) return { ok: false, err: "amigo" };
+    var rx = mJ_(r.reacoes, {}); var l = rx[e] || []; var k = l.indexOf(uid); if (k >= 0) l.splice(k, 1); else l.push(uid); rx[e] = l;
+    cTab_().getRange(r._row, cCol_("reacoes")).setValue(JSON.stringify(rx)); return { ok: true }; }); }
+function cReport_(nick, uid, id) { var fr = mFriends_(nick); var r, d, hide;
+  var bad = mLock_(function () { r = cFind_(id); if (!r || (r.autor !== nick && !fr[r.autor])) return true;
+    d = mJ_(r.denuncias, []); if (d.indexOf(uid) < 0) d.push(uid); hide = (r.faixa === "teen" && d.length >= 1) || d.length >= 2;
+    var sh = cTab_(); sh.getRange(r._row, cCol_("denuncias")).setValue(JSON.stringify(d)); if (hide) sh.getRange(r._row, cCol_("removido")).setValue("denuncia"); return false; });
+  if (bad) return { ok: false, err: "amigo" };
+  try { var ok = typeof g_emailOk === "function" ? g_emailOk() : true;
+    if (ok) MailApp.sendEmail(Session.getEffectiveUser().getEmail(), "Ascension: denúncia na galeria da Missão Criador (" + d.length + ")",
+      "Post " + r.id + " (" + r.faixa + ") denunciado. " + (hide ? "Escondido para todos." : "Escondido para quem denunciou.") + " Veja a fila no painel Criador do app."); } catch (e) {}
+  return { ok: true }; }
+function cmLimpa() { mLock_(function () { var sh = cTab_(); var all = cRows_(); for (var i = all.length - 1; i >= 0; i--) { var r = all[i];
+  if (!cFresh_(r.data)) { if (+r.foto) { try { mFotoDel_(r.id); } catch (e) {} } sh.deleteRow(r._row); } } }); }
+// --- painel do criador: chave própria em Propriedades do script ("cm:adm"); sem a chave, nada ---
+function cAdm_(b) {
+  if (!mRate_("ca", 60)) return { ok: false, err: "limite" };
+  var key = mProps_().getProperty("cm:adm") || ""; var k = String(b.k || "");
+  if (key.length < 16 || k.length !== key.length || mh_(k) !== mh_(key)) return { ok: false, err: "chave" };
+  var a = String(b.a || "");
+  if (a === "cm-adm-mod") return mLock_(function () { var r = cFind_(String(b.id || "")); if (!r) return { ok: false, err: "id" };
+    if (b.op === "del") { if (+r.foto) { try { mFotoDel_(r.id); } catch (e) {} } cTab_().deleteRow(r._row); return { ok: true }; }
+    if (b.op === "ok") { var sh = cTab_(); sh.getRange(r._row, cCol_("removido")).setValue(""); sh.getRange(r._row, cCol_("denuncias")).setValue("[]"); return { ok: true }; }
+    return { ok: false, err: "op" }; });
+  if (a !== "cm-adm") return { ok: false, err: "acao" };
+  var rows = cRows_().filter(function (r) { return cFresh_(r.data); });
+  var live = rows.filter(function (r) { return !r.removido; });
+  var munN = {}; live.forEach(function (r) { var m = String(r.mun || "").toLowerCase(); if (m) munN[m] = (munN[m] || 0) + 1; });
+  var grid = {}, cats = {}, tipos = {}; live.forEach(function (r) { var m = String(r.mun || "").toLowerCase(); m = m && munN[m] >= CM_MIN_MUN ? m : "";
+    var key2 = r.tema + "|" + r.cat + "|" + m; grid[key2] = (grid[key2] || 0) + 1; cats[r.cat] = (cats[r.cat] || 0) + 1; tipos[r.tipo] = (tipos[r.tipo] || 0) + 1; });
+  var score = function (r) { var rx = mJ_(r.reacoes, {}); var s = 0; CM_REACT.forEach(function (e) { s += (rx[e] || []).length; }); return s; };
+  var best = live.slice().sort(function (x, y) { return score(y) - score(x); })[0];
+  return { ok: true, total: live.length,
+    grade: Object.keys(grid).map(function (k) { var p = k.split("|"); return { tema: Number(p[0]), cat: p[1], mun: p[2], n: grid[k] }; }),
+    cats: cats, tipos: tipos,
+    top: best && score(best) > 0 ? { tema: Number(best.tema), cat: best.cat, tipo: best.tipo, p: best.proposta, r: score(best) } : null,
+    fila: rows.filter(function (r) { return mJ_(r.denuncias, []).length > 0; }).map(function (r) { return { id: r.id, tema: Number(r.tema), g: r.gargalo, p: r.proposta, d: mJ_(r.denuncias, []).length, esc: !!r.removido }; }),
+    contato: live.filter(function (r) { return +r.contato === 1 && r.faixa === "adult"; }).map(function (r) { return { a: r.nome, tema: Number(r.tema), p: r.proposta }; }) };
+}
 
 // ===== PUSH — Aviso diário com o app fechado (Web Push), sem servidor novo e sem conta nova.
 // Mora no mesmo arquivo do mural (antes era server/push.gs; se existir um push.gs antigo no projeto, apague). O doPost acima
