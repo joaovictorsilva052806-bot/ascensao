@@ -25,8 +25,8 @@ function clTurma(inv,go){if(!inv||!inv.t||typeof gtSt!=="function"||typeof gtCle
   if(!t){t={id:"t"+Date.now().toString(36),n,e:"⭐",c:"",m:[]};g.l.push(t);}
   if(!t.m.some(x=>gtN(x)===gtN(inv.a)))t.m.push(inv.a);
   try{localStorage.removeItem("asc-amigo-t");}catch(e){}save();try{tmUI();}catch(e){}return t.n;}
-// 1) aviso no link aberto fora do app instalado (o card.js já tirou os parâmetros da barra; a URL original fica no navigation entry)
-(function(){try{if(clStandalone())return;const nav=(performance.getEntriesByType&&performance.getEntriesByType("navigation")[0])||{};
+// 1) aviso no link aberto fora do app instalado (roda depois do cfg carregar: menor de 14 não vê; o card.js já tirou os parâmetros da barra; a URL original fica no navigation entry)
+setTimeout(function(){try{if(clStandalone())return;if(typeof tmKid==="function"&&tmKid())return;const nav=(performance.getEntriesByType&&performance.getEntriesByType("navigation")[0])||{};
   const inv=clParse(nav.name||"");if(!inv)return;const box=clEl("div","clbar");box.id="clBar";box.setAttribute("role","region");box.setAttribute("aria-label","Convite de "+inv.a);
   box.append(clEl("b",null,"🤝 Convite de "+inv.a+(inv.t?" · turma "+inv.t:"")));
   box.append(clEl("span","sm","Já tem o Ascension instalado? Copie o convite, abra o app e cole em Amigos → Recebeu um convite?"));
@@ -35,7 +35,7 @@ function clTurma(inv,go){if(!inv||!inv.t||typeof gtSt!=="function"||typeof gtCle
     if(!ok){try{const i=document.createElement("textarea");i.value=u;document.body.append(i);i.select();ok=document.execCommand("copy");i.remove();}catch(e){}}
     cp.textContent=ok?"Copiado ✓":"Copie o link da conversa";toast(ok?"Convite copiado. Abra o app e cole em Amigos.":"Não deu para copiar. Copie o link na conversa e cole no app.");});
   const x=clEl("button","link","Não tenho o app");x.type="button";x.addEventListener("click",()=>box.remove());row.append(cp,x);box.append(row);
-  document.body.append(box);}catch(e){}})();
+  document.body.append(box);}catch(e){}},0);
 // 2) "Recebeu um convite?" na aba Amigos (fim do painel da Turma). O painel é redesenhado a cada sincronização:
 //    a caixa volta no mesmo estado (aberta, texto digitado, mensagem) e nada some enquanto a pessoa digita.
 let clOpen=false,clVal="",clMsg="";

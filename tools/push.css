@@ -1,0 +1,7 @@
+.pw .pwbt{justify-content:center;gap:10px;flex-wrap:wrap}
+.pw .pwbt button{min-height:44px}
+.pw .chk{display:flex;gap:8px;align-items:center;min-height:44px}
+.pw .chk input{width:22px;height:22px}
+.pw .pwmsg{min-height:1.2em;text-align:center}
+.pwmais{margin:6px 0}
+.pwmais button{min-height:44px}

@@ -83,7 +83,7 @@ for(const [nome,dev] of [['iPhone',devices['iPhone 13']],['Android',devices['Pix
   ok(nome+': fora do treino pode estudar',!(await p.isVisible('#stPanel .stblock')));
   await p.clock.runFor(100*60*1000);await clean(p);await tab(p,'foco');await p.waitForTimeout(100);
   ok(nome+': 30 min antes do treino avisa e mostra a volta',/Hora do treino/.test(await p.textContent('#stPanel')).valueOf()&&/13:30/.test(await p.textContent('#stPanel .stblock').catch(()=>'')));
-  ok(nome+': botão começar desligado no treino',await p.$eval('#stPanel .sttask.top button.go',e=>e.disabled).catch(()=>false));
+  ok(nome+': botão começar desligado no treino',await p.$eval('#stPanel .sttask.top button.go',e=>e.disabled||e.getAttribute('aria-disabled')==='true').catch(()=>false));
   // 9) sono: 1 h antes de dormir avisa (22h15 com sono às 23h)
   await p.evaluate(()=>{document.querySelector('#stPanel details[data-k="cfg"]').open=true;});await p.fill('#stSl','23');
   await p.evaluate(()=>{[...document.querySelectorAll('#stPanel details[data-k="cfg"] button')].find(b=>b.textContent==='Salvar').click();});

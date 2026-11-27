@@ -189,6 +189,9 @@ rep('\nlet saveTimer=null, SYNC="";','\n'+R('textos1.js')+'\nlet saveTimer=null,
 # convite que não se perde: aviso no link aberto fora do app + "Recebeu um convite? Cole aqui" em Amigos (tools/colar.*)
 rep('</style></head>',R('colar.css')+'</style></head>')
 rep('\nlet saveTimer=null, SYNC="";','\n'+R('colar.js')+'\nlet saveTimer=null, SYNC="";')
+# aviso diário com o app fechado (Web Push sem conta nova): opt-in depois do "sim" do lembrete, Mais > Lembretes (tools/push.*, server/push.gs, sw-push.js)
+rep('</style></head>',R('push.css')+'</style></head>')
+rep('\nlet saveTimer=null, SYNC="";','\n'+R('push.js')+'\nlet saveTimer=null, SYNC="";')
 if not ROOT: open('comecar/index.html','w').write(s)
 pass
 

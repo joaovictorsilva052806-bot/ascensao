@@ -2,6 +2,7 @@
 // links do topo e do rodapé fáceis de tocar. Antes, "Instalar no celular" era branco sobre
 // #3d8bff (3,3:1, WCAG pede 4,5:1) e "Abrir o app →", "Privacidade", "Termos de uso" e
 // "Sobre o app" tinham ~17 px de altura (alvo de toque < 24 px, WCAG 2.5.8; aqui pedimos 44 px).
+// 27/11: o índice de /privacidade/ ("1. Quem cuida dos seus dados"...) tinha 26 px por link; agora 44 px.
 // Também confere: sem rolagem lateral, console limpo, todo link interno responde 200, reduce-motion.
 // Rode com: python3 -m http.server 8000 --bind 127.0.0.1 & node qa/paginas-1-0.test.js
 const {chromium}=require('playwright');const U=process.env.BASE||'http://localhost:8000/';
@@ -21,11 +22,11 @@ for(const [vw,vh,rm] of [[390,844,'no-preference'],[1280,800,'reduce']]){
    const cr=(x,y)=>{const a=L(x),c=L(y);return (Math.max(a,c)+.05)/(Math.min(a,c)+.05)};
    const btn=document.querySelector('.btn.p');let c=null;
    if(btn){const cs=getComputedStyle(btn);c=cr(rgb(cs.color),rgb(cs.backgroundColor));}
-   const small=[...document.querySelectorAll('header a, footer a')].filter(a=>a.getBoundingClientRect().height<44).map(a=>a.textContent.trim()+' '+Math.round(a.getBoundingClientRect().height)+'px');
+   const small=[...document.querySelectorAll('header a, footer a, nav.toc a')].filter(a=>a.getBoundingClientRect().height<44).map(a=>a.textContent.trim()+' '+Math.round(a.getBoundingClientRect().height)+'px');
    const links=[...new Set([...document.querySelectorAll('a[href]')].map(a=>a.href).filter(h=>h.startsWith(location.origin)).map(h=>h.split('#')[0]))];
    return {c,small,links,sw:document.documentElement.scrollWidth,iw:innerWidth};});
   if(d.c!==null)ok(tag+'botão principal com contraste ≥ 4,5:1',d.c>=4.5,d.c.toFixed(2)+':1');
-  ok(tag+'links do topo e do rodapé com 44 px de altura',d.small.length===0,d.small.join(', '));
+  ok(tag+'links do topo, do rodapé e do índice com 44 px de altura',d.small.length===0,d.small.join(', '));
   ok(tag+'sem rolagem lateral',d.sw<=d.iw,d.sw+'>'+d.iw);
   if(vw===390){for(const h of d.links){const r=await ctx.request.get(h);ok(tag+'link '+h.replace(U,'/')+' responde 200',r.status()===200,String(r.status()));}}
   ok(tag+'console sem erro',errs.length===0,errs.join(' | '));
