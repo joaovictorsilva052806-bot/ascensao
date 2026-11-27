@@ -1,5 +1,11 @@
 # Relatório de QA (ATENA)
 
+## 27/11/2026 · Desafio Forja 30 conciliado com a caminhada e a dor da Forja (#166/#169)
+
+- Achado na main depois do #169: com o Desafio ativo, 2 botões de caminhada (timers separados) e 2 "Senti dor, parei"; a dor da Forja não contava no Desafio.
+- Correção só em tools/ouro.js: o Desafio lê o fim da caminhada/treino da Forja (20 min para caminhada, aviso de 2 toques antes), dor conta o dia, sem janela extra por cima. Legado: `prog.f30.walk` em andamento segue no timer antigo.
+- Testes: qa/ouro.test.js 129/129 (E, F, F2, F3 cobrem botão único, dor, caminhada curta e dor na caminhada). forja 168/168. Suíte inteira 69/69 arquivos .js verdes. Cache v99 / u-v111.
+
 ## 27/11/2026 · Forja: galeria espera o treino (#135) e toque de 44 px (#136), PR #150 do ARES
 
 - Revisão: correção boa (embrulho do `openCls` só segura a galeria automática com o Forja aberto ou até 10 s depois com aviso na tela; `openCls.force` passa direto; convive com o adiamento do `noite.js`).

@@ -78,23 +78,39 @@ for(const [route,pre] of [['comecar/','asc-u'],['','ascensao']]){const tag=route
   ({ctx,p,errs}=await open(route,pre,P({forja:FJ(),f30:{s:'2026-11-20',d:Object.assign({},d4),lv0:6}}),TT));
   await tap(p,'#fjRuim');await p.clock.fastForward(11*60000);for(let i=0;i<5;i++)await tap(p,'#fjSet');await p.waitForTimeout(400);
   st=await LS(p,pre);ok(tag+' E: 5ª força na semana não conta',!st.f30.d[T]&&(await p.textContent('#fjSheet')).includes('4x nesta semana'));
-  await tap(p,'#fjClose');await tap(p,'#f30WalkC');ok(tag+' E: caminhada abre com timer',await p.locator('#f30Walk').isVisible()&&await p.locator('#f30WGo').isDisabled());
-  await tap(p,'#f30WMin');await p.clock.fastForward(20*60000+2000);await tap(p,'#f30WalkC');await p.waitForTimeout(1200);
-  ok(tag+' E: depois de 20 min libera "Terminei" (tempo contou com a janela fechada)',!(await p.locator('#f30WGo').isDisabled()));
-  await tap(p,'#f30WGo');st=await LS(p,pre);ok(tag+' E: caminhada conta o dia',st.f30.d[T]==='c'&&!st.f30.walk);
+  await tap(p,'#fjClose');ok(tag+' E: um botão de caminhada só no card',await p.locator('#fjWalk').count()+await p.locator('#f30WalkC').count()===1);
+  await tap(p,'#f30WalkC');ok(tag+' E: caminhada abre com timer',await p.locator('#fjWalkT').isVisible());
+  await tap(p,'#fjMin');await p.clock.fastForward(20*60000+2000);await tap(p,'#fjResume');await p.waitForTimeout(400);
+  await tap(p,'#fjWalkEnd');await p.waitForTimeout(400);st=await LS(p,pre);ok(tag+' E: caminhada de 20 min conta o dia (tempo contou com a janela fechada)',st.f30.d[T]==='c'&&!st.forja.walk&&(await p.textContent('#fjSheet')).includes('Desafio Forja 30: dia'),JSON.stringify(st.f30.d));
+  await tap(p,'#fjClose');
   ok(tag+' E: sequência com folgas (2 por semana)',(await p.textContent('#fjCard')).includes('Sequência: 5 dias'),await p.textContent('#fjCard'));
   await ctx.close();
   // F: "Senti dor, parei" no meio do treino conta o dia e mostra o aviso de segurança
   ({ctx,p,errs}=await open(route,pre,P({forja:FJ(),f30:{s:'2026-11-20',d:{},lv0:6}}),TT));
-  await tap(p,'#fjStart');await tap(p,'#fjSet');await tap(p,'#f30Dor');await p.waitForTimeout(400);st=await LS(p,pre);
-  ok(tag+' F: dor conta o dia e fecha o treino',st.f30.d[T]==='dor'&&!st.forja.cur&&!(await p.locator('#fjSheet').isVisible()));
-  ok(tag+' F: aviso "Parou na hora certa" com o texto de segurança',await p.locator('.sysmodal').filter({hasText:'PAROU NA HORA CERTA'}).filter({hasText:'Pare na hora'}).count()===1);
+  await tap(p,'#fjStart');await tap(p,'#fjSet');ok(tag+' F: um botão de dor só no treino',await p.locator('#fjDor').count()===1&&await p.locator('#f30Dor').count()===0);
+  await tap(p,'#fjDor');await p.waitForTimeout(400);st=await LS(p,pre);
+  ok(tag+' F: dor conta o dia e encerra o treino',st.f30.d[T]==='dor'&&!st.forja.cur);
+  ok(tag+' F: tela final com o dia do desafio e o texto de segurança',/Desafio Forja 30: dia 1/.test(await p.textContent('#fjSheet'))&&(await p.textContent('#fjSheet')).includes('procure atendimento'),await p.textContent('#fjSheet'));
+  ok(tag+' F: uma janela só (sem aviso extra por cima)',await p.locator('.sysmodal').filter({hasText:'PAROU NA HORA CERTA'}).count()===0);
+  await ctx.close();
+  // F2: caminhada de 12 min no desafio: 1º toque avisa e não encerra; 2º encerra, conta na Forja e não no desafio
+  ({ctx,p,errs}=await open(route,pre,P({forja:FJ(),f30:{s:'2026-11-20',d:{},lv0:6}}),TT));
+  await tap(p,'#fjWalk');await p.clock.fastForward(12*60000);await p.waitForTimeout(300);await tap(p,'#fjWalkEnd');await p.waitForTimeout(300);st=await LS(p,pre);
+  ok(tag+' F2: 1º toque antes de 20 min avisa e não encerra',!!st.forja.walk&&!st.f30.d[T]);
+  await tap(p,'#fjWalkEnd');await p.waitForTimeout(400);st=await LS(p,pre);
+  ok(tag+' F2: 2º toque encerra: conta na Forja, não no desafio',!st.forja.walk&&!st.f30.d[T]&&st.forja.ses.at(-1).tipo==='C'&&(await p.textContent('#fjSheet')).includes('vale com 20 min'),JSON.stringify(st.f30.d));
+  await tap(p,'#fjClose');
+  // F3: dor na caminhada conta o dia do desafio
+  ({ctx,p,errs}=await open(route,pre,P({forja:FJ(),f30:{s:'2026-11-20',d:{},lv0:6}}),TT));
+  await tap(p,'#fjWalk');await p.clock.fastForward(3*60000);await tap(p,'#fjWalkDor');await p.waitForTimeout(400);st=await LS(p,pre);
+  ok(tag+' F3: dor na caminhada conta o dia',st.f30.d[T]==='dor'&&st.forja.ses.at(-1).dor===1);
+  ok(tag+' F3: console limpo',errs.length===0,errs.join(' | '));
   await ctx.close();
   // G: 19 dias + caminhada = desafio cumprido: título, +100, Hall do aparelho; bônus de nível (+50) uma vez
   const d19={};for(let i=0;i<19;i++){const x=new Date(2026,10,5+i);d19[x.toISOString().slice(0,10)]='c';}
   ({ctx,p,errs}=await open(route,pre,P({forja:FJ({lv:{push:2}}),f30:{s:'2026-11-05',d:d19,lv0:6}}),TT));await p.waitForTimeout(600);st=await LS(p,pre);
   ok(tag+' G: subiu 1 nível no mês = +50 e « Acima de Ontem »',st.ouro===50&&st.f30.lvb===1&&st.chest.titles.some(t=>t.id==='o_t_acima'),JSON.stringify({o:st.ouro,f:st.f30.lvb}));
-  await drain(p);await tap(p,'#f30WalkC');await p.clock.fastForward(20*60000+2000);await p.waitForTimeout(1200);await tap(p,'#f30WGo');await p.waitForTimeout(800);
+  await drain(p);await tap(p,'#fjWalk');await p.clock.fastForward(20*60000+2000);await p.waitForTimeout(1200);await tap(p,'#fjWalkEnd');await p.waitForTimeout(800);await tap(p,'#fjClose');await p.waitForTimeout(1500);
   ok(tag+' G: janela de desafio cumprido',await p.locator('.sysmodal').filter({hasText:'Cumprido: 20 dias'}).count()===1);
   await drain(p);st=await LS(p,pre);
   ok(tag+' G: +100 de Ouro, título « Forjado em 30 » e Hall',st.ouro===150&&st.f30.win===T&&st.chest.titles.some(t=>t.id==='o_t_f30')&&st.f30.hall.length===1,JSON.stringify({o:st.ouro,w:st.f30.win,h:st.f30.hall}));
