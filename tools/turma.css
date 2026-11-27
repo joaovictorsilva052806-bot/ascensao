@@ -45,3 +45,4 @@ body[data-tab=amigos] #frPanel .frlist{display:none}
 .tmlist li{position:relative}
 .dyup{position:absolute;top:-9px;right:10px;padding:1px 8px;border-radius:999px;border:1px solid var(--good);background:#0a1222;font-family:var(--f-mono);font-size:.72rem;color:var(--good);letter-spacing:.06em}
 .zaprival{margin-top:6px}
+.tmempty .tmnick{min-height:44px;align-self:center}

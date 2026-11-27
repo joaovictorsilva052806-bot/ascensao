@@ -20,13 +20,15 @@ function frCheck(){const me=rankName();if(!me)return;const f=frSt();let ch=false
   if($("frModal")||$("sqiModal")||[...document.querySelectorAll(".sysmodal")].some(x=>x.getClientRects().length)||document.body.classList.contains("inmission"))return;
   const inc=sqInvRows.filter(r=>r.k==="F"&&frN(r.b)===frN(me)&&r.a&&!frHas(r.a)&&!f.seen["f:"+frN(r.a)]&&sqiFresh(r.d));
   const td=todayKey();if(!f.ask||f.ask.d!==td)f.ask={d:td,n:0};
-  if(inc.length&&f.ask.n<3){f.ask.n++;save();frAsk(inc[inc.length-1].a);}}
+  if(inc.length&&f.ask.n<3){f.ask.n++;save();const a=inc[inc.length-1].a;
+    // espera o cdInbox/gtInbox (assíncronos: conferem a assinatura do link) para não pedir amizade de quem já entrou pelo link
+    setTimeout(()=>{if(!frHas(a)&&!$("frModal"))frAsk(a);},1500);}}
 function frAsk(n){const f=frSt();const m=frEl("div","sysmodal");m.id="frModal";m.setAttribute("role","dialog");m.setAttribute("aria-modal","true");const c=frEl("div","card");
   const av=frEl("div","fravbig");av.innerHTML=frAv((sqPub[frN(n)]||{}).av,84);
   c.append(frEl("div","tag","[ SISTEMA ] PEDIDO DE AMIZADE"),av,frEl("h3",null,n+" quer ser seu amigo"),frEl("p","sm","Amigos se comparam lado a lado: XP da semana, nível, sequência e desafios."));
   const row=frEl("div","row");const ok=frEl("button","go","Aceitar");ok.type="button";const no=frEl("button","ghost","Agora não");no.type="button";row.append(ok,no);c.append(row);
   const close=()=>{f.seen["f:"+frN(n)]=1;save();m.remove();setTimeout(frCheck,400);};
-  ok.addEventListener("click",()=>{if(!frHas(n))f.l.push(n);delete f.pend[n];sqiPost(["G",rankName(),n,"",sqiDk()]);try{haptic([15,40,15]);}catch(e){}toast(n+" agora é seu amigo.");close();});
+  ok.addEventListener("click",()=>{if(frHas(n)){close();return;}f.l.push(n);delete f.pend[n];sqiPost(["G",rankName(),n,"",sqiDk()]);try{haptic([15,40,15]);}catch(e){}toast(n+" agora é seu amigo.");close();});
   no.addEventListener("click",close);m.append(c);document.body.append(m);setTimeout(()=>ok.focus(),60);}
 // comparação lado a lado
 function frCompare(n){const a=frMe(),b=frRow(n);const m=frEl("div","sysmodal");m.setAttribute("role","dialog");m.setAttribute("aria-modal","true");const c=frEl("div","card frcmp");

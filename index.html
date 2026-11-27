@@ -769,6 +769,7 @@ body[data-tab=amigos] #frPanel .frlist{display:none}
 .tmlist li{position:relative}
 .dyup{position:absolute;top:-9px;right:10px;padding:1px 8px;border-radius:999px;border:1px solid var(--good);background:#0a1222;font-family:var(--f-mono);font-size:.72rem;color:var(--good);letter-spacing:.06em}
 .zaprival{margin-top:6px}
+.tmempty .tmnick{min-height:44px;align-self:center}
 /* ---- Card de jogador + convite + destaque (tools/card.js) ---- */
 .cdmodal .cdcard{position:relative;max-width:360px;padding:16px 16px 14px;border:2px solid var(--cd);border-radius:16px;background:radial-gradient(120% 70% at 50% 0%,color-mix(in srgb,var(--cd) 28%,transparent),transparent 60%),linear-gradient(180deg,#0c1628,#060b15);box-shadow:0 0 0 1px rgba(255,255,255,.04) inset,0 0 34px color-mix(in srgb,var(--cd) 35%,transparent);text-align:center}
 .cdtop{display:flex;justify-content:space-between;align-items:center;gap:8px}
@@ -1506,6 +1507,13 @@ section[data-hbg]>:not(.hrbg){position:relative;z-index:1}
 .clpaste input{flex:1 1 auto;min-width:0;min-height:44px;text-overflow:ellipsis}
 .clpaste .row .go{flex:none;padding:0 14px}
 .clpaste .clmsg{margin-top:6px}
+.pw .pwbt{justify-content:center;gap:10px;flex-wrap:wrap}
+.pw .pwbt button{min-height:44px}
+.pw .chk{display:flex;gap:8px;align-items:center;min-height:44px}
+.pw .chk input{width:22px;height:22px}
+.pw .pwmsg{min-height:1.2em;text-align:center}
+.pwmais{margin:6px 0}
+.pwmais button{min-height:44px}
 .bpgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(96px,1fr));gap:6px;margin:6px 0}
 .bptile{border:1px solid var(--line);border-radius:8px;padding:8px;display:flex;flex-direction:column;gap:2px;background:rgba(0,0,0,.15);color:var(--fg)}
 .bptile b{font-size:1.25rem;color:var(--glow);font-variant-numeric:tabular-nums}.bptile span{font-size:.7rem;line-height:1.2}
@@ -4540,13 +4548,15 @@ function frCheck(){const me=rankName();if(!me)return;const f=frSt();let ch=false
   if($("frModal")||$("sqiModal")||[...document.querySelectorAll(".sysmodal")].some(x=>x.getClientRects().length)||document.body.classList.contains("inmission"))return;
   const inc=sqInvRows.filter(r=>r.k==="F"&&frN(r.b)===frN(me)&&r.a&&!frHas(r.a)&&!f.seen["f:"+frN(r.a)]&&sqiFresh(r.d));
   const td=todayKey();if(!f.ask||f.ask.d!==td)f.ask={d:td,n:0};
-  if(inc.length&&f.ask.n<3){f.ask.n++;save();frAsk(inc[inc.length-1].a);}}
+  if(inc.length&&f.ask.n<3){f.ask.n++;save();const a=inc[inc.length-1].a;
+    // espera o cdInbox/gtInbox (assíncronos: conferem a assinatura do link) para não pedir amizade de quem já entrou pelo link
+    setTimeout(()=>{if(!frHas(a)&&!$("frModal"))frAsk(a);},1500);}}
 function frAsk(n){const f=frSt();const m=frEl("div","sysmodal");m.id="frModal";m.setAttribute("role","dialog");m.setAttribute("aria-modal","true");const c=frEl("div","card");
   const av=frEl("div","fravbig");av.innerHTML=frAv((sqPub[frN(n)]||{}).av,84);
   c.append(frEl("div","tag","[ SISTEMA ] PEDIDO DE AMIZADE"),av,frEl("h3",null,n+" quer ser seu amigo"),frEl("p","sm","Amigos se comparam lado a lado: XP da semana, nível, sequência e desafios."));
   const row=frEl("div","row");const ok=frEl("button","go","Aceitar");ok.type="button";const no=frEl("button","ghost","Agora não");no.type="button";row.append(ok,no);c.append(row);
   const close=()=>{f.seen["f:"+frN(n)]=1;save();m.remove();setTimeout(frCheck,400);};
-  ok.addEventListener("click",()=>{if(!frHas(n))f.l.push(n);delete f.pend[n];sqiPost(["G",rankName(),n,"",sqiDk()]);try{haptic([15,40,15]);}catch(e){}toast(n+" agora é seu amigo.");close();});
+  ok.addEventListener("click",()=>{if(frHas(n)){close();return;}f.l.push(n);delete f.pend[n];sqiPost(["G",rankName(),n,"",sqiDk()]);try{haptic([15,40,15]);}catch(e){}toast(n+" agora é seu amigo.");close();});
   no.addEventListener("click",close);m.append(c);document.body.append(m);setTimeout(()=>ok.focus(),60);}
 // comparação lado a lado
 function frCompare(n){const a=frMe(),b=frRow(n);const m=frEl("div","sysmodal");m.setAttribute("role","dialog");m.setAttribute("aria-modal","true");const c=frEl("div","card frcmp");
@@ -4778,7 +4788,9 @@ function tmUI(){const p=tmPlace();if(!p)return;if(tmKid()||!cfg||cfg.blank){p.hi
   if(s.view==="hoje"){const box=tmEl("div","dybox");const rv=typeof dyRival==="function"?dyRival():null;box.append(tmEl("div","dyriv",rv?rv.txt:"Ranking de hoje: zera à meia-noite. Cada XP de hoje conta."));
     const nt=dyNote();if(nt)box.append(tmEl("div","sm muted",nt));box.append(dyNtfBtn());p.append(box);}
   if(s.view==="turma"&&!gr.length){const e=tmEl("div","tmempty");e.append(tmEl("p",null,"Sua turma ainda está vazia. Chame alguém para jogar com você."));
-    const b=tmEl("button","go","+ Adicionar amigo");b.type="button";b.addEventListener("click",()=>{try{frAdd=true;frUI();}catch(e){}setTimeout(()=>{const f=$("frPanel");if(!f)return;if(f.classList.contains("fold")&&!f.classList.contains("open")){const h=f.querySelector(":scope>.fhd");if(h)h.click();}f.scrollIntoView({block:"start",behavior:matchMedia("(prefers-reduced-motion: reduce)").matches?"auto":"smooth"});const i=f.querySelector("input");if(i)setTimeout(()=>i.focus(),80);},0);});e.append(b);p.append(e);}
+    // turma vazia: o botão principal manda o LINK da turma (mesmo dos botões Copiar link/WhatsApp); por apelido fica como opção secundária
+    if(typeof cdInvite==="function"&&tmOn()&&!(typeof tmKid==="function"&&tmKid())&&rankName()){const iv=tmEl("button","go tminv","📨 Mandar o link da turma");iv.type="button";iv.addEventListener("click",()=>cdInvite());e.append(iv);}
+    const b=tmEl("button",e.querySelector(".tminv")?"link tmnick":"go",e.querySelector(".tminv")?"ou adicionar por apelido":"+ Adicionar amigo");b.type="button";b.addEventListener("click",()=>{try{frAdd=true;frUI();}catch(e){}setTimeout(()=>{const f=$("frPanel");if(!f)return;if(f.classList.contains("fold")&&!f.classList.contains("open")){const h=f.querySelector(":scope>.fhd");if(h)h.click();}f.scrollIntoView({block:"start",behavior:matchMedia("(prefers-reduced-motion: reduce)").matches?"auto":"smooth"});const i=f.querySelector("input");if(i)setTimeout(()=>i.focus(),80);},0);});e.append(b);p.append(e);}
   if(rankRows&&typeof rankErr!=="undefined"&&rankErr){const w=tmEl("div","sm muted tmoff","Sem conexão · mostrando a última lista. Toque para tentar de novo.");w.setAttribute("role","button");w.tabIndex=0;w.style.cursor="pointer";w.addEventListener("click",()=>{rankErr=false;try{tmUI();}catch(e){}loadRank();});const f0=p.firstElementChild;if(f0)f0.after(w);else p.append(w);}
   if(!rankRows){const w=tmEl("div","sm muted",(typeof rankErr!=="undefined"&&rankErr)?"Sem conexão com o ranking. Toque aqui para tentar de novo.":"Carregando a turma…");if(typeof rankErr!=="undefined"&&rankErr){w.style.cursor="pointer";w.addEventListener("click",()=>{rankErr=false;try{tmUI();}catch(e){}loadRank();});}p.append(w);}
   const ol=tmEl("ol","tmlist");L.slice(0,300).forEach((r,i)=>{const li=tmEl("li",(r.me?"me ":"")+(i<3&&L.length>=2?"up":""));
@@ -6860,8 +6872,8 @@ function clTurma(inv,go){if(!inv||!inv.t||typeof gtSt!=="function"||typeof gtCle
   if(!t){t={id:"t"+Date.now().toString(36),n,e:"⭐",c:"",m:[]};g.l.push(t);}
   if(!t.m.some(x=>gtN(x)===gtN(inv.a)))t.m.push(inv.a);
   try{localStorage.removeItem("asc-amigo-t");}catch(e){}save();try{tmUI();}catch(e){}return t.n;}
-// 1) aviso no link aberto fora do app instalado (o card.js já tirou os parâmetros da barra; a URL original fica no navigation entry)
-(function(){try{if(clStandalone())return;const nav=(performance.getEntriesByType&&performance.getEntriesByType("navigation")[0])||{};
+// 1) aviso no link aberto fora do app instalado (roda depois do cfg carregar: menor de 14 não vê; o card.js já tirou os parâmetros da barra; a URL original fica no navigation entry)
+setTimeout(function(){try{if(clStandalone())return;if(typeof tmKid==="function"&&tmKid())return;const nav=(performance.getEntriesByType&&performance.getEntriesByType("navigation")[0])||{};
   const inv=clParse(nav.name||"");if(!inv)return;const box=clEl("div","clbar");box.id="clBar";box.setAttribute("role","region");box.setAttribute("aria-label","Convite de "+inv.a);
   box.append(clEl("b",null,"🤝 Convite de "+inv.a+(inv.t?" · turma "+inv.t:"")));
   box.append(clEl("span","sm","Já tem o Ascension instalado? Copie o convite, abra o app e cole em Amigos → Recebeu um convite?"));
@@ -6870,7 +6882,7 @@ function clTurma(inv,go){if(!inv||!inv.t||typeof gtSt!=="function"||typeof gtCle
     if(!ok){try{const i=document.createElement("textarea");i.value=u;document.body.append(i);i.select();ok=document.execCommand("copy");i.remove();}catch(e){}}
     cp.textContent=ok?"Copiado ✓":"Copie o link da conversa";toast(ok?"Convite copiado. Abra o app e cole em Amigos.":"Não deu para copiar. Copie o link na conversa e cole no app.");});
   const x=clEl("button","link","Não tenho o app");x.type="button";x.addEventListener("click",()=>box.remove());row.append(cp,x);box.append(row);
-  document.body.append(box);}catch(e){}})();
+  document.body.append(box);}catch(e){}},0);
 // 2) "Recebeu um convite?" na aba Amigos (fim do painel da Turma). O painel é redesenhado a cada sincronização:
 //    a caixa volta no mesmo estado (aberta, texto digitado, mensagem) e nada some enquanto a pessoa digita.
 let clOpen=false,clVal="",clMsg="";
@@ -6890,6 +6902,98 @@ function clUI(){const p=$("tmPanel");if(!p||p.hidden)return;if(typeof tmKid==="f
   i.addEventListener("keydown",e=>{if(e.key==="Enter")b.click();});row.append(i,b);d.append(row,msg);p.append(d);}
 if(typeof tmUI==="function"){const _tu=tmUI;tmUI=function(){if(document.activeElement&&document.activeElement.id==="clIn")return;_tu.apply(this,arguments);try{clUI();}catch(e){}};}
 setTimeout(()=>{try{clUI();}catch(e){}},0);
+
+// ---------- Aviso diário com o app fechado (Web Push, fase 2 dos lembretes) ----------
+// Desenho combinado no #22 (EVA 7203048765 + ATENA 7204199544, itens 1, 2 e 7), sem conta nova:
+//   - Opt-in extra SÓ depois do "sim" do lembrete da agenda (tools/lemb.js) ou em Mais > Lembretes.
+//   - Idade: menor de 14 (ou idade desconhecida) não vê; 14 a 17 só com "meu responsável autorizou"; o servidor confere de novo.
+//   - Precisa do ranking ligado (token do jogador): é ele que prova ao servidor quem é quem.
+//   - Guarda no servidor só o endereço de aviso deste aparelho e o horário (server/push.gs, planilha privada).
+//   - 1 aviso por dia, só se a pessoa ainda não abriu o app no dia. "Parar avisos" apaga a inscrição na hora.
+//   - iPhone: só com o app instalado na Tela de Início (iOS 16.4+). Fora disso, fica só a agenda.
+//   - Quem manda é o robô do GitHub Actions (.github/workflows/lembrete-push.yml), a cada 15 min.
+// Grava só "ascensao-push" (na raiz vira "ascensao-push"), fora do progresso.
+(function(){
+  const KEY="ascensao-push",LEMB="ascensao-lemb";
+  const VAPID="BEUNNLfc8c6_-Swq-qK_XNpdMNSa9tusQqPFdFlgk02xU4lMW4TlRiQLOPDz302Ncory9a_kXW4ik3X72qF51CQ"; // chave PÚBLICA (a privada fica só em GitHub Secrets)
+  const URL_=()=>typeof MURAL_URL==="string"?MURAL_URL:"";
+  const rd=k=>{try{return JSON.parse(localStorage.getItem(k)||"null")||{};}catch(e){return {};}};
+  const st=()=>rd(KEY),wr=o=>{try{localStorage.setItem(KEY,JSON.stringify(Object.assign(st(),o)));}catch(e){}};
+  const hora=()=>{const h=rd(LEMB).h;return /^([01]\d|2[0-3]):[0-5]\d$/.test(h||"")?h:"";};
+  const hoje=()=>typeof todayKey==="function"?todayKey():new Date().toISOString().slice(0,10);
+  const say=t=>{if(typeof toast==="function")toast(t);};
+  const ios=/iphone|ipad|ipod/i.test(navigator.userAgent);
+  const standalone=()=>{try{return !!(navigator.standalone||matchMedia("(display-mode: standalone)").matches);}catch(e){return false;}};
+  function supported(){return !!(window.isSecureContext&&"serviceWorker" in navigator&&"PushManager" in window&&"Notification" in window)&&(!ios||standalone());}
+  function band(){let a="";try{a=ageNow();}catch(e){}if(!a&&typeof crOn==="function"&&crOn())return "adult";
+    return a==="teen"?"teen":(a==="young"||a==="adult"||a==="senior")?"adult":"";}
+  const tok=()=>{try{return typeof rkTok==="function"?rkTok():"";}catch(e){return "";}};
+  const nick=()=>{try{return typeof rankName==="function"?rankName():"";}catch(e){return "";}};
+  function eligible(){return supported()&&!!URL_()&&!!band()&&!!(typeof prog!=="undefined"&&prog.rank&&prog.rank.on)&&!!nick()&&!!tok();}
+  async function api(a,o){const r=await fetch(URL_(),{method:"POST",body:JSON.stringify(Object.assign({a,n:nick(),tk:tok()},o||{})),credentials:"omit",redirect:"follow"});
+    const j=await r.json();if(!j||j.ok===false)throw new Error((j&&j.err)||"erro");return j;}
+  const b64u=s=>{const p="=".repeat((4-s.length%4)%4);const raw=atob((s+p).replace(/-/g,"+").replace(/_/g,"/"));return Uint8Array.from(raw,c=>c.charCodeAt(0));};
+  function swReady(){return Promise.race([navigator.serviceWorker.ready,new Promise((_,no)=>setTimeout(()=>no(new Error("sw")),8000))]);}
+  async function subscribe(par){const reg=await swReady();let sub=await reg.pushManager.getSubscription();
+    if(!sub)sub=await reg.pushManager.subscribe({userVisibleOnly:true,applicationServerKey:b64u(VAPID)});
+    const j=sub.toJSON();const k=j.keys||{};const h=hora()||"19:00";
+    try{await api("reg",{band:band(),par:band()==="teen"?(par?1:0):0});await api("pw-sub",{ep:j.endpoint,p:k.p256dh,au:k.auth,h});}
+    catch(e){try{await sub.unsubscribe();}catch(x){}throw e;}
+    wr({on:1,h,ep:j.endpoint,seen:hoje(),t:hoje()});return h;}
+  async function stop(quiet){const s=st();let ep=s.ep||"";
+    try{const reg=await swReady();const sub=await reg.pushManager.getSubscription();if(sub){ep=sub.endpoint||ep;await sub.unsubscribe();}}catch(e){}
+    try{if(tok())await api("pw-del",{ep});}catch(e){}
+    wr({on:0,ep:"",off:hoje()});ui();if(!quiet)say("Avisos no celular desligados. Nada fica guardado.");}
+  // --- janela de opt-in ---
+  function close(m,back){m.remove();document.removeEventListener("keydown",m._k,true);if(back&&back.isConnected)try{back.focus({preventScroll:true});}catch(e){}}
+  function offer(){if(document.getElementById("pwOffer")||!eligible())return;const back=document.activeElement;const teen=band()==="teen";const h=hora()||"19:00";
+    const E=(t,c,x)=>{const e=document.createElement(t);if(c)e.className=c;if(x!=null)e.textContent=x;return e;};
+    const m=E("div","sysmodal pw");m.id="pwOffer";m.setAttribute("role","dialog");m.setAttribute("aria-modal","true");m.setAttribute("aria-labelledby","pwT");
+    const c=E("div","card");const h3=E("h3",null,"🔔 Quer o aviso direto no celular?");h3.id="pwT";
+    c.append(E("div","tag","[ SISTEMA ] AVISO NO CELULAR"),h3,
+      E("p","sm","Chega com o app fechado, às "+h.replace(":","h")+". Só chama se você ainda não abriu o app no dia."),
+      E("p","sm muted","Guardamos só o endereço de aviso deste aparelho e o horário. Nada mais. Desliga quando quiser em Mais > Lembretes."));
+    let chk=null;if(teen){const l=E("label","chk sm");chk=E("input");chk.type="checkbox";chk.id="pwPar";l.append(chk,document.createTextNode(" Meu responsável autorizou os avisos no celular"));c.append(l);}
+    const msg=E("div","sm pwmsg");msg.setAttribute("role","status");
+    const go=E("button","go","Ligar aviso");go.type="button";go.id="pwYes";const no=E("button","link","Agora não");no.type="button";no.id="pwNo";
+    go.addEventListener("click",async()=>{if(teen&&!chk.checked){msg.textContent="Peça para o seu responsável autorizar e marque a caixa.";chk.focus();return;}
+      go.disabled=true;msg.textContent="Ligando…";let perm="default";try{perm=await Notification.requestPermission();}catch(e){}
+      if(perm!=="granted"){wr({asked:hoje(),r:"negou"});close(m,back);say("Sem permissão de aviso. A agenda continua valendo.");ui();return;}
+      try{const hh=await subscribe(teen&&chk.checked);close(m,back);say("Pronto: o Sistema te chama às "+hh.replace(":","h")+", mesmo com o app fechado.");}
+      catch(e){go.disabled=false;msg.textContent="Não deu para ligar agora ("+(e&&e.message||"erro")+"). Tente de novo mais tarde.";}
+      ui();});
+    no.addEventListener("click",()=>{wr({asked:hoje(),r:"nao"});close(m,back);ui();});
+    const row=E("div","row pwbt");row.append(go,no);c.append(row,msg);m.append(c);
+    m.addEventListener("click",e=>{if(e.target===m)no.click();});
+    m._k=e=>{if(e.key==="Escape"){e.preventDefault();e.stopPropagation();no.click();}};document.addEventListener("keydown",m._k,true);
+    document.body.append(m);try{go.focus({preventScroll:true});}catch(e){}}
+  window.pwOffer=offer;
+  // --- Mais > Lembretes: estado e liga/desliga ---
+  function ui(){const cal=document.getElementById("calPanel");if(!cal)return;let w=document.getElementById("pwMais");
+    const s=st();const show=s.on||eligible();if(!show){if(w)w.remove();return;}
+    if(!w){w=document.createElement("div");w.id="pwMais";w.className="pwmais";const ref=document.getElementById("lembMais");if(ref)ref.after(w);else cal.append(w);}
+    w.textContent="";const b=document.createElement("button");b.type="button";
+    if(s.on){const t=document.createElement("div");t.className="sm";t.textContent="🔔 Aviso no celular ligado: "+(s.h||"").replace(":","h")+", só se você ainda não abriu o app.";
+      b.className="link";b.id="pwStop";b.textContent="Parar avisos no celular";b.addEventListener("click",()=>stop());w.append(t,b);}
+    else{b.className="ghost";b.id="pwOn";b.textContent="🔔 Aviso no celular (com o app fechado)";
+      b.addEventListener("click",()=>{if(hora())offer();else if(typeof window.lembOffer==="function"){say("Primeiro escolha a hora do aviso.");window.lembOffer();}else offer();});w.append(b);}}
+  // --- depois do "sim" do lembrete: oferece (1x por dia, no máximo 2 vezes no total); se já está ligado e a hora mudou, atualiza calado ---
+  document.addEventListener("click",e=>{if(!e.target||!e.target.closest||!e.target.closest("#lembAdd"))return;
+    setTimeout(async()=>{const l=rd(LEMB);if(l.r!=="sim"||!hora())return;const s=st();
+      if(s.on){if(s.h!==hora()&&eligible()){try{const hh=await subscribe(true);say("Aviso no celular agora às "+hh.replace(":","h")+".");}catch(x){}ui();}return;}
+      if(!eligible()||s.asked===hoje()||(s.n||0)>=2)return;wr({n:(s.n||0)+1});offer();},700);},true);
+  // --- a cada abertura: marca "visto hoje" (1x por dia) e confere se a inscrição ainda vale ---
+  async function boot(){const s=st();if(!s.on){ui();return;}
+    if(!eligible()){await stop(true);return;}                         // saiu do ranking, mudou a idade, etc.
+    try{if(Notification.permission==="denied"){await stop(true);return;}
+      const reg=await swReady();const sub=await reg.pushManager.getSubscription();
+      if(!sub||sub.endpoint!==s.ep){if(Notification.permission==="granted")await subscribe(true);else{await stop(true);return;}}
+      else if(st().seen!==hoje()){await api("pw-seen");wr({seen:hoje()});}}catch(e){}
+    ui();}
+  if(navigator.serviceWorker)navigator.serviceWorker.addEventListener("message",e=>{if(e.data&&e.data.pw==="renew"&&st().on)subscribe(true).catch(()=>{});});
+  document.addEventListener("visibilitychange",()=>{if(!document.hidden&&st().on&&st().seen!==hoje())boot();});
+  setTimeout(boot,2500);setTimeout(ui,0);
+})();
 
 // ---------- Modo Criador (só no app do JV): jogadores, XP manual, esconder módulos, atalhos ----------
 const CR_HIDE="ascensao-hide",CR_CSV="https://docs.google.com/spreadsheets/d/e/2PACX-1vTyr0ZbAqlFWbOWEZXpjcRPXPE04u9EfktPhrq5Mf_vnQ2YjeVEARfhqGrrpqVXxkIVsvnE_x8DMdpr/pub?gid=1002&single=true&output=csv";
