@@ -40,7 +40,7 @@ function qtTidy(){const box=$("quests");if(!box)return;let nextMoved=false;
 {const _r=render;render=function(){_r.apply(this,arguments);try{qtTidy();}catch(e){}};}
 // mensagem do [SISTEMA]: aponta para a primeira tarefa liberada, com o título curto
 if(typeof sysLine==="function"){const _sl=sysLine;sysLine=function(){const t=_sl();try{const dt=new Date();const done=prog.log[todayKey()]||[];
-  const left=mainsFor(dt).filter(q=>!done.some(e=>e.q===q.id));if(!left.length)return t;const nx=left[0];const ok=left.find(q=>qtLocked(q)==null);
+  const left=mainsFor(dt).filter(q=>!done.some(e=>e.q===q.id));if(!left.length)return t;const nx=left[0];const ok=(typeof slotSort==="function"?slotSort(left):left).find(q=>qtLocked(q)==null);
   const nm=q=>qtShort(q)||q.title;
   if(t.includes("Próxima missão: "+nx.title)){if(ok)return t.replace("Próxima missão: "+nx.title,"Próxima missão: "+nm(ok));const lk=qtLocked(nx);return t.replace("Próxima missão: "+nx.title+".","Próxima missão libera às "+lk+"h: "+nm(nx)+".");}
   if(t.includes("Sugestão: "+(nx.minTitle||nx.title))&&ok&&ok!==nx)return t.replace("Sugestão: "+(nx.minTitle||nx.title),"Sugestão: "+(ok.minTitle||nm(ok)));}catch(e){}return t;};}
