@@ -12,7 +12,7 @@
   const KEY="asc-u-push",LEMB="asc-u-lemb";
   // chave PÚBLICA VAPID (a privada fica só em GitHub Secrets). Vazia = aviso no celular desligado (ninguém vê a oferta).
   // Teste com outra chave: localStorage "asc-push-vapid" (só no próprio aparelho).
-  const VAPID_FIXA="";
+  const VAPID_FIXA="BDcNBzx_o8wholMvtDEJgLzCdxqQR8T7aRwW-it_semHYxGAMa3y_Nf68vz-qtBww3rae2KoG0hms1ClEwlxJXY";
   const VAPID=(()=>{try{const t=localStorage.getItem("asc-push-vapid")||"";if(/^B[A-Za-z0-9_-]{86}$/.test(t))return t;}catch(e){}return VAPID_FIXA;})();
   const URL_=()=>typeof MURAL_URL==="string"?MURAL_URL:"";
   const rd=k=>{try{return JSON.parse(localStorage.getItem(k)||"null")||{};}catch(e){return {};}};

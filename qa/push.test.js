@@ -91,10 +91,12 @@ for(const [route,pre] of [['comecar/','asc-u'],['','ascensao']]){const T=(route|
     await p.check('#pwPar');await p.click('#pwYes');await p.waitForTimeout(700);
     const r=p.posts.find(x=>x.a==='reg')||{};ok(T+'D: marcou: reg teen com responsável',r.band==='teen'&&r.par===1,JSON.stringify(r));
     ok(T+'D: e inscreve',p.posts.some(x=>x.a==='pw-sub'));ok(T+'D: console limpo',!p.errs.length,p.errs.join(' | '));await ctx.close();}
-  // K) sem chave pública no código: desligado para todo mundo
+  // K) chave pública de produção no código (JV liberou em 27/11): sem chave de teste, o app usa a do código, válida (65 bytes, começa com 0x04)
   {const [ctx,p]=await abre(b,{route,pre});await p.evaluate(()=>localStorage.removeItem('asc-push-vapid'));await p.reload();await p.waitForTimeout(1500);await drain(p);
-    await lembSim(p);ok(T+'K: sem chave pública: sem oferta',!(await vis(p,'#pwOffer')));await mais(p);ok(T+'K: sem chave pública: sem botão em Mais',!(await vis(p,'#pwOn')));
-    ok(T+'K: nada sai',!p.posts.some(x=>/^pw|reg/.test(x.a)));await ctx.close();}
+    const src=require('fs').readFileSync(__dirname+'/../tools/push.js','utf8');const m=/const VAPID_FIXA="([^"]*)"/.exec(src);const raw=m?Buffer.from(m[1],'base64url'):Buffer.alloc(0);
+    ok(T+'K: chave pública do código tem 65 bytes (P-256 sem compressão)',raw.length===65&&raw[0]===4,String(raw.length));
+    await lembSim(p);ok(T+'K: com a chave do código, a oferta aparece',await vis(p,'#pwOffer'));
+    ok(T+'K: nada sai antes do toque',!p.posts.some(x=>/^pw/.test(x.a)));await ctx.close();}
   // J) 320 px
   {const [ctx,p]=await abre(b,{route,pre,w:320});await lembSim(p);
     const r=await p.evaluate(()=>{const c=document.querySelector('#pwOffer .card').getBoundingClientRect();const bs=[...document.querySelectorAll('#pwOffer button')].map(x=>x.getBoundingClientRect());
