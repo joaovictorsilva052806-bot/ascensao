@@ -4,8 +4,16 @@
 
 - Novo: área com moldura lendária no topo da aba Lendárias (#191; sem a aba, na aba Foco) e chamada de 1 toque em Hoje. Link de indicação do criador vem com aviso de comissão (`"indicacao": true`). Lista em `missoes-lendarias.json`; a Cuponomia entra com `"teste": true` (só o Modo Criador vê) e o link de indicação do JV. Só adiciona `prog.lend`.
 - `qa/lendaria.test.js` 55/55: 4 faixas de idade, lista vazia/incompleta/http some, teste só no Criador, selo de publicidade, rel sponsored, Ouro +80 1x, trava do 4º dia, dados antigos intactos, 320/1280 px, reduce-motion, toque ≥ 44 px.
-- Suíte inteira (83 arquivos, 4 em paralelo): 80 verdes. `arsenal` e `chefe-contraste` falharam só sob carga e passaram ao rodar sozinhos (74/74 e 14/14); `push-send.test.mjs` falha também na main (módulo `web-push` não instalado no sandbox).
-- Print 390x844 conferido. Cache `ascensao-v114` / `ascensao-u-v126` (v113 saiu no #191).
+- Suíte inteira (83 arquivos, 4 em paralelo) depois de juntar a main com #190/#191: 82 verdes; só `push-send.test.mjs` falha, também na main (módulo `web-push` não instalado no sandbox).
+- Print 390x844 conferido. Cache `ascensao-v115` / `ascensao-u-v127` (v113 e v114 saíram no #191 e #192).
+
+## 27/11/2026 · Cobrar com Pix no Criador (pagamento sem taxa e sem servidor)
+
+- Novo painel "💸 Cobrar com Pix" na aba Criador (só no app do JV): chave Pix (aleatória recomendada; aviso quando é CPF/celular), nome e cidade salvos uma vez, só no aparelho (`ascensao-pix`).
+- Nova cobrança: quem paga, valor, a que se refere (atalhos: Turma Parceiro, Indicação Bellardi, Consultoria, Apoio) → Pix copia e cola + QR + "Enviar no WhatsApp" + Copiar/Compartilhar.
+- Lista com "Recebi" (2 toques, depois de conferir no banco), total recebido no mês, pendente, meta do 1º contrato, recibo com a data real de emissão, apagar com 2 toques.
+- Conferência do QR: as matrizes de 25 conteúdos (versões 1 a 10) são idênticas às da biblioteca de referência `qrcode` (Python) e o QR da tela, capturado do navegador, foi lido pelo OpenCV igual ao copia e cola. CRC confere com o exemplo do Banco Central (1D3D).
+- Testes: novo qa/pix.test.js 34/34 (unidade do BR Code e do QR, fluxo completo, 360/1280 px, reduce-motion, nada na rede, /comecar/ sem o código). Cache v114 (só a raiz mudou).
 
 ## 27/11/2026 · Missão Criador, fase 1 (painel Criador) · PR #179
 

@@ -148,3 +148,7 @@ Hoje o app é PWA (instala pelo navegador, grátis). Para entrar nas lojas depoi
 
 - **Play Store:** empacotar como TWA (Trusted Web Activity) com o Bubblewrap ou o PWABuilder. Conta Google Play: taxa única de US$ 25.
 - **App Store:** Capacitor (ou PWABuilder) gera o app iOS. Exige Mac/Xcode e conta Apple Developer: US$ 99/ano, e a Apple costuma recusar app que é só um site embrulhado.
+
+## Cobrar com Pix (só no Criador)
+
+`tools/pix.js` e `tools/pix.css` (só no app da raiz, aba Criador): gera o Pix copia e cola (BR Code do Banco Central, com CRC16) e o QR Code no próprio aparelho, com valor e descrição, mais a mensagem pronta para o WhatsApp. Sem servidor, sem taxa de plataforma e sem dependência (o QR é escrito à mão: byte, correção M, versões 1 a 10). Chave Pix, nome e cobranças ficam só em `ascensao-pix`, fora do progresso, e nada vai para a rede. "Recebi" e "Apagar" pedem 2 toques; o recibo sai com a data real de emissão. Teste: `node qa/pix.test.js`.
