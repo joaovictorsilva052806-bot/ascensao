@@ -1570,6 +1570,9 @@ button.pill.ouro[hidden]{display:none}
 .hllist li{display:flex;flex-wrap:wrap;align-items:center;gap:4px 10px;padding:8px 10px;border:1px solid var(--line);border-radius:10px;background:#0a1222}
 .hllist li b{color:var(--gold)}
 .hllist li .link{min-height:44px;margin-left:auto}
+/* área de toque ≥ 44px sem mudar o visual (mesma faixa invisível dos selos 🔥/🛡️/classe; ARES #22 27/11: tinha 30px) */
+button.pill.ouro{position:relative}
+button.pill.ouro::before{content:"";position:absolute;left:-3px;right:-3px;top:-8px;bottom:-8px}
 /* ---- Trilha Primeira Renda (tools/renda.*) ---- */
 .rdpanel{display:grid;gap:10px}
 .rdbar{height:8px}
