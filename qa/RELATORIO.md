@@ -28,6 +28,7 @@
 - Novo: "Bloquear" no Mural (diretriz 1.2 da Apple), só no aparelho, em `prog.mural.blk` (campo novo, nada apagado), com Desbloquear. Testado em 360 e 390 px (o botão quebra linha sem cortar).
 - Novo: `nativo/` (Capacitor 8, /comecar/ dentro do pacote, ponte nativa) e workflow que compila para o simulador sem assinatura. O site não muda.
 - **Placar:** suíte inteira em série 51/51 arquivos verdes (inclui `nativo` 14/14 e `mural` 24/24 com 6 casos novos); `rotas` 12/12 e `mural` refeitos depois do ajuste de CSS. Caches `ascensao-v77` / `ascensao-u-v89`.
+- 27/11 (ok do JV para publicar): main trazida 3 vezes para o PR. Suíte inteira em série 69/69 em cima do #163; depois do #164/#165, `mural`, `nativo`, `rotas`, `seguranca`, `ouro`, `alvo`, `classe`, `liga` e `sequencia` sem FAIL. Workflow do iPhone passou a rodar só à mão (2 disparos cancelados na fila do Mac, sem log). Caches `ascensao-v96` / `ascensao-u-v108`.
 
 ## 25/11/2026 23h · Retenção D1/D3/D7 e funil no Modo Criador (PR rascunho, espera o "pode publicar")
 
