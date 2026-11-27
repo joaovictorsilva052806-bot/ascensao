@@ -24,8 +24,8 @@ async function open(time,ls,o={}){const ctx=await b.newContext({viewport:o.vp||{
 const dump=p=>p.evaluate(()=>{const o={};for(let i=0;i<localStorage.length;i++){const k=localStorage.key(i);o[k]=localStorage.getItem(k);}return o;});
 const prog=p=>p.evaluate(()=>JSON.parse(localStorage.getItem('ascensao-prog')));
 const clean=async p=>{await p.evaluate(()=>{document.querySelectorAll('.sysmodal').forEach(m=>m.remove());const l=document.getElementById('levelup');if(l)l.hidden=true;});};
-const chip=(p,t)=>p.locator('#cmBox .cmchip',{hasText:t}).first().click();
-const go=async p=>{await p.locator('#cmBox .cmgo').click();await p.waitForTimeout(300);await clean(p);};
+const chip=(p,t)=>p.locator('#cmBox .cmchip',{hasText:t}).first().dispatchEvent('click');
+const go=async p=>{await p.locator('#cmBox .cmgo').dispatchEvent('click');await p.waitForTimeout(300);await clean(p);};
 const xpOf=(st,k)=>{for(const d in st.log)for(const e of st.log[d])if(e.q===k)return e.xp;return 0;};
 let ls={'ascensao-cfg':JSON.stringify(CFG),'ascensao-prog':JSON.stringify(PROG),'ascensao-sync':SYNC,'ascensao-season':'2'};
 // ---- dia 1 (sex 27/11/2026, semana 2026-W48 → tema 8 = Escola) ----
@@ -39,14 +39,14 @@ ok('descrição curta sem foto: recusa',(await p.textContent('#cmBox .cmerr')||'
 await p.locator('#cmBox textarea').fill('Na rua da escola, liga pro 11 98765-4321 para saber mais do problema');await go(p);
 ok('telefone no texto: recusa',(await p.textContent('#cmBox .cmerr')||'').includes('telefone'));
 // troca de tema 1x
-await p.locator('#cmBox .link',{hasText:'Trocar tema'}).click();await p.locator('#cmBox .cmchip',{hasText:'Moradia'}).click();await p.waitForTimeout(200);
+await p.locator('#cmBox .link',{hasText:'Trocar tema'}).dispatchEvent('click');await p.locator('#cmBox .cmchip',{hasText:'Moradia'}).dispatchEvent('click');await p.waitForTimeout(200);
 let st=await prog(p);ok('troca de tema grava tema 0 e troca=true',st.cm.tema===0&&st.cm.troca===true,JSON.stringify(st.cm&&{t:st.cm.tema,x:st.cm.troca}));
 ok('depois da troca, não oferece trocar de novo',!(await p.locator('#cmBox .link',{hasText:'Trocar tema'}).count()));
 // foto + texto
-await p.setInputFiles('#cmFile',path.join(__dirname,'..','icon-512.png'));await p.waitForTimeout(800);
+await p.setInputFiles('#cmFile',path.join(__dirname,'..','icon-512.png'));await p.waitForSelector('#cmBox .cmprev:not([hidden])',{timeout:15000});
 await p.locator('#cmBox textarea').fill('Casa da esquina sem reboco e com a laje exposta.');await go(p);
 ok('foto sem confirmar "sem rosto": recusa',(await p.textContent('#cmBox .cmerr')||'').includes('rosto'));
-await p.locator('#cmSafe').check();await go(p);await p.waitForTimeout(1200);
+await p.locator('#cmSafe').evaluate(e=>{e.checked=true});await go(p);await p.waitForTimeout(1200);
 st=await prog(p);let all=await dump(p);
 ok('etapa 1 salva com img=true e +20 XP',st.cm.s[1]&&st.cm.s[1].img===true&&xpOf(st,'cm:2026-W48:1')===20,JSON.stringify(st.cm.s));
 ok('foto fica em ascensao-cm-foto, no aparelho',/^data:image\/jpeg/.test((JSON.parse(all['ascensao-cm-foto']||'{}'))['2026-W48']||''));
@@ -90,7 +90,7 @@ for(let i=0;i<5;i++){
   if(n===3){await chip(p,'Organização');await p.locator('#cmBox textarea').fill('Ninguém sabe a quem pedir a rampa na subprefeitura.');}
   if(n===4){await p.locator('#cmBox textarea').fill('Juntar 3 vizinhos, medir a calçada e mandar o pedido de rampa pelo site da prefeitura com fotos.');await chip(p,'Política');await chip(p,'Zero');}
   if(n===5){await p.locator('#cmBox textarea').fill('Ela disse que uma rampa já ajudava muito.');await go(p);
-    ok('etapa 5 sem o aceite da pessoa: recusa',(await p.textContent('#cmBox .cmerr')||'').includes('concordando'));await p.locator('#cmOkP').check();}
+    ok('etapa 5 sem o aceite da pessoa: recusa',(await p.textContent('#cmBox .cmerr')||'').includes('concordando'));await p.locator('#cmOkP').evaluate(e=>{e.checked=true});}
   await go(p);st=await prog(p);
   if(n===5){ok('semana completa: 170 XP no total',[1,2,3,4,5].reduce((a,k)=>a+xpOf(st,'cm:2026-W49:'+k),0)===170);
     ok('teto do dia cheio: Ouro não entra hoje e a chave fica livre',!st.ouro&&!st.ouroX.got['cm:2026-W49'],JSON.stringify({o:st.ouro,g:st.ouroX.got}));
@@ -105,12 +105,12 @@ ls=await dump(p);await ctx.close();
 {const pr=JSON.parse(ls['ascensao-prog']);pr.cm.hist=pr.cm.hist.concat([{wk:'2026-W40',tema:1,cat:'lei',tipo:'politica',ok:true,n:30,u:'dias'},{wk:'2026-W39',tema:2,cat:'tecnica',tipo:'engenharia',ok:true,n:12,u:'horas'}]);ls['ascensao-prog']=JSON.stringify(pr);}
 const d50=['2026-12-07','2026-12-08','2026-12-09','2026-12-10','2026-12-11'];
 for(let i=0;i<5;i++){({ctx,p,errs}=await open(d50[i]+'T09:00:00',ls));const n=i+1;
-  if(n===1){await p.locator('#cmBox .link',{hasText:'Voltar a um problema'}).click();await p.locator('#cmBox .cmchip',{hasText:'Idosos'}).click();await p.waitForTimeout(200);
+  if(n===1){await p.locator('#cmBox .link',{hasText:'Voltar a um problema'}).dispatchEvent('click');await p.locator('#cmBox .cmchip',{hasText:'Idosos'}).dispatchEvent('click');await p.waitForTimeout(200);
     ok('voltar ao problema: marca v2of',(await prog(p)).cm.v2of==='2026-W49');await p.locator('#cmBox textarea').fill('Voltei à calçada da praça para ver se mudou alguma coisa.');}
   if(n===2){await p.fill('#cmN','2');await p.fill('#cmU','degraus');await chip(p,'Medi');}
   if(n===3){await chip(p,'Organização');await p.locator('#cmBox textarea').fill('O pedido entrou mas ainda espera a vistoria da prefeitura.');}
   if(n===4){await p.locator('#cmBox textarea').fill('Levar o protocolo para a associação de moradores e cobrar a vistoria em grupo, com a medição.');await chip(p,'Política');await chip(p,'Zero');}
-  if(n===5){await p.locator('#cmBox textarea').fill('Ele achou boa a ideia de ir em grupo.');await p.locator('#cmOkP').check();}
+  if(n===5){await p.locator('#cmBox textarea').fill('Ele achou boa a ideia de ir em grupo.');await p.locator('#cmOkP').evaluate(e=>{e.checked=true});}
   await go(p);await p.waitForTimeout(400);ls=await dump(p);if(n<5)await ctx.close();}
 st=await prog(p);
 ok('número novo no mesmo problema: +60 +20 de Ouro',st.ouro===140&&!!st.ouroX.got['cm2:2026-W50'],String(st.ouro));
