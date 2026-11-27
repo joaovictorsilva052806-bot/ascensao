@@ -10,7 +10,7 @@ const FJ=(o={})=>Object.assign({ok:true,pt:1,pil:false,lv:{},last:{},ses:[],dias
 async function drain(p){for(let k=0;k<2;k++){for(let i=0;i<10;i++){const m=p.locator('.sysmodal button.go');if(await m.count()){await m.first().dispatchEvent('click');await p.waitForTimeout(150);continue;}
   if(await p.locator('#levelup').isVisible()){await p.locator('#luClose').dispatchEvent('click');continue;}await p.waitForTimeout(250);if(!(await p.locator('.sysmodal button.go').count()))break;}await p.waitForTimeout(700);}}
 (async()=>{const b=await chromium.launch();
-async function open(route,pre,prog,time,o={}){const ctx=await b.newContext({viewport:o.vp||{width:390,height:844},reducedMotion:o.rm||'no-preference'});const p=await ctx.newPage();const errs=[];
+async function open(route,pre,prog,time,o={}){const ctx=await b.newContext({viewport:o.vp||{width:390,height:844},reducedMotion:o.rm||'no-preference'});const p=await ctx.newPage();const errs=[];if(o.init)await p.addInitScript(o.init);
   p.on('pageerror',e=>errs.push(e.message));p.on('console',m=>{if(m.type()==='error'&&!/Failed to load resource|ERR_|navigator.vibrate/.test(m.text()))errs.push(m.text())});
   await p.clock.install({time:new Date(time)});await p.goto(U+route+'__seed__');
   await p.evaluate(([c,o,pre])=>{localStorage.setItem(pre+'-cfg',JSON.stringify(c));localStorage.setItem(pre+'-prog',JSON.stringify(o));localStorage.setItem(pre+'-season','2');localStorage.setItem('asc-u-perm','1');localStorage.setItem('asc-u-intro','1');},[o.cfg||CFG,prog,pre]);
@@ -156,8 +156,25 @@ for(const [route,pre] of [['comecar/','asc-u'],['','ascensao']]){const tag=route
   ok(tag+' H2: botão de dor com 44 px',await p.evaluate(()=>document.getElementById('fjDor').getBoundingClientRect().height>=44));
   await tap(p,'#fjDor');st=await LS(p,pre);
   ok(tag+' H2: dor conta o dia (+20) mesmo sem série',(day(st,'2026-11-25').find(e=>e.q==='forja:2026-11-25')||{}).xp===20&&st.forja.ses.at(-1).dor===1&&!st.forja.cur);
+  ok(tag+' H2: treino parado por dor não troca A/B',(await p.textContent('#fjSheet')).includes('Próximo: Treino B'),await p.textContent('#fjSheet'));
   ok(tag+' H2: dor não mexe no alvo',JSON.stringify(st.forja.last)==='{"pull":[10,10,10]}');
   ok(tag+' H2: tela final orienta a parar e procurar ajuda',(await p.textContent('#fjSheet')).includes('procure atendimento'));
   ok(tag+' H2: fjDia lê dor; fjNivelSubiu sem subida',await p.evaluate(()=>ascForja.dia('2026-11-25')+','+ascForja.nivelSubiu('2026-11-01'))==='dor,false');
-  ok(tag+' H2: console limpo',errs.length===0,errs.join(' | '));await ctx.close();}
+  ok(tag+' H2: console limpo',errs.length===0,errs.join(' | '));await ctx.close();
+  // I: tela acesa (Wake Lock) só com o treino ou a caminhada abertos
+  const WL=()=>{window.__wl={req:0,on:0};Object.defineProperty(navigator,'wakeLock',{configurable:true,value:{request:async()=>{__wl.req++;__wl.on++;const ls=[];return {addEventListener:(e,f)=>ls.push(f),release:async()=>{__wl.on--;ls.forEach(f=>f());}};}}});};
+  ({ctx,p,errs}=await open(route,pre,P({gd:{off:1},forja:FJ({ses:[{d:'2026-11-23',tipo:'A',min:30,r:0}]})}),'2026-11-25T18:00:00',{init:WL}));
+  let wl=()=>p.evaluate(()=>window.__wl.on);
+  ok(tag+' I: tela livre fora do treino',await wl()===0);
+  await tap(p,'#fjStart');await p.waitForTimeout(150);ok(tag+' I: treino aberto segura a tela',await wl()===1);
+  await tap(p,'#fjPlus');await tap(p,'#fjSet');await p.waitForTimeout(150);ok(tag+' I: um pedido só durante o treino',await p.evaluate(()=>window.__wl.req)===1&&await wl()===1);
+  await tap(p,'#fjMin');await p.waitForTimeout(150);ok(tag+' I: minimizar solta a tela',await wl()===0);
+  await tap(p,'#fjResume');await p.waitForTimeout(150);ok(tag+' I: voltar ao treino segura de novo',await wl()===1);
+  await tap(p,'#fjDor');await p.waitForTimeout(150);ok(tag+' I: tela final solta a tela',await wl()===0);
+  await tap(p,'#fjClose');await p.waitForTimeout(150);ok(tag+' I: fechar deixa a tela livre',await wl()===0);
+  ok(tag+' I: console limpo',errs.length===0,errs.join(' | '));await ctx.close();
+  ({ctx,p,errs}=await open(route,pre,P({gd:{off:1},forja:FJ({ses:[{d:'2026-11-23',tipo:'A',min:30,r:0}]})}),'2026-11-25T18:00:00',{init:WL}));
+  await tap(p,'#fjWalk');await p.waitForTimeout(150);ok(tag+' I: caminhada segura a tela',await wl()===1);
+  await tap(p,'#fjMin');await p.waitForTimeout(150);ok(tag+' I: minimizar a caminhada solta a tela',await wl()===0);
+  ok(tag+' I: console limpo',errs.length===0,errs.join(' | '));await ctx.close();}
 await b.close();console.log(R.join('\n'));process.exit(R.some(x=>x.startsWith('FAIL'))?1:0);})();

@@ -6315,7 +6315,8 @@ function fjS(){let f=prog.forja;if(!f||typeof f!=="object"||Array.isArray(f))f=p
   return f;}
 const fjDow=()=>(new Date().getDay()+6)%7;
 const fjSec=m=>!!FJ_MOV[m].s;
-function fjNext(f){let l=null;for(let i=f.ses.length-1;i>=0;i--){const x=f.ses[i];if(x&&(x.tipo==="A"||x.tipo==="B")){l=x;break;}}return l&&l.tipo==="A"?"B":"A";}
+// próximo treino: alterna A/B; caminhada e treino parado por dor não contam (o próximo repete o que ficou pela metade)
+function fjNext(f){let l=null;for(let i=f.ses.length-1;i>=0;i--){const x=f.ses[i];if(x&&(x.tipo==="A"||x.tipo==="B")&&!x.dor){l=x;break;}}return l&&l.tipo==="A"?"B":"A";}
 function fjTodayE(){return (prog.log[todayKey()]||[]).find(e=>e.q==="forja:"+todayKey());}
 // último dia de treino marcado (até 6 dias atrás) que passou sem treino, contado só depois do 1º treino
 function fjMissed(f){if(!f.ses.length)return "";const first=f.ses[0].d;const done=new Set(f.ses.map(s=>s.d));
@@ -6339,9 +6340,17 @@ function fjOpen(ruim){const f=fjS();let m=$("fjSheet");
   else if(!f.pt&&!f.ses.length){fjView="setup";fjWant=!!ruim;}
   else{fjStart(!!ruim);return;}
   fjRender();}
-function fjClose(){const m=$("fjSheet");const was=m&&!m.hidden;if(was)fjShutAt=Date.now();if(m)m.hidden=true;document.body.classList.remove("inforja","inmission");if(was&&fjPrev&&fjPrev.isConnected)try{fjPrev.focus();}catch(e){}clearInterval(fjTick);fjTick=null;fjView=null;fjUI();}
+function fjClose(){const m=$("fjSheet");const was=m&&!m.hidden;if(was)fjShutAt=Date.now();if(m)m.hidden=true;document.body.classList.remove("inforja","inmission");if(was&&fjPrev&&fjPrev.isConnected)try{fjPrev.focus();}catch(e){}clearInterval(fjTick);fjTick=null;fjView=null;fjWake(false);fjUI();}
 function fjWalk(){const f=fjS();if(f.cur){fjOpen();return;}
   if(!f.walk){f.walk={d:todayKey(),t0:Date.now()};save();}fjOpen();}
+// tela acesa durante o treino e a caminhada (Wake Lock). Onde não existir, nada muda.
+let fjWL=null,fjWLp=false;
+async function fjWake(on){try{if(on){if(fjWL||fjWLp||!navigator.wakeLock||document.visibilityState!=="visible")return;fjWLp=true;
+    const w=await navigator.wakeLock.request("screen");fjWLp=false;const m=$("fjSheet");
+    if(!m||m.hidden||(fjView!=="run"&&fjView!=="walk")){try{await w.release();}catch(e){}return;}
+    fjWL=w;w.addEventListener("release",()=>{if(fjWL===w)fjWL=null;});}
+  else if(fjWL){const w=fjWL;fjWL=null;await w.release();}}catch(e){fjWLp=false;}}
+document.addEventListener("visibilitychange",()=>{if(document.visibilityState!=="visible")return;const m=$("fjSheet");if(m&&!m.hidden&&(fjView==="run"||fjView==="walk"))fjWake(true);});
 function fjStart(ruim){const f=fjS();fjWant=false;
   f.cur={d:todayKey(),tipo:fjNext(f),ruim:ruim?1:0,i:0,sets:{},t0:Date.now(),rest:0,v:null};save();fjView="run";fjRender();fjUI();}
 function fjRender(){const m=$("fjSheet");if(!m||m.hidden)return;const ae0=document.activeElement;const keep=ae0&&m.contains(ae0)&&ae0.id?ae0.id:"";m.textContent="";const f=fjS();
@@ -6349,7 +6358,7 @@ function fjRender(){const m=$("fjSheet");if(!m||m.hidden)return;const ae0=docume
   top.append(fjEl("span","fjtag","[ SISTEMA ] FORJA"+(fjView==="walk"?" · CAMINHADA":f.cur?" · TREINO "+f.cur.tipo+(f.cur.ruim?" · DIA RUIM":""):"")),fjBtn("link","Minimizar ⌄",fjClose,"fjMin"));c.append(top);
   if(fjView==="safe")fjSafeV(c,f);else if(fjView==="setup")fjSetupV(c,f);else if(fjView==="done")fjDoneV(c,f);else if(fjView==="walk"&&f.walk)fjWalkV(c,f);else if(f.cur)fjRunV(c,f);else{fjClose();return;}
   const ft=fjEl("details","fjstop");ft.append(fjEl("summary",null,"⚠ Quando parar"),fjEl("p","sm",FJ_SAFE));if(fjView!=="safe")c.append(ft);
-  m.append(c);if(fjView==="run")fjRestUI();if(fjView==="walk")fjWalkUI();
+  m.append(c);if(fjView==="run")fjRestUI();if(fjView==="walk")fjWalkUI();fjWake(fjView==="run"||fjView==="walk");
   // foco no botão principal (leitor de tela e teclado), sem roubar o foco de quem está no − / +
   const k=keep&&document.getElementById(keep);if(k&&m.contains(k)){try{k.focus({preventScroll:true});}catch(e){}return;}
   const ae=document.activeElement;if(!ae||!m.contains(ae)||!ae.isConnected){const g=m.querySelector(".fjbig")||m.querySelector("button");if(g)try{g.focus({preventScroll:true});}catch(e){}}}
@@ -7335,7 +7344,9 @@ function f30Start(){const f=f30St();if(f30On())return;f.s=todayKey();f.d={};f.lv
 function f30Quit(){const f=f30St();if(!f.s)return;f.res.push({s:f.s,e:todayKey(),n:f30Count(f),w:0,q:1});f.res=f.res.slice(-12);f.s="";f.d={};f.walk=null;save();try{render();}catch(e){}toast("Desafio encerrado. Seu XP e seu Forja continuam. Pode recomeçar quando quiser.");}
 function f30Scan(){const f=f30St();if(!f.s)return;const tk=todayKey();
   // subiu 1 nível na escada durante o desafio: bônus uma vez
-  if(!f.win&&tk<=f30End(f)&&!f.lvb&&f30LvSum()>(+f.lv0||0)){f.lvb=1;save();orHook();try{bxGiveTitle("o_t_acima","Acima de Ontem","desafio");}catch(e){}orGive("f30lv:"+f.s,OR_G.f30lv,"Subiu de nível no Forja");}
+  // vale só subida de verdade no Forja (entrada forja:lv:* desde o início do desafio); o « Sim » do ajuste rápido não conta
+  const up=typeof fjNivelSubiu==="function"?fjNivelSubiu(f.s):f30LvSum()>(+f.lv0||0);
+  if(!f.win&&tk<=f30End(f)&&!f.lvb&&up){f.lvb=1;save();orHook();try{bxGiveTitle("o_t_acima","Acima de Ontem","desafio");}catch(e){}orGive("f30lv:"+f.s,OR_G.f30lv,"Subiu de nível no Forja");}
   if(!f.win&&f30Count(f)>=F30_GOAL){f.win=tk;const n=f30Count(f);f.res.push({s:f.s,e:tk,n,w:1});f.res=f.res.slice(-12);f.hall.unshift({s:f.s,e:tk,n});f.hall=f.hall.slice(0,12);save();orHook();
     try{bxGiveTitle("o_t_f30","Forjado em 30","desafio");}catch(e){}orGive("f30:"+f.s,OR_G.f30,"Desafio Forja 30");
     sysPop("DESAFIO FORJA 30","Cumprido: "+n+" dias 🏆","Você ganhou o título raro « Forjado em 30 » e +"+OR_G.f30+" de Ouro. Seu nome entrou no Hall da Fama deste aparelho"+(hlCan()?"; dá para mostrar para os amigos em Progresso.":"."),null,"Fechou");return;}
@@ -7504,11 +7515,11 @@ const RD_G={m:20,fim:50};
 const RD_NOTE="Conteúdo informativo. Não é orientação jurídica, contábil nem promessa de vaga ou renda.";
 // [id, título, passo, pronto quando, rótulo da fonte, link oficial, roteiro do app]
 const RD_A=[
- ["pr-a01","O que é Jovem Aprendiz","Ler o que é a aprendizagem profissional: contrato especial de trabalho, com curso junto, para quem tem de 14 a 24 anos.","Sabe explicar em 1 frase","Aprendizagem profissional (MTE)","https://www.gov.br/trabalho/pt-br/assuntos/aprendizagem-profissional"],
+ ["pr-a01","O que é Jovem Aprendiz","Ler o que é a aprendizagem profissional: contrato especial de trabalho, com curso junto, para quem tem de 14 a 24 anos.","Sabe explicar em 1 frase","Aprendizagem profissional (MTE)","https://www.gov.br/trabalho-e-emprego/pt-br/assuntos/aprendizagem-profissional"],
  ["pr-a02","Seus direitos como aprendiz","Ler o art. 428 da CLT e anotar 3 direitos (por exemplo: carteira assinada, salário-mínimo-hora, curso de formação).","Anotou 3 direitos","CLT, art. 428 (Planalto)","https://www.planalto.gov.br/ccivil_03/decreto-lei/del5452.htm"],
  ["pr-a03","O que a lei proíbe antes dos 18","Ler o art. 7º, XXXIII da Constituição: sem trabalho noturno, perigoso ou insalubre antes dos 18, e nenhum trabalho antes dos 16, salvo aprendiz.","Sabe dizer a regra","Constituição, art. 7º (Planalto)","https://www.planalto.gov.br/ccivil_03/constituicao/constituicao.htm"],
  ["pr-a04","Carteira de Trabalho Digital","Com um responsável, ver como a Carteira de Trabalho Digital funciona: app oficial, entrada pela conta gov.br.","Sabe onde baixar","Carteira de Trabalho Digital (gov.br)","https://www.gov.br/pt-br/temas/carteira-de-trabalho-digital"],
- ["pr-a05","Onde ficam as vagas","Listar 2 instituições formadoras da sua cidade (SENAI, SENAC, CIEE ou similar) e como cada uma se inscreve.","2 nomes e o caminho de inscrição","Manual da Aprendizagem (MTE)","https://www.gov.br/trabalho-e-emprego/pt-br/assuntos/aprendizagem-profissional/arquivos-aprendizagem-profissional/manual-da-aprendizagem-profissional-semlogo-1.pdf"],
+ ["pr-a05","Onde ficam as vagas","Listar 2 instituições formadoras da sua cidade (SENAI, SENAC, CIEE ou similar) e como cada uma se inscreve.","2 nomes e o caminho de inscrição","Entidades e cursos de aprendizagem (MTE)","https://www.gov.br/trabalho-e-emprego/pt-br/assuntos/aprendizagem-profissional"],
  ["pr-a06","Currículo de 1 página","Escrever um currículo de 1 página: dados de contato, escola e série, cursos, o que sabe fazer e trabalhos voluntários.","Arquivo salvo no aparelho","","","Modelo: contato (e-mail ou telefone de um responsável) · escola e série · cursos · 3 coisas que você sabe fazer · voluntário ou projetos. Uma página, letra simples. Fica só com você: o app não pede nem guarda."],
  ["pr-a07","1 curso gratuito com certificado","Escolher 1 curso curto e gratuito de iniciação profissional e fazer a primeira aula.","1ª aula concluída","Escola Virtual de Governo (EV.G)","https://www.escolavirtual.gov.br"],
  ["pr-a08","Treinar a entrevista","Responder em voz alta 3 perguntas: \"Fale de você\", \"Por que quer ser aprendiz?\" e \"Um ponto forte e um a melhorar\".","Respondeu as 3 em até 2 min cada","","","Roteiro: 1) escola, 1 coisa que gosta e 1 que aprendeu; 2) aprender na prática e começar com registro; 3) um ponto forte real e um ponto a melhorar com o que você já faz para melhorar."],
