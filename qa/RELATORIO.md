@@ -1,5 +1,15 @@
 # Relatório de QA (ATENA)
 
+## 27/11/2026 · Vitrine que rende: tag pelo afiliados.json, Dica da semana, atalhos e medição com opt-in
+
+- `afiliados.json` na raiz (amazon, mercadolivre, apoio): o JV liga a vitrine editando 1 arquivo, sem trem. Tag limpa (só letras, números, - e _), apoio só com https. O arquivo vence o `AFIL` do código; cópia em `asc-u-vitrine`, fora do progresso. Busca 1 vez por abertura (o service worker não sobrescreve).
+- Dica da semana (Hoje): só com o dia completo, a partir do 4º dia de conta, 1 dia por semana, mesmo livro para todo mundo (vem da semana do ano). "Agora não" = até a próxima semana; "Não quero dicas" = de vez (`asc-u-dica`). Sem contagem, sem "só hoje", sem prêmio por comprar.
+- Atalhos para o Arsenal na Meta de leitura (sem livro em andamento) e no Estudo, com "publicidade" no texto.
+- Medição: só com o envio anônimo do beta ligado (já aprovado), soma no contador de abas da linha diária: afv (vitrine vista), afc (toque), afd/afdc (dica vista/tocada), afh (atalho), afap (apoio). Nunca diz qual livro.
+- Apoie o criador: 18+, voluntário, não libera nada; some no app nativo (Apple 3.1.1).
+- Aviso "Como associado da Amazon…" no rodapé quando a tag da Amazon está ligada. Termos atualizados.
+- Testes: qa/arsenal.test.js 74/74 (raiz e /comecar/; menores, parent, 7 dias, json sujo, nativo, beta ligado/desligado, 360/1280 px, reduce-motion). Cache v104 / u-v116.
+
 ## 27/11/2026 · Missões do Mestre 18+ e Arsenal do Herói (frentes 3 e 4, rascunho)
 
 - Missões do Mestre (aba Progresso): lista em missoes-mestre.json (no repositório só os 3 parceiros, sem valor nem link = seção some). Missão só aparece com todos os campos e links https. Selo "Publicidade · indicação" e "O Mestre também ganha R$ X se você concluir." em cada cartão. "Fiz" +80 de Ouro uma vez, travado nos 3 primeiros dias de conta. Só 18+ pela trava de tools/idade.js. Dados: só `prog.mestre`.
