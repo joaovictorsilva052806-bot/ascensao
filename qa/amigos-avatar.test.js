@@ -89,7 +89,8 @@ for(const [route,pre] of [['comecar/','asc-u'],['','ascensao']]){const tag=route
   await p.reload();await p.waitForTimeout(1200);await calm(p);await tab(p,'amigos');await p.waitForTimeout(300);
   const tmA=p.locator('#tmPanel .tmempty button.go');
   if(!(await tmA.count())){await p.locator('#tmPanel .tmseg button[data-v="turma"]').click();await p.waitForTimeout(300);}
-  await p.locator('#tmPanel .tmempty button.go').click();await p.waitForTimeout(500);
+  // com ranking ligado o botão principal manda o link (.tminv); "por apelido" (.tmnick) abre o painel de amigos
+  await p.locator('#tmPanel .tmempty .tmnick').click();await p.waitForTimeout(500);
   ok(tag+' turma vazia: botão abre o painel de amigos',await p.locator('#frPanel>.fhd').getAttribute('aria-expanded')==='true'&&await p.locator('#frPanel input').isVisible());
   ok(tag+' turma vazia: foco no campo do apelido',await p.evaluate(()=>document.activeElement&&document.activeElement.closest('#frPanel')&&document.activeElement.tagName==='INPUT'));
   ok(tag+' turma vazia: console limpo',errs.length===0,errs.join(' | '));await ctx.close();
