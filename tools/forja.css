@@ -55,3 +55,6 @@
 .fjback,.fjgoal{color:var(--gold)}
 .fjhr{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
 .fjhr input{min-height:40px;padding:6px 10px;border-radius:8px;border:1px solid var(--line);background:#0a1222;color:var(--fg);font:inherit}
+.fjdor{min-height:44px;width:100%;border-color:var(--gold);color:var(--gold)}
+.fjwalk{min-height:44px;width:100%;text-align:left}
+.fjwt{font-size:2.2rem}
