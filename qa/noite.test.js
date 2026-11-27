@@ -52,7 +52,8 @@ for(const [nome,opt] of [['celular',{}],['desktop + reduce-motion',{viewport:{wi
 
 // noite (20h30): "Falta 1.", contador do dia e campos de 44px
 {const errs=[];const ctx=await ctxOf(b);const p=await page(ctx,'2026-11-26T20:30:00-03:00',errs);await onboard(p);
-  await p.evaluate(()=>document.querySelector('#quests .quest.next .msgo').click());await p.waitForTimeout(900);
+  // abre a revisão de estudo pelo id: desde a ordem por período (qa/slot.test.js), às 20h30 a "PRÓXIMA" é a tarefa da noite
+  await p.evaluate(()=>(document.querySelector('#quests .quest[data-q="s_rev"] .msgo')||document.querySelector('#quests .quest.next .msgo')).click());await p.waitForTimeout(900);
   const hs=await p.evaluate(()=>[...document.querySelectorAll('.msadd input,.msadd summary')].filter(e=>e.getClientRects().length).map(e=>Math.round(e.getBoundingClientRect().height)));
   ok('criar card: campos e "+ Criar cards" com 44px ou mais',hs.length>=2&&hs.every(h=>h>=44),hs.join(','));
   await p.evaluate(()=>{const s=[...document.querySelectorAll('.mssheet')].find(x=>!x.hidden);[...s.querySelectorAll('button')].find(x=>/Concluir miss/.test(x.textContent)).click();});await p.waitForTimeout(1200);await pops(p);

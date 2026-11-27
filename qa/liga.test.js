@@ -6,7 +6,7 @@ const CFG={version:3,name:'Teste Silva',startDate:'2026-11-20',profile:{age:'adu
 const CSV='nome,xp,nivel\nAna,120,3\nBia,60,2\nTeste,40,1\nCadu,10,1\n';
 async function drain(p){const t=[];for(let k=0;k<2;k++){for(let i=0;i<10;i++){const m=p.locator('.sysmodal button.go');if(!(await m.count()))break;t.push(await p.locator('.sysmodal h3').first().textContent()+' | '+await p.locator('.sysmodal p').first().textContent());await m.first().dispatchEvent('click');await p.waitForTimeout(150);}await p.waitForTimeout(900);}return t;}
 (async()=>{const b=await chromium.launch();
-async function open(prog,time){const ctx=await b.newContext({viewport:{width:390,height:844}});const p=await ctx.newPage();const errs=[];const posts=[];
+async function open(prog,time){const ctx=await b.newContext({viewport:{width:390,height:844}});await ctx.addInitScript(()=>{if(!localStorage.getItem('asc-u-tele'))localStorage.setItem('asc-u-tele','{"asked":1}');});const p=await ctx.newPage();const errs=[];const posts=[];
   p.on('pageerror',e=>errs.push(e.message));p.on('console',m=>{if(m.type()==='error'&&!/Failed to load resource|ERR_|navigator.vibrate/.test(m.text()))errs.push(m.text())});
   await ctx.route('https://docs.google.com/**',r=>{if(r.request().method()==='POST'){posts.push(r.request().postData());return r.fulfill({status:200,body:''});}return r.fulfill({status:200,contentType:'text/csv',body:CSV});});
   await p.clock.install({time:new Date(time)});

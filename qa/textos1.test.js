@@ -3,7 +3,7 @@
 const {chromium}=require('playwright');const R=[];const ok=(n,c,x)=>R.push((c?'PASS ':'FAIL ')+n+(x&&!c?' · '+x:''));
 (async()=>{const b=await chromium.launch();
 for(const vp of [{width:390,height:844},{width:1280,height:800}]){const tag=vp.width+'px';
-  const ctx=await b.newContext({viewport:vp,timezoneId:'America/Sao_Paulo'});const p=await ctx.newPage();const errs=[];
+  const ctx=await b.newContext({viewport:vp,timezoneId:'America/Sao_Paulo'});await ctx.addInitScript(()=>{if(!localStorage.getItem('asc-u-tele'))localStorage.setItem('asc-u-tele','{"asked":1}');});const p=await ctx.newPage();const errs=[];
   await p.clock.install({time:new Date('2026-11-26T13:00:00Z')});
   p.on('pageerror',e=>errs.push(e.message));p.on('console',m=>{if(m.type()==='error'&&!/Failed to load resource|ERR_|vibrate/.test(m.text()))errs.push(m.text())});
   await ctx.route('https://docs.google.com/**',r=>r.fulfill({status:200,body:''}));await ctx.route('https://script.google.com/**',r=>r.fulfill({status:200,body:'{}'}));
@@ -36,7 +36,7 @@ for(const vp of [{width:390,height:844},{width:1280,height:800}]){const tag=vp.w
   ok(tag+': placar do dia sem "(s)"',/^Hoje: \d+ (tarefas? )?feitas? · \+\d+ XP( no dia)?$/.test(await p.textContent('#dayxp')),await p.textContent('#dayxp'));
   ok(tag+': console limpo',errs.length===0,errs.join(' | '));await ctx.close();}
 // reduce-motion: Despertar aparece inteiro, sem digitação, com o texto novo
-{const ctx=await b.newContext({viewport:{width:390,height:844},reducedMotion:'reduce'});const p=await ctx.newPage();const errs=[];p.on('pageerror',e=>errs.push(e.message));
+{const ctx=await b.newContext({viewport:{width:390,height:844},reducedMotion:'reduce'});await ctx.addInitScript(()=>{if(!localStorage.getItem('asc-u-tele'))localStorage.setItem('asc-u-tele','{"asked":1}');});const p=await ctx.newPage();const errs=[];p.on('pageerror',e=>errs.push(e.message));
   await ctx.route('https://docs.google.com/**',r=>r.fulfill({status:200,body:''}));await ctx.route('https://script.google.com/**',r=>r.fulfill({status:200,body:'{}'}));
   await p.goto('http://localhost:8000/comecar/');await p.waitForTimeout(150);
   ok('reduce-motion: Despertar pronto na hora',(await p.textContent('#qType')).includes('Pronto para despertar?')&&(await p.textContent('#qWake')).includes('Sem conta.'));
@@ -44,7 +44,7 @@ for(const vp of [{width:390,height:844},{width:1280,height:800}]){const tag=vp.w
   ok('reduce-motion: perguntas com texto novo',(await p.textContent('#q_h1'))==='Ana, qual a sua idade?');
   ok('reduce-motion: console limpo',errs.length===0,errs.join(' | '));await ctx.close();}
 // dado antigo: jogador que já existia abre o app, nada some e o texto novo aparece
-for(const [route,pre] of [['comecar/','asc-u'],['','ascensao']]){const ctx=await b.newContext({viewport:{width:390,height:844},timezoneId:'America/Sao_Paulo'});const p=await ctx.newPage();const errs=[];
+for(const [route,pre] of [['comecar/','asc-u'],['','ascensao']]){const ctx=await b.newContext({viewport:{width:390,height:844},timezoneId:'America/Sao_Paulo'});await ctx.addInitScript(()=>{if(!localStorage.getItem('asc-u-tele'))localStorage.setItem('asc-u-tele','{"asked":1}');});const p=await ctx.newPage();const errs=[];
   await p.clock.install({time:new Date('2026-11-26T13:00:00Z')});p.on('pageerror',e=>errs.push(e.message));
   await ctx.route('https://docs.google.com/**',r=>r.fulfill({status:200,body:''}));await ctx.route('https://script.google.com/**',r=>r.fulfill({status:200,body:'{}'}));
   const CFG={version:1,name:'Velho',startDate:'2026-10-01',profile:{age:'adult',occ:'clt',focus:['sono']},quests:[{id:'q1',title:'Ler 10 min',xp:10,stat:'mente',main:true}]};
@@ -58,7 +58,7 @@ for(const [route,pre] of [['comecar/','asc-u'],['','ascensao']]){const ctx=await
   if(route)ok((route||'/')+' dado antigo: check-in com texto novo',/Pegar \+\d+ XP/.test(ci)&&/Bem-vindo de volta/.test(ci)&&!/primeiro XP/.test(ci),ci);
   ok((route||'/')+' dado antigo: console limpo',errs.length===0,errs.join(' | '));await ctx.close();}
 // modo "simples" e app do JV (raiz) seguem abrindo sem erro
-{const ctx=await b.newContext({viewport:{width:390,height:844}});const p=await ctx.newPage();const errs=[];p.on('pageerror',e=>errs.push(e.message));
+{const ctx=await b.newContext({viewport:{width:390,height:844}});await ctx.addInitScript(()=>{if(!localStorage.getItem('asc-u-tele'))localStorage.setItem('asc-u-tele','{"asked":1}');});const p=await ctx.newPage();const errs=[];p.on('pageerror',e=>errs.push(e.message));
   await ctx.route('https://docs.google.com/**',r=>r.fulfill({status:200,body:''}));await ctx.route('https://script.google.com/**',r=>r.fulfill({status:200,body:'{}'}));
   await p.goto('http://localhost:8000/');await p.waitForTimeout(800);ok('raiz: abre sem erro',errs.length===0,errs.join(' | '));await ctx.close();}
 await b.close();console.log(R.join('\n'));process.exit(R.some(x=>x.startsWith('FAIL'))?1:0);})();

@@ -85,6 +85,19 @@ Grava só `prog.forja` (`lv`, `last`, `ses`, `ok`, `dias`, `pil`, `pt`, `cur`); 
 
 Grava só `prog.st`. XP novo: `st:t:<id>` (+10, entregue no prazo) e `st:c:<dia>` (+1 por card, até 10 por dia). Teste: `node qa/estudo.test.js`.
 
+## Ouro, Loja e Desafio Forja 30
+
+`tools/ouro.js` e `tools/ouro.css` (entram nos dois geradores, no fim da cadeia). Ouro é pontuação FECHADA: não se compra, não se transfere, não vira dinheiro, não entra em sorteio.
+
+- **Ganhos** (chave única cada, teto de 200 por dia; sem espaço, tenta de novo amanhã): dia com as principais feitas +10 (`dia:<dia>`), semana sem quebrar a sequência +50 (`sem:<segunda>`), chefão +30 (lê `ach:tb:<semana>`). Só conta o que acontece depois do 1º uso (`ouroX.t0`).
+- **Loja**: molduras, fundos do cartão e títulos entram em `BX_FR`/`BX_TT`/`HR_BG` só depois de comprados (o baú nunca sorteia item da loja). Escudo de sequência respeita `ST_MAX`.
+- **Desafio Forja 30**: 20 de 30 dias, 1 por data; treino do Forja com 10 min de timer (força até 4x por semana), caminhada de 20 min ou "Senti dor, parei"; 2 folgas por semana na sequência. Cumprir: +100, título e Hall da Fama. Subir 1 nível na escada no mês: +50. Até 13 anos não vê; 14-17 vê a regra de só peso do corpo.
+- **Hall da turma**: ações `hall`/`hlist` no `server/mural.gs` (token, faixa, 14-17 com `par`, só amigos). Sem a republicação, mostra só o do aparelho.
+
+- **Uma moeda só:** as moedas do Baú de recompensas viram Ouro 1 vez (saldo XP/10 menos o gasto), com backup em `*-prog-preouro` antes. Depois disso o Baú resgata com Ouro. Volta: "Voltar o Baú para moedas" em Mais > Ajustes (`orUnmerge`).
+
+Grava só `prog.ouro` (inteiro), `prog.ouroX` (com `mig`) e `prog.f30`. Teste: `node qa/ouro.test.js`.
+
 ## Resumo do beta (Modo Criador)
 
 `tools/painel.js` e `tools/painel.css` (só na aba Criador do app do JV, via `gen.py --root`): números agregados em cima das abas privadas que o painel já lê (testadores, ativos hoje e em 7 dias, volta no dia 2 e no dia 8, missões feitas, feedbacks, funil e ativos por dia). Colunas achadas pelo nome do cabeçalho. Não envia nada; guarda no aparelho do criador só a contagem diária em `ascensao-painel-hist`. Teste: `node qa/painel.test.js`. Integração com a EVA: `docs/integracao-eva.md`.

@@ -28,7 +28,7 @@
 .fjrest{font-family:var(--f-mono);font-size:.9rem;color:var(--muted);min-height:1.3em;text-align:center}
 .fjrest.on{color:var(--glow)}
 .fjnav{justify-content:space-between}
-.fjstop summary{cursor:pointer;color:var(--gold);min-height:32px;font-size:.85rem}
+.fjstop summary{cursor:pointer;color:var(--gold);min-height:44px;box-sizing:border-box;padding:12px 0;font-size:.85rem}
 .fjstop p{margin:6px 0 0}
 .fjsafe{margin:0;padding:12px;border-left:3px solid var(--gold);background:rgba(255,190,80,.06);line-height:1.45}
 .fjpt{display:grid;gap:8px}

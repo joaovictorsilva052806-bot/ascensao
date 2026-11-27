@@ -3,6 +3,28 @@
 Formato: [Keep a Changelog](https://keepachangelog.com/pt-BR/1.1.0/). Versões: [SemVer](https://semver.org/lang/pt-BR/) (`MAIOR.MENOR.CORREÇÃO`).
 Regra de ouro de toda versão: o progresso salvo no aparelho nunca é apagado nem renomeado.
 
+## Forja: uma janela por vez e toque de 44 px (27/11/2026, dentro da 1.0)
+
+### Corrigido
+- No 1º treino de um jogador novo, a Galeria de classes não abre mais por cima do treino nem junto com o "Sequência iniciada": espera o Forja fechar e os avisos passarem (#135). Trocar de classe pela pílula continua na hora.
+- "⚠ Quando parar" com área de toque de 44 px (#136).
+- Nada novo é salvo. Caches `ascensao-v97` / `ascensao-u-v109`.
+
+## Uma moeda só (27/11/2026, dentro da 1.0)
+
+### Mudou
+- As moedas do Baú de recompensas (10 XP = 1 moeda) viraram **Ouro**, 1 para 1, uma vez por aparelho. O Baú e a Loja usam o mesmo saldo.
+- Backup do progresso antes (`*-prog-preouro`). Só adiciona `prog.ouroX.mig`; `prog.rpg.spent` e as recompensas ficam iguais. Caminho de volta: Mais > Ajustes > "Voltar o Baú para moedas". Caches `ascensao-v95` / `ascensao-u-v107`.
+
+## Ouro, Loja e Desafio Forja 30 (27/11/2026, dentro da 1.0)
+
+### Novo
+- **Ouro** (pontuação de jogo, sem valor em dinheiro): dia com as principais feitas +10, semana sem quebrar a sequência +50, chefão +30. Teto de 200 por dia, nunca negativo, cada ganho uma vez só.
+- **Loja do Ouro** (pílula 🪙 em Hoje e painel em Progresso): 3 molduras, 2 fundos de cartão, 2 títulos raros e escudo de sequência (150, até o máximo de 2). Compra em 2 toques. Texto fixo: "Ouro não vale dinheiro e não pode ser sacado."
+- **Desafio Forja 30** (regras do ARES): 20 de 30 dias; vale treino do Forja/Dia ruim com 10 min de timer ou caminhada de 20 min; força até 4x por semana; 2 folgas por semana; "Senti dor, parei" conta o dia. Cumpriu: +100 e « Forjado em 30 ». Subiu 1 nível no mês: +50 e « Acima de Ontem ». Até 13 anos não vê.
+- **Hall da Fama**: o do aparelho sempre; o da turma (só amigos, regras do Mural) depois de republicar o `server/mural.gs`.
+- Grava só `prog.ouro`, `prog.ouroX` e `prog.f30`. Caches `ascensao-v94` / `ascensao-u-v106`.
+
 ## Estudo (26/11/2026, dentro da 1.0)
 
 ### Novo

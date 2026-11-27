@@ -46,6 +46,19 @@ ok('meu post tem Apagar, do amigo tem Denunciar',(await p.textContent('.mupost:n
 await p.locator('.mupost:nth-child(2) .murb').first().click();await p.waitForTimeout(300);
 ok('reação vai ao servidor',calls.some(c=>c.a==='react'&&c.e==='🔥'&&c.id==='mbbbbbbbbbbbbbbb'));
 await p.locator('#muPanel').screenshot({path:OUT+'/mural-turma.png'});
+// bloquear (App Store 1.2): só no aparelho, some da tela, dá para desfazer, não apaga nada do progresso
+p.on('dialog',d=>d.accept());const nCalls=calls.length;
+ok('post do amigo tem Bloquear',(await p.locator('.mupost:nth-child(2) .muop',{hasText:'Bloquear'}).count())===1&&(await p.locator('.mupost:nth-child(1) .muop',{hasText:'Bloquear'}).count())===0);
+await p.locator('.mupost:nth-child(2) .muop',{hasText:'Bloquear'}).click();await p.waitForTimeout(400);
+let sb=await p.evaluate(()=>JSON.parse(localStorage.getItem('asc-u-prog')));
+ok('bloquear: some do mural',(await p.locator('.mupost').count())===1);
+ok('bloquear: grava só prog.mural.blk',JSON.stringify(sb.mural.blk)==='["ana"]'&&sb.mural.ok===1&&sb.mural.par===1&&sb.friends.l.includes('Ana')&&sb.rank.on===true);
+ok('bloquear: nada vai ao servidor',!calls.slice(nCalls).some(c=>c.a!=='list'));
+ok('bloquear: aviso para desfazer',(await p.textContent('.mublk')).includes('1 pessoa bloqueada'));
+await p.locator('#muPanel').screenshot({path:OUT+'/mural-bloqueio.png'});
+await p.locator('.mublk button').click();await p.waitForTimeout(400);
+sb=await p.evaluate(()=>JSON.parse(localStorage.getItem('asc-u-prog')));
+ok('desbloquear: volta a aparecer',(await p.locator('.mupost').count())===2&&sb.mural.blk.length===0&&!(await p.locator('.mublk').count()));
 ok('console limpo (1)',errs.length===0,errs.join(' | '));await ctx.close();
 // 2: até 13: nada de foto, figurinha no álbum local, nenhuma chamada ao servidor
 ({ctx,p,errs,calls}=await open(base({rank:undefined,friends:undefined}),'kid'));
