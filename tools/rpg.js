@@ -62,7 +62,7 @@ function sysLine(){const dt=new Date();const h=dt.getHours();const nm=((cfg&&cfg
   if(!ms.length)return hi+(done.length?"Dia ativo. Quer pegar uma extra?":"Sem missão principal hoje. Uma tarefa já ativa o dia.");
   if(!left.length)return hi+"Missão diária completa. Sequência protegida. Descanse, você mereceu.";
   const nx=left[0];
-  if(h>=20)return hi+"Faltam "+left.length+". Sugestão: "+(nx.minTitle||nx.title)+" (o mínimo já vale).";
+  if(h>=20)return hi+(left.length>1?"Faltam ":"Falta ")+left.length+". Sugestão: "+(nx.minTitle||nx.title)+" (o mínimo já vale).";
   return hi+(left.length<ms.length?"Bom ritmo. ":"")+"Próxima missão: "+nx.title+".";}
 function typeSys(el,t){if(el.dataset.t===t)return;el.dataset.t=t;clearInterval(typeSys.i);
   if(matchMedia("(prefers-reduced-motion: reduce)").matches||document.body.dataset.tab!=="hoje"){el.textContent=t;return;}
@@ -170,6 +170,9 @@ $("dunOpen").addEventListener("click",()=>{const wk=dkey(dunWeek());if(Object.ke
 // ---------- Aviso diário do Sistema: vai pela agenda do celular (arquivo .ics com todos os lembretes) ----------
 const SYSTIP_KEY=document.getElementById("o_go")?"asc-"+"u-systip":"ascensao-systip";
 function sysTipUI(){let d="";try{d=localStorage.getItem(SYSTIP_KEY)||"";}catch(e){}const el=$("sysTip");if(!el)return;
-  const days=1;el.hidden=!!d||!cfg||cfg.blank||!!document.querySelector(".sysmodal")||days<1;}
-$("sysTipYes").addEventListener("click",()=>{try{localStorage.setItem(SYSTIP_KEY,"1");}catch(e){}$("sysTip").hidden=true;if($("calIcs"))$("calIcs").click();toast("Abriu a agenda? Toque em Adicionar tudo. O aviso do Sistema vem junto.");});
+  const days=1;el.hidden=!!d||!cfg||cfg.blank||[...document.querySelectorAll(".sysmodal:not([hidden])")].some(m=>m.getClientRects().length)||days<1;}
+// "Ativar" abre a oferta de 1 evento diário com chips de horário (tools/lemb.js): .ics no iPhone/PC, Google Agenda no Android
+$("sysTipYes").addEventListener("click",()=>{$("sysTip").hidden=true;
+  if(typeof window.lembOffer==="function"){window.lembOffer(ok=>{try{localStorage.setItem(SYSTIP_KEY,ok?"1":"0");}catch(e){}});return;}
+  try{localStorage.setItem(SYSTIP_KEY,"1");}catch(e){}if($("calIcs"))$("calIcs").click();});
 $("sysTipNo").addEventListener("click",()=>{try{localStorage.setItem(SYSTIP_KEY,"0");}catch(e){}$("sysTip").hidden=true;});

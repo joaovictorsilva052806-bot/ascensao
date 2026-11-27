@@ -22,7 +22,7 @@ const BX_TIER=[["Baú de madeira","#8b5a2b","#d9a066"],["Baú de prata","#8d99ae
 // --- sorteio (com garantia: no máximo 4 baús seguidos sem item) ---
 function bxRoll(){const c=bxSt();const tier=bxTier();
   if(typeof clsGrantScroll==="function"&&bxRnd()<[.03,.05,.08][tier])return {k:"s",n:"Pergaminho de Renascimento",r:2,xp:5,tier};
-  const fr=BX_FR.filter(f=>!c.frames.includes(f[0])),tt=BX_TT.filter(t=>!c.titles.some(x=>x.id===t[0]));
+  const fr=BX_FR.filter(f=>!f[5]&&!c.frames.includes(f[0])),tt=BX_TT.filter(t=>!c.titles.some(x=>x.id===t[0]));
   const pc=[.25,.35,.5][tier];const want=(fr.length||tt.length)&&(c.dry>=4||bxRnd()<pc);
   if(want){const w=tier===2?[0,4,4,2]:[0,6,3,1];
     const useF=fr.length&&(!tt.length||bxRnd()<.6);const pool=useF?fr:tt;const id=bxPick(pool.map(x=>[x[0],w[x[2]]]));const it=pool.find(x=>x[0]===id);
@@ -105,8 +105,8 @@ function bxColUI(){let p=$("bxCol");const first=$("avPanel")||document.querySele
   p.append(bxEl("div","sm muted","Feche o dia para abrir 1 baú. Toque num item para usar; toque de novo para tirar."));
   p.append(bxEl("h3","bxh","Molduras"));const g=bxEl("div","bxgrid");
   for(const f of BX_FR){const own=c.frames.includes(f[0]);const b=bxEl("button","bxf"+(own?"":" lock")+(c.frame===f[0]?" eq":""));b.type="button";b.style.cssText=bxFrameCss(f[0]);
-    const ring=bxEl("span","bxring");if(own){try{ring.innerHTML=avMine(44);}catch(e){}}else ring.textContent="🔒";b.append(ring,bxEl("span","bxfn",own?f[1]:"???"),bxEl("span","bxfr",BX_RAR[f[2]]));b.style.setProperty("--rc",BX_RCOL[f[2]]);
-    b.disabled=!own;b.setAttribute("aria-label",own?f[1]+(c.frame===f[0]?" (em uso)":""):"Moldura bloqueada, "+BX_RAR[f[2]]);
+    const ring=bxEl("span","bxring");if(own){try{ring.innerHTML=avMine(44);}catch(e){}}else ring.textContent="🔒";b.append(ring,bxEl("span","bxfn",own?f[1]:"???"),bxEl("span","bxfr",f[5]&&!own?"aos "+f[5]+" itens":BX_RAR[f[2]]));b.style.setProperty("--rc",BX_RCOL[f[2]]);
+    b.disabled=!own;b.setAttribute("aria-label",own?f[1]+(c.frame===f[0]?" (em uso)":""):"Moldura bloqueada, "+(f[5]?"sai aos "+f[5]+" itens da coleção":BX_RAR[f[2]]));
     if(own)b.addEventListener("click",()=>{c.frame=c.frame===f[0]?"":f[0];save();bxApplyFrame();bxColUI();toast(c.frame?"Moldura em uso: "+f[1]:"Moldura removida.");});g.append(b);}
   p.append(g);p.append(bxEl("h3","bxh","Títulos"));const tl=bxEl("div","bxtl");
   if(!c.titles.length)tl.append(bxEl("span","sm muted","Nenhum ainda. Baús e chefões dão títulos raros."));

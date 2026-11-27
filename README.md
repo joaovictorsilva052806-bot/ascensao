@@ -31,7 +31,11 @@ Pontos de entrada no JS: `render()` desenha tudo; `toggle(quest, "full"|"min")` 
 
 ## Segredos
 
-`tools/secret.js` e `tools/secret.css` (entram nos dois geradores): 17 conquistas ocultas com títulos raros, Terminal do Sistema (em Mais) para códigos e Modo Zen. Grava só `prog.sec` e `prog.secTitle`; o XP entra como `ach:<id>`. Teste: `node qa/segredos.test.js` com o servidor local ligado.
+`tools/secret.js` e `tools/secret.css` (entram nos dois geradores): 25 conquistas ocultas (8 delas são piscadelas de cultura pop: só a referência, com nomes e textos nossos, sem personagens, falas ou marcas) com títulos raros, Terminal do Sistema (em Mais) para códigos e Modo Zen. Grava só `prog.sec` e `prog.secTitle`; o XP entra como `ach:<id>`. Teste: `node qa/segredos.test.js` com o servidor local ligado.
+
+## Marcos da coleção
+
+`tools/colecao.js` e `tools/colecao.css` (entram nos dois geradores, depois do baú): cada segredo, moldura e título conta para a Coleção. Aos 3, 8, 15 e 25 itens sai uma moldura exclusiva que não cai no baú (barra com "faltam N" na Coleção do baú e no prêmio do baú). Grava só ids novos em `prog.chest.frames` (lista que já existe). Teste: `node qa/colecao.test.js`.
 
 ## Sequência (estilo Duolingo)
 
@@ -52,11 +56,34 @@ Escolha de classe (`openCls` em `tools/rpg.js`): na 1ª vez o Sistema sugere uma
 
 Teste: `node qa/ranking-dia.test.js`.
 
+## Estudo (aba Foco)
+
+`tools/estudo.js` e `tools/estudo.css` (entram nos dois geradores): painel **📚 Estudo** logo abaixo do Modo foco, pensado para TDAH.
+
+- **Hoje:** no máximo 3 tarefas. Administrativo (📌) sempre primeiro; depois prazo, peso e a tarefa mais curta. Uma em destaque com "▶ Começar 25 min", que usa o timer que já existe. No fim do bloco: "Terminei", "Avancei" (abre pausa de 5 min; 15 a cada 4 blocos) ou "Travei" (quebra em um passo de 10 min que vai para o topo). "Não consigo agora" adia 1 dia; no 2º adiamento pede o passo menor.
+- **Prazos:** alerta na aba Hoje quando falta 7 dias ou menos (amarelo até 3, vermelho atrasado).
+- **Flashcards:** revisão espaçada 1-3-7-14-30 dias, errou volta para 1; sessão de até 10 cards; importa `frente;verso` colado.
+- **Horas complementares:** meta em horas; só "Validado" conta como cumprido.
+- **Treino e sono:** nada de estudo no treino ±30 min (lê a tarefa de treino da rotina ou o ajuste), meta cai 1 bloco em dia de treino e aviso 1 h antes de dormir.
+
+Grava só `prog.st`. XP novo: `st:t:<id>` (+10, entregue no prazo) e `st:c:<dia>` (+1 por card, até 10 por dia). Teste: `node qa/estudo.test.js`.
+
 ## Forja: treino em casa que evolui sozinho
 
 `tools/forja.js` e `tools/forja.css` (entram nos dois geradores pelo `gen.py`): treino sem equipamento, Treino A/B alternado 3x por semana (seg/qua/sex por padrão, editável em 1 toque no card "🔥 Forja" de Hoje). Cada movimento (empurrar, puxar, ombro, perna, ponte, core) tem uma escada de 5 níveis e dupla progressão: alvo = última vez +1 repetição (8 a 12; core 20 a 45 s); bateu o topo em todas as séries, o app sugere o próximo nível (+30 XP uma vez por nível). "Dia ruim" = 1 série de cada, ~10 min, +20 XP e conta para a sequência. 3 treinos na semana = "Semana forjada" (+25); 4 semanas seguidas = segredo "Aço". Aviso de segurança genérico antes do 1º treino e sempre no rodapé ("Quando parar"). Quests opcionais dos 4 pilares (nunca principais, não geram dívida). O ▶ da quest `s_treino` abre o Forja.
 
 Grava só `prog.forja` (`lv`, `last`, `ses`, `ok`, `dias`, `pil`, `pt`, `cur`); XP em `forja:<dia>` (1 por dia), `forja:lv:<mov>:<n>` e `forja:sem:<segunda>`. Nenhum dado de corpo, peso ou saúde é coletado. Teste: `node qa/forja.test.js`.
+## Estudo (aba Foco)
+
+`tools/estudo.js` e `tools/estudo.css` (entram nos dois geradores): painel **📚 Estudo** logo abaixo do Modo foco, pensado para TDAH.
+
+- **Hoje:** no máximo 3 tarefas. Administrativo (📌) sempre primeiro; depois prazo, peso e a tarefa mais curta. Uma em destaque com "▶ Começar 25 min", que usa o timer que já existe. No fim do bloco: "Terminei", "Avancei" (abre pausa de 5 min; 15 a cada 4 blocos) ou "Travei" (quebra em um passo de 10 min que vai para o topo). "Não consigo agora" adia 1 dia; no 2º adiamento pede o passo menor.
+- **Prazos:** alerta na aba Hoje quando falta 7 dias ou menos (amarelo até 3, vermelho atrasado).
+- **Flashcards:** revisão espaçada 1-3-7-14-30 dias, errou volta para 1; sessão de até 10 cards; importa `frente;verso` colado.
+- **Horas complementares:** meta em horas; só "Validado" conta como cumprido.
+- **Treino e sono:** nada de estudo no treino ±30 min (lê a tarefa de treino da rotina ou o ajuste), meta cai 1 bloco em dia de treino e aviso 1 h antes de dormir.
+
+Grava só `prog.st`. XP novo: `st:t:<id>` (+10, entregue no prazo) e `st:c:<dia>` (+1 por card, até 10 por dia). Teste: `node qa/estudo.test.js`.
 
 ## Resumo do beta (Modo Criador)
 

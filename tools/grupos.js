@@ -96,6 +96,7 @@ function gtPodium(L,view){const top=L.slice(0,3);if(top.length<2)return null;con
 // --- destaque em Hoje: ranking da semana sempre à vista ---
 function gtHero(){let h=$("gtHero");const st=$("dayPill");const host=st&&st.closest("section");if(!host)return;
   if(!h){h=gtEl("section","panel gthero");h.id="gtHero";h.dataset.tab="hoje";host.after(h);}
+  // a posição na aba Hoje é do tools/heroi.js (hrOrder: depois da lista de tarefas)
   const kid=(()=>{try{return ageNow()==="kid";}catch(e){return false;}})();
   if(kid||!cfg||cfg.blank||document.body.classList.contains("onboarding")){h.hidden=true;return;}
   const g=gtSt();const on=tmOn();const pc=$("pingCard");

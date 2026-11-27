@@ -1,0 +1,16 @@
+/* revisão noturna: criar card com área de toque de 44px (campos tinham 24px, "+ Criar cards" 32px) */
+.msadd input{min-height:44px}
+.msadd summary{min-height:44px;line-height:44px}
+/* atalho "⭐ Colar figurinha" (8 s depois de concluir) ficava em cima do "✓ Concluir missão" da próxima missão */
+body.inmission .much{display:none}
+/* barra de abas: em telas abaixo de 390px (Android 360, iPhone SE/mini 375) "PROGRESSO" passava da aba e encostava em "AMIGOS" */
+@media (max-width:389px){.tabbar button{letter-spacing:.02em}}
+@media (max-width:340px){.tabbar button{letter-spacing:0;font-size:.5rem}}
+/* aviso (toast) e atalho "⭐ Colar figurinha" ficavam no mesmo lugar (84px e 86px do rodapé): o aviso sobe quando o atalho aparece */
+body:has(#muChip) .toast{bottom:calc(146px + env(safe-area-inset-bottom,0px))}
+.toast .ntrow{display:block;margin-top:2px;font-size:.92em;opacity:.95}
+.toast .ntundo{min-height:44px;padding:0 6px;margin-left:4px;color:var(--glow,#6fb1ff);font:inherit;text-decoration:underline}
+.ntvolta{border-color:var(--glow,#6fb1ff)}
+.ntvolta h2{margin:0 0 4px}
+.ntvolta .row{display:flex;gap:12px;align-items:center;flex-wrap:wrap;margin-top:8px}
+.ntvolta .row button{min-height:44px}

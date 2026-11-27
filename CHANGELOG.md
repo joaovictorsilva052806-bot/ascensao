@@ -3,6 +3,12 @@
 Formato: [Keep a Changelog](https://keepachangelog.com/pt-BR/1.1.0/). Versões: [SemVer](https://semver.org/lang/pt-BR/) (`MAIOR.MENOR.CORREÇÃO`).
 Regra de ouro de toda versão: o progresso salvo no aparelho nunca é apagado nem renomeado.
 
+## Estudo (26/11/2026, dentro da 1.0)
+
+### Novo
+- Estudo na aba Foco: Hoje com 3 tarefas, bloco de 25 min com pausa, prazos com alerta, flashcards com revisão espaçada, horas complementares e respeito ao horário do treino e do sono.
+- Grava `prog.st` e os flashcards numa chave própria do aparelho. Caches `ascensao-v83` / `ascensao-u-v95`.
+
 ## Forja (26/11/2026, dentro da 1.0)
 
 ### Novo
@@ -11,6 +17,10 @@ Regra de ouro de toda versão: o progresso salvo no aparelho nunca é apagado ne
 - XP: treino +40 (1 por dia), subir de nível +30 (uma vez por nível), 3 treinos na semana +25. Segredo novo: "Aço".
 - Aviso "Quando parar" antes do 1º treino e sempre no rodapé. Quests opcionais dos 4 pilares.
 - Grava só `prog.forja`. Nenhum dado de corpo ou saúde é coletado. Caches `ascensao-v74` / `ascensao-u-v86`.
+## [Não lançado]
+
+### Novo
+- Estudo na aba Foco: Hoje com 3 tarefas, bloco de 25 min com pausa, prazos com alerta, flashcards com revisão espaçada, horas complementares e respeito ao horário do treino e do sono.
 
 ## [1.0.0] - 2026-11-26 (lançamento, aguardando o ok do JV)
 
