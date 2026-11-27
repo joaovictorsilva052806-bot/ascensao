@@ -3,6 +3,15 @@
 Formato: [Keep a Changelog](https://keepachangelog.com/pt-BR/1.1.0/). Versões: [SemVer](https://semver.org/lang/pt-BR/) (`MAIOR.MENOR.CORREÇÃO`).
 Regra de ouro de toda versão: o progresso salvo no aparelho nunca é apagado nem renomeado.
 
+## Ouro, Loja e Desafio Forja 30 (27/11/2026, dentro da 1.0)
+
+### Novo
+- **Ouro** (pontuação de jogo, sem valor em dinheiro): dia com as principais feitas +10, semana sem quebrar a sequência +50, chefão +30. Teto de 200 por dia, nunca negativo, cada ganho uma vez só.
+- **Loja do Ouro** (pílula 🪙 em Hoje e painel em Progresso): 3 molduras, 2 fundos de cartão, 2 títulos raros e escudo de sequência (150, até o máximo de 2). Compra em 2 toques. Texto fixo: "Ouro não vale dinheiro e não pode ser sacado."
+- **Desafio Forja 30** (regras do ARES): 20 de 30 dias; vale treino do Forja/Dia ruim com 10 min de timer ou caminhada de 20 min; força até 4x por semana; 2 folgas por semana; "Senti dor, parei" conta o dia. Cumpriu: +100 e « Forjado em 30 ». Subiu 1 nível no mês: +50 e « Acima de Ontem ». Até 13 anos não vê.
+- **Hall da Fama**: o do aparelho sempre; o da turma (só amigos, regras do Mural) depois de republicar o `server/mural.gs`.
+- Grava só `prog.ouro`, `prog.ouroX` e `prog.f30`. Caches `ascensao-v94` / `ascensao-u-v106`.
+
 ## Estudo (26/11/2026, dentro da 1.0)
 
 ### Novo

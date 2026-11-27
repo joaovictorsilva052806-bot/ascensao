@@ -192,6 +192,9 @@ rep('\nlet saveTimer=null, SYNC="";','\n'+R('colar.js')+'\nlet saveTimer=null, S
 # aviso diário com o app fechado (Web Push sem conta nova): opt-in depois do "sim" do lembrete, Mais > Lembretes (tools/push.*, server/push.gs, sw-push.js)
 rep('</style></head>',R('push.css')+'</style></head>')
 rep('\nlet saveTimer=null, SYNC="";','\n'+R('push.js')+'\nlet saveTimer=null, SYNC="";')
+# Ouro local + Loja do Ouro + Desafio Forja 30 + Hall da Fama (tools/ouro.*): só adiciona prog.ouro, prog.ouroX e prog.f30
+rep('</style></head>',R('ouro.css')+'</style></head>')
+rep('\nlet saveTimer=null, SYNC="";','\n'+R('ouro.js')+'\nlet saveTimer=null, SYNC="";')
 if not ROOT: open('comecar/index.html','w').write(s)
 pass
 
