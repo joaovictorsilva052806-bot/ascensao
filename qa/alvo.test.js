@@ -37,5 +37,14 @@ for(const [nome,vp] of [['celular',{width:390,height:844}],['desktop',{width:128
     await card.evaluate(e=>{const b=e.querySelector('.btns');if(b)b.scrollIntoView({block:'center'});});await p.waitForTimeout(150);
     const bt=await card.evaluate(e=>[...e.querySelectorAll('.btns button')].filter(b=>b.offsetParent).every(b=>{const r=b.getBoundingClientRect();const pts=[[r.left+r.width/2,r.top+2],[r.left+r.width/2,r.top+r.height/2]];return pts.every(([x,y])=>b.contains(document.elementFromPoint(x,y)));}));
     ok(nome+': botões da tarefa não perdem o toque',bt);}
+  // pílula 🪙 da Loja (aparece depois do 1º Ouro): mesma faixa de toque dos outros selos (ARES, #22, 27/11: tinha 30px)
+  await p.evaluate(()=>{const k='asc-u-prog';const g=JSON.parse(localStorage.getItem(k)||'{}');g.ouro=40;localStorage.setItem(k,JSON.stringify(g));});
+  await p.reload();await p.waitForTimeout(1200);
+  await p.waitForFunction(()=>document.getAnimations().every(a=>a.playState!=='running'||(a.effect&&a.effect.getTiming().iterations===Infinity)),null,{timeout:8000}).catch(()=>{});
+  await p.evaluate(()=>scrollTo(0,0));
+  if(!(await p.$('#ouroPill:visible')))ok(nome+': #ouroPill visível',false,'não achou');
+  else{const f=await faixa(p,'#ouroPill');ok(nome+': selo #ouroPill aceita toque em ≥ 44px',f.hit>=44,JSON.stringify(f));ok(nome+': selo #ouroPill não cresceu na tela',f.alt<=32,f.alt+'px');
+    const vz=await p.$eval('#ouroPill',e=>{const r=e.getBoundingClientRect(),y=r.top+r.height/2;const a=document.elementFromPoint(r.left-4,y),b=document.elementFromPoint(r.right+4,y);return [a&&a.id,b&&b.id].join(',');});
+    ok(nome+': faixa do 🪙 não rouba o toque dos vizinhos',!/ouroPill/.test(vz),vz);}
   ok(nome+': sem erro de console',!errs.length,errs.join(' | '));await c.close();}
 await b.close();console.log(R.join('\n'));const f=R.filter(x=>x.startsWith('FAIL')).length;console.log((R.length-f)+'/'+R.length);process.exit(f?1:0);})();
