@@ -1,0 +1,21 @@
+/* ---------- Cartas do Sistema (tools/misterio.js) ---------- */
+.mygrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(140px,1fr));gap:8px;margin:10px 0 6px}
+.mycard{display:flex;flex-direction:column;gap:4px;min-height:132px;padding:10px;border-radius:12px;border:1px dashed var(--line,#1f2e4d);background:repeating-linear-gradient(135deg,rgba(0,212,255,.05) 0 6px,transparent 6px 14px),#0b1322}
+.mycard b{font-family:var(--f-hud,inherit);letter-spacing:.06em}
+.mycard .myico{font-size:1.5rem;line-height:1;width:40px;height:40px;display:grid;place-items:center;border-radius:10px;border:1px solid var(--line,#1f2e4d);color:var(--glow,#00d4ff);font-family:var(--f-hud,inherit)}
+.mycard.on{border-style:solid;border-color:var(--gold,#f2c14e);background:linear-gradient(160deg,rgba(242,193,78,.16),rgba(0,212,255,.06) 70%),#0b1322;box-shadow:0 0 14px rgba(242,193,78,.22)}
+.mycard.on b{color:var(--gold,#f2c14e)}
+.mycard.on .myico{border-color:var(--gold,#f2c14e)}
+.myprize{color:var(--gold,#f2c14e);margin-top:auto}
+.mymeter{height:8px;margin-top:auto;border-radius:6px;background:#111a2c;overflow:hidden;border:1px solid var(--line,#1f2e4d)}
+.mymeter i{display:block;height:100%;background:linear-gradient(90deg,var(--glow,#00d4ff),#7aa2ff);transition:width .6s ease}
+.mysig{color:var(--glow,#00d4ff);margin-top:4px}
+.myline{padding:0;display:flex;align-items:stretch;border-color:color-mix(in srgb,var(--glow,#00d4ff) 40%,var(--line,#1f2e4d))}
+.mylbtn{all:unset;box-sizing:border-box;cursor:pointer;flex:1;min-height:56px;display:flex;flex-direction:column;justify-content:center;gap:2px;padding:10px 14px}
+.mylbtn:focus-visible,.myx:focus-visible{outline:2px solid var(--glow,#00d4ff);outline-offset:-2px;border-radius:10px}
+.mytag{color:var(--glow,#00d4ff);letter-spacing:.12em;font-size:.68rem}
+.mytxt{font-style:italic}
+.myx{all:unset;box-sizing:border-box;cursor:pointer;min-width:48px;min-height:48px;display:grid;place-items:center;color:var(--muted,#9fb0c8)}
+.mycard.new .myico{animation:myflip .5s ease-out}
+@keyframes myflip{from{transform:rotateY(90deg);opacity:.2}to{transform:none;opacity:1}}
+@media (prefers-reduced-motion:reduce){.mymeter i{transition:none}.mycard.new .myico{animation:none}}
