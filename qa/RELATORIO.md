@@ -1,5 +1,12 @@
 # Relatório de QA (ATENA)
 
+## 27/11/2026 · Missões Lendárias (tasks que pagam, 18+) + Cuponomia em teste · PR #189
+
+- Novo: área com moldura lendária na aba Foco (antes das Tasks que pagam) e chamada de 1 toque em Hoje. Lista em `missoes-lendarias.json`; a Cuponomia entra com `"teste": true` (só o Modo Criador vê) e o link de indicação do JV. Só adiciona `prog.lend`.
+- `qa/lendaria.test.js` 51/51: 4 faixas de idade, lista vazia/incompleta/http some, teste só no Criador, selo de publicidade, rel sponsored, Ouro +80 1x, trava do 4º dia, dados antigos intactos, 320/1280 px, reduce-motion, toque ≥ 44 px.
+- Suíte inteira (83 arquivos, 4 em paralelo): 80 verdes. `arsenal` e `chefe-contraste` falharam só sob carga e passaram ao rodar sozinhos (74/74 e 14/14); `push-send.test.mjs` falha também na main (módulo `web-push` não instalado no sandbox).
+- Print 390x844 conferido. Cache `ascensao-v113` / `ascensao-u-v125`.
+
 ## 27/11/2026 · Missão Criador, fase 1 (painel Criador) · PR #179
 
 - Novo: missão semanal de 5 etapas na aba Criador (só no app do JV). Só adiciona `prog.cm`; a foto fica em `ascensao-cm-foto`, fora do progresso e da planilha.
