@@ -1,5 +1,11 @@
 # Relatório de QA (ATENA)
 
+## 27/11/2026 · Ouro, Loja do Ouro, Desafio Forja 30 e Hall da Fama (#163)
+
+- Novo: Ouro (dia completo +10, semana sem quebrar +50, chefão +30, teto 200/dia), Loja (molduras, fundos, títulos, escudo), Desafio Forja 30 com as regras do ARES e Hall da Fama (aparelho; turma depois de republicar o mural.gs).
+- Dados: só `prog.ouro`, `prog.ouroX`, `prog.f30`. Perfil antigo sem Ouro abre com todos os campos intactos; saldo negativo vira 0; recarregar não paga de novo.
+- Testes: qa/ouro.test.js 97/97 (390x844, 360 px, 1280x800, reduce-motion, raiz e /comecar/, menor de 14). Suíte inteira 67/67 arquivos verdes sobre a main com #161 e #162. Cache v94 / u-v106.
+
 ## 26/11/2026 · Marcos da coleção (mesmo PR dos segredos)
 
 - Novo: barra "Coleção: N itens · faltam X para « moldura »" na Coleção do baú e no prêmio do baú. Segredos, molduras e títulos contam; aos 3, 8, 15 e 25 itens sai uma moldura exclusiva (Faísca do Colecionador, Prisma, Constelação, Coroa do Arquivista) que o baú nunca sorteia. Vários marcos de uma vez = 1 janela só, sempre depois da janela do item.
