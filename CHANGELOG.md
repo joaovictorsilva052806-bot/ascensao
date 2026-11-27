@@ -3,6 +3,13 @@
 Formato: [Keep a Changelog](https://keepachangelog.com/pt-BR/1.1.0/). Versões: [SemVer](https://semver.org/lang/pt-BR/) (`MAIOR.MENOR.CORREÇÃO`).
 Regra de ouro de toda versão: o progresso salvo no aparelho nunca é apagado nem renomeado.
 
+## Missão Criador, fase 1 no painel Criador (27/11/2026, dentro da 1.0)
+
+### Adicionado
+- Painel Criador: uma missão por semana sobre um problema real da cidade, em 5 etapas (Observar, Medir, Gargalo, Propor, Testar), no máximo 1 por dia. Tema pela semana do ano (10 temas), troca 1x por semana.
+- XP 20/20/30/40/60 (170 na semana). Ouro pelo teto do dia: +60 na semana completa, +20 ao voltar ao mesmo problema com número novo. 4 semanas: título "Arquiteto do Mundo"; 10: moldura "Planta Baixa".
+- Só adiciona `prog.cm`. A foto nunca entra no progresso nem vai para a planilha: fica em `ascensao-cm-foto`, no aparelho, e vira miniatura por 8 semanas. Texto com telefone, e-mail, @, CEP ou endereço é recusado. Caches `ascensao-v105` / `ascensao-u-v117`.
+
 ## Desafio Forja 30 com a caminhada e a dor da Forja (27/11/2026, dentro da 1.0)
 
 ### Corrigido

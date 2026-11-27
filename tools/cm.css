@@ -1,0 +1,46 @@
+/* ---- Missão Criador (tools/cm.*) ---- */
+.cmbox{display:grid;gap:8px;margin:6px 0 4px}
+.cmhd{display:flex;align-items:baseline;justify-content:space-between;gap:8px}
+.cmhd .crh{margin:10px 0 0}
+.cmcard{display:grid;gap:8px;padding:12px;border:1px solid var(--line);border-left:3px solid var(--glow);border-radius:10px;background:#0a1222}
+.cmcard.ok{border-left-color:var(--good)}
+.cmtit{font-size:1rem;line-height:1.35}
+.cmq{color:var(--fg);opacity:.9}
+.cmv2{color:var(--gold)}
+.cmdots{display:flex;gap:6px}
+.cmdot{width:22px;height:6px;border-radius:3px;background:var(--line)}
+.cmdot.on{background:var(--good)}
+.cmdot.now{background:var(--glow);animation:cmPulse 1.6s ease-in-out infinite}
+@keyframes cmPulse{50%{opacity:.45}}
+@media (prefers-reduced-motion:reduce){.cmdot.now{animation:none}}
+.cmform{display:grid;gap:8px}
+.cmh{margin:4px 0 0;font-size:.95rem}
+.cmta,.cmin{width:100%;box-sizing:border-box;font:inherit;color:var(--fg);background:#060b16;border:1px solid var(--line);border-radius:8px;padding:10px;min-height:44px}
+.cmta{resize:vertical;min-height:84px}
+.cmcnt{justify-self:end;margin-top:-4px}
+.cmnum{display:grid;grid-template-columns:1fr 1.2fr;gap:8px}
+.cmchips{display:flex;flex-wrap:wrap;gap:6px}
+.cmchip{display:inline-flex;align-items:center;min-height:44px;padding:0 12px;border:1px solid var(--line);border-radius:22px;background:#0d1526;color:var(--fg);font:inherit;font-size:.9rem;cursor:pointer}
+.cmchip input{position:absolute;opacity:0;width:1px;height:1px}
+.cmchip:has(input:checked){border-color:var(--glow);background:rgba(0,212,255,.14)}
+.cmchip:has(input:focus-visible){outline:2px solid var(--glow);outline-offset:2px}
+.cmck{display:flex;gap:10px;align-items:center;min-height:44px;font-size:.9rem}
+.cmck input{width:22px;height:22px;flex:none}
+.cmfile{display:grid;gap:6px;font-size:.9rem}
+.cmfile input{min-height:44px;color:var(--muted)}
+.cmprev{max-width:100%;max-height:220px;border-radius:8px;object-fit:cover}
+.cmerr{color:var(--bad);font-size:.9rem}
+.cmgo{min-height:44px;justify-self:start}
+.cmrow{gap:12px}
+.cmrow .link,.cmcard>.link,.cmswap .link{min-height:44px}
+.cmwait{color:var(--good)}
+.cmfecho{margin:0;line-height:1.45}
+.cmaviso{color:var(--muted);border-top:1px solid var(--line);padding-top:8px}
+.cmswap{display:grid;gap:8px}
+.cmfoot{display:grid;gap:6px}
+.cmhist{list-style:none;margin:0;padding:0;display:grid;gap:4px}
+.cmhist li{display:flex;align-items:center;gap:8px}
+.cmhist li.ok{color:var(--fg)}
+.cmth{width:36px;height:36px;border-radius:6px;object-fit:cover;flex:none}
+.cmbox,.cmbox>*,.cmcard>*,.cmform>*{min-width:0}
+.cmfile input{max-width:100%}
