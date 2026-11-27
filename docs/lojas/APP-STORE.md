@@ -5,7 +5,7 @@ Status em 26/11/2026: **tudo o que dá para fazer sem a conta Apple Developer es
 ## 1. Resumo em 5 linhas
 
 1. **Empacotamento:** Capacitor 8 (grátis, MIT) com o `/comecar/` **dentro** do pacote, em `nativo/`. PWABuilder descartado para iOS (abre o site por URL: alto risco de recusa pela diretriz 4.2).
-2. **Prova de que compila:** o workflow `.github/workflows/ios-teste.yml` compila para o simulador num Mac do GitHub, **sem assinatura e sem conta Apple** (grátis em repositório público).
+2. **Compilação sem Mac:** o workflow `.github/workflows/ios-teste.yml` compila para o simulador num Mac do GitHub, **sem assinatura e sem conta Apple** (grátis em repositório público). ⚠️ Ainda **não provado**: em 26/11 os 2 disparos ficaram na fila do Mac e foram cancelados sem log. Por isso roda só à mão (Actions → Run workflow) até uma rodada passar.
 3. **Exigências da Apple já cobertas:** recursos nativos (háptico, avisos locais, compartilhar, cópia do progresso), manifesto de privacidade, "Bloquear" no Mural (1.2), textos de câmera/fotos, só iPhone e só retrato.
 4. **Ficha da loja, prints 6,9" e 6,5", classificação 13+ e rótulos de privacidade:** abaixo.
 5. **O que falta é só do JV:** conta Apple Developer (US$ 99/ano, depois do 1º contrato pago), aprovar textos, e-mail de contato e o nome do pacote.
@@ -154,7 +154,7 @@ Pronto (este PR):
 - [x] `id` no manifest da raiz (o `/comecar/` já tinha)
 - [x] Bloquear usuário no Mural (diretriz 1.2), com teste
 - [x] Projeto Capacitor + ponte nativa + teste `qa/nativo.test.js`
-- [x] Compilação grátis no GitHub (simulador, sem assinatura)
+- [ ] Compilação grátis no GitHub (simulador, sem assinatura): workflow pronto, 1ª rodada no Mac ainda não passou
 - [x] Manifesto de privacidade, textos de câmera/fotos, só iPhone/retrato
 - [x] Prints 6,9" e 6,5" com o visual atual
 - [x] Ficha, palavras-chave, classificação, rótulos de privacidade e notas ao revisor (rascunho)
