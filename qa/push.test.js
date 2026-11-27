@@ -1,4 +1,4 @@
-// Aviso diário com o app fechado (Web Push, fase 2 dos lembretes · tools/push.js + server/push.gs).
+// Aviso diário com o app fechado (Web Push, fase 2 dos lembretes · tools/push.js + server/mural.gs (seção PUSH)).
 // Push do navegador e Apps Script simulados. Confere: oferta só depois do "sim" do lembrete; adulto liga e manda reg + pw-sub
 // (endpoint, chaves, hora); "Agora não" não manda nada; menor de 14 e quem está fora do ranking não veem; 14-17 só com o responsável;
 // permissão negada não inscreve; iPhone fora do app instalado não vê; Parar apaga (unsubscribe + pw-del); "visto" 1x por dia;
@@ -27,7 +27,7 @@ async function abre(b,{route='comecar/',pre='asc-u',age='adult',rank=true,dev='A
   const p=await ctx.newPage();p.errs=[];p.posts=[];p.pings=[];p.srv=srv;
   p.on('pageerror',e=>p.errs.push(e.message));p.on('console',m=>{if(m.type()==='error'&&!/Failed to load resource|ERR_|navigator.vibrate/.test(m.text()))p.errs.push(m.text())});
   await p.route('https://script.google.com/**',r=>{const d=r.request().postData()||'';let j={};try{j=JSON.parse(d);}catch(e){}
-    // pw-ping: o servidor já tem o server/push.gs? (p.srv=false imita o Apps Script antigo, que não conhece a ação)
+    // pw-ping: o servidor já tem o seção PUSH do server/mural.gs? (p.srv=false imita o Apps Script antigo, que não conhece a ação)
     if(j.a==='pw-ping'){p.pings.push(j);return r.fulfill({status:200,contentType:'application/json',body:p.srv?'{"ok":true,"pw":1}':'{"ok":false,"err":"acao"}'});}
     p.posts.push(j);return r.fulfill({status:200,contentType:'application/json',body:'{"ok":true,"posts":[]}'});});
   await p.route(/^https?:\/\/(?!localhost|127\.0\.0\.1|script\.google\.com)/,r=>r.abort());
@@ -100,13 +100,13 @@ for(const [route,pre] of [['comecar/','asc-u'],['','ascensao']]){const T=(route|
     ok(T+'K: chave pública do código tem 65 bytes (P-256 sem compressão)',raw.length===65&&raw[0]===4,String(raw.length));
     await lembSim(p);ok(T+'K: com a chave do código, a oferta aparece',await vis(p,'#pwOffer'));
     ok(T+'K: nada sai antes do toque',!p.posts.some(x=>/^pw/.test(x.a)));await ctx.close();}
-  // L) Apps Script ainda sem o server/push.gs: ninguém vê a oferta nem o botão (nada de "não deu para ligar"); a pergunta não leva nome nem token
+  // L) Apps Script ainda sem o seção PUSH do server/mural.gs: ninguém vê a oferta nem o botão (nada de "não deu para ligar"); a pergunta não leva nome nem token
   {const [ctx,p]=await abre(b,{route,pre,srv:false});await lembSim(p);await p.waitForTimeout(800);
     ok(T+'L: servidor sem push: sem oferta',!(await vis(p,'#pwOffer')));await mais(p);ok(T+'L: servidor sem push: sem botão em Mais',!(await vis(p,'#pwOn')));
     ok(T+'L: perguntou ao servidor (pw-ping) sem nome nem token',p.pings.length>=1&&p.pings.every(x=>Object.keys(x).join()==='a'),JSON.stringify(p.pings));
     ok(T+'L: nada de inscrição',!p.posts.some(x=>/^pw|reg/.test(x.a)));
     const sv=await p.evaluate(pre=>JSON.parse(localStorage.getItem(pre+'-push')||'{}').sv,pre);ok(T+'L: guarda o "não" por 1 hora',sv&&sv.ok===0&&sv.t>0,JSON.stringify(sv));
-    // depois que o JV cola o push.gs: a próxima checagem (1 h depois) libera
+    // depois que o JV cola o mural.gs novo: a próxima checagem (1 h depois) libera
     p.srv=true;await p.evaluate(pre=>{const k=pre+'-push';const o=JSON.parse(localStorage.getItem(k)||'{}');o.sv.t=Date.now()-3700e3;localStorage.setItem(k,JSON.stringify(o));},pre);
     await p.reload();await p.waitForTimeout(1500);await drain(p);await mais(p);await p.waitForTimeout(800);await mais(p);
     ok(T+'L: servidor pronto: botão aparece em Mais',await vis(p,'#pwOn'));ok(T+'L: console limpo',!p.errs.length,p.errs.join(' | '));await ctx.close();}
