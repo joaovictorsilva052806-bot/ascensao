@@ -1,0 +1,8 @@
+{
+  "_leia": "Missões do Mestre (só 18+). Uma missão só aparece com TODOS os campos preenchidos: id, parceiro, ganho, mestre (R$, número), cond, link e regras (https). Valores e links de indicação: o JV confere no dia e preenche. Vazio = a seção não aparece.",
+  "missoes": [
+    {"id": "cuponomia", "parceiro": "Cuponomia", "ganho": "", "mestre": 0, "cond": "", "link": "", "regras": ""},
+    {"id": "meliuz", "parceiro": "Méliuz", "ganho": "", "mestre": 0, "cond": "", "link": "", "regras": ""},
+    {"id": "picpay", "parceiro": "PicPay", "ganho": "", "mestre": 0, "cond": "", "link": "", "regras": ""}
+  ]
+}

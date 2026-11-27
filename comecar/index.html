@@ -1573,6 +1573,49 @@ button.pill.ouro[hidden]{display:none}
 /* área de toque ≥ 44px sem mudar o visual (mesma faixa invisível dos selos 🔥/🛡️/classe; ARES #22 27/11: tinha 30px) */
 button.pill.ouro{position:relative}
 button.pill.ouro::before{content:"";position:absolute;left:-3px;right:-3px;top:-8px;bottom:-8px}
+/* ---- Trilha Primeira Renda (tools/renda.*) ---- */
+.rdpanel{display:grid;gap:10px}
+.rdbar{height:8px}
+.rdm{display:grid;gap:6px;padding:10px 12px;border:1px solid var(--line);border-radius:10px;background:#0a1222}
+.rdm.big{border-color:var(--glow);box-shadow:0 0 12px color-mix(in srgb,var(--glow) 25%,transparent)}
+.rdm.ok{opacity:.8}
+.rdm .rdt{font-size:1rem;margin:0;line-height:1.3}
+.rdm.big .rdt{font-size:1.1rem}
+.rdm .rdp{margin:0;line-height:1.45}
+.rdm .rdq{margin:0;color:var(--muted)}
+.rdsrc{color:var(--glow);min-height:44px;display:inline-flex;align-items:center;text-underline-offset:3px;word-break:break-word}
+.rdtip summary,.rdall summary{cursor:pointer;min-height:44px;display:flex;align-items:center;color:var(--glow)}
+.rdtip p{margin:0 0 6px}
+.rdbtn{min-height:44px;justify-self:start}
+.rdlist{display:grid;gap:8px}
+.rddone{margin:0;color:var(--good)}
+.rdnote{margin:0;color:var(--muted);border-left:3px solid var(--line);padding-left:8px}
+/* ---- Missões do Mestre 18+ (tools/mestre.*) ---- */
+.mmpanel{display:grid;gap:10px}
+.mmcard{display:grid;gap:6px;padding:10px 12px;border:1px solid var(--line);border-radius:10px;background:#0a1222}
+.mmcard.ok{opacity:.8}
+.mmad{justify-self:start;font-family:var(--f-mono);font-size:.72rem;letter-spacing:.06em;color:#0b0f17;background:var(--gold);border-radius:4px;padding:2px 6px}
+.mmp{font-size:1.05rem}
+.mmcard p{margin:0;line-height:1.4}
+.mmc{color:var(--muted)}
+.mmmestre{color:var(--gold);border-left:3px solid var(--gold);padding-left:8px}
+.mmrow{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
+.mmlink,.mmreg,.mmfiz{min-height:44px;display:inline-flex;align-items:center;justify-content:center}
+a.mmlink{padding:0 14px;border-radius:8px;text-decoration:none;font-weight:600;color:var(--glow);border:1px solid var(--glow);background:rgba(0,212,255,.08)}
+.mmreg{color:var(--glow);padding:0 6px}
+.mmfiz{justify-self:start}
+.mmfiz.mmlock{opacity:.6}
+/* ---- Arsenal do Herói: vitrine de afiliados 18+ (tools/arsenal.*) ---- */
+.afpanel{display:grid;gap:10px}
+.afh{margin:6px 0 0;font-size:.95rem}
+.afgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:8px}
+.afitem{display:grid;gap:6px;align-content:start;padding:10px 12px;border:1px solid var(--line);border-radius:10px;background:#0a1222}
+.afitem .aft{font-size:1rem;line-height:1.3}
+.afitem .afa{color:var(--muted)}
+.afitem .aff{margin:0;line-height:1.4}
+.afseal{justify-self:start;font-size:.78rem;line-height:1.35;color:#0b0f17;background:var(--gold);border-radius:4px;padding:3px 6px}
+a.aflink{justify-self:start;min-height:44px;display:inline-flex;align-items:center;padding:0 14px;border-radius:8px;text-decoration:none;font-weight:600;color:var(--glow);border:1px solid var(--glow);background:rgba(0,212,255,.08)}
+.afnote{margin:0}
 </style></head><body>
 
 <div class="hudtop"><span>ASCENSION<i>//</i>SISTEMA ONLINE</span><span class="mono" id="clock">--:--</span></div>
@@ -7435,6 +7478,197 @@ function orUndoUI(){const w=$("wipe");if(!w)return;let b=$("orUnmerge");const m=
 if(typeof renderRPG==="function"){const _rr=renderRPG;renderRPG=function(){_rr.apply(this,arguments);try{orChest();}catch(e){}};}
 {const _r=render;render=function(){_r.apply(this,arguments);try{orUndoUI();}catch(e){}clearTimeout(orMerge._t);orMerge._t=setTimeout(()=>{try{orMerge();}catch(e){}},600);};}
 setTimeout(()=>{try{orMerge();orChest();orUndoUI();}catch(e){}},50);
+
+// ---------- Trava de idade 18+ (tools/idade.js): Primeira Renda (versão 18+), Missões do Mestre e Arsenal do Herói ----------
+// Regras (viabilidade 7206553830, liberadas em 7216423824): (1) sem idade = menor onde AGE_UNK_MINOR (no /comecar/);
+// (2) quem já foi menor (14-17, até 13 ou sem idade) só vira 18+ depois de 7 dias; (3) some com autorização de responsável (parent) gravada;
+// (4) sem Ouro de Missão do Mestre nos 3 primeiros dias de conta (adGoldOk).
+// A idade é autodeclarada: isto barra o impulso, não quem mente. A trava real é o cadastro 18+ do parceiro (dito nos Termos).
+// Só ADICIONA prog.idade = {a: faixa vista por último, t0: 1º dia visto, up: dia em que passou de menor para 18+, mn: 1 se já foi menor}.
+const AD_ADULT=["young","adult","senior"],AD_WAIT=7,AD_GOLD=3;
+function adSt(){let x=prog.idade;if(!x||typeof x!=="object"||Array.isArray(x))x=prog.idade={};return x;}
+function adDiff(a,b){const p=k=>{const [y,m,d]=String(k).split("-").map(Number);return Date.UTC(y,m-1,d);};const n=Math.round((p(b)-p(a))/864e5);return isFinite(n)?n:0;}
+function adUnkMinor(){return typeof AGE_UNK_MINOR!=="undefined"&&!!AGE_UNK_MINOR;}
+// menor do jeito que o app já conta: até 13, 14-17 ou (no /comecar/) sem idade
+function adMinorAge(a){return a==="kid"||a==="teen"||(!a&&adUnkMinor());}
+function adParent(){for(const k of ["asc-u-tele","asc-u-beta"]){try{const o=JSON.parse(localStorage.getItem(k)||"{}");if(o&&o.parent)return true;}catch(e){}}return false;}
+// registra a faixa vista; passar de menor para 18+ liga a espera de 7 dias
+function adSeen(){if(!cfg||cfg.blank)return;const a=ageNow(),x=adSt(),tk=todayKey();let ch=false;
+  if(!/^\d{4}-\d{2}-\d{2}$/.test(x.t0||"")){x.t0=tk;ch=true;}
+  if(x.a!==a){const was=typeof x.a==="string"?x.a:null;
+    if(!adMinorAge(a)&&(x.mn||(was!==null&&adMinorAge(was))))x.up=tk;
+    x.a=a;ch=true;}
+  if(adMinorAge(a)&&!x.mn){x.mn=1;ch=true;}
+  if(ch)save();}
+// dias que faltam para liberar o 18+ (0 = liberado)
+function adWait(){const x=adSt();if(!x.up)return 0;return Math.max(0,AD_WAIT-adDiff(x.up,todayKey()));}
+function ad18(){try{if(!cfg||cfg.blank)return false;const a=ageNow();
+  if(a?!AD_ADULT.includes(a):adUnkMinor())return false;
+  if(adParent())return false;adSeen();return adWait()===0;}catch(e){return false;}}
+function adGoldOk(){try{const x=adSt();let s=cfg&&/^\d{4}-\d{2}-\d{2}$/.test(cfg.startDate||"")?cfg.startDate:x.t0||todayKey();return adDiff(s,todayKey())>=AD_GOLD;}catch(e){return false;}}
+{const _r=render;render=function(){_r.apply(this,arguments);try{adSeen();}catch(e){}};}
+// ---------- Trilha Primeira Renda (aba Foco): spec de conteúdo do ATLAS (#22, 7221245467) ----------
+// Duas versões pela faixa de idade: 14-17 "Primeiro passo profissional" (só informação e preparo) e 18+ "Primeiro freela".
+// Até 13 (ou sem idade no /comecar/): a trilha não aparece, sem mensagem. Quem acabou de passar para 18+ segue na versão 14-17 por 7 dias (tools/idade.js).
+// Sem promessa de ganho, sem link de afiliado, só fontes oficiais ou públicas. Missão concluída = check do próprio jogador:
+// nada do que ele escreve (currículo, portfólio, valores) é pedido, guardado ou enviado.
+// Ouro (decisão da ATENA): +20 por missão e +50 ao fechar a trilha, uma vez por missão, dentro do teto do dia (tools/ouro.js).
+// Só ADICIONA prog.renda = {a:{id:dia}, b:{id:dia}} (feitas de cada versão).
+const RD_G={m:20,fim:50};
+const RD_NOTE="Conteúdo informativo. Não é orientação jurídica, contábil nem promessa de vaga ou renda.";
+// [id, título, passo, pronto quando, rótulo da fonte, link oficial, roteiro do app]
+const RD_A=[
+ ["pr-a01","O que é Jovem Aprendiz","Ler o que é a aprendizagem profissional: contrato especial de trabalho, com curso junto, para quem tem de 14 a 24 anos.","Sabe explicar em 1 frase","Aprendizagem profissional (MTE)","https://www.gov.br/trabalho-e-emprego/pt-br/assuntos/aprendizagem-profissional"],
+ ["pr-a02","Seus direitos como aprendiz","Ler o art. 428 da CLT e anotar 3 direitos (por exemplo: carteira assinada, salário-mínimo-hora, curso de formação).","Anotou 3 direitos","CLT, art. 428 (Planalto)","https://www.planalto.gov.br/ccivil_03/decreto-lei/del5452.htm"],
+ ["pr-a03","O que a lei proíbe antes dos 18","Ler o art. 7º, XXXIII da Constituição: sem trabalho noturno, perigoso ou insalubre antes dos 18, e nenhum trabalho antes dos 16, salvo aprendiz.","Sabe dizer a regra","Constituição, art. 7º (Planalto)","https://www.planalto.gov.br/ccivil_03/constituicao/constituicao.htm"],
+ ["pr-a04","Carteira de Trabalho Digital","Com um responsável, ver como a Carteira de Trabalho Digital funciona: app oficial, entrada pela conta gov.br.","Sabe onde baixar","Carteira de Trabalho Digital (gov.br)","https://www.gov.br/pt-br/temas/carteira-de-trabalho-digital"],
+ ["pr-a05","Onde ficam as vagas","Listar 2 instituições formadoras da sua cidade (SENAI, SENAC, CIEE ou similar) e como cada uma se inscreve.","2 nomes e o caminho de inscrição","Entidades e cursos de aprendizagem (MTE)","https://www.gov.br/trabalho-e-emprego/pt-br/assuntos/aprendizagem-profissional"],
+ ["pr-a06","Currículo de 1 página","Escrever um currículo de 1 página: dados de contato, escola e série, cursos, o que sabe fazer e trabalhos voluntários.","Arquivo salvo no aparelho","","","Modelo: contato (e-mail ou telefone de um responsável) · escola e série · cursos · 3 coisas que você sabe fazer · voluntário ou projetos. Uma página, letra simples. Fica só com você: o app não pede nem guarda."],
+ ["pr-a07","1 curso gratuito com certificado","Escolher 1 curso curto e gratuito de iniciação profissional e fazer a primeira aula.","1ª aula concluída","Escola Virtual de Governo (EV.G)","https://www.escolavirtual.gov.br"],
+ ["pr-a08","Treinar a entrevista","Responder em voz alta 3 perguntas: \"Fale de você\", \"Por que quer ser aprendiz?\" e \"Um ponto forte e um a melhorar\".","Respondeu as 3 em até 2 min cada","","","Roteiro: 1) escola, 1 coisa que gosta e 1 que aprendeu; 2) aprender na prática e começar com registro; 3) um ponto forte real e um ponto a melhorar com o que você já faz para melhorar."],
+ ["pr-a09","Primeiro orçamento pessoal","Anotar quanto entra e quanto sai num mês (mesada, lanche, transporte) e separar 1 meta de economia.","Planilha ou anotação feita","","","Roteiro: duas colunas, entra e sai. Some cada uma. Meta: guardar um valor pequeno por semana, sempre o mesmo."],
+ ["pr-a10","Conversa com um adulto","Mostrar a trilha para um responsável e combinar o próximo passo: inscrição, curso ou espera.","Combinado registrado","",""]];
+const RD_B=[
+ ["pr-b01","Escolher 1 serviço","Escrever em 1 frase o que você faz, para quem e qual resultado entrega.","Frase escrita","","","Modelo: \"Eu faço ___ para ___, e o resultado é ___.\""],
+ ["pr-b02","Portfólio mínimo","Juntar 3 trabalhos (reais, de curso ou feitos de propósito) numa pasta ou página, cada um com 1 linha de contexto.","3 itens publicados ou salvos","","","Roteiro: em cada item, 1 linha com o problema, o que você fez e o resultado."],
+ ["pr-b03","Preço do primeiro serviço","Calcular o preço: horas estimadas × valor-hora + custos. Comparar com 2 referências públicas da sua área.","Preço definido e justificado","","","Conta: horas × valor-hora + custos (programa, transporte, material). Se ficar muito longe das 2 referências, reveja as horas."],
+ ["pr-b04","Proposta de 1 página","Escrever escopo, prazo, preço, forma de pagamento e o que não está incluído.","Modelo salvo","","","Modelo: Escopo · Prazo · Preço · Pagamento · Fora do escopo. Uma página."],
+ ["pr-b05","Combinado por escrito","Antes de começar, confirmar escopo e valor por escrito (mensagem ou contrato simples). O CDC protege quem contrata: o combinado escrito protege os dois lados.","Modelo de mensagem salvo","CDC (Planalto)","https://www.planalto.gov.br/ccivil_03/leis/l8078compilado.htm"],
+ ["pr-b06","MEI: posso ser?","Conferir se a sua atividade está na lista oficial de ocupações do MEI. Nem toda atividade pode, como algumas intelectuais e regulamentadas.","Sabe se a ocupação existe","Atividades permitidas ao MEI (gov.br)","https://www.gov.br/empresas-e-negocios/pt-br/empreendedor/quero-ser-mei/atividades-permitidas/e"],
+ ["pr-b07","Como se formaliza","Ler o passo a passo oficial do registro como MEI e anotar o que é preciso (conta gov.br nível prata ou ouro, dados, ocupação). Não precisa abrir agora.","Lista de requisitos anotada","Registrar-se como MEI (gov.br)","https://www.gov.br/pt-br/servicos/realizar-registro-como-microempreendedor-individual-mei"],
+ ["pr-b08","Recebi sem CNPJ: e o imposto?","Ler como pessoa física declara serviço recebido de outra pessoa física (carnê-leão) e anotar a regra principal.","Sabe a regra","Carnê-leão (Receita Federal)","https://www.gov.br/receitafederal/pt-br/assuntos/meu-imposto-de-renda/pagamento/carne-leao"],
+ ["pr-b09","Primeiros 5 contatos","Listar 5 pessoas ou empresas que podem precisar do serviço e escrever 1 mensagem curta e honesta. Enviar só se quiser.","Lista e mensagem prontas","","","Modelo: \"Oi, ___. Eu faço ___. Vi que ___. Posso te mostrar um exemplo? Sem compromisso.\""],
+ ["pr-b10","Separar o dinheiro","Abrir uma \"caixinha\" ou anotação separada para o dinheiro do trabalho e definir quanto guardar de cada pagamento para imposto e reserva.","Regra de separação definida","","","Roteiro: antes de gastar, separe de cada pagamento uma parte para imposto e outra para reserva. Anote a regra num lugar só."]];
+function rdEl(t,c,x){const e=document.createElement(t);if(c)e.className=c;if(x!=null)e.textContent=x;return e;}
+function rdSt(){let r=prog.renda;if(!r||typeof r!=="object"||Array.isArray(r))r=prog.renda={};for(const k of ["a","b"])if(!r[k]||typeof r[k]!=="object"||Array.isArray(r[k]))r[k]={};return r;}
+// versão pela idade: "" (não aparece), "a" (14-17) ou "b" (18+)
+function rdVer(){try{if(!cfg||cfg.blank||!cfg.quests||!cfg.quests.length)return "";const a=ageNow();
+  if(a==="kid")return "";if(typeof ad18==="function"&&ad18())return "b";
+  if(a==="teen"||(a&&typeof adWait==="function"&&adWait()>0))return "a";
+  if(a&&typeof adParent==="function"&&adParent())return "a";return "";}catch(e){return "";}}
+let rdAll=false;
+function rdDone(v,id){return !!rdSt()[v][id];}
+function rdToggle(v,m){const r=rdSt();const L=v==="b"?RD_B:RD_A;
+  if(r[v][m[0]]){delete r[v][m[0]];save();toast("Missão desmarcada. O Ouro que já entrou fica.");rdRender();return;}
+  r[v][m[0]]=todayKey();save();let g=0;try{if(typeof orGive==="function")g=orGive("pr:"+m[0],RD_G.m,"Primeira Renda");}catch(e){}
+  try{haptic([10,30,10]);}catch(e){}
+  const all=L.every(x=>r[v][x[0]]);
+  if(all){let g2=0;try{if(typeof orGive==="function")g2=orGive("pr:fim:"+v,RD_G.fim,"Trilha completa");}catch(e){}
+    try{if(typeof sparks==="function")sparks(true);}catch(e){}
+    sysPop("TRILHA COMPLETA",v==="b"?"Primeiro freela: 10 de 10":"Primeiro passo profissional: 10 de 10","Você fez a sua parte, passo a passo. Agora é repetir o que funcionou."+(g2?" +"+g2+" 🪙 de Ouro.":""),null,"Fechar");}
+  else toast("✓ "+m[1]+(g?" · +"+g+" 🪙":""));
+  rdRender();}
+function rdCard(v,m,big){const done=rdDone(v,m[0]);const c=rdEl("div","rdm"+(done?" ok":"")+(big?" big":""));c.dataset.rd=m[0];
+  const h=rdEl(big?"h3":"b","rdt",(done?"✓ ":"")+m[1]);c.append(h);
+  if(big||!done){c.append(rdEl("p","rdp",m[2]),rdEl("p","sm rdq","Pronto quando: "+m[3]));
+    if(m[5]){const a=rdEl("a","rdsrc","Fonte: "+m[4]+" ↗");a.href=m[5];a.target="_blank";a.rel="noopener noreferrer";c.append(a);}
+    if(m[6]){const d=rdEl("details","rdtip");d.append(rdEl("summary",null,"Ver o roteiro"),rdEl("p","sm",m[6]));c.append(d);}}
+  const b=rdEl("button",done?"ghost rdbtn":"go rdbtn",done?"Desmarcar":"Fiz ✓ +"+RD_G.m+" 🪙");b.type="button";
+  b.setAttribute("aria-label",(done?"Desmarcar ":"Marcar como feita: ")+m[1]);b.addEventListener("click",()=>rdToggle(v,m));c.append(b);return c;}
+function rdRender(){let p=$("rdPanel");const v=rdVer();
+  if(!v){if(p)p.hidden=true;return;}
+  if(!p){const anchor=$("stPanel")||$("focusPanel");if(!anchor)return;p=rdEl("section","panel rdpanel");p.id="rdPanel";p.dataset.tab="foco";anchor.after(p);}
+  p.hidden=false;const L=v==="b"?RD_B:RD_A,r=rdSt();const n=L.filter(m=>r[v][m[0]]).length;
+  const keep=document.activeElement&&p.contains(document.activeElement)?(document.activeElement.closest("[data-rd]")||{}).dataset:null;
+  p.textContent="";const hd=rdEl("div","qhead");hd.append(rdEl("h2",null,"💼 Primeira Renda"),rdEl("span","sm mono",n+"/"+L.length));p.append(hd);
+  p.append(rdEl("div","sm muted rdsub",(v==="b"?"Primeiro freela":"Primeiro passo profissional")+" · 1 missão por vez, até 25 min. +"+RD_G.m+" 🪙 por missão, +"+RD_G.fim+" ao fechar."));
+  const bar=rdEl("div","bar rdbar");const i=rdEl("i");i.style.width=Math.round(100*n/L.length)+"%";bar.append(i);bar.setAttribute("role","progressbar");bar.setAttribute("aria-valuemin","0");bar.setAttribute("aria-valuemax",String(L.length));bar.setAttribute("aria-valuenow",String(n));bar.setAttribute("aria-label","Missões feitas");p.append(bar);
+  const next=L.find(m=>!r[v][m[0]]);
+  if(next)p.append(rdEl("div","tag","[ PRÓXIMA MISSÃO ]"),rdCard(v,next,true));
+  else p.append(rdEl("p","rddone","✓ Trilha completa. Você pode rever qualquer missão abaixo."));
+  const d=rdEl("details","rdall");d.open=rdAll||!next;d.addEventListener("toggle",()=>{rdAll=d.open;});d.append(rdEl("summary",null,"Todas as missões ("+n+"/"+L.length+")"));
+  const g=rdEl("div","rdlist");for(const m of L)if(m!==next)g.append(rdCard(v,m,false));d.append(g);p.append(d);
+  p.append(rdEl("p","sm rdnote",RD_NOTE));
+  if(keep&&keep.rd){const b=p.querySelector('[data-rd="'+keep.rd+'"] .rdbtn')||p.querySelector(".rdbtn");if(b)try{b.focus({preventScroll:true});}catch(e){}}}
+// Ouro que não coube no teto do dia (200) entra no dia seguinte: a chave só é gravada quando o Ouro entra
+function rdPay(){const v=rdVer();if(!v||typeof orGive!=="function"||typeof orReady!=="function"||!orReady())return;const r=rdSt(),L=v==="b"?RD_B:RD_A,got=orX().got;
+  for(const m of L)if(r[v][m[0]]&&!got["pr:"+m[0]])orGive("pr:"+m[0],RD_G.m,"Primeira Renda");
+  if(L.every(m=>r[v][m[0]])&&!got["pr:fim:"+v])orGive("pr:fim:"+v,RD_G.fim,"Trilha completa");}
+{const _r=render;render=function(){_r.apply(this,arguments);try{rdRender();}catch(e){}clearTimeout(rdPay._t);rdPay._t=setTimeout(()=>{try{rdPay();}catch(e){}},900);};}
+setTimeout(()=>{try{rdRender();}catch(e){}},60);
+
+// ---------- Missões do Mestre (só 18+): spec da EVA 7205176627, trava de idade de 7216423824 ----------
+// Cartões de parceiros com regulamento próprio. A lista vem de missoes-mestre.json (na raiz do site), para trocar parceiro,
+// valor ou link sem trem novo. Missão sem todos os campos preenchidos (ou com link que não é https) não aparece; lista vazia = seção some.
+// Só para 18+ pela trava de tools/idade.js (sem idade = menor no /comecar/; 7 dias depois de ter sido menor; some com parent).
+// "Fiz" é autodeclarado: +80 de Ouro uma vez por missão, travado nos 3 primeiros dias de conta. Opcional: quem não faz não perde nada.
+// Nada sai do aparelho além do toque no link do parceiro. Só ADICIONA prog.mestre = {id: dia}.
+const MM_G=80,MM_KEY="asc-u-mestre-cfg";
+let mmList=null,mmTry=0;
+function mmEl(t,c,x){const e=document.createElement(t);if(c)e.className=c;if(x!=null)e.textContent=x;return e;}
+function mmSt(){let m=prog.mestre;if(!m||typeof m!=="object"||Array.isArray(m))m=prog.mestre={};return m;}
+const mmHttps=u=>{try{const x=new URL(String(u||""));return x.protocol==="https:"?x.href:"";}catch(e){return "";}};
+function mmClean(j){const L=j&&Array.isArray(j.missoes)?j.missoes:[];const out=[];
+  for(const m of L){if(!m||typeof m!=="object")continue;const id=String(m.id||"").replace(/[^a-z0-9_-]/gi,"").slice(0,24),parceiro=String(m.parceiro||"").trim().slice(0,40),
+    ganho=String(m.ganho||"").trim().slice(0,80),cond=String(m.cond||"").trim().slice(0,140),mestre=Math.round(+m.mestre*100)/100,link=mmHttps(m.link),regras=mmHttps(m.regras);
+    if(id&&parceiro&&ganho&&cond&&mestre>0&&link&&regras)out.push({id,parceiro,ganho,cond,mestre,link,regras});}
+  return out;}
+function mmUrl(){return (location.pathname.indexOf("/comecar/")>=0?"../":"")+"missoes-mestre.json";}
+function mmLoad(){if(mmList||mmTry>2)return;mmTry++;
+  try{const c=JSON.parse(localStorage.getItem(MM_KEY)||"null");if(c)mmList=mmClean(c);}catch(e){}
+  try{fetch(mmUrl(),{cache:"no-cache"}).then(r=>r.ok?r.json():null).then(j=>{if(!j)return;mmList=mmClean(j);try{localStorage.setItem(MM_KEY,JSON.stringify(j));}catch(e){}mmRender();}).catch(()=>{});}catch(e){}}
+const mmBRL=v=>"R$ "+v.toFixed(2).replace(".",",").replace(",00","");
+function mmDone(m){const s=mmSt();if(s[m.id])return;if(!adGoldOk()){toast("O Ouro das Missões do Mestre libera no 4º dia de conta.");return;}
+  s[m.id]=todayKey();save();let g=0;try{g=orGive("mm:"+m.id,MM_G,"Missão do Mestre");}catch(e){}
+  toast("✓ "+m.parceiro+(g?" · +"+g+" 🪙":" · o Ouro entra quando couber no teto do dia"));mmRender();}
+function mmRender(){let p=$("mmPanel");const ok=typeof ad18==="function"&&ad18()&&typeof orGive==="function";
+  if(ok&&!mmList)mmLoad();
+  const L=ok&&mmList?mmList:[];if(!L.length){if(p)p.hidden=true;return;}
+  if(!p){const anchor=$("orPanel")||$("bxCol")||document.querySelector('.wrap>section[data-tab="prog"]');if(!anchor)return;p=mmEl("section","panel mmpanel");p.id="mmPanel";p.dataset.tab="prog";anchor.after(p);}
+  p.hidden=false;const s=mmSt();const gold=adGoldOk();p.textContent="";
+  const hd=mmEl("div","qhead");hd.append(mmEl("h2",null,"🎖️ Missões do Mestre"),mmEl("span","sm mono",L.filter(m=>s[m.id]).length+"/"+L.length));p.append(hd);
+  p.append(mmEl("div","sm muted","Missões opcionais de parceiros, só para 18+. Quem não faz não perde nada. Cada uma tem regulamento próprio do parceiro."));
+  for(const m of L){const done=!!s[m.id];const c=mmEl("div","mmcard"+(done?" ok":""));c.dataset.mm=m.id;
+    c.append(mmEl("span","mmad","Publicidade · indicação"),mmEl("b","mmp",(done?"✓ ":"")+m.parceiro),mmEl("p","mmg","Você ganha: "+m.ganho),mmEl("p","sm mmc","Para liberar: "+m.cond));
+    c.append(mmEl("p","mmmestre","O Mestre também ganha "+mmBRL(m.mestre)+" se você concluir."));
+    const row=mmEl("div","mmrow");const a=mmEl("a","mmlink","Abrir no "+m.parceiro+" ↗");a.href=m.link;a.target="_blank";a.rel="sponsored noopener noreferrer";
+    const r=mmEl("a","mmreg","Regulamento ↗");r.href=m.regras;r.target="_blank";r.rel="noopener noreferrer";row.append(a,r);c.append(row);
+    const b=mmEl("button",done?"ghost mmfiz":"mmfiz"+(gold?"":" mmlock"),done?"Feita":gold?"Fiz · +"+MM_G+" 🪙":"Ouro libera no 4º dia de conta");b.type="button";
+    if(done)b.disabled=true;else b.addEventListener("click",()=>mmDone(m));b.setAttribute("aria-label",done?m.parceiro+": feita":"Marcar como feita: "+m.parceiro);c.append(b);p.append(c);}
+  p.append(mmEl("p","sm muted mmlaw","Idade autodeclarada: o parceiro exige 18+ no cadastro dele. "+OR_LAW));}
+{const _r=render;render=function(){_r.apply(this,arguments);try{mmRender();}catch(e){}};}
+setTimeout(()=>{try{mmRender();}catch(e){}},80);
+
+// ---------- Arsenal do Herói: vitrine de afiliados (só 18+), pedido da EVA 7219654001 + parecer do ATLAS (7221075738) ----------
+// Só para 18+ pela trava de tools/idade.js. Mesma lista fixa para todo mundo: sem recomendação personalizada e sem rastreio próprio.
+// Selo de publicidade visível sem clique ao lado de cada link (CONAR 2026 + CDC art. 36). Nada sai do aparelho além do toque no link.
+// AFIL vazio = a vitrine não aparece. O JV preenche as tags quando abrir as contas (é público no site: tag de afiliado não é segredo).
+// Itens por módulo: Estudo (10 livros do ATLAS) e Forja (lista do ARES, ainda vazia: o grupo some). Não grava nada no progresso.
+const AFIL={amz:'',ml:''};
+const AF_SEAL="Publicidade · link de afiliado: o criador do app ganha comissão se você comprar";
+// [título, autor, 1 frase honesta, busca na loja, link do Mercado Livre (opcional, gerado pelo JV)]
+const AF_ITEMS={
+ estudo:[
+  ["Hábitos Atômicos","James Clear","Mostra como hábitos pequenos se somam, com passos práticos para começar bem pequeno.","Hábitos Atômicos James Clear"],
+  ["O Poder do Hábito","Charles Duhigg","Explica o ciclo deixa, rotina e recompensa que existe por trás dos hábitos.","O Poder do Hábito Charles Duhigg"],
+  ["Trabalho Focado","Cal Newport","Defende blocos longos sem distração para o trabalho que exige concentração.","Trabalho Focado Cal Newport"],
+  ["Mindset","Carol S. Dweck","Compara a mentalidade fixa com a de crescimento e o que isso muda no jeito de aprender.","Mindset Carol Dweck"],
+  ["Garra","Angela Duckworth","Sobre persistência e interesse de longo prazo, com as pesquisas da autora.","Garra Angela Duckworth"],
+  ["Essencialismo","Greg McKeown","Ajuda a dizer não ao que não importa para fazer bem o que importa.","Essencialismo Greg McKeown"],
+  ["A Arte de Fazer Acontecer (GTD)","David Allen","O método GTD: tirar tudo da cabeça e organizar em listas de próximas ações.","A Arte de Fazer Acontecer David Allen"],
+  ["Rápido e Devagar","Daniel Kahneman","Os dois modos de pensar e os atalhos que levam a erros de julgamento. Leitura mais densa.","Rápido e Devagar Kahneman"],
+  ["Mentes Inquietas","Ana Beatriz Barbosa Silva","Livro de divulgação sobre TDAH. Não substitui a avaliação de um profissional de saúde.","Mentes Inquietas Ana Beatriz Barbosa Silva"],
+  ["Como Fazer Amigos e Influenciar Pessoas","Dale Carnegie","Clássico sobre conversa e relacionamento, com dicas simples do dia a dia.","Como Fazer Amigos e Influenciar Pessoas Dale Carnegie"]],
+ forja:[]};
+const AF_GROUPS=[["forja","⚒️ Forja"],["estudo","📚 Estudo"]];
+function afEl(t,c,x){const e=document.createElement(t);if(c)e.className=c;if(x!=null)e.textContent=x;return e;}
+const afTag=v=>String(v||"").trim().replace(/[^A-Za-z0-9_-]/g,"").slice(0,40);
+function afLink(it){const amz=afTag(AFIL.amz);if(amz&&it[3])return "https://www.amazon.com.br/s?k="+encodeURIComponent(it[3])+"&tag="+encodeURIComponent(amz);
+  if(afTag(AFIL.ml)&&it[4]){try{const u=new URL(it[4]);if(u.protocol==="https:")return u.href;}catch(e){}}return "";}
+function afOn(){return (!!afTag(AFIL.amz)||!!afTag(AFIL.ml))&&typeof ad18==="function"&&ad18();}
+function afRender(){let p=$("afPanel");const groups=afOn()?AF_GROUPS.map(([k,n])=>[n,(AF_ITEMS[k]||[]).map(it=>[it,afLink(it)]).filter(x=>x[1])]).filter(g=>g[1].length):[];
+  if(!groups.length){if(p)p.hidden=true;return;}
+  if(!p){const ms=document.querySelectorAll('.wrap>section[data-tab="mais"]:not(#afPanel)');const anchor=ms[ms.length-1];if(!anchor)return;p=afEl("section","panel afpanel");p.id="afPanel";p.dataset.tab="mais";anchor.after(p);}
+  p.hidden=false;p.textContent="";const hd=afEl("div","qhead");hd.append(afEl("h2",null,"🛡️ Arsenal do Herói"),afEl("span","sm mono","publicidade"));p.append(hd);
+  p.append(afEl("div","sm muted","Livros e equipamentos que o time indica, a mesma lista para todo mundo. Comprar é opcional e não muda nada no jogo."));
+  for(const [n,L] of groups){p.append(afEl("h3","afh",n));const g=afEl("div","afgrid");
+    for(const [it,url] of L){const c=afEl("div","afitem");c.append(afEl("b","aft",it[0]),afEl("span","sm afa",it[1]),afEl("p","aff",it[2]));
+      const a=afEl("a","aflink","Ver na loja ↗");a.href=url;a.target="_blank";a.rel="sponsored noopener noreferrer";a.setAttribute("aria-label","Ver "+it[0]+" na loja. "+AF_SEAL);
+      c.append(afEl("span","afseal",AF_SEAL),a);g.append(c);}
+    p.append(g);}
+  p.append(afEl("p","sm muted afnote","O preço e a compra são da loja. O app não sabe o que você comprou e não guarda nada disso."));}
+{const _r=render;render=function(){_r.apply(this,arguments);try{afRender();}catch(e){}};}
+setTimeout(()=>{try{afRender();}catch(e){}},90);
 
 let saveTimer=null, SYNC="";
 try{SYNC=localStorage.getItem("asc-u-sync")||"";}catch(e){}

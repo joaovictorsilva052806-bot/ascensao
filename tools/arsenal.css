@@ -1,0 +1,11 @@
+/* ---- Arsenal do Herói: vitrine de afiliados 18+ (tools/arsenal.*) ---- */
+.afpanel{display:grid;gap:10px}
+.afh{margin:6px 0 0;font-size:.95rem}
+.afgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:8px}
+.afitem{display:grid;gap:6px;align-content:start;padding:10px 12px;border:1px solid var(--line);border-radius:10px;background:#0a1222}
+.afitem .aft{font-size:1rem;line-height:1.3}
+.afitem .afa{color:var(--muted)}
+.afitem .aff{margin:0;line-height:1.4}
+.afseal{justify-self:start;font-size:.78rem;line-height:1.35;color:#0b0f17;background:var(--gold);border-radius:4px;padding:3px 6px}
+a.aflink{justify-self:start;min-height:44px;display:inline-flex;align-items:center;padding:0 14px;border-radius:8px;text-decoration:none;font-weight:600;color:var(--glow);border:1px solid var(--glow);background:rgba(0,212,255,.08)}
+.afnote{margin:0}

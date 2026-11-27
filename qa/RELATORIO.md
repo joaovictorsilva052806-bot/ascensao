@@ -1,5 +1,19 @@
 # Relatório de QA (ATENA)
 
+## 27/11/2026 · Missões do Mestre 18+ e Arsenal do Herói (frentes 3 e 4, rascunho)
+
+- Missões do Mestre (aba Progresso): lista em missoes-mestre.json (no repositório só os 3 parceiros, sem valor nem link = seção some). Missão só aparece com todos os campos e links https. Selo "Publicidade · indicação" e "O Mestre também ganha R$ X se você concluir." em cada cartão. "Fiz" +80 de Ouro uma vez, travado nos 3 primeiros dias de conta. Só 18+ pela trava de tools/idade.js. Dados: só `prog.mestre`.
+- Arsenal do Herói (aba Mais): `AFIL={amz:'',ml:''}` vazio = some. 10 livros do ATLAS no grupo Estudo; Forja vazia até a lista do ARES. Selo "Publicidade · link de afiliado: o criador do app ganha comissão se você comprar" ao lado de cada link, rel sponsored, mesma lista para todos, não grava nada.
+- Termos: seções novas das Missões do Mestre e do Arsenal.
+- Testes: qa/mestre.test.js 50/50, qa/arsenal.test.js 34/34, qa/renda.test.js 48/48. Achado no caminho: `arPanel`/`arEl` já existiam na Arena; o Arsenal usa o prefixo `af`.
+
+## 27/11/2026 · Trilha Primeira Renda + trava de idade 18+ (frente 2, rascunho)
+
+- Novo: painel "💼 Primeira Renda" na aba Foco com a spec do ATLAS (#22, 7221245467). 14-17 vê "Primeiro passo profissional" (só informação); 18+ vê "Primeiro freela"; até 13 e sem idade no /comecar/ não veem nada. 1 missão em destaque, o resto numa linha. +20 de Ouro por missão e +50 ao fechar (Ouro que não cabe no teto do dia entra no dia seguinte).
+- Trava 18+ (tools/idade.js, reaproveitada pelas frentes 3 e 4): sem idade = menor no /comecar/; quem já foi menor espera 7 dias para ver o 18+; autorização de responsável gravada segura a versão 14-17.
+- Dados: só `prog.renda` (dia de cada missão) e `prog.idade`. Nada do que o jogador escreve é pedido ou guardado.
+- Testes: novo qa/renda.test.js 48/48 (raiz e /comecar/, 390x844, 360 px, 1280x800, reduce-motion, perfil antigo, 7 dias, parent, teto do Ouro). Cache v103 / u-v115.
+
 ## 27/11/2026 · Loja do Ouro sem sorteio (ECA Digital, Lei 15.211/2025, art. 20)
 
 - Auditoria: nada com resultado aleatório se compra com Ouro. Loja = 8 itens de escolha direta (3 molduras, 2 fundos, 2 títulos, escudo), nome e preço na cara. Baú de recompensas = prêmios que o próprio jogador escreve, preço fixo. O Baú do dia (sorteio) é grátis por mérito e não tem caminho que gaste Ouro. Nenhuma mudança no app.
