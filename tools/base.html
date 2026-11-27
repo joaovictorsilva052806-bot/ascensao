@@ -200,7 +200,7 @@ input:focus,select:focus,textarea:focus{outline:none;border-color:var(--accent)!
 /* o aviso é só texto: toque passa para o que está embaixo (menos o botão Desfazer) */
 .toast{pointer-events:none}.toast button,.toast a{pointer-events:auto}
 @keyframes toastIn{from{opacity:0;transform:translate(-50%,12px)}to{opacity:1;transform:translate(-50%,0)}}
-.xpfloat{position:fixed;z-index:70;pointer-events:none;font-family:var(--f-hud);font-weight:700;font-size:1rem;color:#eaffff;text-shadow:0 0 10px var(--accent),0 0 20px var(--accent);animation:xpUp 1.1s var(--ease) forwards}
+.xpfloat{position:fixed;z-index:70;pointer-events:none;transform:translateX(-50%);white-space:nowrap;font-family:var(--f-hud);font-weight:700;font-size:1rem;color:#eaffff;text-shadow:0 0 10px var(--accent),0 0 20px var(--accent);animation:xpUp 1.1s var(--ease) forwards}
 .xpfloat.gold{color:#fff3cf;text-shadow:0 0 10px var(--gold),0 0 22px var(--gold)}
 @keyframes xpUp{0%{opacity:0;transform:translate(-50%,0) scale(.7)}15%{opacity:1;transform:translate(-50%,-10px) scale(1.1)}100%{opacity:0;transform:translate(-50%,-70px) scale(1)}}
 .levelup .card{animation:holo .5s var(--ease)}
@@ -523,7 +523,7 @@ function toast(msg){const t=$("toast");t.textContent=msg;t.hidden=false;clearTim
 let lastPt=null;document.addEventListener("pointerdown",e=>{lastPt={x:e.clientX,y:e.clientY,el:e.target.closest(".quest")};},true);
 function fx(xp,gold){try{const ua=navigator.userActivation;if(navigator.vibrate&&(!ua||ua.hasBeenActive))navigator.vibrate(gold?[12,40,18]:12);}catch(e){}
   if(!xp)return;const f=document.createElement("div");f.className="xpfloat"+(gold?" gold":"");f.textContent="+"+xp+" XP";
-  const pt=lastPt||{x:innerWidth/2,y:innerHeight/2};f.style.left=pt.x+"px";f.style.top=(pt.y-20)+"px";document.body.append(f);setTimeout(()=>f.remove(),1200);}
+  const pt=lastPt||{x:innerWidth/2,y:innerHeight/2};const n=document.querySelectorAll(".xpfloat").length;/* +XP que sai junto (quest + conquista) sobe uma linha acima, sem borrão */f.style.left=pt.x+"px";f.style.top=Math.max(8,pt.y-20-n*26)+"px";document.body.append(f);setTimeout(()=>f.remove(),1200);}
 // ---------- Sequência (estilo Duolingo: descanso congela, não quebra) ----------
 function isRest(k){return !!(prog.rest||{})[k]||!!(prog.shield&&prog.shield.used&&prog.shield.used[k]);}
 function streakDays(){const act=k=>(prog.log[k]||[]).some(e=>!String(e.q).startsWith("ach:"));const rest=isRest;
