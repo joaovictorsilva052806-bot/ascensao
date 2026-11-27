@@ -4704,7 +4704,7 @@ function openCls(){if(clsGalOpen||(rpgState().cls&&!openCls.force))return;const 
   if(!r.cls||!full)c.append(top);else more.hidden=true;
   if(!r.cls&&!full)list.hidden=true;
   c.append(list);
-  const later=avEl("button","link",r.cls?"Fechar":"Escolher depois");later.type="button";later.addEventListener("click",close);c.append(later);
+  const later=avEl("button","link",r.cls?"Fechar":"Escolher depois");later.type="button";later.dataset.esc="1";later.addEventListener("click",close);c.append(later);
   // confirmação
   function confirm(cl){if(!r.cls){if(clsApply(cl,true))close();return;}const st2=clsCan();const cf=avEl("div","sysmodal clscf");cf.setAttribute("role","dialog");cf.setAttribute("aria-modal","true");const k=avEl("div","card");
     const pv=avEl("div","clspv big");pv.innerHTML=clsPrev(AV_CLS.includes(cl.id)?cl.id:"x",120);k.append(avEl("div","tag",r.cls?"[ SISTEMA ] CONFIRMAR TROCA":"[ SISTEMA ] CONFIRMAR CLASSE"),pv,avEl("h3",null,clsName(cl,lv)));
@@ -4712,7 +4712,7 @@ function openCls(){if(clsGalOpen||(rpgState().cls&&!openCls.force))return;const 
     li("✔ "+RPG_IC[cl.stat]+" "+STATS[cl.stat]+" sobe 1,5x mais rápido.");li("✔ Seu XP, nível e sequência continuam iguais.");
     if(r.cls){li("↺ Você deixa de ser "+clsName(r.cls,lv)+" (vira o título ex-"+r.cls.name+").");li(st2.ok?(st2.use==="tk"?"📜 Usa 1 Pergaminho de Renascimento.":st2.use==="24h"?"⏳ Grátis: ainda está nas primeiras 24 horas.":"🗓 Usa a troca grátis do mês. A próxima libera em "+CLS_DAYS+" dias."):"⛔ "+st2.txt);}
     k.append(ul);const dl=avEl("label","clsdress");const ck=avEl("input");ck.type="checkbox";ck.checked=true;dl.append(ck,document.createTextNode(" Vestir a roupa da classe no avatar"));k.append(dl);
-    const row=avEl("div","row");const go=avEl("button","go",r.cls?"Confirmar troca":"Escolher");go.type="button";go.disabled=!st2.ok;const bk=avEl("button","ghost","Voltar");bk.type="button";
+    const row=avEl("div","row");const go=avEl("button","go",r.cls?"Confirmar troca":"Escolher");go.type="button";go.disabled=!st2.ok;const bk=avEl("button","ghost","Voltar");bk.type="button";bk.dataset.esc="1";
     bk.addEventListener("click",()=>cf.remove());go.addEventListener("click",()=>{if(clsApply(cl,ck.checked)){cf.remove();close();}else cf.remove();});row.append(bk,go);k.append(row);cf.append(k);document.body.append(cf);setTimeout(()=>go.focus(),60);}
   m.append(c);document.body.append(m);}
 function chgCls(){openCls.force=true;clsGalOpen=false;openCls();}
@@ -4806,7 +4806,7 @@ function frCompare(n){const a=frMe(),b=frRow(n);const m=frEl("div","sysmodal");m
   const tb=frEl("div","frstats");for(const [l,k] of rows){const x=a[k]==null?0:+a[k],y=b[k]==null?0:+b[k];const r=frEl("div","frst");
     const l1=frEl("span","v"+(x>y?" win":""),String(x));const l2=frEl("span","v"+(y>x?" win":""),b[k]==null?"–":String(y));r.append(l1,frEl("span","l",l),l2);tb.append(r);}c.append(tb);
   const dx=(b.xp||0)-a.xp;c.append(frEl("p","sm frmsg",b.xp==null?n+" ainda não pontuou nesta semana.":dx>0?"Faltam "+(dx+1)+" XP para você passar "+n+" nesta semana. Um desafio relâmpago dá 10.":dx<0?"Você está "+(-dx)+" XP à frente de "+n+". Segura a liderança.":"Empatados. O próximo XP decide."));
-  const row=frEl("div","row");const x=frEl("button","go","Fechar");x.type="button";x.addEventListener("click",()=>m.remove());row.append(x);c.append(row);m.append(c);document.body.append(m);setTimeout(()=>x.focus(),60);}
+  const row=frEl("div","row");const x=frEl("button","go","Fechar");x.type="button";x.dataset.esc="1";x.addEventListener("click",()=>m.remove());row.append(x);c.append(row);m.append(c);document.body.append(m);setTimeout(()=>x.focus(),60);}
 let frAdd=false;
 function frUI(){let p=$("frPanel");const anchor=$("sqPanel")||$("rankPanel");if(!anchor)return;
   if(!p){p=frEl("section","panel frp");p.id="frPanel";p.dataset.tab="prog";const rp=$("rankPanel");(rp||anchor).after(p);}
@@ -5088,7 +5088,7 @@ function tmCard(n){const me=!n||tmN(n)===tmN(rankName());const d=me?cdMine():cdO
       const cp=cdEl("button","ghost","⚔️ Comparar");cp.type="button";cp.addEventListener("click",()=>{close();try{frCompare(d.n);}catch(e){}});row.append(cp);}
     else if(!frSt().pend[d.n]){const b=cdEl("button","go","+ Adicionar amigo");b.type="button";b.addEventListener("click",()=>{frRequest(d.n);close();});row.append(b);}}
   else{const b=cdEl("button","go","📨 Convidar amigo");b.type="button";b.addEventListener("click",()=>{close();cdInvite();});row.append(b);}
-  const x=cdEl("button","link cdclose","Fechar");x.type="button";x.addEventListener("click",close);c.append(row,x);
+  const x=cdEl("button","link cdclose","Fechar");x.type="button";x.dataset.esc="1";x.addEventListener("click",close);c.append(row,x);
   m.append(c);document.body.append(m);try{haptic([10]);}catch(e){}setTimeout(()=>x.focus(),60);}
 // --- convite pessoal ---
 // link fixo da turma: o mesmo link serve para quantas pessoas quiser (grupo do WhatsApp, Instagram etc.)
@@ -6402,6 +6402,10 @@ setInterval(fdTick,5000);setTimeout(()=>{fdTick();fdBadge();},1500);
   document.addEventListener("keydown",e=>{if(e.key!=="Tab")return;const o=open();if(!o.length)return;const m=o[o.length-1];
     const f=focaveis(m);if(!f.length)return;const i=f.indexOf(document.activeElement);
     if(i<0||(!e.shiftKey&&i===f.length-1)||(e.shiftKey&&i===0)){e.preventDefault();f[e.shiftKey?f.length-1:0].focus();}},true);
+  // Esc fecha a janela de cima quando ela marca a saída segura com data-esc (Fechar/Voltar/Escolher depois):
+  // faz o mesmo que tocar no botão. Janelas com escolha (aceitar amigo, idade) não marcam e seguem como estão.
+  document.addEventListener("keydown",e=>{if(e.key!=="Escape"||e.repeat||e.defaultPrevented)return;const o=open();if(!o.length)return;
+    const b=o[o.length-1].querySelector("[data-esc]");if(!b||b.disabled||!b.getClientRects().length)return;e.preventDefault();e.stopPropagation();b.click();});
   setTimeout(scan,0);
 })();
 

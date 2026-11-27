@@ -369,7 +369,7 @@ function openCls(){if(clsGalOpen||(rpgState().cls&&!openCls.force))return;const 
   if(!r.cls||!full)c.append(top);else more.hidden=true;
   if(!r.cls&&!full)list.hidden=true;
   c.append(list);
-  const later=avEl("button","link",r.cls?"Fechar":"Escolher depois");later.type="button";later.addEventListener("click",close);c.append(later);
+  const later=avEl("button","link",r.cls?"Fechar":"Escolher depois");later.type="button";later.dataset.esc="1";later.addEventListener("click",close);c.append(later);
   // confirmação
   function confirm(cl){if(!r.cls){if(clsApply(cl,true))close();return;}const st2=clsCan();const cf=avEl("div","sysmodal clscf");cf.setAttribute("role","dialog");cf.setAttribute("aria-modal","true");const k=avEl("div","card");
     const pv=avEl("div","clspv big");pv.innerHTML=clsPrev(AV_CLS.includes(cl.id)?cl.id:"x",120);k.append(avEl("div","tag",r.cls?"[ SISTEMA ] CONFIRMAR TROCA":"[ SISTEMA ] CONFIRMAR CLASSE"),pv,avEl("h3",null,clsName(cl,lv)));
@@ -377,7 +377,7 @@ function openCls(){if(clsGalOpen||(rpgState().cls&&!openCls.force))return;const 
     li("✔ "+RPG_IC[cl.stat]+" "+STATS[cl.stat]+" sobe 1,5x mais rápido.");li("✔ Seu XP, nível e sequência continuam iguais.");
     if(r.cls){li("↺ Você deixa de ser "+clsName(r.cls,lv)+" (vira o título ex-"+r.cls.name+").");li(st2.ok?(st2.use==="tk"?"📜 Usa 1 Pergaminho de Renascimento.":st2.use==="24h"?"⏳ Grátis: ainda está nas primeiras 24 horas.":"🗓 Usa a troca grátis do mês. A próxima libera em "+CLS_DAYS+" dias."):"⛔ "+st2.txt);}
     k.append(ul);const dl=avEl("label","clsdress");const ck=avEl("input");ck.type="checkbox";ck.checked=true;dl.append(ck,document.createTextNode(" Vestir a roupa da classe no avatar"));k.append(dl);
-    const row=avEl("div","row");const go=avEl("button","go",r.cls?"Confirmar troca":"Escolher");go.type="button";go.disabled=!st2.ok;const bk=avEl("button","ghost","Voltar");bk.type="button";
+    const row=avEl("div","row");const go=avEl("button","go",r.cls?"Confirmar troca":"Escolher");go.type="button";go.disabled=!st2.ok;const bk=avEl("button","ghost","Voltar");bk.type="button";bk.dataset.esc="1";
     bk.addEventListener("click",()=>cf.remove());go.addEventListener("click",()=>{if(clsApply(cl,ck.checked)){cf.remove();close();}else cf.remove();});row.append(bk,go);k.append(row);cf.append(k);document.body.append(cf);setTimeout(()=>go.focus(),60);}
   m.append(c);document.body.append(m);}
 function chgCls(){openCls.force=true;clsGalOpen=false;openCls();}

@@ -28,5 +28,9 @@
   document.addEventListener("keydown",e=>{if(e.key!=="Tab")return;const o=open();if(!o.length)return;const m=o[o.length-1];
     const f=focaveis(m);if(!f.length)return;const i=f.indexOf(document.activeElement);
     if(i<0||(!e.shiftKey&&i===f.length-1)||(e.shiftKey&&i===0)){e.preventDefault();f[e.shiftKey?f.length-1:0].focus();}},true);
+  // Esc fecha a janela de cima quando ela marca a saída segura com data-esc (Fechar/Voltar/Escolher depois):
+  // faz o mesmo que tocar no botão. Janelas com escolha (aceitar amigo, idade) não marcam e seguem como estão.
+  document.addEventListener("keydown",e=>{if(e.key!=="Escape"||e.repeat||e.defaultPrevented)return;const o=open();if(!o.length)return;
+    const b=o[o.length-1].querySelector("[data-esc]");if(!b||b.disabled||!b.getClientRects().length)return;e.preventDefault();e.stopPropagation();b.click();});
   setTimeout(scan,0);
 })();
