@@ -6,7 +6,7 @@ const CFG=(occ,focus)=>({version:3,name:'Teste',startDate:'2026-11-25',profile:{
 const P={log:{},extra:{},faith:{},energy:{},mit:{},reviews:{},money:[],rest:{},ach:{},velho:'fica'};
 (async()=>{const b=await chromium.launch();
 for(const [route,pre] of [['comecar/','asc-u'],['','ascensao']])for(const [occ,exp,focus,why] of [['estudante','Universitário',[],''],['','⚔️',[],'Pelo seu perfil'],['','Corpo',['corpo'],'Saúde e corpo']]){const tag=(route||'/')+' '+(occ||(focus.length?'foco '+focus[0]:'sem rotina'));
-  const ctx=await b.newContext({viewport:{width:390,height:844}});const p=await ctx.newPage();const errs=[];
+  const ctx=await b.newContext({viewport:{width:390,height:844}});await ctx.addInitScript(()=>{if(!localStorage.getItem('asc-u-tele'))localStorage.setItem('asc-u-tele','{"asked":1}');});const p=await ctx.newPage();const errs=[];
   p.on('pageerror',e=>errs.push(e.message));p.on('console',m=>{if(m.type()==='error'&&!/Failed to load resource|ERR_|navigator.vibrate/.test(m.text()))errs.push(m.text())});
   await ctx.route('https://docs.google.com/**',r=>r.fulfill({status:200,body:''}));
   await p.goto('http://localhost:8000/'+route);

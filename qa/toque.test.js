@@ -13,7 +13,8 @@ async function medir(p){return p.$$eval('.panel.fold',ps=>ps.filter(x=>x.offsetP
   return {t:(h.querySelector('h2')||h).textContent.trim().slice(0,30),hh:r.height,ph:q.height,open:x.classList.contains('open')};}));}
 (async()=>{const b=await chromium.launch();
 for(const [nome,vp] of [['celular',{width:390,height:844}],['desktop',{width:1280,height:800}]]){
-  const c=await b.newContext({viewport:vp,timezoneId:'America/Sao_Paulo'});await c.addInitScript(()=>{if(!localStorage.getItem('asc-u-tele'))localStorage.setItem('asc-u-tele','{"asked":1}');});const p=await c.newPage();const errs=[]; // o aceite do painel do criador (#tlModal) cobria o cabeçalho na hora do toque; ele tem teste própriop.on('pageerror',e=>errs.push(e.message));
+  const c=await b.newContext({viewport:vp,timezoneId:'America/Sao_Paulo'});await c.addInitScript(()=>{if(!localStorage.getItem('asc-u-tele'))localStorage.setItem('asc-u-tele','{"asked":1}');});const p=await c.newPage();const errs=[]; // o aceite do painel do criador (#tlModal) cobria o cabeçalho na hora do toque; ele tem teste próprio
+  p.on('pageerror',e=>errs.push(e.message));
   p.on('console',m=>{if(m.type()==='error'&&!/ERR_TUNNEL|ERR_PROXY|Failed to load resource/.test(m.text()))errs.push(m.text());});
   await p.goto(B+'/comecar/');await p.waitForTimeout(800);await onboard(p);await p.waitForTimeout(500);
   const fs=(await medir(p)).filter(x=>!x.open);
@@ -26,7 +27,8 @@ for(const [nome,vp] of [['celular',{width:390,height:844}],['desktop',{width:128
   const o=(await medir(p)).find(x=>x.open);ok(nome+': cabeçalho aberto ≥ 44px',o&&o.hh>=44,o&&o.hh+'px');
   ok(nome+': sem erro de console',!errs.length,errs.join(' | '));await c.close();}
 // app pessoal (raiz): mesmo CSS
-{const c=await b.newContext({viewport:{width:390,height:844}});await c.addInitScript(()=>{if(!localStorage.getItem('asc-u-tele'))localStorage.setItem('asc-u-tele','{"asked":1}');});const p=await c.newPage();const errs=[]; // o aceite do painel do criador (#tlModal) cobria o cabeçalho na hora do toque; ele tem teste própriop.on('pageerror',e=>errs.push(e.message));
+{const c=await b.newContext({viewport:{width:390,height:844}});await c.addInitScript(()=>{if(!localStorage.getItem('asc-u-tele'))localStorage.setItem('asc-u-tele','{"asked":1}');});const p=await c.newPage();const errs=[]; // o aceite do painel do criador (#tlModal) cobria o cabeçalho na hora do toque; ele tem teste próprio
+  p.on('pageerror',e=>errs.push(e.message));
   await p.goto(B+'/');await p.waitForTimeout(1200);const fs=await medir(p);
   ok('raiz: cabeçalhos ≥ 44px',fs.every(f=>f.hh>=44),JSON.stringify(fs.filter(f=>f.hh<44)));ok('raiz: sem erro de página',!errs.length,errs.join(' | '));await c.close();}
 // reduce-motion: a seta continua sem transição
