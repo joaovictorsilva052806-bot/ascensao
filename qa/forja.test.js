@@ -127,5 +127,37 @@ for(const [route,pre] of [['comecar/','asc-u'],['','ascensao']]){const tag=route
   await tap(p,'#fjStart');await tap(p,'#fjOk');await tap(p,'#fjGo');
   ok(tag+' E: celular sem rolagem lateral',await p.evaluate(()=>document.documentElement.scrollWidth<=innerWidth));
   await p.screenshot({path:SP+'forja-celular.png'});
-  ok(tag+' E: console limpo',errs.length===0,errs.join(' | '));await ctx.close();}
+  ok(tag+' E: console limpo',errs.length===0,errs.join(' | '));await ctx.close();
+  // H: caminhada de 20 min, "senti dor, parei" e leitura do dia (base do Desafio Forja 30)
+  ({ctx,p,errs}=await open(route,pre,P({gd:{off:1},forja:FJ({ses:[{d:'2026-11-23',tipo:'A',min:30,r:0}]})}),'2026-11-25T18:00:00'));
+  ok(tag+' H: botão de caminhada no card',(await p.textContent('#fjWalk')).includes('caminhada de 20 min'),await p.textContent('#fjCard'));
+  await tap(p,'#fjWalk');
+  ok(tag+' H: timer da caminhada aberto',await p.locator('#fjWalkT').isVisible()&&(await p.textContent('#fjSheet')).includes('dá para conversar'));
+  await p.clock.runFor(5*60000);await tap(p,'#fjWalkEnd');
+  ok(tag+' H: antes de 10 min não conta',(await LS(p,pre)).forja.walk&&!day(await LS(p,pre),'2026-11-25').some(e=>e.q==='forja:2026-11-25'));
+  await tap(p,'#fjMin');await p.clock.runFor(1000);
+  ok(tag+' H: minimizar mantém a caminhada no card',(await p.textContent('#fjCard')).includes('Caminhada em andamento'));
+  await tap(p,'#fjResume');await p.clock.runFor(16*60000);
+  ok(tag+' H: 21 min, meta batida',(await p.textContent('#fjWalkS')).includes('Meta de 20 min'));
+  await tap(p,'#fjWalkEnd');st=await LS(p,pre);
+  const ce=day(st,'2026-11-25').find(e=>e.q==='forja:2026-11-25');
+  ok(tag+' H: caminhada dá +20 e marca o treino do perfil',ce&&ce.xp===20&&day(st,'2026-11-25').some(e=>e.q==='s_treino'),JSON.stringify(day(st,'2026-11-25')));
+  ok(tag+' H: caminhada grava tipo C, sem mexer em nível nem alvo',st.forja.ses.at(-1).tipo==='C'&&st.forja.ses.at(-1).min>=20&&!st.forja.walk&&JSON.stringify(st.forja.last)==='{}');
+  ok(tag+' H: tela final da caminhada',(await p.textContent('#fjSheet')).includes('Caminhada feita'));
+  await tap(p,'#fjClose');
+  ok(tag+' H: card mostra caminhada feita e o próximo continua B',(await p.textContent('#fjCard')).includes('Caminhada de hoje feita')&&(await p.textContent('#fjCard')).includes('Treino B'),await p.textContent('#fjCard'));
+  ok(tag+' H: fjDia lê caminhada e treino',await p.evaluate(()=>[ascForja.dia('2026-11-25'),ascForja.dia('2026-11-23'),ascForja.dia('2026-11-24')].join())==='caminhada,treino,',await p.evaluate(()=>typeof ascForja));
+  ok(tag+' H: caminhada não entra na Semana forjada',(await p.textContent('#fjPanel')).includes('Esta semana: 1 de 3'),await p.textContent('#fjPanel'));
+  ok(tag+' H: console limpo',errs.length===0,errs.join(' | '));await ctx.close();
+  // H2: senti dor no treino: conta o dia, encerra na hora, não mexe no alvo
+  ({ctx,p,errs}=await open(route,pre,P({gd:{off:1},forja:FJ({last:{pull:[10,10,10]},ses:[{d:'2026-11-23',tipo:'A',min:30,r:0}]})}),'2026-11-25T18:00:00'));
+  await tap(p,'#fjStart');
+  ok(tag+' H2: botão "Senti dor, parei" no treino',(await p.textContent('#fjDor')).includes('Senti dor'));
+  ok(tag+' H2: botão de dor com 44 px',await p.evaluate(()=>document.getElementById('fjDor').getBoundingClientRect().height>=44));
+  await tap(p,'#fjDor');st=await LS(p,pre);
+  ok(tag+' H2: dor conta o dia (+20) mesmo sem série',(day(st,'2026-11-25').find(e=>e.q==='forja:2026-11-25')||{}).xp===20&&st.forja.ses.at(-1).dor===1&&!st.forja.cur);
+  ok(tag+' H2: dor não mexe no alvo',JSON.stringify(st.forja.last)==='{"pull":[10,10,10]}');
+  ok(tag+' H2: tela final orienta a parar e procurar ajuda',(await p.textContent('#fjSheet')).includes('procure atendimento'));
+  ok(tag+' H2: fjDia lê dor; fjNivelSubiu sem subida',await p.evaluate(()=>ascForja.dia('2026-11-25')+','+ascForja.nivelSubiu('2026-11-01'))==='dor,false');
+  ok(tag+' H2: console limpo',errs.length===0,errs.join(' | '));await ctx.close();}
 await b.close();console.log(R.join('\n'));process.exit(R.some(x=>x.startsWith('FAIL'))?1:0);})();
