@@ -200,6 +200,9 @@ rep('\nlet saveTimer=null, SYNC="";','\n'+R('ouro.js')+'\nlet saveTimer=null, SY
 # trava de idade 18+ (tools/idade.js) e trilha Primeira Renda na aba Foco (tools/renda.*): só adiciona prog.idade e prog.renda
 rep('</style></head>',R('renda.css')+'</style></head>')
 rep('\nlet saveTimer=null, SYNC="";','\n'+R('idade.js')+R('renda.js')+'\nlet saveTimer=null, SYNC="";')
+# Tasks que pagam 18+ na aba Foco (tools/tasks.*): só adiciona prog.tp; Carteira real fica fora do prog, só no aparelho
+rep('</style></head>',R('tasks.css')+'</style></head>')
+rep('\nlet saveTimer=null, SYNC="";','\n'+R('tasks.js')+'\nlet saveTimer=null, SYNC="";')
 # Missões do Mestre 18+ na aba Progresso (tools/mestre.*; lista em missoes-mestre.json): só adiciona prog.mestre
 rep('</style></head>',R('mestre.css')+'</style></head>')
 rep('\nlet saveTimer=null, SYNC="";','\n'+R('mestre.js')+'\nlet saveTimer=null, SYNC="";')
