@@ -1570,6 +1570,9 @@ button.pill.ouro[hidden]{display:none}
 .hllist li{display:flex;flex-wrap:wrap;align-items:center;gap:4px 10px;padding:8px 10px;border:1px solid var(--line);border-radius:10px;background:#0a1222}
 .hllist li b{color:var(--gold)}
 .hllist li .link{min-height:44px;margin-left:auto}
+/* área de toque ≥ 44px sem mudar o visual (mesma faixa invisível dos selos 🔥/🛡️/classe; ARES #22 27/11: tinha 30px) */
+button.pill.ouro{position:relative}
+button.pill.ouro::before{content:"";position:absolute;left:-3px;right:-3px;top:-8px;bottom:-8px}
 .bpgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(96px,1fr));gap:6px;margin:6px 0}
 .bptile{border:1px solid var(--line);border-radius:8px;padding:8px;display:flex;flex-direction:column;gap:2px;background:rgba(0,0,0,.15);color:var(--fg)}
 .bptile b{font-size:1.25rem;color:var(--glow);font-variant-numeric:tabular-nums}.bptile span{font-size:.7rem;line-height:1.2}
