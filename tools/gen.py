@@ -206,6 +206,9 @@ rep('\nlet saveTimer=null, SYNC="";','\n'+R('mestre.js')+'\nlet saveTimer=null, 
 # Arsenal do Herói: vitrine de afiliados 18+ em Mais (tools/arsenal.*): AFIL vazio = some; não grava nada
 rep('</style></head>',R('arsenal.css')+'</style></head>')
 rep('\nlet saveTimer=null, SYNC="";','\n'+R('arsenal.js')+'\nlet saveTimer=null, SYNC="";')
+# Turma Parceiro 18+ (tools/parceiro.*): treinador/academia roda o Desafio 30 com alunos adultos; painel só com agregados (server/mural.gs, pt-*)
+rep('</style></head>',R('parceiro.css')+'</style></head>')
+rep('\nlet saveTimer=null, SYNC="";','\n'+R('parceiro.js')+'\nlet saveTimer=null, SYNC="";')
 if not ROOT: open('comecar/index.html','w').write(s)
 pass
 
