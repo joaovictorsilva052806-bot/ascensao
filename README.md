@@ -33,6 +33,10 @@ Pontos de entrada no JS: `render()` desenha tudo; `toggle(quest, "full"|"min")` 
 
 `tools/secret.js` e `tools/secret.css` (entram nos dois geradores): 25 conquistas ocultas (8 delas são piscadelas de cultura pop: só a referência, com nomes e textos nossos, sem personagens, falas ou marcas) com títulos raros, Terminal do Sistema (em Mais) para códigos e Modo Zen. Grava só `prog.sec` e `prog.secTitle`; o XP entra como `ach:<id>`. Teste: `node qa/segredos.test.js` com o servidor local ligado.
 
+## Ideia que vale bônus
+
+`tools/sug.js`/`sug.css` (nos dois apps, no painel Sugerir melhoria): cada ideia ganha um código `S-XXXXXXXX` que vai na mensagem do WhatsApp. Moderação no aparelho (sem link, e-mail, telefone ou número longo) e 1 ideia por dia. Para aceitar, o criador cola o código em Criador > Aceitar ideia e põe a linha (SHA-256 do código, sem nome) em `sugestoes-aceitas.json`; o app do jogador paga Ouro 1 vez (`sug:<código>`) e destrava o segredo "Arquiteto do Sistema". Crédito com apelido só 18+ e com o aceite marcado. Grava só `c`/`n` nos itens novos de `prog.feedback` e `prog.sug`. Teste: `node qa/sug.test.js`.
+
 ## Marcos da coleção
 
 `tools/colecao.js` e `tools/colecao.css` (entram nos dois geradores, depois do baú): cada segredo, moldura e título conta para a Coleção. Aos 3, 8, 15 e 25 itens sai uma moldura exclusiva que não cai no baú (barra com "faltam N" na Coleção do baú e no prêmio do baú). Grava só ids novos em `prog.chest.frames` (lista que já existe). Teste: `node qa/colecao.test.js`.

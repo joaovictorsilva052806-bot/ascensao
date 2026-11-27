@@ -206,6 +206,9 @@ rep('\nlet saveTimer=null, SYNC="";','\n'+R('tasks.js')+'\nlet saveTimer=null, S
 # Missões do Mestre 18+ na aba Progresso (tools/mestre.*; lista em missoes-mestre.json): só adiciona prog.mestre
 rep('</style></head>',R('mestre.css')+'</style></head>')
 rep('\nlet saveTimer=null, SYNC="";','\n'+R('mestre.js')+'\nlet saveTimer=null, SYNC="";')
+# Ideia que vale bônus (tools/sug.*; lista em sugestoes-aceitas.json): código por ideia, Ouro 1 vez quando o criador aceita, conquista s_arq
+rep('</style></head>',R('sug.css')+'</style></head>')
+rep('\nlet saveTimer=null, SYNC="";','\n'+R('sug.js')+'\nlet saveTimer=null, SYNC="";')
 # Arsenal do Herói: vitrine de afiliados 18+ em Mais (tools/arsenal.*): AFIL vazio = some; não grava nada
 rep('</style></head>',R('arsenal.css')+'</style></head>')
 rep('\nlet saveTimer=null, SYNC="";','\n'+R('arsenal.js')+'\nlet saveTimer=null, SYNC="";')

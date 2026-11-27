@@ -1,8 +1,14 @@
 // ---------- Sugestões (sai pelo WhatsApp; fica salva no aparelho) ----------
 $("fbSend").addEventListener("click",()=>{const t=$("fbText").value.trim();if(!t){$("fbMsg").textContent="Escreva a sugestão primeiro.";return;}
-  prog.feedback=(prog.feedback||[]).concat([{t,d:new Date().toISOString()}]);save();
-  const lv=levelOf(totalXP());const msg="💡 Sugestão para o app Ascension\n\n"+t+"\n\n(nível "+lv+", "+activeDays()+" dias ativos, "+(cfg&&cfg.quests?cfg.quests.length:0)+" quests)";
-  window.open("https://wa.me/?text="+encodeURIComponent(msg),"_blank");$("fbText").value="";$("fbMsg").textContent="Valeu! Sugestão salva ("+prog.feedback.length+" no total).";});
+  // moderação e limite (tools/sug.js): sem link, e-mail ou telefone; 1 ideia por dia
+  const bad=typeof sugCheck==="function"?sugCheck(t):"";if(bad){$("fbMsg").textContent=bad;return;}
+  const c=typeof sugCode==="function"?sugCode():"",nk=typeof sugNick==="function"?sugNick():"";
+  const it={t,d:new Date().toISOString()};if(c)it.c=c;if(nk)it.n=nk;
+  prog.feedback=(prog.feedback||[]).concat([it]);save();
+  const lv=levelOf(totalXP());const msg="💡 Sugestão para o app Ascension\n\n"+t+"\n\n(nível "+lv+", "+activeDays()+" dias ativos, "+(cfg&&cfg.quests?cfg.quests.length:0)+" quests)"+(c?"\nCódigo da ideia: "+c:"")+(nk?"\nCrédito na lista de ideias: "+nk:"");
+  window.open("https://wa.me/?text="+encodeURIComponent(msg),"_blank");$("fbText").value="";
+  $("fbMsg").textContent=c?"Valeu! Ideia "+c+" enviada. Se ela entrar no app, você ganha "+SUG_OURO+" 🪙 de Ouro.":"Valeu! Sugestão salva ("+prog.feedback.length+" no total).";
+  try{sugRender();}catch(e){}});
 $("fbQuick").addEventListener("click",()=>{goTab("mais");setTimeout(()=>$("fbText").focus(),60);});
 // ---------- Dica de instalação (iPhone e Android fora da tela de início) ----------
 const UA=navigator.userAgent,IOS=/iphone|ipad|ipod/i.test(UA),AND=/android/i.test(UA);let instEvt=null;
