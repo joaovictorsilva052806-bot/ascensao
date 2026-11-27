@@ -1,0 +1,24 @@
+/* ---- Cobrar com Pix (tools/pix.*), só no Criador ---- */
+.pxpanel{display:grid;gap:10px}
+.pxsum{display:grid;gap:2px;padding:10px 12px;border:1px solid var(--line);border-radius:10px;background:#0a1222}
+.pxbig{font-size:1.6rem;font-weight:700;color:var(--gold)}
+.pxgoal{margin-top:4px}
+.pxform{display:grid;gap:8px}
+.pxform input,.pxform select{min-height:44px;font-size:16px}
+.pxchips{display:flex;flex-wrap:wrap;gap:6px}
+.pxchip{min-height:44px;font-size:.85rem}
+.pxwarn{color:var(--muted)}
+.pxshow{display:grid;gap:8px;padding:12px;border:1px solid var(--glow);border-radius:10px;background:rgba(0,212,255,.05)}
+.pxqr{justify-self:center;background:#fff;padding:6px;border-radius:8px;line-height:0}
+.pxqr svg{display:block;max-width:100%;height:auto}
+.pxcode{width:100%;box-sizing:border-box;font-family:ui-monospace,monospace;font-size:.78rem;word-break:break-all;resize:none}
+.pxacts{display:flex;flex-wrap:wrap;gap:8px}
+.pxacts>*,.pxra>*{min-height:44px}
+.pxwa{display:inline-flex;align-items:center}
+.pxlist{display:grid;gap:6px}
+.pxrow{display:grid;gap:6px;padding:8px 10px;border:1px solid var(--line);border-radius:8px}
+.pxrow.pago{opacity:.8;border-style:dashed}
+.pxrt{display:grid;gap:2px}
+.pxra{display:flex;flex-wrap:wrap;gap:6px;align-items:center}
+.pxnote{margin:0}
+.pxcode{background:#0a1222;color:var(--text,#e6f1ff);border:1px solid var(--line);border-radius:8px;padding:8px}
