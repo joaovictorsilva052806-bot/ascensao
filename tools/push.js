@@ -12,7 +12,7 @@
   const KEY="asc-u-push",LEMB="asc-u-lemb";
   // chave PÚBLICA VAPID (a privada fica só em GitHub Secrets). Vazia = aviso no celular desligado (ninguém vê a oferta).
   // Teste com outra chave: localStorage "asc-push-vapid" (só no próprio aparelho).
-  const VAPID_FIXA="";
+  const VAPID_FIXA="BDcNBzx_o8wholMvtDEJgLzCdxqQR8T7aRwW-it_semHYxGAMa3y_Nf68vz-qtBww3rae2KoG0hms1ClEwlxJXY";
   const VAPID=(()=>{try{const t=localStorage.getItem("asc-push-vapid")||"";if(/^B[A-Za-z0-9_-]{86}$/.test(t))return t;}catch(e){}return VAPID_FIXA;})();
   const URL_=()=>typeof MURAL_URL==="string"?MURAL_URL:"";
   const rd=k=>{try{return JSON.parse(localStorage.getItem(k)||"null")||{};}catch(e){return {};}};
@@ -27,6 +27,14 @@
     return a==="teen"?"teen":(a==="young"||a==="adult"||a==="senior")?"adult":"";}
   const tok=()=>{try{return typeof rkTok==="function"?rkTok():"";}catch(e){return "";}};
   const nick=()=>{try{return typeof rankName==="function"?rankName():"";}catch(e){return "";}};
+  // o servidor já sabe fazer aviso? (o JV cola o server/push.gs uma vez). Sem isso, ninguém vê a oferta (nada de "não deu para ligar").
+  // Pergunta "pw-ping" sem nome nem token; guarda a resposta: sim vale o dia, não vale 1 hora.
+  let SRV=null,srvP=null;
+  function srvCheck(){const v=st().sv||{};const ag=Date.now()-(+v.t||0);
+    if(v.ok&&v.d===hoje()){SRV=true;return Promise.resolve(true);}if(v.t&&!v.ok&&ag<3600e3){SRV=false;return Promise.resolve(false);}
+    if(srvP)return srvP;
+    srvP=fetch(URL_(),{method:"POST",body:JSON.stringify({a:"pw-ping"}),credentials:"omit",redirect:"follow"}).then(r=>r.json()).then(j=>!!(j&&j.ok&&j.pw)).catch(()=>false)
+      .then(ok=>{SRV=ok;wr({sv:{ok:ok?1:0,d:hoje(),t:Date.now()}});srvP=null;return ok;});return srvP;}
   function eligible(){return !!VAPID&&supported()&&!!URL_()&&!!band()&&!!(typeof prog!=="undefined"&&prog.rank&&prog.rank.on)&&!!nick()&&!!tok();}
   async function api(a,o){const r=await fetch(URL_(),{method:"POST",body:JSON.stringify(Object.assign({a,n:nick(),tk:tok()},o||{})),credentials:"omit",redirect:"follow"});
     const j=await r.json();if(!j||j.ok===false)throw new Error((j&&j.err)||"erro");return j;}
@@ -44,7 +52,7 @@
     wr({on:0,ep:"",off:hoje()});ui();if(!quiet)say("Avisos no celular desligados. Nada fica guardado.");}
   // --- janela de opt-in ---
   function close(m,back){m.remove();document.removeEventListener("keydown",m._k,true);if(back&&back.isConnected)try{back.focus({preventScroll:true});}catch(e){}}
-  function offer(){if(document.getElementById("pwOffer")||!eligible())return;const back=document.activeElement;const teen=band()==="teen";const h=hora()||"19:00";
+  function offer(){if(document.getElementById("pwOffer")||!eligible())return;if(SRV!==true){srvCheck().then(ok=>{if(ok)offer();});return;}const back=document.activeElement;const teen=band()==="teen";const h=hora()||"19:00";
     const E=(t,c,x)=>{const e=document.createElement(t);if(c)e.className=c;if(x!=null)e.textContent=x;return e;};
     const m=E("div","sysmodal pw");m.id="pwOffer";m.setAttribute("role","dialog");m.setAttribute("aria-modal","true");m.setAttribute("aria-labelledby","pwT");
     const c=E("div","card");const h3=E("h3",null,"🔔 Quer o aviso direto no celular?");h3.id="pwT";
@@ -68,7 +76,8 @@
   window.pwOffer=offer;
   // --- Mais > Lembretes: estado e liga/desliga ---
   function ui(){const cal=document.getElementById("calPanel");if(!cal)return;let w=document.getElementById("pwMais");
-    const s=st();const show=s.on||eligible();if(!show){if(w)w.remove();return;}
+    const s=st();const el=!s.on&&eligible();const show=s.on||(el&&SRV===true);
+    if(!show){if(w)w.remove();if(el&&SRV===null)srvCheck().then(ok=>{if(ok)ui();});return;}
     if(!w){w=document.createElement("div");w.id="pwMais";w.className="pwmais";const ref=document.getElementById("lembMais");if(ref)ref.after(w);else cal.append(w);}
     w.textContent="";const b=document.createElement("button");b.type="button";
     if(s.on){const t=document.createElement("div");t.className="sm";t.textContent="🔔 Aviso no celular ligado: "+(s.h||"").replace(":","h")+", só se você ainda não abriu o app.";

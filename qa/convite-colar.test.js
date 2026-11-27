@@ -37,6 +37,29 @@ for(const [route,pre,tag] of [['comecar/','asc-u','/comecar/'],['','ascensao','/
   await p.fill('#clIn','oi tudo bem');await p.locator('.clpaste button.go').click();ok(tag+' B: texto sem convite avisa',/Não achei/.test(await p.textContent('.clmsg')));
   await p.fill('#clIn',LINK);await p.locator('.clpaste button.go').click();ok(tag+' B: o próprio convite não vira amizade',/é seu/.test(await p.textContent('.clmsg')));
   ok(tag+' B: console limpo',!errs.length,errs.join(' | '));await ctx.close();
+  // F: pontuação colada no fim do link (achado 1 da EVA/QA 7204805292): não cria turma "Família." / "Família)" / "Família!"
+  for(const [nome,txt] of [['ponto',LINK+'.'],['parênteses','('+LINK+')'],['exclamação','entra aí '+LINK+'!'],['aspas','"'+LINK+'"']]){
+    ({ctx,p,errs}=await open(route,pre,CFG('adult'),PROG({rank:{on:true,asked:true,uid:'lari1234',nick:'Lari'}})));await amigos(p);
+    await p.fill('#clIn',txt);await p.locator('.clpaste button.go').click();await p.waitForTimeout(1200);
+    const s=await p.evaluate(pre=>JSON.parse(localStorage.getItem(pre+'-prog')),pre);const ts=((s.turmas&&s.turmas.l)||[]).map(t=>t.n);
+    ok(tag+' F '+nome+': turma "Família" sem pontuação, com JV',((s.turmas&&s.turmas.l)||[]).some(t=>t.n==='Família'&&t.m.includes('JV'))&&!ts.some(n=>/Família\W/.test(n)),JSON.stringify(ts));
+    ok(tag+' F '+nome+': amigo "JV" sem pontuação',((s.friends&&s.friends.l)||[]).includes('JV'),JSON.stringify(s.friends&&s.friends.l));
+    ok(tag+' F '+nome+': console limpo',!errs.length,errs.join(' | '));await ctx.close();}
+  // G: JV já é amigo e está em "Minha turma"; o link da Família põe ele também na Família (achado 2)
+  ({ctx,p,errs}=await open(route,pre,CFG('adult'),PROG({rank:{on:true,asked:true,uid:'lari1234',nick:'Lari'},friends:{l:['JV'],pend:{},seen:{}},turmas:{l:[{id:'t0',n:'Minha turma',e:'⭐',c:'',m:['JV']}],cur:'t0'}})));await amigos(p);
+  await p.fill('#clIn',LINK);await p.locator('.clpaste button.go').click();await p.waitForTimeout(1200);
+  st=await p.evaluate(pre=>JSON.parse(localStorage.getItem(pre+'-prog')),pre);
+  ok(tag+' G: amigo antigo entra na turma do link',((st.turmas&&st.turmas.l)||[]).some(t=>t.n==='Família'&&t.m.includes('JV')),JSON.stringify(st.turmas));
+  ok(tag+' G: e continua na turma antiga',((st.turmas&&st.turmas.l)||[]).some(t=>t.n==='Minha turma'&&t.m.includes('JV')),JSON.stringify(st.turmas));
+  ok(tag+' G: mensagem cita a turma do link',/Família/.test(await p.textContent('.clmsg')),await p.textContent('.clmsg'));
+  ok(tag+' G: amigo não duplicou e progresso intacto',st.friends.l.filter(x=>x==='JV').length===1&&st.velho==='fica'&&st.log['2026-11-25'].length===1);
+  ok(tag+' G: console limpo',!errs.length,errs.join(' | '));await ctx.close();
+  // H: 320 px: campo legível (achado 3)
+  ({ctx,p,errs}=await open(route,pre,CFG('adult'),PROG({rank:{on:true,asked:true,uid:'lari1234',nick:'Lari'}}),{viewport:{width:320,height:640}}));await amigos(p);
+  const wd=await p.evaluate(()=>{const i=document.getElementById('clIn'),b=document.querySelector('.clpaste button.go');return {i:Math.round(i.getBoundingClientRect().width),b:Math.round(b.getBoundingClientRect().width),bh:Math.round(b.getBoundingClientRect().height),sw:document.documentElement.scrollWidth,iw:innerWidth};});
+  ok(tag+' H 320px: campo maior que o botão e ≥ 150 px',wd.i>=150&&wd.i>wd.b,JSON.stringify(wd));
+  ok(tag+' H 320px: botão com 44 px e sem rolagem lateral',wd.bh>=44&&wd.sw<=wd.iw+1,JSON.stringify(wd));
+  await p.screenshot({path:'/tmp/cola-320-'+pre+'.png'});await ctx.close();
   // C: sem ranking ainda: guarda e pede o apelido
   ({ctx,p,errs}=await open(route,pre,CFG('adult'),PROG()));await amigos(p);
   if(await p.locator('#clIn').count()){await p.fill('#clIn',LINK);await p.locator('.clpaste button.go').click();await p.waitForTimeout(300);

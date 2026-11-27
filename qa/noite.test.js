@@ -16,7 +16,9 @@
 const {chromium}=require('playwright');const B='http://127.0.0.1:8000';const U=B+'/comecar/';const R=[];
 const ok=(n,c,x)=>R.push((c?'PASS ':'FAIL ')+n+(x&&!c?' · '+x:''));
 const noise=t=>/TUNNEL|fonts\.g|docs\.google|Failed to load resource|vibrate/.test(t);
-async function ctxOf(b,o={}){return b.newContext({viewport:{width:390,height:844},hasTouch:true,isMobile:true,timezoneId:'America/Sao_Paulo',...o});}
+async function ctxOf(b,o={}){const c=await b.newContext({viewport:{width:390,height:844},hasTouch:true,isMobile:true,timezoneId:'America/Sao_Paulo',...o});
+  // a oferta do aviso diário (dia 1/2, tools/lemb.js) já respondida: este teste mede as outras janelas (qa/lembrete-momento.test.js cobre a oferta)
+  await c.addInitScript(()=>{try{if(!localStorage.getItem('asc-u-lemb'))localStorage.setItem('asc-u-lemb','{"r":"nao","a":{"1":"x","2":"x"}}');}catch(e){}});return c;}
 async function page(ctx,iso,errs){const p=await ctx.newPage();p.on('console',m=>{if(m.type()==='error'&&!noise(m.text()))errs.push(m.text());});p.on('pageerror',e=>errs.push('PE '+e.message));await p.clock.install({time:new Date(iso)});return p;}
 // fecha avisos do Sistema; o pedido do painel do criador recebe "Agora não" (nunca "Aceito")
 async function pops(p){for(let i=0;i<10;i++){const r=await p.evaluate(()=>{const tl=document.querySelector('#tlModal');if(tl&&tl.getClientRects().length){tl.querySelector('button.ghost').click();return 1;}
