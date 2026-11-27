@@ -212,6 +212,9 @@ rep('\nlet saveTimer=null, SYNC="";','\n'+R('mestre.js')+'\nlet saveTimer=null, 
 # Arsenal do Herói: vitrine de afiliados 18+ em Mais (tools/arsenal.*): AFIL vazio = some; não grava nada
 rep('</style></head>',R('arsenal.css')+'</style></head>')
 rep('\nlet saveTimer=null, SYNC="";','\n'+R('arsenal.js')+'\nlet saveTimer=null, SYNC="";')
+# Indique a Bellardi 18+ em Mais (tools/indique.*): INDIQUE_WA vazio = some; não grava nada e não envia dado do indicado
+rep('</style></head>',R('indique.css')+'</style></head>')
+rep('\nlet saveTimer=null, SYNC="";','\n'+R('indique.js')+'\nlet saveTimer=null, SYNC="";')
 if not ROOT: open('comecar/index.html','w').write(s)
 pass
 
