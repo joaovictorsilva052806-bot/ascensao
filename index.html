@@ -1754,6 +1754,25 @@ a.aflink{justify-self:start;min-height:44px;display:inline-flex;align-items:cent
 a.inlink{min-height:44px;display:inline-flex;align-items:center;padding:0 14px;border-radius:8px;text-decoration:none;font-weight:600;color:var(--glow);border:1px solid var(--glow);background:rgba(0,212,255,.08)}
 .incopy{min-height:44px}
 .inhint,.inlaw{margin:0}
+/* ---- Acabamento visual (tools/visual.css): só aparência, entra por último no CSS dos dois geradores ---- */
+/* 1. Painéis dourados (Forja, Comece por aqui, Lendárias, chamada "???"): cantos da moldura na mesma cor da borda */
+.panel:is(.gd,.fjhome,.gthero,.tpline,.tppanel,#lnPanel,#lnTease)::before,.panel:is(.gd,.fjhome,.gthero,.tpline,.tppanel,#lnPanel,#lnTease)::after{border-color:var(--gold)}
+/* 2. Aba Lendárias: ativa fica dourada (antes virava azul e perdia a identidade) */
+.tabbar button[data-go=lenda].on{color:#ffd76a;text-shadow:0 0 8px rgba(245,197,66,.55)}
+.tabbar button[data-go=lenda].on svg{stroke:#ffd76a;filter:drop-shadow(0 0 5px rgba(245,197,66,.7))}
+.tabbar button[data-go=lenda]::before{background:#f5c542;box-shadow:0 0 10px rgba(245,197,66,.8)}
+/* 3. Rótulos da barra de abas um pouco maiores (9 px → 9,6 px) e sem cortar em telas estreitas */
+.tabbar button{font-size:.6rem;letter-spacing:.08em;white-space:nowrap;min-width:0}
+@media (max-width:360px){.tabbar{column-gap:2px;padding-inline:4px}.tabbar button{font-size:.48rem;letter-spacing:.02em}}
+/* 4. Frases não levam espaçamento de título: leitura mais fácil */
+.gd .tx,.gd .tx *,.tbstx,.tbstx *,.zapc .tt,.swipehint,.gd .link{letter-spacing:normal}
+/* 5. Dias perdidos na masmorra: legíveis (contraste AA) sem perder o tom apagado */
+.dun>.miss{opacity:.72}
+/* 6. Foco do teclado visível também em links, resumos e abas */
+a:focus-visible,summary:focus-visible,[role=button]:focus-visible,select:focus-visible,textarea:focus-visible{outline:2px solid var(--glow);outline-offset:2px}
+/* 7. Barra do topo numa linha só em telas estreitas (iPhone SE / 320 px) */
+.hudtop>span{white-space:nowrap}
+@media (max-width:360px){.hudtop{letter-spacing:.12em;font-size:.56rem}.hudtop i{margin:0 3px}}
 .bpgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(96px,1fr));gap:6px;margin:6px 0}
 .bptile{border:1px solid var(--line);border-radius:8px;padding:8px;display:flex;flex-direction:column;gap:2px;background:rgba(0,0,0,.15);color:var(--fg)}
 .bptile b{font-size:1.25rem;color:var(--glow);font-variant-numeric:tabular-nums}.bptile span{font-size:.7rem;line-height:1.2}
