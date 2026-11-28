@@ -29,7 +29,7 @@ function clTurma(inv,go){if(!inv||!inv.t||typeof gtSt!=="function"||typeof gtCle
 setTimeout(function(){try{if(clStandalone())return;if(typeof tmKid==="function"&&tmKid())return;const nav=(performance.getEntriesByType&&performance.getEntriesByType("navigation")[0])||{};
   const inv=clParse(nav.name||"");if(!inv)return;const box=clEl("div","clbar");box.id="clBar";box.setAttribute("role","region");box.setAttribute("aria-label","Convite de "+inv.a);
   box.append(clEl("b",null,"🤝 Convite de "+inv.a+(inv.t?" · guilda "+inv.t:"")));
-  box.append(clEl("span","sm","Já tem o Ascension instalado? Copie o convite, abra o app e cole em Amigos → Recebeu um convite?"));
+  box.append(clEl("span","sm","Já tem o Ascension instalado? Copie o convite, abra o app e cole em Amigos → Entrar numa Guilda."));
   const row=clEl("div","row");const cp=clEl("button","go","Copiar convite");cp.type="button";
   cp.addEventListener("click",async()=>{const u=clLink(inv.a,inv.c,inv.t);let ok=false;try{await navigator.clipboard.writeText(u);ok=true;}catch(e){}
     if(!ok){try{const i=document.createElement("textarea");i.value=u;document.body.append(i);i.select();ok=document.execCommand("copy");i.remove();}catch(e){}}
@@ -41,13 +41,18 @@ setTimeout(function(){try{if(clStandalone())return;if(typeof tmKid==="function"&
 let clOpen=false,clVal="",clMsg="";
 function clUI(){const p=$("tmPanel");if(!p||p.hidden)return;if(typeof tmKid==="function"&&tmKid())return;
   let d=p.querySelector(".clpaste");if(d&&d.parentNode===p&&p.lastElementChild===d)return;if(d)d.remove();
-  d=clEl("details","clpaste");d.open=clOpen;d.addEventListener("toggle",()=>{clOpen=d.open;});const sm=clEl("summary",null,"🔗 Recebeu um convite? Cole aqui");d.append(sm);
-  d.append(clEl("div","sm muted","Cole o link que te mandaram (pode ser a mensagem inteira). Você vira amigo e entra na guilda, sem perder nada do seu jogo."));
-  const row=clEl("div","row");const i=clEl("input");i.type="text";i.id="clIn";i.placeholder="Cole o link aqui";i.setAttribute("aria-label","Link do convite");i.autocomplete="off";i.value=clVal;
+  d=clEl("details","clpaste");d.open=clOpen;d.addEventListener("toggle",()=>{clOpen=d.open;});const sm=clEl("summary",null,"🗝️ Entrar numa Guilda");d.append(sm);
+  d.append(clEl("div","sm muted","Digite o código que te passaram (ex.: 7KQM-4XHT) ou cole o link do convite. Você vira amigo e entra na guilda, sem perder nada do seu jogo."));
+  const row=clEl("div","row");const i=clEl("input");i.type="text";i.id="clIn";i.placeholder="Código ou link";i.setAttribute("aria-label","Código ou link do convite");i.autocapitalize="characters";i.spellcheck=false;i.autocomplete="off";i.value=clVal;
   i.addEventListener("input",()=>{clVal=i.value;});
   const b=clEl("button","go","Entrar");b.type="button";const msg=clEl("div","sm clmsg",clMsg);msg.setAttribute("role","status");
   const say=t=>{clMsg=t;msg.textContent=t;};
-  b.addEventListener("click",()=>{const inv=clParse(i.value);if(!inv){say("Não achei um convite nesse texto. Cole o link inteiro que começa com https://");return;}
+  b.addEventListener("click",()=>{const inv=clParse(i.value);
+    if(!inv&&typeof kdParse==="function"){const k=kdParse(i.value);if(k){if(!kdValid(k)){say("Confira o código: são 8 letras e números, sem 0, O, 1, I ou L.");return;}
+      try{localStorage.setItem("asc-guilda-k",k);}catch(e){}i.value="";clVal="";
+      if(typeof tmOn==="function"&&tmOn()&&typeof rankName==="function"&&rankName()){say("🗝️ Código "+kdShow(k)+" enviado. Quando o dono da guilda abrir o app, vocês viram amigos.");kdTick();}
+      else{say("Código guardado. Entre no ranking com um apelido e o pedido sai na hora.");try{renderRankUI();}catch(e){}}return;}}
+    if(!inv){say("Não achei um convite nesse texto. Digite o código (ex.: 7KQM-4XHT) ou cole o link inteiro que começa com https://");return;}
     const me=typeof rankName==="function"?rankName():"";if(me&&typeof tmN==="function"&&tmN(me)===tmN(inv.a)){say("Esse convite é seu. Mande para um amigo.");return;}
     clApply(inv);i.value="";clVal="";
     if(typeof tmOn==="function"&&tmOn()&&me){const tn=clTurma(inv);say("Pronto: convite de "+inv.a+" aceito"+(tn?" (guilda "+tn+")":"")+".");try{cdInvDo();}catch(e){}try{clTurma(inv,1);}catch(e){}}

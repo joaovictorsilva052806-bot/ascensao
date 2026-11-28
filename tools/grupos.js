@@ -51,7 +51,7 @@ function gtGo(id){const g=gtSt();g.cur=id;try{tmSt().view="turma";}catch(e){}sav
 function gtSheet(id){const g=gtSt();const novo=!id;const t=novo?{id:"",n:"",e:GT_EM[g.l.length%GT_EM.length],c:"",m:[]}:g.l.find(x=>x.id===id);if(!t)return;
   let fr=[];try{fr=frSt().l.slice();}catch(e){}
   const m=gtEl("div","sysmodal gtmodal");m.setAttribute("role","dialog");m.setAttribute("aria-modal","true");m.setAttribute("aria-label",novo?"Nova guilda":"Editar guilda");
-  const c=gtEl("div","card gtcard");c.append(gtEl("div","tag",novo?"[ SISTEMA ] NOVA TURMA":"[ SISTEMA ] EDITAR TURMA"));
+  const c=gtEl("div","card gtcard");c.append(gtEl("div","tag",novo?"[ SISTEMA ] NOVA GUILDA":"[ SISTEMA ] EDITAR GUILDA"));
   const close=()=>{m.remove();};m.addEventListener("click",e=>{if(e.target===m)close();});
   const lb=gtEl("label","gtlbl","Nome da guilda");const inp=gtEl("input","gtname");inp.maxLength=20;inp.autocomplete="off";inp.placeholder="Ex.: Igreja, Família, Trabalho";inp.value=t.n;lb.append(inp);c.append(lb);
   const ems=gtEl("div","gtems");ems.setAttribute("role","radiogroup");ems.setAttribute("aria-label","Ícone da guilda");let em=t.e;

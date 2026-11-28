@@ -60,7 +60,7 @@ function muAlbumUI(){let p=$("muAlbum");const anchor=$("bxCol")||$("avPanel")||d
 // --- consentimento (1ª vez) e aviso curto nas próximas ---
 function muConsent(done){const s=muSt();const teen=muBand()==="teen";
   const m=muEl("div","sysmodal mumodal");m.setAttribute("role","dialog");m.setAttribute("aria-modal","true");const c=muEl("div","card");
-  c.append(muEl("div","tag","[ SISTEMA ] MURAL DA TURMA"),muEl("h3",null,"Antes da 1ª foto"));
+  c.append(muEl("div","tag","[ SISTEMA ] MURAL DA GUILDA"),muEl("h3",null,"Antes da 1ª foto"));
   const ul=muEl("ul","sm mulist");for(const t of ["Só seus amigos confirmados veem. Nunca fica público nem vai para o ranking.","A foto some sozinha em 7 dias. Você pode apagar antes, quando quiser.","Não mostre rosto (nem o seu, nem de ninguém), uniforme, nome da escola, endereço, número da casa, placa ou documento.","Sem comentários: só reações 🔥 💪 👏. Viu algo errado? Toque em Denunciar."])ul.append(muEl("li",null,t));c.append(ul);
   const l1=muEl("label","chk sm");const c1=muEl("input");c1.type="checkbox";l1.append(c1,document.createTextNode(" Entendi as regras"));c.append(l1);
   let c2=null;if(teen){const l2=muEl("label","chk sm");c2=muEl("input");c2.type="checkbox";l2.append(c2,document.createTextNode(" Meu responsável autorizou eu postar fotos para meus amigos"));c.append(l2);}

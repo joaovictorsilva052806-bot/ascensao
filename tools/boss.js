@@ -83,7 +83,7 @@ function tbPlace(){const wrap=document.querySelector(".wrap");if(!wrap)return nu
 function tbUI(){const p=tbPlace();if(!p)return;if(!tbOn()){p.hidden=true;tbStrip();return;}p.hidden=false;
   const st=tbState();const s=tbSt();const ws=tbWk();const b=st.boss;const dead=st.left<=0;const prev=s.seen[ws]||0;const gain=st.dmg-prev;
   p.textContent="";
-  const hd=tbEl("div","tbhd");hd.append(tbEl("span","tbtag",tbSocial()?"CHEFÃO DA TURMA":"CHEFÃO DA SEMANA"),tbEl("span","tbclock",dead?"✔ derrotado":"⏳ até domingo · "+(typeof tmLeft==="function"?tmLeft():"")));p.append(hd);
+  const hd=tbEl("div","tbhd");hd.append(tbEl("span","tbtag",tbSocial()?"CHEFÃO DA GUILDA":"CHEFÃO DA SEMANA"),tbEl("span","tbclock",dead?"✔ derrotado":"⏳ até domingo · "+(typeof tmLeft==="function"?tmLeft():"")));p.append(hd);
   const stage=tbEl("div","tbstage"+(dead?" dead":""));stage.innerHTML=tbArt(b,st.pct,dead);if(dead)stage.append(tbEl("span","tbstamp","DERROTADO"));p.append(stage);
   p.append(tbEl("h3","tbname",b[0]));
   const hp=tbEl("div","tbhp");const fill=tbEl("i");fill.style.width=st.pct+"%";if(st.pct<20)fill.className="crit";else if(st.pct<50)fill.className="hurt";hp.append(fill);
