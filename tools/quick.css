@@ -27,3 +27,6 @@ button.big{padding:16px;font-size:1.05rem}
 .qsync{font-family:var(--f-mono);font-size:.68rem;letter-spacing:.2em;color:var(--accent);text-align:right;margin-top:-8px;min-height:1em}
 .quick.waking .qbar,.quick.waking .qsync{visibility:hidden}
 @media (prefers-reduced-motion:reduce){.qorb,.qtype .cur::after{animation:none}.qwake{transition:none}}
+
+.qerr{margin:6px 2px 0;font-size:14px;line-height:1.35;color:#ffb4a8}.qerr[hidden]{display:none}
+#quick input[aria-invalid=true],#quick input[aria-invalid=true]:focus{border-color:#ff8a7a!important;box-shadow:0 0 0 2px rgba(255,138,122,.35)}
