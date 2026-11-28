@@ -11,7 +11,7 @@ const BX_TT=[// [id, título, raridade]
  ["t_crep","Guardião do Crepúsculo",1],["t_fech","Fechador de Dias",1],["t_aco","Mente de Aço",1],
  ["t_chama","Chama Constante",2],["t_lamina","Lâmina Silenciosa",2],["t_desp","O Despertado",2],
  ["t_sob","Soberano da Rotina",3],["t_ecl","Filho do Eclipse",3]];
-const BX_RAR=["","Raro","Épico","Lendário"],BX_RCOL=["#9fb0c8","#00d4ff","#c77dff","#f2c14e"];
+const BX_RAR=["","Raro","Épico","Lendário"],BX_RCOL=["#9fb0c8","#4da3ff","#c77dff","#f2c14e"];
 function bxSt(){if(!prog.chest||typeof prog.chest!=="object")prog.chest={};const c=prog.chest;c.roll=c.roll||{};c.got=c.got||{};c.frames=c.frames||[];c.titles=c.titles||[];c.dry=c.dry||0;return c;}
 function bxEl(t,cl,x){const e=document.createElement(t);if(cl)e.className=cl;if(x!=null)e.textContent=x;return e;}
 function bxMotion(){return !matchMedia("(prefers-reduced-motion: reduce)").matches;}

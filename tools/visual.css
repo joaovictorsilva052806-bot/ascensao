@@ -50,3 +50,9 @@ button.link{font-weight:500}
 /* 12. Menos ruído: a dica de arrastar só aparece no 1º uso */
 body:not(.asc-fresh) .swipehint{display:none}
 :root:root .quest .msgo{font-size:var(--fs-lg)}
+/* 13. Itens do baú com cor de raridade clara (comum cinza · raro azul · épico roxo · lendário dourado) */
+.bxf:not(.lock){border-color:color-mix(in srgb,var(--rc) 60%,transparent);background:radial-gradient(circle at 50% 28%,color-mix(in srgb,var(--rc) 20%,transparent),transparent 68%),#0a1222;box-shadow:0 0 14px color-mix(in srgb,var(--rc) 22%,transparent)}
+.bxf.eq{box-shadow:0 0 0 2px var(--rc),0 0 18px color-mix(in srgb,var(--rc) 45%,transparent)}
+.bxf.lock .bxfr{opacity:.8}
+.bxtt{border-left:3px solid var(--rc)}
+.bxtt.eq{box-shadow:0 0 14px color-mix(in srgb,var(--rc) 30%,transparent)}
