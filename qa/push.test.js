@@ -44,6 +44,10 @@ async function mais(p){await p.evaluate(()=>{const t=document.querySelector('#ta
 async function lembSim(p){await mais(p);await p.evaluate(()=>document.getElementById('lembMais').click());await p.waitForTimeout(300);
   await p.evaluate(()=>{const c=[...document.querySelectorAll('#lembOffer .lembchip')].find(b=>b.dataset.v==='19:00');c.click();document.getElementById('lembAdd').click();});await p.waitForTimeout(1200);}
 const vis=async(p,s)=>p.evaluate(s=>{const e=document.querySelector(s);return !!(e&&e.getClientRects().length);},s);
+{const src=require('fs').readFileSync(__dirname+'/../tools/push-send.mjs','utf8');const pick=re=>(src.match(re)||[])[0];
+  const f=new Function(pick(/const MSGS = .*;/)+'\nconst day=1;\n'+pick(/const msg = .*;/)+'\nreturn msg;')();
+  ok('robô: sequência de 5 dias vira "quebra à meia-noite"',/sequência de 5 dias quebra à meia-noite/.test(f({sq:5})),f({sq:5}));
+  ok('robô: sem sequência (0/1) usa a frase de sempre',!/quebra/.test(f({sq:1}))&&!/quebra/.test(f({})),f({sq:1}));}
 (async()=>{const b=await chromium.launch();
 for(const [route,pre] of [['comecar/','asc-u'],['','ascensao']]){const T=(route||'/')+' ';
   // A) adulto no ranking: "sim" no lembrete → oferta → liga
@@ -79,6 +83,7 @@ for(const [route,pre] of [['comecar/','asc-u'],['','ascensao']]){const T=(route|
     await p.evaluate(()=>localStorage.setItem('__pwsub',window.__pw.sub.endpoint));await p.close();
     const [,p2]=await abre(b,{route,pre,keep:ctx});
     await p2.waitForTimeout(2500);ok(T+'G: abriu o app: manda pw-seen',p2.posts.filter(x=>x.a==='pw-seen').length===1,p2.posts.map(x=>x.a).join(','));
+    {const sn=p2.posts.find(x=>x.a==='pw-seen');ok(T+'G: pw-seen leva só o nº de dias da sequência',sn&&Number.isInteger(sn.s)&&sn.s>=0&&sn.s<=999,JSON.stringify(sn&&{s:sn.s}));}
     await p2.evaluate(()=>{document.dispatchEvent(new Event('visibilitychange'));});await p2.waitForTimeout(500);
     ok(T+'G: só 1x por dia',p2.posts.filter(x=>x.a==='pw-seen').length===1);ok(T+'G: console limpo',!p2.errs.length,p2.errs.join(' | '));await ctx.close();}
   // C) menor de 14, idade desconhecida, fora do ranking, iPhone no Safari

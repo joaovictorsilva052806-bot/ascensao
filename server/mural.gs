@@ -205,8 +205,9 @@ function hallLimpa() { mLock_(function () { var sh = hTab_(); var all = hRows_()
 //   Sem LEMB_KEY, as ações do robô respondem "chave" e nada sai.
 //
 // O que fica guardado (aba "push" da planilha PRIVADA do mural, nunca a pública do ranking):
-//   id | uid | endpoint | p256dh | auth | hora (HH:MM) | visto (AAAA-MM-DD) | enviado (AAAA-MM-DD) | criado (ms)
-//   Só isso: o endereço de aviso do aparelho e o horário. Nada de tarefa, nome ou conteúdo.
+//   id | uid | endpoint | p256dh | auth | hora (HH:MM) | visto (AAAA-MM-DD) | enviado (AAAA-MM-DD) | criado (ms) | seq (dias seguidos, 0-999)
+//   Só isso: o endereço de aviso do aparelho, o horário e o número de dias da sequência (para o aviso "sua sequência de N dias quebra hoje").
+//   Nada de tarefa, nome ou conteúdo. Planilha antiga sem a coluna J: ela é criada sozinha.
 //
 // Regras (o servidor confere tudo):
 //  - token do jogador obrigatório (mVinc_ do mural.gs). Faixa de idade já registrada (mAge_): ≤13 nunca; 14-17 só com responsável (p=1).
@@ -216,7 +217,7 @@ function hallLimpa() { mLock_(function () { var sh = hTab_(); var all = hRows_()
 //  - "Parar avisos" (pw-del) apaga a linha na hora.
 
 var PW_TAB = "push";
-var PW_COLS = ["id", "uid", "endpoint", "p256dh", "auth", "hora", "visto", "enviado", "criado"];
+var PW_COLS = ["id", "uid", "endpoint", "p256dh", "auth", "hora", "visto", "enviado", "criado", "seq"];
 var PW_MAX_DEV = 3, PW_IDLE_DAYS = 30, PW_TZ = "America/Sao_Paulo";
 var PW_HOSTS = /^https:\/\/(fcm\.googleapis\.com|android\.googleapis\.com|updates\.push\.services\.mozilla\.com|[\w.-]*push\.apple\.com|[\w.-]*\.notify\.windows\.com)\//;
 
@@ -233,7 +234,7 @@ function pwRoute_(b) {
   if (!uid) return { ok: false, err: "token" };
   if (!mRate_("pw:" + uid, 20)) return { ok: false, err: "limite" };
   if (a === "pw-del") return pwDel_(uid, String(b.ep || ""));
-  if (a === "pw-seen") return pwSeen_(uid);
+  if (a === "pw-seen") return pwSeen_(uid, b.s);
   if (a === "pw-sub") { if (!mAge_(uid)) return { ok: false, err: "idade" }; return pwSub_(uid, b); }
   return { ok: false, err: "acao" };
 }
@@ -244,7 +245,8 @@ function pwKeyOk_(k) {
 }
 function pwToday_() { return Utilities.formatDate(new Date(), PW_TZ, "yyyy-MM-dd"); }
 function pwTab_() { var ss = mStore_(); var sh = ss.getSheetByName(PW_TAB); if (!sh) { sh = ss.insertSheet(PW_TAB); sh.appendRow(PW_COLS); }
-  sh.getRange("A:I").setNumberFormat("@"); return sh; }       // tudo como texto: o Sheets não converte hora/data
+  if (String(sh.getRange(1, 10).getValue()) !== "seq") sh.getRange(1, 10).setValue("seq");
+  sh.getRange("A:J").setNumberFormat("@"); return sh; }       // tudo como texto: o Sheets não converte hora/data
 function pwRows_() { var v = pwTab_().getDataRange().getValues(); var out = [];
   for (var i = 1; i < v.length; i++) { var r = {}; for (var j = 0; j < PW_COLS.length; j++) r[PW_COLS[j]] = String(v[i][j] == null ? "" : v[i][j]); r._row = i + 1; out.push(r); }
   return out; }
@@ -262,8 +264,9 @@ function pwSub_(uid, b) {
     return { ok: true };
   });
 }
-function pwSeen_(uid) { var t = pwToday_(); return mLock_(function () { var sh = pwTab_();
-  pwRows_().forEach(function (r) { if (r.uid === uid && r.visto !== t) sh.getRange(r._row, 7).setValue(t); }); return { ok: true }; }); }
+function pwSeen_(uid, s) { var t = pwToday_(); var n = Math.floor(Number(s)); var q = isFinite(n) && n >= 0 ? String(Math.min(999, n)) : "";
+  return mLock_(function () { var sh = pwTab_();
+  pwRows_().forEach(function (r) { if (r.uid !== uid) return; if (r.visto !== t) sh.getRange(r._row, 7).setValue(t); if (q !== "" && r.seq !== q) sh.getRange(r._row, 10).setValue(q); }); return { ok: true }; }); }
 function pwDel_(uid, ep) { return mLock_(function () { var sh = pwTab_(); var rows = pwRows_();
   for (var i = rows.length - 1; i >= 0; i--) if (rows[i].uid === uid && (!ep || rows[i].endpoint === ep)) sh.deleteRow(rows[i]._row);
   return { ok: true }; }); }
@@ -276,7 +279,7 @@ function pwDue_() { return mLock_(function () {
     if (r.visto && r.visto < idle) { sh.deleteRow(r._row); continue; }          // 30 dias sem abrir: para de chamar
     if (r.hora > now || r.visto === t || r.enviado === t) continue;
     sh.getRange(r._row, 8).setValue(t);
-    out.push({ i: r.id, ep: r.endpoint, p: r.p256dh, au: r.auth }); }
+    out.push({ i: r.id, ep: r.endpoint, p: r.p256dh, au: r.auth, sq: +r.seq || 0 }); }
   return { ok: true, subs: out };
 }); }
 function pwGone_(ids) { if (!Array.isArray(ids)) return { ok: false, err: "ids" }; var set = {}; ids.slice(0, 500).forEach(function (x) { set[String(x)] = 1; });
