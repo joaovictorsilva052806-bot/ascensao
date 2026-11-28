@@ -206,6 +206,9 @@ rep('\nlet saveTimer=null, SYNC="";','\n'+R('tasks.js')+'\nlet saveTimer=null, S
 # código curto da Guilda: "Entrar numa Guilda" com 8 letras, sem mandar o código para a planilha (tools/codigo.*)
 rep('</style></head>',R('codigo.css')+'</style></head>')
 rep('\nlet saveTimer=null, SYNC="";','\n'+R('codigo.js')+'\nlet saveTimer=null, SYNC="";')
+# Quadro de Missões: 30 missões curtas (estudo ATLAS, treino ARES), 3 por dia, opcionais (tools/quadro.*)
+rep('</style></head>',R('quadro.css')+'</style></head>')
+rep('\nlet saveTimer=null, SYNC="";','\n'+R('quadro.js')+'\nlet saveTimer=null, SYNC="";')
 # Missões Lendárias 18+ (tools/lendaria.*; lista em missoes-lendarias.json): área das tasks que pagam na aba Foco + chamada em Hoje; só adiciona prog.lend
 rep('</style></head>',R('lendaria.css')+'</style></head>')
 rep('\nlet saveTimer=null, SYNC="";','\n'+R('lendaria.js')+'\nlet saveTimer=null, SYNC="";')
