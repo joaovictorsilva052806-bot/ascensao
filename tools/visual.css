@@ -17,3 +17,16 @@ a:focus-visible,summary:focus-visible,[role=button]:focus-visible,select:focus-v
 /* 7. Barra do topo numa linha só em telas estreitas (iPhone SE / 320 px) */
 .hudtop>span{white-space:nowrap}
 @media (max-width:360px){.hudtop{letter-spacing:.12em;font-size:.56rem}.hudtop i{margin:0 3px}}
+/* 8. Tela de entrada (#quick): luz ambiente no topo, coluna centrada em tela larga, escolhas com toque e foco claros */
+.quick{background:radial-gradient(120% 55% at 50% 0%,rgba(0,212,255,.16),rgba(0,212,255,0) 60%),var(--bg)}
+.quick>*{width:100%;max-width:520px;margin-inline:auto}
+.qstep h2{text-shadow:0 0 14px rgba(0,212,255,.35)}
+.qstep input:focus,.qstep input:focus-visible{border-color:var(--accent);box-shadow:0 0 0 3px rgba(0,212,255,.18),0 0 18px rgba(0,212,255,.2);outline:none}
+.qgrid button{border-radius:8px;line-height:1.25;transition:border-color .15s,background-color .15s,box-shadow .15s}
+.qgrid button:not(.on):active{border-color:var(--accent);background:rgba(0,212,255,.1)}
+.qgrid button.on{font-weight:600}
+#q_full{opacity:.85}
+.quick .qstep:not(.qperm){margin-top:4vh}
+#quick button.go.big{background:linear-gradient(180deg,rgba(0,212,255,.34),rgba(0,212,255,.14));font-weight:600;letter-spacing:.02em;border-radius:6px}
+/* 9. Chamada "???" das Lendárias em Hoje: faixa dourada à esquerda, lê como prêmio, não como aviso */
+.tpline.tplock{background:linear-gradient(90deg,rgba(245,197,66,.12),rgba(245,197,66,0) 55%),var(--panel)}
