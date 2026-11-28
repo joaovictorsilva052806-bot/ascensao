@@ -1,0 +1,7 @@
+/* ⚔️ Torre do Véu (tools/torre.js); brilho e selo por rank ficam no visual.css (--rk, .tbrk-*) */
+.twbar{display:grid;grid-template-columns:repeat(10,1fr);gap:4px;margin:6px 0 8px}
+.twbar i{display:block;height:6px;border-radius:3px;background:rgba(255,255,255,.12)}
+.twbar i.on{background:var(--rk,#f2c14e);box-shadow:0 0 6px var(--rk,#f2c14e)}
+.artx.twg b{color:var(--rk,#f2c14e);letter-spacing:.02em}
+.artx.twm b{color:#ffd166}
+.twnext{margin:4px 0 8px}
