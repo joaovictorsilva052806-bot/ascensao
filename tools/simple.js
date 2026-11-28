@@ -3,13 +3,15 @@
 // Não apaga nada: só recolhe. O que fica aberto é lembrado nesta sessão (preferência de tela, não é progresso).
 (function(){
   const KEEP=new Set(["focusPanel","dunPanel","invPanel","onb","quick","syncCard","zapPanel","gdPanel","chPanel","tpLine","tpPanel"]);
+  // cabeçalhos que viram linha: .qhead/h2 e os dos painéis de Progresso feitos em JS (Atributos, Arena, Meta de leitura)
+  const HD=".qhead,h2,.athd,.arhd,.lrhd";
   const openKey="asc-ui-open";let opened={};try{opened=JSON.parse(sessionStorage.getItem(openKey)||"{}")||{};}catch(e){}
   const saveOpen=()=>{try{sessionStorage.setItem(openKey,JSON.stringify(opened));}catch(e){}};
   function foldAll(){for(const sec of document.querySelectorAll(".wrap>section.panel[data-tab]:not([data-sf])")){
     const tab=sec.dataset.tab;
     if(KEEP.has(sec.id)||sec.classList.contains("tip")||sec.classList.contains("onb")||tab==="criador"){sec.dataset.sf="1";continue;}
     const hd=sec.firstElementChild;if(!hd)continue; // ainda vazia: tenta de novo quando o conteúdo chegar
-    sec.dataset.sf="1";if(!(hd.matches(".qhead")||hd.matches("h2")))continue;
+    sec.dataset.sf="1";if(!hd.matches(HD))continue;
     // Hoje: perfil e tarefas ficam abertos. Progresso: a masmorra fica aberta. Mais: tudo vira menu.
     if(tab==="hoje"&&sec.querySelector("#quests"))continue;
     const key=sec.id||(tab+":"+(hd.textContent||"").trim().slice(0,40));
@@ -25,7 +27,7 @@
     sec.addEventListener("click",e=>{if(!onHd(e))return;if(e.target.closest("a,input,select,textarea")||(e.target.closest("button")&&e.target.closest("button")!==sec.firstElementChild))return;flip();});
     sec.addEventListener("keydown",e=>{if(!onHd(e))return;if(e.key==="Enter"||e.key===" "){e.preventDefault();flip();}});
     }}
-  function markHd(sec){const h=sec.firstElementChild;if(!h||h.classList.contains("fhd"))return;if(!(h.matches(".qhead")||h.matches("h2")))return;
+  function markHd(sec){const h=sec.firstElementChild;if(!h||h.classList.contains("fhd"))return;if(!h.matches(HD))return;
     h.classList.add("fhd");h.setAttribute("role","button");h.tabIndex=0;h.setAttribute("aria-expanded",sec.classList.contains("open")?"true":"false");}
   let rq=0;const refold=()=>{if(rq)return;rq=1;Promise.resolve().then(()=>{rq=0;foldAll();for(const sec of document.querySelectorAll(".wrap>section.panel.fold"))markHd(sec);});};
   foldAll();const w=document.querySelector(".wrap");if(w&&window.MutationObserver)new MutationObserver(refold).observe(w,{childList:true,subtree:true});

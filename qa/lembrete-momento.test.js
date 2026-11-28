@@ -18,6 +18,7 @@ async function abre(b,route,pre,prog,lemb){
   const p=await ctx.newPage();p.errs=[];
   p.on('pageerror',e=>p.errs.push(e.message));p.on('console',m=>{if(m.type()==='error'&&!/Failed to load resource|ERR_|navigator.vibrate/.test(m.text()))p.errs.push(m.text())});
   await p.route(/^https?:\/\/(?!localhost|127\.0\.0\.1)/,r=>r.abort());
+  await p.clock.install({time:new Date(dk(0)+'T10:00:00')}); // hora fixa (10h de hoje): com o relógio real o teste dependia da hora e ficava vermelho à noite (27/11 21h)
   await p.goto(U+'privacidade/');
   await p.evaluate(([c,o,pre,l])=>{localStorage.clear();localStorage.setItem(pre+'-cfg',JSON.stringify(c));localStorage.setItem(pre+'-prog',JSON.stringify(o));localStorage.setItem(pre+'-season','2');
     if(l)localStorage.setItem(pre+'-lemb',JSON.stringify(l));
