@@ -82,7 +82,7 @@ function fjStart(ruim){const f=fjS();fjWant=false;
   f.cur={d:todayKey(),tipo:fjNext(f),ruim:ruim?1:0,i:0,sets:{},t0:Date.now(),rest:0,v:null};save();fjView="run";fjRender();fjUI();}
 function fjRender(){const m=$("fjSheet");if(!m||m.hidden)return;const ae0=document.activeElement;const keep=ae0&&m.contains(ae0)&&ae0.id?ae0.id:"";m.textContent="";const f=fjS();
   const c=fjEl("div","fjcard");const top=fjEl("div","fjtop");
-  top.append(fjEl("span","fjtag","[ SISTEMA ] FORJA"+(fjView==="walk"?" · CAMINHADA":f.cur?" · TREINO "+f.cur.tipo+(f.cur.ruim?" · DIA RUIM":""):"")),fjBtn("link","Minimizar ⌄",fjClose,"fjMin"));c.append(top);
+  top.append(fjEl("span","fjtag","[ SISTEMA ] FORJA"+(fjView==="walk"?" · CAMINHADA":f.cur?" · TREINO "+f.cur.tipo+(f.cur.ruim?(fjS().ses.length?" · DIA RUIM":" · 1º TREINO, 10 MIN"):""):"")),fjBtn("link","Minimizar ⌄",fjClose,"fjMin"));c.append(top);
   if(fjView==="safe")fjSafeV(c,f);else if(fjView==="setup")fjSetupV(c,f);else if(fjView==="done")fjDoneV(c,f);else if(fjView==="walk"&&f.walk)fjWalkV(c,f);else if(f.cur)fjRunV(c,f);else{fjClose();return;}
   const ft=fjEl("details","fjstop");ft.append(fjEl("summary",null,"⚠ Quando parar"),fjEl("p","sm",FJ_SAFE));if(fjView!=="safe")c.append(ft);
   m.append(c);if(fjView==="run")fjRestUI();if(fjView==="walk")fjWalkUI();fjWake(fjView==="run"||fjView==="walk");
@@ -224,7 +224,9 @@ function fjCard(){let p=$("fjCard");const q=$("quests");const anchor=q&&q.closes
   // dia de treino: o card vem antes das tarefas; feito ou descanso: vai para depois, sem empurrar as tarefas
   // no 1º uso (body[data-hrstart]) quem posiciona a Forja é o hrOrder (tools/heroi.js), abaixo das tarefas
   const top=!!cu||(dia&&!feito);if(!p.parentNode||!document.body.dataset.hrstart){if(top){if(p.nextElementSibling!==anchor)anchor.before(p);}else if(anchor.nextElementSibling!==p)anchor.after(p);}
-  if(!fjReady()){p.hidden=true;return;}p.hidden=false;p.textContent="";
+  // QA 60 s (B3): no dia 1, a Forja só aparece para quem escolheu "Saúde e corpo"
+  let fo=null;try{fo=cfg&&cfg.profile&&Array.isArray(cfg.profile.focus)?cfg.profile.focus:null;}catch(e){}
+  if(!fjReady()||(fo&&!fo.includes("corpo")&&typeof ascQuietD1==="function"&&ascQuietD1()&&!f.ses.length&&!cu)){p.hidden=true;return;}p.hidden=false;p.textContent="";
   const hd=fjEl("div","qhead");hd.append(fjEl("h2",null,"🔥 Forja"));
   const ed=fjBtn("link fjdl",f.dias.map(d=>FJ_DN[d]).join(" · ")+(fjHora(f)?" · "+fjHora(f):"")+" ✎",()=>{fjEdit=!fjEdit;fjCard();},"fjDaysBtn");ed.setAttribute("aria-label","Dias de treino: "+f.dias.map(d=>FJ_DN[d]).join(", ")+". Toque para mudar");ed.setAttribute("aria-expanded",fjEdit?"true":"false");hd.append(ed);p.append(hd);
   if(fjEdit){fjDays(p);fjHoraIn(p);}
@@ -232,7 +234,11 @@ function fjCard(){let p=$("fjCard");const q=$("quests");const anchor=q&&q.closes
   if(cu){p.append(fjEl("div","sm","Treino "+cu.tipo+" em andamento · exercício "+(cu.i+1)+" de "+FJ_TR[cu.tipo].length));p.append(fjBtn("go fjbig","Continuar treino",()=>fjOpen(),"fjResume"));return;}
   if(feito){const hj=f.ses.filter(s=>s&&s.d===todayKey()),so=hj.length&&hj.every(s=>s.tipo==="C");p.append(fjEl("div","sm fjok",(so?"Caminhada de hoje feita ✓":"Treino de hoje feito ✓")+" · próximo: Treino "+t+(fjNextDay(f)?" ("+fjNextDay(f)+")":"")));return;}
   const wk=fjWeekDays(f,weekStart(todayKey())),ms=fjMissed(f);
-  if(dia){p.append(fjEl("div","sm fjline","Treino "+t+" · 5 exercícios · ~30 min"));
+  // 1º treino: começa pequeno (10 min, sem equipamento); o completo fica a 1 toque
+  if(!f.ses.length){p.append(fjEl("div","sm fjline","1º treino: 10 min, sem equipamento."));
+    const row=fjEl("div","row fjrow");row.append(fjBtn("go","Começar (10 min)",()=>fjOpen(true),"fjFirst"),fjBtn("ghost","Treino completo (~30 min)",()=>fjOpen(false),"fjStart"));p.append(row);
+    p.append(fjBtn("link fjwalk","🚶 Hoje só uma caminhada de "+FJ_WALK+" min",fjWalk,"fjWalk"));}
+  else if(dia){p.append(fjEl("div","sm fjline","Treino "+t+" · 5 exercícios · ~30 min"));
     if(ms)p.append(fjEl("div","sm fjback","Faltou "+(ms==="ontem"?"ontem":"na "+ms)+"? Normal. Um dia não quebra o hábito; o que pesa é faltar dois seguidos. Hoje vale até o Dia ruim."));
     else if(wk===2)p.append(fjEl("div","sm fjgoal","2 de 3 treinos na semana. Falta 1 para a Semana forjada (+"+FJ_XP.sem+" XP)."));
     const row=fjEl("div","row fjrow");row.append(fjBtn("go","Começar",()=>fjOpen(false),"fjStart"),fjBtn("ghost","Dia ruim (10 min)",()=>fjOpen(true),"fjRuim"));p.append(row);

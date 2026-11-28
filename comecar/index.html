@@ -1702,6 +1702,9 @@ body.asc-fresh #gtHero,body.asc-fresh #chPanel{display:none!important}
 /* QA 60 s, P1-5: no 1º uso o 1º ▶ cabe na 1ª tela do iPhone SE. Antes da 1ª missão, sai o que repete a barra do Sistema
    (linha do Sistema e "Ficha do personagem"), a linha "Nenhuma tarefa ainda" e o atalho da Classe, se ainda não tem (ela fica para o dia 2). Só no dia 1 do perfil. Voltam sozinhos depois da 1ª missão. */
 body.asc-d1 #sysLine,body.asc-d1 #hrTog,body.asc-d1 #dayxp,body.asc-d1 #dayPill,body.asc-d1nc #clsPill{display:none!important}
+/* 1º dinheiro recebido: chamar 1 amigo (tools/tasks.js) */
+.tpshare{margin:10px 0 4px;padding:10px 12px;border:1px dashed color-mix(in srgb,#f5c542 60%,var(--line));border-radius:12px;display:grid;gap:8px}
+.tpshare .row{display:flex;gap:8px;flex-wrap:wrap}
 /* código curto da Guilda (tools/codigo.js) */
 .kdbox{margin-top:10px;padding-top:10px;border-top:1px dashed rgba(255,255,255,.14);display:flex;flex-direction:column;gap:6px}
 .kdrow{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
@@ -6743,7 +6746,7 @@ function fjStart(ruim){const f=fjS();fjWant=false;
   f.cur={d:todayKey(),tipo:fjNext(f),ruim:ruim?1:0,i:0,sets:{},t0:Date.now(),rest:0,v:null};save();fjView="run";fjRender();fjUI();}
 function fjRender(){const m=$("fjSheet");if(!m||m.hidden)return;const ae0=document.activeElement;const keep=ae0&&m.contains(ae0)&&ae0.id?ae0.id:"";m.textContent="";const f=fjS();
   const c=fjEl("div","fjcard");const top=fjEl("div","fjtop");
-  top.append(fjEl("span","fjtag","[ SISTEMA ] FORJA"+(fjView==="walk"?" · CAMINHADA":f.cur?" · TREINO "+f.cur.tipo+(f.cur.ruim?" · DIA RUIM":""):"")),fjBtn("link","Minimizar ⌄",fjClose,"fjMin"));c.append(top);
+  top.append(fjEl("span","fjtag","[ SISTEMA ] FORJA"+(fjView==="walk"?" · CAMINHADA":f.cur?" · TREINO "+f.cur.tipo+(f.cur.ruim?(fjS().ses.length?" · DIA RUIM":" · 1º TREINO, 10 MIN"):""):"")),fjBtn("link","Minimizar ⌄",fjClose,"fjMin"));c.append(top);
   if(fjView==="safe")fjSafeV(c,f);else if(fjView==="setup")fjSetupV(c,f);else if(fjView==="done")fjDoneV(c,f);else if(fjView==="walk"&&f.walk)fjWalkV(c,f);else if(f.cur)fjRunV(c,f);else{fjClose();return;}
   const ft=fjEl("details","fjstop");ft.append(fjEl("summary",null,"⚠ Quando parar"),fjEl("p","sm",FJ_SAFE));if(fjView!=="safe")c.append(ft);
   m.append(c);if(fjView==="run")fjRestUI();if(fjView==="walk")fjWalkUI();fjWake(fjView==="run"||fjView==="walk");
@@ -6885,7 +6888,9 @@ function fjCard(){let p=$("fjCard");const q=$("quests");const anchor=q&&q.closes
   // dia de treino: o card vem antes das tarefas; feito ou descanso: vai para depois, sem empurrar as tarefas
   // no 1º uso (body[data-hrstart]) quem posiciona a Forja é o hrOrder (tools/heroi.js), abaixo das tarefas
   const top=!!cu||(dia&&!feito);if(!p.parentNode||!document.body.dataset.hrstart){if(top){if(p.nextElementSibling!==anchor)anchor.before(p);}else if(anchor.nextElementSibling!==p)anchor.after(p);}
-  if(!fjReady()){p.hidden=true;return;}p.hidden=false;p.textContent="";
+  // QA 60 s (B3): no dia 1, a Forja só aparece para quem escolheu "Saúde e corpo"
+  let fo=null;try{fo=cfg&&cfg.profile&&Array.isArray(cfg.profile.focus)?cfg.profile.focus:null;}catch(e){}
+  if(!fjReady()||(fo&&!fo.includes("corpo")&&typeof ascQuietD1==="function"&&ascQuietD1()&&!f.ses.length&&!cu)){p.hidden=true;return;}p.hidden=false;p.textContent="";
   const hd=fjEl("div","qhead");hd.append(fjEl("h2",null,"🔥 Forja"));
   const ed=fjBtn("link fjdl",f.dias.map(d=>FJ_DN[d]).join(" · ")+(fjHora(f)?" · "+fjHora(f):"")+" ✎",()=>{fjEdit=!fjEdit;fjCard();},"fjDaysBtn");ed.setAttribute("aria-label","Dias de treino: "+f.dias.map(d=>FJ_DN[d]).join(", ")+". Toque para mudar");ed.setAttribute("aria-expanded",fjEdit?"true":"false");hd.append(ed);p.append(hd);
   if(fjEdit){fjDays(p);fjHoraIn(p);}
@@ -6893,7 +6898,11 @@ function fjCard(){let p=$("fjCard");const q=$("quests");const anchor=q&&q.closes
   if(cu){p.append(fjEl("div","sm","Treino "+cu.tipo+" em andamento · exercício "+(cu.i+1)+" de "+FJ_TR[cu.tipo].length));p.append(fjBtn("go fjbig","Continuar treino",()=>fjOpen(),"fjResume"));return;}
   if(feito){const hj=f.ses.filter(s=>s&&s.d===todayKey()),so=hj.length&&hj.every(s=>s.tipo==="C");p.append(fjEl("div","sm fjok",(so?"Caminhada de hoje feita ✓":"Treino de hoje feito ✓")+" · próximo: Treino "+t+(fjNextDay(f)?" ("+fjNextDay(f)+")":"")));return;}
   const wk=fjWeekDays(f,weekStart(todayKey())),ms=fjMissed(f);
-  if(dia){p.append(fjEl("div","sm fjline","Treino "+t+" · 5 exercícios · ~30 min"));
+  // 1º treino: começa pequeno (10 min, sem equipamento); o completo fica a 1 toque
+  if(!f.ses.length){p.append(fjEl("div","sm fjline","1º treino: 10 min, sem equipamento."));
+    const row=fjEl("div","row fjrow");row.append(fjBtn("go","Começar (10 min)",()=>fjOpen(true),"fjFirst"),fjBtn("ghost","Treino completo (~30 min)",()=>fjOpen(false),"fjStart"));p.append(row);
+    p.append(fjBtn("link fjwalk","🚶 Hoje só uma caminhada de "+FJ_WALK+" min",fjWalk,"fjWalk"));}
+  else if(dia){p.append(fjEl("div","sm fjline","Treino "+t+" · 5 exercícios · ~30 min"));
     if(ms)p.append(fjEl("div","sm fjback","Faltou "+(ms==="ontem"?"ontem":"na "+ms)+"? Normal. Um dia não quebra o hábito; o que pesa é faltar dois seguidos. Hoje vale até o Dia ruim."));
     else if(wk===2)p.append(fjEl("div","sm fjgoal","2 de 3 treinos na semana. Falta 1 para a Semana forjada (+"+FJ_XP.sem+" XP)."));
     const row=fjEl("div","row fjrow");row.append(fjBtn("go","Começar",()=>fjOpen(false),"fjStart"),fjBtn("ghost","Dia ruim (10 min)",()=>fjOpen(true),"fjRuim"));p.append(row);
@@ -8160,6 +8169,12 @@ function tpWallet(){const a=tpW(),rec=a.filter(x=>x.st!=="p"),pen=a.filter(x=>x.
     d.append(tpEl("div","sm tpwnx","Próximo marco: "+tpBRL(nx[0]).replace(",00","")+" · título \""+(tot>0?nx[1]:"???")+"\""));
     const bar=tpEl("div","tpbar");bar.setAttribute("role","progressbar");bar.setAttribute("aria-label","Próximo marco da Carteira");bar.setAttribute("aria-valuemin","0");bar.setAttribute("aria-valuemax","100");bar.setAttribute("aria-valuenow",String(pc));const fill=tpEl("i");fill.style.width=pc+"%";bar.append(fill);d.append(bar);}
   else d.append(tpEl("div","sm tpwnx","Todos os marcos batidos. Lenda."));
+  // 1º dinheiro recebido: convite para um amigo fazer junto (o texto do convite nunca leva o valor; nada sai sozinho)
+  if(tot>0&&typeof cdInvite==="function"){let off=false;try{off=localStorage.getItem(TP_WK+"-sh")==="1";}catch(e){}
+    if(!off){const sh=tpEl("div","tpshare");sh.append(tpEl("div","sm","🎉 Dinheiro de verdade na sua conta. Chame 1 amigo para fazer junto: com companhia a gente não desiste."));
+      const r=tpEl("div","row");const b=tpEl("button","go tpshgo","📨 Chamar um amigo");b.type="button";b.addEventListener("click",()=>{try{cdInvite();}catch(e){}});
+      const x=tpEl("button","ghost tpshx","Agora não");x.type="button";x.addEventListener("click",()=>{try{localStorage.setItem(TP_WK+"-sh","1");}catch(e){}sh.remove();});
+      r.append(b,x);sh.append(r);d.append(sh);}}
   // registrar ganho em 2 toques
   const rg=tpEl("details","tpwreg");rg.append(tpEl("summary",null,"＋ Registrar ganho"));
   const f=tpEl("form","tpwf");const sel=tpEl("select");sel.setAttribute("aria-label","De onde veio");for(const T of TP_L.slice(0,tpVis()))sel.append(new Option(tpName(T),T.id));sel.append(new Option("Outro","outro"));

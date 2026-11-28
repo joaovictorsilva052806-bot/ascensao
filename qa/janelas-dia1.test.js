@@ -29,6 +29,8 @@ for(const [tag,age,hr] of [['adulto',3,'10:00'],['14-17',2,'10:00'],['14-17 madr
   const sb=await p.evaluate(()=>{const e=document.getElementById('smBar');if(!e||!e.getClientRects().length)return -1;return Math.round(e.getBoundingClientRect().bottom+scrollY);});
   ok(tag+': barra do Sistema com Aceitar acima da barra de abas',sb>0&&sb<=602,String(sb));
   ok(tag+': 1º ▶ acima da barra de abas do SE (fundo em '+y+', abas em 602)',y>0&&y<=600,String(y));
+  const fj=await p.evaluate(()=>{const c=JSON.parse(localStorage.getItem('asc-u-cfg')||'{}');const fo=(c.profile&&c.profile.focus)||[];const e=document.getElementById('fjCard');return {corpo:fo.includes('corpo'),vis:!!(e&&!e.hidden&&e.getClientRects().length),txt:e?e.textContent:''};});
+  ok(tag+': Forja no dia 1 só com "Saúde e corpo"'+(fj.corpo?' (escolheu: 1º treino de 10 min)':' (não escolheu: escondida)'),fj.corpo?(!fj.vis||/1º treino: 10 min/.test(fj.txt)):!fj.vis,JSON.stringify(fj));
   const id=await p.evaluate(()=>{const q=document.querySelector('.quest:not(.done):not(.qtlock)');return q&&q.dataset.q;});
   await p.locator(`.quest[data-q="${id}"] .btns .go`).dispatchEvent('click');await watch(p,seen,57000);
   const st=await p.evaluate(()=>JSON.parse(localStorage.getItem('asc-u-prog')||'{}'));
