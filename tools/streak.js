@@ -26,12 +26,16 @@ function stRisk(){const h=new Date().getHours();return h>=18&&!stAct(todayKey())
   let sp=$("shieldPill");if(!sp){sp=document.createElement("span");sp.className="pill shield";sp.id="shieldPill";st.after(sp);
     for(const el of [st,sp]){el.setAttribute("role","button");el.tabIndex=0;el.addEventListener("click",stInfo);el.addEventListener("keydown",e=>{if(e.key==="Enter"||e.key===" "){e.preventDefault();stInfo();}});}}
   sp.textContent="🛡️ "+s.n;sp.title=s.n+" escudo(s) de sequência";sp.classList.toggle("none",!s.n);
-  const r=stRisk();st.classList.toggle("risk",r);if(r)st.title="Sequência em risco: 1 tarefa hoje salva";
+  const r=stRisk();st.classList.toggle("risk",r);if(r)st.title="Sequência em risco: 1 tarefa hoje salva";const bk=!r&&stBack();st.classList.toggle("back",bk);if(bk)st.title="Dia "+(streakDays()+1)+" em jogo: 1 tarefa hoje e a sequência sobe";
   if(!sysQ.length)setTimeout(()=>{if(!sysQ.length){shieldAuto();stMilestone();stPerfect();}},700);};}
 function stPerfect(){if(!cfg||cfg.blank)return;const s=shieldSt();const tk=todayKey();if(s.perfect===tk)return;const ms=mainsFor(new Date());const L=prog.log[tk]||[];
   if(ms.length<2||!ms.every(q=>L.some(e=>e.q===q.id)))return;s.perfect=tk;save();const n=streakDays();
   sysPop("DIA PERFEITO","Missão diária completa ✓","Todas as "+ms.length+" principais de hoje. Sequência: "+n+(n===1?" dia":" dias")+" 🔥. O resto do dia é bônus: descanse ou pegue uma extra.",null,"Fechou");}
 function stInfo(){const s=shieldSt();const n=streakDays();
   sysPop("SEQUÊNCIA","🔥 "+n+(n===1?" dia":" dias")+" · 🛡️ "+s.n,"1 tarefa por dia mantém o fogo (o mínimo vale). Se um dia passar em branco, um escudo salva a sequência sozinho. Você ganha 1 escudo a cada marco de 7, 14, 30 dias e guarda até "+ST_MAX+".",null,"Entendi");}
+// Volta do dia seguinte (manhã/tarde): a promessa do dia 1 ("amanhã, 1 tarefa e vira 2") aparece na 1ª linha que a pessoa lê.
+function stBack(){const h=new Date().getHours();return h>=5&&h<18&&!stAct(todayKey())&&!isRest(todayKey())&&streakDays()>0;}
+{const _sl=sysLine;sysLine=function(){const t=_sl();if(stBack()){const n=streakDays();const nx=mainsFor(new Date()).find(q=>!(typeof qtLocked==="function"&&qtLocked(q)));const hi=t.split(". ")[0]+". ";
+    return hi+"🔥 Dia "+(n+1)+" em jogo: 1 tarefa e a sequência vira "+(n+1)+". "+(nx?"Comece por: "+nx.title+(nx.minTitle?" (o mínimo vale: "+nx.minTitle+")":"")+".":"Qualquer tarefa vale.");}return t;};}
 {const _sl=sysLine;sysLine=function(){const t=_sl();if(!stRisk())return t;const ms=mainsFor(new Date()).filter(q=>!(prog.log[todayKey()]||[]).some(e=>e.q===q.id));const nx=ms[0];
   return "🔥 Sua sequência de "+streakDays()+(streakDays()===1?" dia":" dias")+" está em risco. "+(nx?"1 tarefa salva: "+(nx.minTitle||nx.title)+".":"Uma tarefa qualquer salva.")+(shieldSt().n?" Se não der, o escudo segura.":"");};}
