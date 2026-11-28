@@ -6771,6 +6771,11 @@ setInterval(fdTick,5000);setTimeout(()=>{fdTick();fdBadge();},1500);
   // faz o mesmo que tocar no botão. Janelas com escolha (aceitar amigo, idade) não marcam e seguem como estão.
   document.addEventListener("keydown",e=>{if(e.key!=="Escape"||e.repeat||e.defaultPrevented)return;const o=open();if(!o.length)return;
     const b=o[o.length-1].querySelector("[data-esc]");if(!b||b.disabled||!b.getClientRects().length)return;e.preventDefault();e.stopPropagation();b.click();});
+  // Teclado: o que tem role="button" mas não é <button> (cabeçalho de painel, nome da quest, pílulas) responde a
+  // Enter/Espaço como um toque. Quem já trata a tecla (e chama preventDefault) segue igual: aqui só cobre os que faltavam.
+  document.addEventListener("keydown",e=>{if(e.defaultPrevented||e.repeat||(e.key!=="Enter"&&e.key!==" ")||e.altKey||e.ctrlKey||e.metaKey)return;
+    const t=e.target;if(!t||t.nodeType!==1||!t.matches('[role="button"]')||t.isContentEditable||/^(BUTTON|A|INPUT|SELECT|TEXTAREA|SUMMARY)$/.test(t.tagName))return;
+    if(t.getAttribute("aria-disabled")==="true")return;e.preventDefault();t.click();});
   setTimeout(scan,0);
 })();
 
