@@ -67,3 +67,7 @@ function kdUI(){const p=$("tmPanel");if(!p||p.hidden||tmKid()||!tmOn())return;co
   row.append(v,cp);c.append(row);const r=bx.querySelector(".cdlbtn");(r||bx.lastChild).after(c);}
 {const _tu=tmUI;tmUI=function(){_tu.apply(this,arguments);try{kdUI();}catch(e){}};}
 setTimeout(()=>{try{kdUI();}catch(e){}},0);
+// conta convite no funil anônimo (só com opt-in, tools/tele.js): convidar, copiar link/código ou mandar no WhatsApp
+function kdCount(){try{if(typeof tlInvited==="function")tlInvited();}catch(e){}}
+{const _ci=cdInvite;cdInvite=function(){kdCount();return _ci.apply(this,arguments);};}
+document.addEventListener("click",e=>{const b=e.target.closest&&e.target.closest("#tmPanel .cdlbtn button, #tmPanel .kdbox button");if(b)kdCount();},true);

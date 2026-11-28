@@ -4028,8 +4028,16 @@ function tlUI(){let p=$("tlPanel");if(!p){const anchor=$("betaPanel");if(!anchor
 // nota do "Teste do app" também vai identificada para quem aceitou
 {const bs=$("betaSend");if(bs)bs.addEventListener("click",()=>{try{const t=tlGet();if(!t.on||!tlAgeOk()||!tlTeenOk(t)||!betaRate)return;const tx=$("betaText").value.trim().replace(/\S+@\S+/g,"[email]").replace(/\+?\d[\d\s().-]{7,}\d/g,"[número]").slice(0,240);tlSend("nota",betaRate+": "+tx);}catch(e){}},true);}
 // funil anônimo do dia (mesmo opt-in e mesmo formato A|id|etapa|data): fez 1 missão de verdade hoje; fechou o dia (baú liberado)
+// Os 3 números do JV (28/11), mesmo opt-in e mesmo formato anônimo: 9-novo (perfil criado hoje), 10-ativou (1ª missão de verdade, 1 vez na vida),
+// 11-voltou-d1 / 12-voltou-d7 (abriu 1 e 7 dias depois de criar o perfil), 13-convidou (mandou convite ou código da guilda, 1 por dia).
+// O dia de entrada é o cfg.startDate que o app já tem: quem já jogava não conta como novo.
+function tlDays(){const s=cfg&&cfg.startDate;if(!/^\d{4}-\d{2}-\d{2}$/.test(s||""))return null;return Math.round((new Date(todayKey()+"T12:00")-new Date(s+"T12:00"))/864e5);}
+function tlOnce(step,flag){const t=tlGet();if(t[flag])return;if(!anonOk())return;t[flag]=tlDk();tlSet(t);anon(step);}
+function tlCohort(){try{if(!anonOk()||!cfg||cfg.blank||!cfg.quests||!cfg.quests.length)return;const d=tlDays();if(d==null)return;
+  if(d===0)tlOnce("9-novo","n0");if(d===1)tlOnce("11-voltou-d1","r1");if(d===7)tlOnce("12-voltou-d7","r7");}catch(e){}}
+function tlInvited(){try{anon("13-convidou");}catch(e){}}
 function tlFunnel(){try{if(!anonOk()||!cfg||cfg.blank||!cfg.quests||!cfg.quests.length)return;const L=prog.log[todayKey()]||[];const ids=new Set(cfg.quests.map(q=>q.id));
-  if(L.some(e=>ids.has(e.q)))anon("7-quest");if(typeof bxReady==="function"&&bxReady())anon("8-fechou-dia");}catch(e){}}
+  if(L.some(e=>ids.has(e.q))){anon("7-quest");const d=tlDays();if(d!=null&&d<=7)tlOnce("10-ativou","a1");}tlCohort();if(typeof bxReady==="function"&&bxReady())anon("8-fechou-dia");}catch(e){}}
 function tlBoot(){try{anon(standalone()?"3-abriu-app":"2-abriu-navegador");if(cfg&&!cfg.blank&&cfg.quests&&cfg.quests.length){anon("4-perfil");tlDaily();tlZap();setTimeout(tlAsk,2500);}tlUI();tlFunnel();setInterval(tlFunnel,15000);document.addEventListener("visibilitychange",()=>{if(document.hidden)tlFunnel();});}catch(e){}}
 // Métrica dos desafios relâmpago (só com opt-in, anônima: id aleatório, sem apelido): 1 linha por dia sobre ONTEM.
 // A|id|6-desafios|dia de ontem|aparelho|app/navegador|feitos de 3|dupla 0/1|sensor 0/1|usou o app ontem 0/1
@@ -8088,6 +8096,10 @@ function kdUI(){const p=$("tmPanel");if(!p||p.hidden||tmKid()||!tmOn())return;co
   row.append(v,cp);c.append(row);const r=bx.querySelector(".cdlbtn");(r||bx.lastChild).after(c);}
 {const _tu=tmUI;tmUI=function(){_tu.apply(this,arguments);try{kdUI();}catch(e){}};}
 setTimeout(()=>{try{kdUI();}catch(e){}},0);
+// conta convite no funil anônimo (só com opt-in, tools/tele.js): convidar, copiar link/código ou mandar no WhatsApp
+function kdCount(){try{if(typeof tlInvited==="function")tlInvited();}catch(e){}}
+{const _ci=cdInvite;cdInvite=function(){kdCount();return _ci.apply(this,arguments);};}
+document.addEventListener("click",e=>{const b=e.target.closest&&e.target.closest("#tmPanel .cdlbtn button, #tmPanel .kdbox button");if(b)kdCount();},true);
 
 // ---------- Missões de Parceiros: missões lendárias patrocinadas (só 18+, no topo da aba Lendárias; sem a aba, na aba Foco; chamada em Hoje) ----------
 // Lista em missoes-lendarias.json (raiz do site), para trocar parceiro, texto ou link sem trem novo. Missão sem os campos

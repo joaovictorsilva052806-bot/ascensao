@@ -33,7 +33,7 @@ function bpCalc(j,now){now=now||new Date();const out={};
   const D=bpRows(j.diario);if(D.length>1){const h=D[0].map(bpNorm),cI=bpCol(h,[/^id$|uid|anon|apelido|nick/]),cD=bpCol(h,[/data|dia|date/]);
     if(cI>=0&&cD>=0){const per={};for(const r of D.slice(1)){const d=bpDate(r[cD]);if(!d)continue;const k=bpK(d);(per[k]=per[k]||new Set()).add(String(r[cI]));}
       out.dias={};for(const k in per)out.dias[k]=per[k].size;}}
-  const F=bpRows(j.funil);if(F.length>1){out.funil=F.slice(1).map(r=>{const lab=r.find(c=>c!==""&&bpNum(c)==null);const nums=r.map(bpNum).filter(x=>x!=null);return lab&&nums.length?{l:String(lab).replace(/^\d+-/,""),v:nums[nums.length-1]}:null;}).filter(Boolean).slice(0,8);}
+  const F=bpRows(j.funil);if(F.length>1){out.funil=F.slice(1).map(r=>{const lab=r.find(c=>c!==""&&bpNum(c)==null);const nums=r.map(bpNum).filter(x=>x!=null);return lab&&nums.length?{l:String(lab).replace(/^\d+-/,""),v:nums[nums.length-1]}:null;}).filter(Boolean);}
   const B=bpRows(j.feedback);if(B.length>1){out.fb=B.length-1;const h=B[0].map(bpNorm);const cT=bpCol(h,[/nota|texto|feedback|mensagem|comentario/]);
     out.fbUlt=cT>=0?B.slice(1).map(r=>String(r[cT]||"").trim()).filter(Boolean).slice(-3).reverse():[];}
   return out;}
@@ -55,6 +55,16 @@ function bpRender(j){const box=$("bpSum");if(!box)return;box.textContent="";
   if(o.feitas!=null)tile(String(o.feitas),"missões feitas"+(o.puladas!=null&&o.feitas+o.puladas>0?" · "+Math.round(100*o.feitas/(o.feitas+o.puladas))+"% das principais":""));
   if(o.fb!=null)tile(String(o.fb),"feedbacks");
   box.append(g);
+  // os 3 números (funil anônimo, só de quem aceitou): ativação, volta no D1/D7 e convites por jogador
+  const fv=re=>{const f=(o.funil||[]).find(x=>re.test(bpNorm(x.l)));return f?f.v:null;};
+  const nv=fv(/^novo/),at=fv(/^ativou/),v1=fv(/^voltou-d1/),v7=fv(/^voltou-d7/),cv=fv(/^convidou/);
+  if(nv!=null||at!=null||v1!=null||cv!=null){const g3=el("div","bpgrid bp3");const t3=(v,l,hint)=>{const t=el("div","bptile");t.append(el("b",null,v),el("span",null,l));if(hint)t.title=hint;g3.append(t);};
+    const pc=(a,b)=>a!=null&&b?Math.min(100,Math.round(100*a/b))+"%":"—";
+    t3(pc(at,nv),"ativação"+(at!=null?" ("+at+"/"+(nv||0)+")":""),"Fez a 1ª missão de verdade, entre quem criou o perfil");
+    t3(pc(v1,nv),"voltaram no D1"+(v1!=null?" ("+v1+")":""),"Abriram o app 1 dia depois de criar o perfil");
+    t3(pc(v7,nv),"voltaram no D7"+(v7!=null?" ("+v7+")":""),"Abriram o app 7 dias depois de criar o perfil");
+    t3(cv!=null&&nv?(cv/nv).toFixed(1).replace(".",","):"—","convites por jogador"+(cv!=null?" ("+cv+")":""),"Dias em que alguém mandou convite ou código da guilda, por jogador novo");
+    box.append(el("div","bpsub","Os 3 números (anônimo, só de quem aceitou o painel)"),g3);}
   // ativos por dia (7 dias): planilha "diario" > histórico deste aparelho
   const days=o.dias||bpHist(o.hoje,now);
   const ser=[];for(let i=6;i>=0;i--){const d=new Date(now);d.setDate(d.getDate()-i);const k=bpK(d);ser.push({d,v:days[k]!=null?days[k]:null});}
@@ -63,7 +73,8 @@ function bpRender(j){const box=$("bpSum");if(!box)return;box.textContent="";
     for(const s of ser){const c=el("div","bpday");const bar=el("i");bar.style.height=(s.v==null?0:Math.max(4,Math.round(40*s.v/mx)))+"px";if(s.v==null)c.classList.add("bpnone");
       c.append(el("small",null,s.v==null?"·":String(s.v)),bar,el("span",null,s.d.toLocaleDateString("pt-BR",{weekday:"narrow"})));w.append(c);}
     box.append(el("div","bpsub","Ativos por dia"+(o.dias?"":" (anotado cada vez que você abre o painel)")),w);}
-  if(o.funil&&o.funil.length){const mx=Math.max(1,...o.funil.map(f=>f.v));const w=el("div","bpfun");
-    for(const f of o.funil){const r=el("div","bpfrow");const bar=el("i");bar.style.width=Math.max(2,Math.round(100*f.v/mx))+"%";r.append(el("span",null,f.l),el("b",null,String(f.v)),bar);w.append(r);}
+  const fun=(o.funil||[]).filter(f=>!/^(novo|ativou|voltou-d[17]|convidou)/.test(bpNorm(f.l))).slice(0,8);
+  if(fun.length){const mx=Math.max(1,...fun.map(f=>f.v));const w=el("div","bpfun");
+    for(const f of fun){const r=el("div","bpfrow");const bar=el("i");bar.style.width=Math.max(2,Math.round(100*f.v/mx))+"%";r.append(el("span",null,f.l),el("b",null,String(f.v)),bar);w.append(r);}
     box.append(el("div","bpsub","Funil do convite (anônimo)"),w);}
   if(o.fbUlt&&o.fbUlt.length){const ul=el("ul","bpfb");for(const t of o.fbUlt)ul.append(el("li",null,t.length>140?t.slice(0,140)+"…":t));box.append(el("div","bpsub","Últimos feedbacks"),ul);}}
