@@ -74,6 +74,9 @@ for(const [route,pre] of [['comecar/','asc-u'],['','ascensao']]){const tag=route
   const w=await LS(p,pre+'-real');st=await LS(p,pre+'-prog');
   ok(tag+' carteira anota fora do prog',Array.isArray(w)&&w.length===1&&w[0].v===25.5&&!JSON.stringify(st).includes('25.5'),JSON.stringify(w));
   ok(tag+' total aparece em destaque',/R\$ 25,50/.test(await p.textContent('#tpPanel .tpwallet .tpwbig')));
+  ok(tag+' 1º dinheiro: convite para 1 amigo, sem o valor',await p.locator('#tpPanel .tpshare .tpshgo').isVisible()&&!/R\$/.test(await p.textContent('#tpPanel .tpshare')));
+  await p.click('#tpPanel .tpshare .tpshx');await p.waitForTimeout(300);
+  ok(tag+' "Agora não" some com o convite e lembra',!(await p.locator('#tpPanel .tpshare').count())&&await p.evaluate(k=>localStorage.getItem(k),pre+'-real-sh')==='1');
   await p.fill('#tpPanel .tpwallet .tpwf input','-3');await p.click('#tpPanel .tpwallet .tpwadd');await p.waitForTimeout(200);
   ok(tag+' valor inválido não entra',(await LS(p,pre+'-real')).length===1);
   // pendente não soma; "Caiu ✓" passa para recebido

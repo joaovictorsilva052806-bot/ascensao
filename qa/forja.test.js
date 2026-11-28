@@ -23,8 +23,8 @@ const day=(st,d)=>st.log[d]||[];
 for(const [route,pre] of [['comecar/','asc-u'],['','ascensao']]){const tag=route?'/comecar/':'/';
   // A: perfil antigo sem prog.forja, quarta-feira (dia de treino padrão)
   let {ctx,p,errs}=await open(route,pre,P(),'2026-11-25T10:00:00');
-  ok(tag+' A: card do Forja em Hoje',await p.locator('#fjCard').isVisible()&&(await p.textContent('#fjCard')).includes('Treino A · 5 exercícios · ~30 min'),await p.textContent('#fjCard').catch(()=>''));
-  ok(tag+' A: botões Começar e Dia ruim',await p.locator('#fjStart').isVisible()&&(await p.textContent('#fjRuim')).includes('Dia ruim (10 min)'));
+  ok(tag+' A: card do Forja em Hoje',await p.locator('#fjCard').isVisible()&&(await p.textContent('#fjCard')).includes('Treino completo (~30 min)'),await p.textContent('#fjCard').catch(()=>''));
+  ok(tag+' A: 1º treino começa pequeno (10 min) e o completo fica a 1 toque',await p.locator('#fjStart').isVisible()&&(await p.textContent('#fjFirst')).includes('10 min')&&/1º treino: 10 min/.test(await p.textContent('#fjCard')));
   await tap(p,'#fjStart');
   ok(tag+' A: aviso de segurança antes do 1º treino',await p.locator('#fjSheet').isVisible()&&(await p.textContent('#fjSheet')).includes('Pare na hora')&&(await p.textContent('#fjSheet')).includes('não substitui orientação médica'));
   ok(tag+' A: janela acessível (foco dentro, outras telas esperam)',await p.evaluate(()=>{const m=document.getElementById('fjSheet');return m.getAttribute('role')==='dialog'&&m.contains(document.activeElement)&&document.body.classList.contains('inmission');}));
@@ -87,7 +87,7 @@ for(const [route,pre] of [['comecar/','asc-u'],['','ascensao']]){const tag=route
   ok(tag+' C: console limpo',errs.length===0,errs.join(' | '));await ctx.close();
   // D: desktop, descanso (quinta), editar dias em 1 toque, ▶ da quest de treino, Mais > níveis, tirar pilares
   const cfgP=JSON.parse(JSON.stringify(CFG));cfgP.quests.push({id:'fj_prot',title:'Proteína',xp:15,stat:'corpo',fj:1});
-  ({ctx,p,errs}=await open(route,pre,P({forja:FJ({pil:true})}),'2026-11-26T10:00:00',{vp:{width:1280,height:800},cfg:cfgP}));
+  ({ctx,p,errs}=await open(route,pre,P({forja:FJ({pil:true,ses:[{d:'2026-11-23',tipo:'A',min:30,r:0}]})}),'2026-11-26T10:00:00',{vp:{width:1280,height:800},cfg:cfgP}));
   ok(tag+' D: quinta é descanso',(await p.textContent('#fjCard')).includes('Hoje é descanso'),await p.textContent('#fjCard'));
   ok(tag+' D: no descanso o card vai para depois das tarefas',await p.evaluate(()=>{const c=document.getElementById('fjCard'),q=document.getElementById('quests').closest('section');return !!(q.compareDocumentPosition(c)&Node.DOCUMENT_POSITION_FOLLOWING);}));
   ok(tag+' D: sem rolagem lateral no desktop',await p.evaluate(()=>document.documentElement.scrollWidth<=innerWidth));

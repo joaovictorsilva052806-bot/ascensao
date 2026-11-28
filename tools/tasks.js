@@ -199,6 +199,12 @@ function tpWallet(){const a=tpW(),rec=a.filter(x=>x.st!=="p"),pen=a.filter(x=>x.
     d.append(tpEl("div","sm tpwnx","Próximo marco: "+tpBRL(nx[0]).replace(",00","")+" · título \""+(tot>0?nx[1]:"???")+"\""));
     const bar=tpEl("div","tpbar");bar.setAttribute("role","progressbar");bar.setAttribute("aria-label","Próximo marco da Carteira");bar.setAttribute("aria-valuemin","0");bar.setAttribute("aria-valuemax","100");bar.setAttribute("aria-valuenow",String(pc));const fill=tpEl("i");fill.style.width=pc+"%";bar.append(fill);d.append(bar);}
   else d.append(tpEl("div","sm tpwnx","Todos os marcos batidos. Lenda."));
+  // 1º dinheiro recebido: convite para um amigo fazer junto (o texto do convite nunca leva o valor; nada sai sozinho)
+  if(tot>0&&typeof cdInvite==="function"){let off=false;try{off=localStorage.getItem(TP_WK+"-sh")==="1";}catch(e){}
+    if(!off){const sh=tpEl("div","tpshare");sh.append(tpEl("div","sm","🎉 Dinheiro de verdade na sua conta. Chame 1 amigo para fazer junto: com companhia a gente não desiste."));
+      const r=tpEl("div","row");const b=tpEl("button","go tpshgo","📨 Chamar um amigo");b.type="button";b.addEventListener("click",()=>{try{cdInvite();}catch(e){}});
+      const x=tpEl("button","ghost tpshx","Agora não");x.type="button";x.addEventListener("click",()=>{try{localStorage.setItem(TP_WK+"-sh","1");}catch(e){}sh.remove();});
+      r.append(b,x);sh.append(r);d.append(sh);}}
   // registrar ganho em 2 toques
   const rg=tpEl("details","tpwreg");rg.append(tpEl("summary",null,"＋ Registrar ganho"));
   const f=tpEl("form","tpwf");const sel=tpEl("select");sel.setAttribute("aria-label","De onde veio");for(const T of TP_L.slice(0,tpVis()).concat(tpP()))sel.append(new Option(tpName(T),T.id));sel.append(new Option("Outro","outro"));
