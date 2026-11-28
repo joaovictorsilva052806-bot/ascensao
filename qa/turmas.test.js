@@ -29,7 +29,7 @@ for(const [route,pre,dev,vp] of [['comecar/','asc-u','iPhone',{width:390,height:
   // 1. migração: quem já joga ganha "Minha turma" com os amigos e o link antigo
   let {ctx,p,errs}=await open(route,pre,base(),{vp});
   let st=await LS(p,pre);
-  ok(tag+' migração: Minha turma com Ana e Bia',st.turmas&&st.turmas.l.length===1&&st.turmas.l[0].n==='Minha turma'&&st.turmas.l[0].m.join()==='Ana,Bia',JSON.stringify(st.turmas));
+  ok(tag+' migração: Minha turma com Ana e Bia',st.turmas&&st.turmas.l.length===1&&st.turmas.l[0].n==='Minha guilda'&&st.turmas.l[0].m.join()==='Ana,Bia',JSON.stringify(st.turmas));
   ok(tag+' migração: campos antigos intactos',st.velho==='fica'&&st.friends.velhoF===1&&st.turma.inv==='legado01'&&st.rank.uid==='abc12345'&&st.log['2026-11-25']);
   // 2. destaque em Hoje
   const hero=p.locator('#gtHero');ok(tag+' Hoje: ranking da semana em destaque',await hero.isVisible()&&(await hero.textContent()).includes('Ranking da semana'));
@@ -37,7 +37,7 @@ for(const [route,pre,dev,vp] of [['comecar/','asc-u','iPhone',{width:390,height:
   await hero.screenshot({path:SHOT+'hoje-destaque-'+dev+(route?'':'-raiz')+'.png'});
   // 3. aba Amigos: seletor de turmas + pódio
   await tab(p,'amigos');await p.waitForTimeout(500);await p.locator('#tmPanel .tmseg button[data-v="turma"]').dispatchEvent('click');await p.waitForTimeout(200);
-  ok(tag+' Amigos: seletor de turmas',await p.locator('#tmPanel .gtbar .gtchip.on').count()===1&&(await p.locator('#tmPanel .gtbar').textContent()).includes('Minha turma'));
+  ok(tag+' Amigos: seletor de turmas',await p.locator('#tmPanel .gtbar .gtchip.on').count()===1&&(await p.locator('#tmPanel .gtbar').textContent()).includes('Minha guilda'));
   ok(tag+' Amigos: pódio com 3',await p.locator('#tmPanel .gtpod .gtp').count()===3);
   ok(tag+' Amigos: link antigo continua',(await p.locator('#tmPanel .cdurl').textContent()).includes('c=legado01')&&!(await p.locator('#tmPanel .cdurl').textContent()).includes('&t='));
   ok(tag+' Amigos: sem rolagem lateral',!(await hscroll(p)));
@@ -58,7 +58,7 @@ for(const [route,pre,dev,vp] of [['comecar/','asc-u','iPhone',{width:390,height:
   const u=await p.locator('#tmPanel .cdurl').textContent();
   ok(tag+' Igreja: link próprio com a turma',/c=[a-z0-9]{8}&t=Igreja/.test(u)&&!u.includes('legado01'),u);
   // 5. trocar de volta
-  await p.locator('#tmPanel .gtchip',{hasText:'Minha turma'}).click();await p.waitForTimeout(200);
+  await p.locator('#tmPanel .gtchip',{hasText:'Minha guilda'}).click();await p.waitForTimeout(200);
   const n2=await p.locator('#tmPanel .tmlist li:not(.tmzone) .tmtx b').allTextContents();ok(tag+' troca: Minha turma volta com 3',n2.length===3,n2.join(','));
   // 6. renomear e apagar
   await p.locator('#tmPanel .gtchip',{hasText:'Igreja'}).click();await p.waitForTimeout(150);await p.locator('#tmPanel .gtchip.on').click();await p.waitForTimeout(150);

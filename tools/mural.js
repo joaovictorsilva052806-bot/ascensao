@@ -96,7 +96,7 @@ async function muAct(a,o,okMsg){try{await muApi(a,o);if(okMsg)toast(okMsg);}catc
 function muUI(){let p=$("muPanel");const wrap=document.querySelector(".wrap");if(!wrap)return;
   if(!p){p=muEl("section","panel mu");p.id="muPanel";p.dataset.tab="amigos";const at=$("tmPanel");at&&at.parentNode===wrap?at.after(p):wrap.append(p);}
   if(!MURAL_URL||!muBand()||!(prog.rank&&prog.rank.on)){p.hidden=true;return;}p.hidden=false;p.textContent="";const s=muSt();
-  const hd=muEl("div","muhd");hd.append(muEl("h2",null,"📸 Mural da turma"),muEl("span","sm muted","só amigos · 7 dias"));p.append(hd);
+  const hd=muEl("div","muhd");hd.append(muEl("h2",null,"📸 Mural da guilda"),muEl("span","sm muted","só amigos · 7 dias"));p.append(hd);
   if(!muPhotoOn()){p.append(muEl("div","sm muted","O mural liga quando você está no ranking com apelido."));return;}
   if(!s.ok){p.append(muEl("p","sm","Prove uma tarefa com foto. Só seus amigos veem e ela some em 7 dias."));const b=muEl("button","go","Ligar o mural");b.type="button";b.addEventListener("click",()=>muConsent(()=>{muAt=0;muLoad();}));p.append(b);return;}
   const add=muEl("button","ghost","＋ Postar prova de uma tarefa de hoje");add.type="button";add.addEventListener("click",()=>{const tk=todayKey();const done=(prog.log[tk]||[]).map(e=>e.q);

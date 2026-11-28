@@ -31,7 +31,7 @@ const AT_RULES=[
 const AT_OLD={foco:["disc","intel"],vendas:["fort","caris"],mente:["sabed","intel"],corpo:["forca","vital"]};
 // classes: [primário, secundário, passiva, títulos nv 5/10/20/30]
 const AT_CLS={
- estudante:["intel","disc","foco1","Aplicado","Destaque da Turma","Mestre dos Estudos","Lenda Acadêmica"],
+ estudante:["intel","disc","foco1","Aplicado","Destaque da Guilda","Mestre dos Estudos","Lenda Acadêmica"],
  universitario:["intel","sabed","noite","Calouro Veterano","Pesquisador","Mestre do Campus","Doutor Lendário"],
  profissional:["fort","disc","manha","Pontual","Referência do Time","Líder Nato","Lenda da Carreira"],
  empreendedor:["fort","caris","combo","Visionário","Fazedor de Negócios","Magnata","Lenda dos Negócios"],

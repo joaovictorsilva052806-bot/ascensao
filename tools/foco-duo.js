@@ -15,7 +15,7 @@ function fdSheet(){let m=$("fdSheet");if(!m){m=fdEl("div","smsheet");m.id="fdShe
 // escolher o amigo
 function fdStart(){if(!fdOn()){toast("Entre no ranking e adicione um amigo em Amigos para focar em dupla.");return;}const o=fdSt();
   if(o.w){fdStatus();return;}const pals=duoPals();const c=fdSheet();
-  if(!pals.length){c.append(fdEl("h3","smh","Ninguém na turma ainda"),fdEl("p","sm","Adicione um amigo na aba Amigos e chame ele para focar junto."));return;}
+  if(!pals.length){c.append(fdEl("h3","smh","Ninguém na guilda ainda"),fdEl("p","sm","Adicione um amigo na aba Amigos e chame ele para focar junto."));return;}
   const hm=fdHM(Math.ceil((Date.now()+FD_LEAD*60000)/60000)*60000);
   c.append(fdEl("h3","smh","Quem foca com você?"),fdEl("p","sm","Os dois começam um bloco de 25 min às "+fdShow(hm)+". Terminaram os dois: +"+FD_XP+" XP para cada."));
   const ch=fdEl("div","duochips");for(const n of pals.slice(0,12)){const b=fdEl("button","chip","+ "+n);b.type="button";b.onclick=()=>fdInvite(n,hm);ch.append(b);}c.append(ch);}
