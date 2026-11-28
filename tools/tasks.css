@@ -66,6 +66,13 @@ body:not([data-tab=lenda]) .wrap>section[data-tab=lenda]{display:none}
 .tpline.tplock .tplk{letter-spacing:.08em}
 .tabbar .tplbar{color:#f5c542}
 .tabbar .tplbar.lock{opacity:.75}
+/* polimento: estados vazios, sem internet e movimento reduzido */
+.tpempty{margin:4px 0;padding:10px 12px;border:1px dashed var(--line);border-radius:10px;color:var(--text);line-height:1.45}
+.tpoff{margin:0;padding:8px 10px;border-left:3px solid var(--warn,#ffb020);line-height:1.45}
+.tpall{color:var(--good,#5be38f);font-weight:600}
+.tpsli{display:grid}
+.tplink:focus-visible,.tpchip:focus-visible,.tpt:focus-visible{outline:2px solid var(--glow);outline-offset:2px}
+@media (prefers-reduced-motion:reduce){.tpbar>i{transition:none}.tpseal.nx{animation:none}}
 /* Carteira: placar */
 .tpwallet{position:relative;overflow:hidden;border:1px solid color-mix(in srgb,#f5c542 55%,var(--line));border-radius:14px;padding:14px;margin:10px 0;background:linear-gradient(160deg,color-mix(in srgb,#f5c542 14%,transparent),transparent 70%);display:grid;gap:8px}
 .tpwlbl{font-size:.7rem;letter-spacing:.14em;color:#f5c542;font-weight:700}

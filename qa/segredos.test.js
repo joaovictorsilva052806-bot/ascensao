@@ -17,7 +17,7 @@ async function page(opts={},time){const ctx=await b.newContext({viewport:{width:
 let {ctx,p,errs}=await page({},new Date('2026-11-25T14:00:00'));
 await p.goto(U);await seed(p,base());
 ok('root: painel Segredos existe',await p.locator('#secPanel').count()===1);
-ok('root: 0 / 26',(await p.textContent('#secCount')).trim()==='0 / 26',await p.textContent('#secCount'));
+ok('root: 0 / 27',(await p.textContent('#secCount')).trim()==='0 / 27',await p.textContent('#secCount'));
 await p.click('#tabbar [data-go="mais"]');await abre(p,'#secCode');await p.fill('#secCode','  LÁRICA ');await p.press('#secCode','Enter');await p.waitForTimeout(400);
 ok('código "LÁRICA" (maiúscula/acento) revela',(await modal(p)).includes('Larica'),await p.textContent('#secOut'));
 await p.screenshot({path:SP+'reveal.png'});
@@ -89,7 +89,7 @@ ok('teclado: console sem erros',errs.length===0,errs.join(' | '));await ctx.clos
 ({ctx,p,errs}=await page({},new Date('2026-11-25T10:00:00')));
 {const o=base();o.log['2026-11-24']=[{q:'q1',kind:'full',xp:10,bonus:0,t:'x'}];o.sec={s_larica:'2026-11-01',s_zen:'2026-11-02'};o.secTitle='s_zen';await seedFirst(p,o);}
 st=await LS(p);ok('migração: segredos e título antigos intactos',st.sec.s_larica==='2026-11-01'&&st.sec.s_zen==='2026-11-02'&&st.secTitle==='s_zen'&&st.foo==='campo-antigo');
-ok('migração: contador 2 / 26',(await p.textContent('#secCount')).trim()==='2 / 26',await p.textContent('#secCount'));
+ok('migração: contador 2 / 27',(await p.textContent('#secCount')).trim()==='2 / 27',await p.textContent('#secCount'));
 await p.click('#tabbar [data-go="prog"]');await abre(p,'#secList');await p.locator('#secPanel').screenshot({path:SP+'pop-celular.png'});
 ok('migração: console sem erros',errs.length===0,errs.join(' | '));await ctx.close();
 // reduce-motion

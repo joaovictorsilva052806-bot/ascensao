@@ -107,6 +107,22 @@ const TP_L=[
      "Enviar 10 fotos ou vídeos seus, com título e palavras-chave em inglês.",
      "Aprovados: acompanhar as vendas no painel."]}];
 function tpEl(t,c,x){const e=document.createElement(t);if(c)e.className=c;if(x!=null)e.textContent=x;return e;}
+// acessibilidade: texto só para leitor de tela, ícone decorativo escondido, região viva fixa (fora do painel, que é redesenhado)
+function tpSr(x){return tpEl("span","srlive",x);}
+function tpIc(x){const e=tpEl("span","tpic",x);e.setAttribute("aria-hidden","true");return e;}
+function tpPl(n,a,b){return n+" "+(n===1?a:b);}
+function tpSay(x){let l=$("tpLive");if(!l){l=tpEl("div","srlive");l.id="tpLive";l.setAttribute("aria-live","polite");l.setAttribute("role","status");document.body.append(l);}
+  l.textContent="";setTimeout(()=>{l.textContent=x;},40);}
+// o painel é redesenhado a cada toque: guarda onde estava o foco e devolve ao mesmo controle (senão o teclado cai no topo da página)
+function tpFocusKey(){const a=document.activeElement,p=$("tpPanel");if(!a||!p||!p.contains(a))return null;const c=a.closest("[data-tp]"),id=c&&c.dataset.tp;
+  if(a.classList.contains("tpbtn")&&id)return '.tpm[data-tp="'+id+'"] .tpbtn[data-i="'+a.dataset.i+'"]';
+  if(a.classList.contains("tpchip"))return '.tpchip[data-f="'+a.dataset.f+'"]';
+  if(a.tagName==="SUMMARY")return id?'.tpm[data-tp="'+id+'"]>summary':a.closest(".tpwallet")?".tpwallet>summary":null;
+  if(a.closest(".tpgot")&&id)return '.tpm[data-tp="'+id+'"] .tpgot input';
+  if(a.closest(".tpwallet"))return a.tagName==="SELECT"?".tpwallet .tpwf select":a.classList.contains("tpwclr")?".tpwallet .tpwclr":".tpwallet .tpwf input";
+  return null;}
+function tpRefocus(p,k){if(!k)return;const ae=document.activeElement;if(ae&&ae!==document.body&&ae.isConnected&&!p.contains(ae))return;
+  const e=p.querySelector(k);if(e&&e.getClientRects().length)try{e.focus({preventScroll:true});}catch(x){}}
 function tpName(T){return T.t.replace(/^\S+\s/,"");}
 function tpOn(){try{return !!(cfg&&!cfg.blank&&cfg.quests&&cfg.quests.length)&&typeof ad18==="function"&&ad18();}catch(e){return false;}}
 function tpSt(){let r=prog.tp;if(!r||typeof r!=="object"||Array.isArray(r))r=prog.tp={};for(const T of TP_L){if(!r[T.id]||typeof r[T.id]!=="object"||Array.isArray(r[T.id]))r[T.id]={};if(!r[T.id].s||typeof r[T.id].s!=="object"||Array.isArray(r[T.id].s))r[T.id].s={};}return r;}
@@ -136,7 +152,7 @@ function tpStep(T,i){const r=tpSt(),s=r[T.id].s;
     const nx=tpVis()>before?TP_L[tpVis()-1]:null;
     const msg=(first?"A Carteira foi desbloqueada: anote ali o que você receber. ":"")+(nx?"Uma nova task se revelou: "+TP_TIER[nx.tier][0]+". ":"")+"O dinheiro, quando vier, vem direto de quem paga."+(g?" +"+g+" 🪙 de Ouro.":"");
     try{sysPop(first?"CARTEIRA DESBLOQUEADA":"TASK "+tier[0].toUpperCase()+" CONCLUÍDA",tpName(T),msg,null,"Fechar");}catch(e){toast("✓ Task concluída"+(g?" · +"+g+" 🪙":""));}}
-  else{if(!all&&r[T.id].f)delete r[T.id].f;save();}
+  else{if(!all&&r[T.id].f)delete r[T.id].f;save();tpSay((s[i]?"Passo "+(i+1)+" marcado. ":"Passo "+(i+1)+" desmarcado. ")+tpN(T)+" de "+T.s.length+" feitos em "+tpName(T)+".");}
   tpOpen=T.id;tpRender();try{tpLine();}catch(e){}}
 // "Quanto ganhei" dentro de cada card: alimenta a Carteira real (só no aparelho)
 function tpGot(T){const f=tpEl("form","tpwf tpgot");const inp=tpEl("input");inp.type="text";inp.inputMode="decimal";inp.maxLength=12;inp.autocomplete="off";inp.placeholder="Quanto ganhei (R$)";inp.setAttribute("aria-label","Quanto ganhei com "+tpName(T)+", em reais");
@@ -144,12 +160,12 @@ function tpGot(T){const f=tpEl("form","tpwf tpgot");const inp=tpEl("input");inp.
   f.addEventListener("submit",ev=>{ev.preventDefault();if(tpAdd(T.id,inp.value)){tpOpen=T.id;const w=$("tpPanel")&&$("tpPanel").querySelector(".tpwallet");if(w){tpCoins(w);}setTimeout(()=>{tpRender();try{tpLine();}catch(e){}},w?400:0);}});return f;}
 function tpCard(T){const r=tpSt(),s=r[T.id].s,n=tpN(T),done=n===T.s.length,tier=TP_TIER[T.tier];
   const c=tpEl("details","tpm t-"+T.tier+(done?" ok":""));c.dataset.tp=T.id;c.open=tpOpen===T.id;c.addEventListener("toggle",()=>{if(c.open)tpOpen=T.id;else if(tpOpen===T.id)tpOpen=null;});
-  const sm=tpEl("summary","tpt");const nm=tpEl("span","tpnm");nm.append(tpEl("span","tptier",tier[0]),tpEl("span",null,(done?"✓ ":"")+T.t));sm.append(nm,tpEl("span","sm mono",n+"/"+T.s.length));c.append(sm);
+  const sm=tpEl("summary","tpt");const nm=tpEl("span","tpnm");nm.append(tpEl("span","tptier",tier[0]),tpEl("span",null,(done?"✓ ":"")+T.t));const ct=tpEl("span","sm mono",n+"/"+T.s.length);ct.append(tpSr(" passos feitos"+(done?", concluída":"")));sm.append(nm,ct);c.append(sm);
   c.append(tpEl("p","tpwhen",T.when),tpEl("p","tpsub","💰 "+T.pay));
   if(T.ja)c.append(tpEl("p","sm tpja","🔁 "+T.ja));
-  const ol=tpEl("ol","tpsteps");T.s.forEach((x,i)=>{const li=tpEl("li");const b=tpEl("button",(s[i]?"ghost":"go")+" tpbtn",(s[i]?"✓ ":"")+x);b.type="button";b.dataset.i=i;
+  const ol=tpEl("ol","tpsteps");T.s.forEach((x,i)=>{const li=tpEl("li");const b=tpEl("button",(s[i]?"ghost":"go")+" tpbtn");b.type="button";b.dataset.i=i;if(s[i])b.append(tpIc("✓ "));b.append(tpSr("Passo "+(i+1)+" de "+T.s.length+": "),x);
     b.setAttribute("aria-pressed",s[i]?"true":"false");b.addEventListener("click",()=>tpStep(T,i));li.append(b);ol.append(li);});c.append(ol);
-  const lk=tpEl("div","tplinks");lk.append(tpEl("span","sm muted","Páginas oficiais:"));for(const [nm2,u] of T.links){const a=tpEl("a","tplink",nm2+" ↗");a.href=u;a.target="_blank";a.rel="noopener noreferrer";lk.append(a);}c.append(lk);
+  const lk=tpEl("div","tplinks");lk.append(tpEl("span","sm muted","Páginas oficiais:"));for(const [nm2,u] of T.links){const a=tpEl("a","tplink",nm2);a.append(tpIc(" ↗"),tpSr(" (site oficial, abre fora do app)"));a.href=u;a.target="_blank";a.rel="noopener noreferrer";lk.append(a);}c.append(lk);
   c.append(tpEl("p","sm tpwarn","⚠️ "+T.warn));
   if(tpWal())c.append(tpGot(T));
   c.append(tpEl("p","sm muted",done?"✓ Concluída. +"+tier[1]+" 🪙 já entrou (uma vez só).":"Ao marcar os "+T.s.length+" passos: +"+tier[1]+" 🪙 de Ouro (uma vez só)."));
@@ -164,12 +180,13 @@ function tpWallet(){const a=tpW(),rec=a.filter(x=>x.st!=="p"),pen=a.filter(x=>x.
   const tot=tpSum(rec,()=>true),mes=todayKey().slice(0,7),tm=tpSum(rec,x=>String(x.d).slice(0,7)===mes),td=tpSum(rec,x=>x.d===todayKey()),pv=tpSum(pen,()=>true);
   const top=tpEl("div","tpwtop");top.append(tpEl("div","tpwlbl","💰 CARTEIRA · recebido fora do app"),tpEl("div","tpwbig",tpBRL(tot)),
     tpEl("div","sm mono tpwsub","Este mês: "+tpBRL(tm)+" · Hoje: "+tpBRL(td)+(pv?" · Pendente: "+tpBRL(pv):"")));d.append(top);
+  if(!a.length)d.append(tpEl("p","sm tpempty","Nada anotado ainda. Recebeu? Anote aqui o valor e de onde veio."));
   // marcos: títulos que destravam com o total recebido
   const nx=TP_MARCOS.find(m=>tot<m[0]);const got=TP_MARCOS.filter(m=>tot>=m[0]);
   if(got.length){const tg=tpEl("div","tpwtit");for(const m of got)tg.append(tpEl("span","tpwbadge","🏅 "+m[1]));d.append(tg);}
   if(nx){const prev=got.length?got[got.length-1][0]:0,pc=Math.max(0,Math.min(100,Math.round((tot-prev)/(nx[0]-prev)*100)));
     d.append(tpEl("div","sm tpwnx","Próximo marco: "+tpBRL(nx[0]).replace(",00","")+" · título \""+(tot>0?nx[1]:"???")+"\""));
-    const bar=tpEl("div","tpbar");bar.setAttribute("role","progressbar");bar.setAttribute("aria-label","Próximo marco da Carteira");bar.setAttribute("aria-valuemin","0");bar.setAttribute("aria-valuemax","100");bar.setAttribute("aria-valuenow",String(pc));const fill=tpEl("i");fill.style.width=pc+"%";bar.append(fill);d.append(bar);}
+    const bar=tpEl("div","tpbar");bar.setAttribute("role","progressbar");bar.setAttribute("aria-label","Próximo marco da Carteira");bar.setAttribute("aria-valuetext",tpBRL(tot)+" de "+tpBRL(nx[0]));bar.setAttribute("aria-valuemin","0");bar.setAttribute("aria-valuemax","100");bar.setAttribute("aria-valuenow",String(pc));const fill=tpEl("i");fill.style.width=pc+"%";bar.append(fill);d.append(bar);}
   else d.append(tpEl("div","sm tpwnx","Todos os marcos batidos. Lenda."));
   // registrar ganho em 2 toques
   const rg=tpEl("details","tpwreg");rg.append(tpEl("summary",null,"＋ Registrar ganho"));
@@ -184,40 +201,45 @@ function tpWallet(){const a=tpW(),rec=a.filter(x=>x.st!=="p"),pen=a.filter(x=>x.
       if(x.st==="p"){const ok=tpEl("button","ghost tpwok","Caiu ✓");ok.type="button";ok.setAttribute("aria-label","Marcar "+tpBRL(x.v)+" como recebido");
         ok.addEventListener("click",()=>{const b=tpW();const y=b.find(z=>z.d===x.d&&z.src===x.src&&+z.v===+x.v&&z.st==="p");if(y){delete y.st;tpWSave(b);}toast("Recebido: "+tpBRL(x.v));tpCoins(d);setTimeout(()=>tpRender(true),500);});li.append(ok);}
       ul.append(li);});d.append(ul);
-    const clr=tpEl("button","ghost tpwclr","Apagar a carteira");clr.type="button";clr.addEventListener("click",()=>{if(clr.dataset.c){tpWSave([]);try{localStorage.removeItem(TP_WK);}catch(e){}toast("Carteira apagada.");tpRender(true);}else{clr.dataset.c="1";clr.textContent="Toque de novo para apagar tudo";}});d.append(clr);}
+    const clr=tpEl("button","ghost tpwclr","Apagar a carteira");clr.type="button";clr.addEventListener("click",()=>{if(clr.dataset.c){tpWSave([]);try{localStorage.removeItem(TP_WK);}catch(e){}toast("Carteira apagada.");tpRender(true);}else{clr.dataset.c="1";clr.textContent="Toque de novo para apagar tudo";tpSay("Toque de novo para apagar tudo da Carteira.");}});d.append(clr);}
   d.append(tpEl("p","sm muted","É só o seu placar: o app não guarda, não recebe e não vê dinheiro. Fica só neste aparelho, fora da planilha e de qualquer ranking. Ganho fora do app pode ter imposto: veja \"Recebi sem CNPJ\" na Primeira Renda."));
   return d;}
 // aba própria: botão na barra, só para 18+
 const TP_ICON='<svg viewBox="0 0 24 24"><path d="M12 3l3 5 5 1-3.5 4 1 5.5L12 16l-5.5 2.5 1-5.5L4 9l5-1z"/></svg>';
 function tpTab(){const bar=$("tabbar");if(!bar)return;let b=bar.querySelector('[data-go="lenda"]');
-  if(!b){b=document.createElement("button");b.type="button";b.dataset.go="lenda";b.className="tplbar";b.innerHTML=TP_ICON+"Lendárias";
+  if(!b){b=document.createElement("button");b.type="button";b.dataset.go="lenda";b.className="tplbar";b.innerHTML=TP_ICON.replace("<svg ",'<svg aria-hidden="true" focusable="false" ')+"Lendárias";
     b.addEventListener("click",()=>{goTab("lenda");tpRender();});const mais=bar.querySelector('[data-go="mais"]');bar.insertBefore(b,mais||null);
     try{if(sessionStorage.getItem("asc-tab")==="lenda")setTimeout(()=>{if(tpOn())goTab("lenda");},0);}catch(e){}}
-  b.hidden=!tpOn();b.classList.toggle("lock",!tpOpenTab());if(b.hidden&&document.body.dataset.tab==="lenda")goTab("hoje");}
+  b.hidden=!tpOn();b.classList.toggle("lock",!tpOpenTab());if(tpOpenTab())b.removeAttribute("aria-label");else b.setAttribute("aria-label","Lendárias, trancada");if(b.hidden&&document.body.dataset.tab==="lenda")goTab("hoje");}
 function tpRender(keepW){try{tpTab();}catch(e){}let p=$("tpPanel");if(!tpOn()){if(p)p.hidden=true;return;}
   if(!p){const w=document.querySelector(".wrap");if(!w)return;p=tpEl("section","panel tppanel");p.id="tpPanel";p.dataset.tab="lenda";w.append(p);}
-  const wo=keepW||((p.querySelector(".tpwreg")||{}).open);p.hidden=false;p.textContent="";
+  const wo=keepW||((p.querySelector(".tpwreg")||{}).open);const fk=tpFocusKey();p.hidden=false;p.textContent="";
+  tpBuild(p,wo);tpRefocus(p,fk);}
+function tpBuild(p,wo){
   const hd=tpEl("div","qhead");p.append(hd);
   if(!tpOpenTab()){p.classList.add("tplock");
-    hd.append(tpEl("h2",null,"⚜️ Tasks Lendárias"),tpEl("span","sm mono","🔒"));
-    const v=tpEl("div","tpvault");v.append(tpEl("div","tpsig","🔒"),tpEl("p","tpq","O Sistema guarda tarefas que pagam de verdade."),tpEl("p","sm muted","Só se revelam para quem já provou constância."));
-    const ul=tpEl("ul","tpreq");ul.append(tpEl("li","ok","✓ 18+ confirmado"),tpEl("li",null,"○ Conclua 1 missão de hoje"));v.append(ul);
+    hd.append(tpEl("h2",null,"⚜️ Tasks Lendárias"),tpEl("span","sm mono","🔒 trancada"));
+    const sig=tpEl("div","tpsig","🔒");sig.setAttribute("aria-hidden","true");const v=tpEl("div","tpvault");v.append(sig,tpEl("p","tpq","O Sistema guarda tarefas que pagam de verdade."),tpEl("p","sm muted","Só se revelam para quem já provou constância."));
+    const ul=tpEl("ul","tpreq");const r1=tpEl("li","ok"),r2=tpEl("li");r1.append(tpIc("✓ "),tpSr("Feito: "),"Idade 18+ confirmada");r2.append(tpIc("○ "),tpSr("Falta: "),"Concluir 1 missão de hoje");ul.append(r1,r2);v.append(ul);
     const go=tpEl("button","go","Ir para as missões de hoje");go.type="button";go.addEventListener("click",()=>goTab("hoje"));v.append(go);p.append(v);return;}
   p.classList.remove("tplock");
   const dn=tpDone(),vis=tpVis();
-  hd.append(tpEl("h2",null,"⚜️ Tasks Lendárias"),tpEl("span","sm mono",dn+" concluídas · "+vis+"/"+TP_L.length+" reveladas"));
+  hd.append(tpEl("h2",null,"⚜️ Tasks Lendárias"),tpEl("span","sm mono",tpPl(dn,"concluída","concluídas")+" · "+vis+"/"+TP_L.length+" reveladas"));
+  if(dn===TP_L.length)p.append(tpEl("div","tpmeta tpall","✓ Você concluiu todas as Tasks Lendárias. Quando surgir uma nova, ela aparece aqui."));
+  if(!navigator.onLine)p.append(tpEl("div","sm tpoff","📡 Sem internet. Os passos funcionam e ficam salvos; as páginas oficiais abrem quando a conexão voltar."));
   if(tpWal()){const w=tpWallet();const wr=w.querySelector(".tpwreg");if(wr)wr.open=!!wo;p.append(w);}
   if(tpWal()){const td=tpToday(),pc=Math.min(100,Math.round(td/TP_META*100));const mt=tpEl("div","tpmeta");
     mt.append(tpEl("div","tpmt","🎯 Meta de hoje: seus primeiros "+tpBRL(TP_META).replace(",00","")),tpEl("div","sm mono tpmv",td>=TP_META?"✓ Meta batida: "+tpBRL(td)+" anotados hoje":"Anotado hoje: "+tpBRL(td)+" de "+tpBRL(TP_META)));
-    const bar=tpEl("div","tpbar");bar.setAttribute("role","progressbar");bar.setAttribute("aria-label","Meta de hoje");bar.setAttribute("aria-valuemin","0");bar.setAttribute("aria-valuemax","100");bar.setAttribute("aria-valuenow",String(pc));const fill=tpEl("i");fill.style.width=pc+"%";bar.append(fill);mt.append(bar);
+    const bar=tpEl("div","tpbar");bar.setAttribute("role","progressbar");bar.setAttribute("aria-label","Meta de hoje");bar.setAttribute("aria-valuemin","0");bar.setAttribute("aria-valuemax","100");bar.setAttribute("aria-valuenow",String(pc));bar.setAttribute("aria-valuetext",tpBRL(Math.min(td,TP_META))+" de "+tpBRL(TP_META));const fill=tpEl("i");fill.style.width=pc+"%";bar.append(fill);mt.append(bar);
     p.append(mt);}
   else p.append(tpEl("div","tpmeta tpwlock","🔒 Conclua 1 Task Lendária para abrir a Carteira e a meta do dia."));
-  p.append(tpEl("div","sm muted tpintro","Quem paga é o comprador ou a plataforma, direto para você. Comece pelo Desapega: é o único que cai hoje."));
+  p.append(tpEl("div","sm muted tpintro","Comece pelo Desapega: é a única que pode pagar hoje. Marque cada passo quando fizer."));
   const fl=tpEl("div","tpfil");fl.setAttribute("role","group");fl.setAttribute("aria-label","Filtrar por raridade");
-  for(const [k,lb] of [["all","Todas"],["l","Lendária"],["r","Rara"],["c","Comum"]]){const b=tpEl("button","tpchip"+(k!=="all"?" t-"+k:"")+(tpF===k?" on":""),lb);b.type="button";b.setAttribute("aria-pressed",tpF===k?"true":"false");b.addEventListener("click",()=>{tpF=k;tpRender();});fl.append(b);}
+  for(const [k,lb] of [["all","Todas"],["l","Lendária"],["r","Rara"],["c","Comum"]]){const b=tpEl("button","tpchip"+(k!=="all"?" t-"+k:"")+(tpF===k?" on":""),lb);b.type="button";b.dataset.f=k;b.setAttribute("aria-pressed",tpF===k?"true":"false");b.addEventListener("click",()=>{tpF=k;tpRender();const n=$("tpPanel").querySelectorAll(".tpm[data-tp]").length;tpSay("Filtro "+lb+": "+tpPl(n,"task revelada","tasks reveladas")+".");});fl.append(b);}
   p.append(fl);
-  const sg=tpEl("div","tpseals");TP_L.forEach((T,k)=>{if(tpF!=="all"&&T.tier!==tpF)return;if(k<vis)p.append(tpCard(T));else sg.append(tpSealed(T,k-vis));});
-  if(sg.children.length){p.append(tpEl("div","sm muted tpslh","🔒 "+sg.children.length+" seladas · cada task concluída revela a próxima"));p.append(sg);}
+  const sg=tpEl("div","tpseals");sg.setAttribute("role","list");let nc=0;TP_L.forEach((T,k)=>{if(tpF!=="all"&&T.tier!==tpF)return;if(k<vis){p.append(tpCard(T));nc++;}else{const x=tpSealed(T,k-vis);const li=tpEl("div","tpsli");li.setAttribute("role","listitem");li.append(x);sg.append(li);}});
+  if(!nc&&tpF!=="all")p.append(tpEl("p","tpempty","Nenhuma task "+TP_TIER[tpF][0]+" revelada ainda. Conclua uma task para revelar a próxima."));
+  if(sg.children.length){p.append(tpEl("div","sm muted tpslh","🔒 "+tpPl(sg.children.length,"selada","seladas")+" · cada task concluída revela a próxima"));p.append(sg);}
   p.append(tpEl("p","sm tpnote",TP_NOTE));}
 // Hoje: uma linha só (integra as Lendárias com o dia). Trancada: pista misteriosa. Aberta: o próximo passo que paga.
 function tpNext(){const r=tpSt(),v=tpVis();for(const T of TP_L.slice(0,v)){const i=T.s.findIndex((x,k)=>!r[T.id].s[k]);if(i>=0)return {T,i};}return null;}
@@ -235,3 +257,4 @@ function tpLine(){let l=$("tpLine");if(!tpOn()){if(l)l.hidden=true;return;}
   l.append(b);}
 {const _r=render;render=function(){_r.apply(this,arguments);try{tpRender();}catch(e){}try{tpLine();}catch(e){}};}
 setTimeout(()=>{try{tpRender();}catch(e){}try{tpLine();}catch(e){}},70);
+for(const ev of ["online","offline"])addEventListener(ev,()=>{try{if($("tpPanel"))tpRender();}catch(e){}});

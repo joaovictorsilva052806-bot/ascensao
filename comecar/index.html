@@ -1659,6 +1659,13 @@ body:not([data-tab=lenda]) .wrap>section[data-tab=lenda]{display:none}
 .tpline.tplock .tplk{letter-spacing:.08em}
 .tabbar .tplbar{color:#f5c542}
 .tabbar .tplbar.lock{opacity:.75}
+/* polimento: estados vazios, sem internet e movimento reduzido */
+.tpempty{margin:4px 0;padding:10px 12px;border:1px dashed var(--line);border-radius:10px;color:var(--text);line-height:1.45}
+.tpoff{margin:0;padding:8px 10px;border-left:3px solid var(--warn,#ffb020);line-height:1.45}
+.tpall{color:var(--good,#5be38f);font-weight:600}
+.tpsli{display:grid}
+.tplink:focus-visible,.tpchip:focus-visible,.tpt:focus-visible{outline:2px solid var(--glow);outline-offset:2px}
+@media (prefers-reduced-motion:reduce){.tpbar>i{transition:none}.tpseal.nx{animation:none}}
 /* Carteira: placar */
 .tpwallet{position:relative;overflow:hidden;border:1px solid color-mix(in srgb,#f5c542 55%,var(--line));border-radius:14px;padding:14px;margin:10px 0;background:linear-gradient(160deg,color-mix(in srgb,#f5c542 14%,transparent),transparent 70%);display:grid;gap:8px}
 .tpwlbl{font-size:.7rem;letter-spacing:.14em;color:#f5c542;font-weight:700}
@@ -1727,6 +1734,15 @@ a.mmlink{padding:0 14px;border-radius:8px;text-decoration:none;font-weight:600;c
 .mmreg{color:var(--glow);padding:0 6px}
 .mmfiz{justify-self:start}
 .mmfiz.mmlock{opacity:.6}
+/* Ideia que vale bônus (tools/sug.*) */
+.sugrule{margin:8px 0;padding:8px 10px;border-left:3px solid var(--gold);background:rgba(255,200,60,.06);border-radius:3px}
+.sugnk{margin:6px 0}.sugnk label{display:flex;align-items:center;gap:8px;min-height:44px}.sugnk input[type=checkbox]{width:22px;height:22px}
+.sugnk input#sugNk{font:inherit;width:100%;min-height:44px;background:rgba(0,212,255,.04);border:1px solid var(--line);color:var(--fg);border-radius:3px;padding:8px 10px}
+.sugh{font-size:.9rem;margin:12px 0 4px}
+.suglist{list-style:none;margin:0;padding:0}.suglist li{display:flex;justify-content:space-between;gap:8px;padding:8px 0;border-top:1px solid var(--line)}
+.suglist li b{font-family:ui-monospace,monospace;letter-spacing:.04em}.suglist li.ok span{color:var(--good)}
+.sugcr{margin-top:12px}.sugcr input{min-height:44px;font-family:ui-monospace,monospace}
+.sugcrout{white-space:pre-wrap;word-break:break-all;font-size:.75rem;padding:8px;border:1px solid var(--line);border-radius:3px;background:rgba(0,0,0,.25)}
 /* ---- Arsenal do Herói: vitrine de afiliados 18+ (tools/arsenal.*) ---- */
 .afpanel{display:grid;gap:10px}
 .afh{margin:6px 0 0;font-size:.95rem}
@@ -1744,6 +1760,21 @@ a.aflink{justify-self:start;min-height:44px;display:inline-flex;align-items:cent
 .afrow .ghost{min-height:44px}
 .afdica .link,.afgo{min-height:44px;text-align:left}
 .afapoio{display:grid;gap:6px;padding:10px 12px;border:1px dashed var(--line);border-radius:10px}
+/* pedido de avaliação (tools/aval.js): estrelas e botões com 44px de toque */
+.avl .card{gap:8px}
+.avlstars{display:flex;justify-content:center;gap:4px}
+.avlstar{min-width:48px;min-height:48px;font-size:1.7rem;line-height:1;background:none;border:1px solid transparent;border-radius:10px;color:var(--muted,#7d8ea3);cursor:pointer;transition:color .15s,transform .15s}
+.avlstar.on{color:var(--glow,#6fb1ff);text-shadow:0 0 10px rgba(0,212,255,.55)}
+.avlstar:focus-visible{outline:2px solid var(--accent,#00d4ff);outline-offset:2px}
+.avlstar:active{transform:scale(.92)}
+.avllbl{min-height:1.2em}
+.avltxt{width:100%;box-sizing:border-box;min-height:56px;font:inherit;font-size:.9rem;padding:8px 10px;border-radius:8px;border:1px solid var(--line,#28415c);background:rgba(0,0,0,.25);color:inherit;resize:none}
+.avlrow{display:flex;flex-direction:column;gap:6px}
+.avlrow button{min-height:44px}
+.avlrow .go:disabled{opacity:.45;cursor:default}
+@media (prefers-reduced-motion:reduce){.avlstar{transition:none}.avlstar:active{transform:none}}
+/* o atalho "Colar figurinha" não fica por cima do cartão */
+body:has(#avlCard) #muChip{display:none}
 /* ---- Indique a Bellardi 18+ (tools/indique.*) ---- */
 .inpanel{display:grid;gap:10px}
 .inlead{margin:0;line-height:1.45}
@@ -2130,8 +2161,12 @@ a.inlink{min-height:44px;display:inline-flex;align-items:center;padding:0 14px;b
     <h2>Sugerir melhoria</h2>
     <div class="sm muted">O que está chato, confuso ou faltando? Pode ser curto. A mensagem sai pelo WhatsApp: é só escolher para quem mandar.</div>
     <textarea id="fbText" aria-label="Sua sugestão" rows="4" maxlength="800" placeholder="Ex.: queria uma quest para beber água" style="font:inherit;width:100%;background:rgba(0,212,255,.04);border:1px solid var(--line);color:var(--fg);border-radius:3px;padding:9px 10px"></textarea>
+    <div class="sm sugrule" id="sugRule">💡 Ideia que entrar no app vale <b>40 🪙 de Ouro</b> e uma conquista secreta. 1 ideia por dia. Não escreva link, e-mail nem telefone.</div>
+    <div class="sugnk" id="sugNkRow" hidden><label class="sm"><input type="checkbox" id="sugNkOk"> Se a ideia entrar, pode citar meu apelido na lista de ideias que viraram app</label><input id="sugNk" aria-label="Apelido para os créditos" maxlength="16" autocomplete="off" placeholder="Apelido (não use o nome completo)" hidden></div>
     <div class="row"><button class="go" type="button" id="fbSend">Enviar pelo WhatsApp</button></div>
-    <div class="sm muted" id="fbMsg"></div>
+    <div class="sm muted" id="fbMsg" aria-live="polite"></div>
+    <div id="sugMine" class="sugmine" hidden></div>
+    <div id="sugHall" class="sughall" hidden></div>
   </section>
 
   <section data-tab="mais" class="panel">
@@ -3031,9 +3066,15 @@ $("o_bkGo").addEventListener("click",()=>{let withCfg=false;try{withCfg=restoreB
   setTimeout(()=>{try{let ch=false;for(const q of (cfg&&cfg.quests)||[]){if(FIX[q.title]){q.title=FIX[q.title];if(q.id==="s_fech"&&!q.minTitle)q.minTitle="só marcar o que fiz";ch=true;}}if(ch){localStorage.setItem("asc-u-cfg",JSON.stringify(cfg));try{render();}catch(e){}}}catch(e){}},0);}
 // ---------- Sugestões (sai pelo WhatsApp; fica salva no aparelho) ----------
 $("fbSend").addEventListener("click",()=>{const t=$("fbText").value.trim();if(!t){$("fbMsg").textContent="Escreva a sugestão primeiro.";return;}
-  prog.feedback=(prog.feedback||[]).concat([{t,d:new Date().toISOString()}]);save();
-  const lv=levelOf(totalXP());const msg="💡 Sugestão para o app Ascension\n\n"+t+"\n\n(nível "+lv+", "+activeDays()+" dias ativos, "+(cfg&&cfg.quests?cfg.quests.length:0)+" quests)";
-  window.open("https://wa.me/?text="+encodeURIComponent(msg),"_blank");$("fbText").value="";$("fbMsg").textContent="Valeu! Sugestão salva ("+prog.feedback.length+" no total).";});
+  // moderação e limite (tools/sug.js): sem link, e-mail ou telefone; 1 ideia por dia
+  const bad=typeof sugCheck==="function"?sugCheck(t):"";if(bad){$("fbMsg").textContent=bad;return;}
+  const c=typeof sugCode==="function"?sugCode():"",nk=typeof sugNick==="function"?sugNick():"";
+  const it={t,d:new Date().toISOString()};if(c)it.c=c;if(nk)it.n=nk;
+  prog.feedback=(prog.feedback||[]).concat([it]);save();
+  const lv=levelOf(totalXP());const msg="💡 Sugestão para o app Ascension\n\n"+t+"\n\n(nível "+lv+", "+activeDays()+" dias ativos, "+(cfg&&cfg.quests?cfg.quests.length:0)+" quests)"+(c?"\nCódigo da ideia: "+c:"")+(nk?"\nCrédito na lista de ideias: "+nk:"");
+  window.open("https://wa.me/?text="+encodeURIComponent(msg),"_blank");$("fbText").value="";
+  $("fbMsg").textContent=c?"Valeu! Ideia "+c+" enviada. Se ela entrar no app, você ganha "+SUG_OURO+" 🪙 de Ouro.":"Valeu! Sugestão salva ("+prog.feedback.length+" no total).";
+  try{sugRender();}catch(e){}});
 $("fbQuick").addEventListener("click",()=>{goTab("mais");setTimeout(()=>$("fbText").focus(),60);});
 // ---------- Dica de instalação (iPhone e Android fora da tela de início) ----------
 const UA=navigator.userAgent,IOS=/iphone|ipad|ipod/i.test(UA),AND=/android/i.test(UA);let instEvt=null;
@@ -7850,6 +7891,22 @@ const TP_L=[
      "Enviar 10 fotos ou vídeos seus, com título e palavras-chave em inglês.",
      "Aprovados: acompanhar as vendas no painel."]}];
 function tpEl(t,c,x){const e=document.createElement(t);if(c)e.className=c;if(x!=null)e.textContent=x;return e;}
+// acessibilidade: texto só para leitor de tela, ícone decorativo escondido, região viva fixa (fora do painel, que é redesenhado)
+function tpSr(x){return tpEl("span","srlive",x);}
+function tpIc(x){const e=tpEl("span","tpic",x);e.setAttribute("aria-hidden","true");return e;}
+function tpPl(n,a,b){return n+" "+(n===1?a:b);}
+function tpSay(x){let l=$("tpLive");if(!l){l=tpEl("div","srlive");l.id="tpLive";l.setAttribute("aria-live","polite");l.setAttribute("role","status");document.body.append(l);}
+  l.textContent="";setTimeout(()=>{l.textContent=x;},40);}
+// o painel é redesenhado a cada toque: guarda onde estava o foco e devolve ao mesmo controle (senão o teclado cai no topo da página)
+function tpFocusKey(){const a=document.activeElement,p=$("tpPanel");if(!a||!p||!p.contains(a))return null;const c=a.closest("[data-tp]"),id=c&&c.dataset.tp;
+  if(a.classList.contains("tpbtn")&&id)return '.tpm[data-tp="'+id+'"] .tpbtn[data-i="'+a.dataset.i+'"]';
+  if(a.classList.contains("tpchip"))return '.tpchip[data-f="'+a.dataset.f+'"]';
+  if(a.tagName==="SUMMARY")return id?'.tpm[data-tp="'+id+'"]>summary':a.closest(".tpwallet")?".tpwallet>summary":null;
+  if(a.closest(".tpgot")&&id)return '.tpm[data-tp="'+id+'"] .tpgot input';
+  if(a.closest(".tpwallet"))return a.tagName==="SELECT"?".tpwallet .tpwf select":a.classList.contains("tpwclr")?".tpwallet .tpwclr":".tpwallet .tpwf input";
+  return null;}
+function tpRefocus(p,k){if(!k)return;const ae=document.activeElement;if(ae&&ae!==document.body&&ae.isConnected&&!p.contains(ae))return;
+  const e=p.querySelector(k);if(e&&e.getClientRects().length)try{e.focus({preventScroll:true});}catch(x){}}
 function tpName(T){return T.t.replace(/^\S+\s/,"");}
 function tpOn(){try{return !!(cfg&&!cfg.blank&&cfg.quests&&cfg.quests.length)&&typeof ad18==="function"&&ad18();}catch(e){return false;}}
 function tpSt(){let r=prog.tp;if(!r||typeof r!=="object"||Array.isArray(r))r=prog.tp={};for(const T of TP_L){if(!r[T.id]||typeof r[T.id]!=="object"||Array.isArray(r[T.id]))r[T.id]={};if(!r[T.id].s||typeof r[T.id].s!=="object"||Array.isArray(r[T.id].s))r[T.id].s={};}return r;}
@@ -7879,7 +7936,7 @@ function tpStep(T,i){const r=tpSt(),s=r[T.id].s;
     const nx=tpVis()>before?TP_L[tpVis()-1]:null;
     const msg=(first?"A Carteira foi desbloqueada: anote ali o que você receber. ":"")+(nx?"Uma nova task se revelou: "+TP_TIER[nx.tier][0]+". ":"")+"O dinheiro, quando vier, vem direto de quem paga."+(g?" +"+g+" 🪙 de Ouro.":"");
     try{sysPop(first?"CARTEIRA DESBLOQUEADA":"TASK "+tier[0].toUpperCase()+" CONCLUÍDA",tpName(T),msg,null,"Fechar");}catch(e){toast("✓ Task concluída"+(g?" · +"+g+" 🪙":""));}}
-  else{if(!all&&r[T.id].f)delete r[T.id].f;save();}
+  else{if(!all&&r[T.id].f)delete r[T.id].f;save();tpSay((s[i]?"Passo "+(i+1)+" marcado. ":"Passo "+(i+1)+" desmarcado. ")+tpN(T)+" de "+T.s.length+" feitos em "+tpName(T)+".");}
   tpOpen=T.id;tpRender();try{tpLine();}catch(e){}}
 // "Quanto ganhei" dentro de cada card: alimenta a Carteira real (só no aparelho)
 function tpGot(T){const f=tpEl("form","tpwf tpgot");const inp=tpEl("input");inp.type="text";inp.inputMode="decimal";inp.maxLength=12;inp.autocomplete="off";inp.placeholder="Quanto ganhei (R$)";inp.setAttribute("aria-label","Quanto ganhei com "+tpName(T)+", em reais");
@@ -7887,12 +7944,12 @@ function tpGot(T){const f=tpEl("form","tpwf tpgot");const inp=tpEl("input");inp.
   f.addEventListener("submit",ev=>{ev.preventDefault();if(tpAdd(T.id,inp.value)){tpOpen=T.id;const w=$("tpPanel")&&$("tpPanel").querySelector(".tpwallet");if(w){tpCoins(w);}setTimeout(()=>{tpRender();try{tpLine();}catch(e){}},w?400:0);}});return f;}
 function tpCard(T){const r=tpSt(),s=r[T.id].s,n=tpN(T),done=n===T.s.length,tier=TP_TIER[T.tier];
   const c=tpEl("details","tpm t-"+T.tier+(done?" ok":""));c.dataset.tp=T.id;c.open=tpOpen===T.id;c.addEventListener("toggle",()=>{if(c.open)tpOpen=T.id;else if(tpOpen===T.id)tpOpen=null;});
-  const sm=tpEl("summary","tpt");const nm=tpEl("span","tpnm");nm.append(tpEl("span","tptier",tier[0]),tpEl("span",null,(done?"✓ ":"")+T.t));sm.append(nm,tpEl("span","sm mono",n+"/"+T.s.length));c.append(sm);
+  const sm=tpEl("summary","tpt");const nm=tpEl("span","tpnm");nm.append(tpEl("span","tptier",tier[0]),tpEl("span",null,(done?"✓ ":"")+T.t));const ct=tpEl("span","sm mono",n+"/"+T.s.length);ct.append(tpSr(" passos feitos"+(done?", concluída":"")));sm.append(nm,ct);c.append(sm);
   c.append(tpEl("p","tpwhen",T.when),tpEl("p","tpsub","💰 "+T.pay));
   if(T.ja)c.append(tpEl("p","sm tpja","🔁 "+T.ja));
-  const ol=tpEl("ol","tpsteps");T.s.forEach((x,i)=>{const li=tpEl("li");const b=tpEl("button",(s[i]?"ghost":"go")+" tpbtn",(s[i]?"✓ ":"")+x);b.type="button";b.dataset.i=i;
+  const ol=tpEl("ol","tpsteps");T.s.forEach((x,i)=>{const li=tpEl("li");const b=tpEl("button",(s[i]?"ghost":"go")+" tpbtn");b.type="button";b.dataset.i=i;if(s[i])b.append(tpIc("✓ "));b.append(tpSr("Passo "+(i+1)+" de "+T.s.length+": "),x);
     b.setAttribute("aria-pressed",s[i]?"true":"false");b.addEventListener("click",()=>tpStep(T,i));li.append(b);ol.append(li);});c.append(ol);
-  const lk=tpEl("div","tplinks");lk.append(tpEl("span","sm muted","Páginas oficiais:"));for(const [nm2,u] of T.links){const a=tpEl("a","tplink",nm2+" ↗");a.href=u;a.target="_blank";a.rel="noopener noreferrer";lk.append(a);}c.append(lk);
+  const lk=tpEl("div","tplinks");lk.append(tpEl("span","sm muted","Páginas oficiais:"));for(const [nm2,u] of T.links){const a=tpEl("a","tplink",nm2);a.append(tpIc(" ↗"),tpSr(" (site oficial, abre fora do app)"));a.href=u;a.target="_blank";a.rel="noopener noreferrer";lk.append(a);}c.append(lk);
   c.append(tpEl("p","sm tpwarn","⚠️ "+T.warn));
   if(tpWal())c.append(tpGot(T));
   c.append(tpEl("p","sm muted",done?"✓ Concluída. +"+tier[1]+" 🪙 já entrou (uma vez só).":"Ao marcar os "+T.s.length+" passos: +"+tier[1]+" 🪙 de Ouro (uma vez só)."));
@@ -7907,12 +7964,13 @@ function tpWallet(){const a=tpW(),rec=a.filter(x=>x.st!=="p"),pen=a.filter(x=>x.
   const tot=tpSum(rec,()=>true),mes=todayKey().slice(0,7),tm=tpSum(rec,x=>String(x.d).slice(0,7)===mes),td=tpSum(rec,x=>x.d===todayKey()),pv=tpSum(pen,()=>true);
   const top=tpEl("div","tpwtop");top.append(tpEl("div","tpwlbl","💰 CARTEIRA · recebido fora do app"),tpEl("div","tpwbig",tpBRL(tot)),
     tpEl("div","sm mono tpwsub","Este mês: "+tpBRL(tm)+" · Hoje: "+tpBRL(td)+(pv?" · Pendente: "+tpBRL(pv):"")));d.append(top);
+  if(!a.length)d.append(tpEl("p","sm tpempty","Nada anotado ainda. Recebeu? Anote aqui o valor e de onde veio."));
   // marcos: títulos que destravam com o total recebido
   const nx=TP_MARCOS.find(m=>tot<m[0]);const got=TP_MARCOS.filter(m=>tot>=m[0]);
   if(got.length){const tg=tpEl("div","tpwtit");for(const m of got)tg.append(tpEl("span","tpwbadge","🏅 "+m[1]));d.append(tg);}
   if(nx){const prev=got.length?got[got.length-1][0]:0,pc=Math.max(0,Math.min(100,Math.round((tot-prev)/(nx[0]-prev)*100)));
     d.append(tpEl("div","sm tpwnx","Próximo marco: "+tpBRL(nx[0]).replace(",00","")+" · título \""+(tot>0?nx[1]:"???")+"\""));
-    const bar=tpEl("div","tpbar");bar.setAttribute("role","progressbar");bar.setAttribute("aria-label","Próximo marco da Carteira");bar.setAttribute("aria-valuemin","0");bar.setAttribute("aria-valuemax","100");bar.setAttribute("aria-valuenow",String(pc));const fill=tpEl("i");fill.style.width=pc+"%";bar.append(fill);d.append(bar);}
+    const bar=tpEl("div","tpbar");bar.setAttribute("role","progressbar");bar.setAttribute("aria-label","Próximo marco da Carteira");bar.setAttribute("aria-valuetext",tpBRL(tot)+" de "+tpBRL(nx[0]));bar.setAttribute("aria-valuemin","0");bar.setAttribute("aria-valuemax","100");bar.setAttribute("aria-valuenow",String(pc));const fill=tpEl("i");fill.style.width=pc+"%";bar.append(fill);d.append(bar);}
   else d.append(tpEl("div","sm tpwnx","Todos os marcos batidos. Lenda."));
   // registrar ganho em 2 toques
   const rg=tpEl("details","tpwreg");rg.append(tpEl("summary",null,"＋ Registrar ganho"));
@@ -7927,40 +7985,45 @@ function tpWallet(){const a=tpW(),rec=a.filter(x=>x.st!=="p"),pen=a.filter(x=>x.
       if(x.st==="p"){const ok=tpEl("button","ghost tpwok","Caiu ✓");ok.type="button";ok.setAttribute("aria-label","Marcar "+tpBRL(x.v)+" como recebido");
         ok.addEventListener("click",()=>{const b=tpW();const y=b.find(z=>z.d===x.d&&z.src===x.src&&+z.v===+x.v&&z.st==="p");if(y){delete y.st;tpWSave(b);}toast("Recebido: "+tpBRL(x.v));tpCoins(d);setTimeout(()=>tpRender(true),500);});li.append(ok);}
       ul.append(li);});d.append(ul);
-    const clr=tpEl("button","ghost tpwclr","Apagar a carteira");clr.type="button";clr.addEventListener("click",()=>{if(clr.dataset.c){tpWSave([]);try{localStorage.removeItem(TP_WK);}catch(e){}toast("Carteira apagada.");tpRender(true);}else{clr.dataset.c="1";clr.textContent="Toque de novo para apagar tudo";}});d.append(clr);}
+    const clr=tpEl("button","ghost tpwclr","Apagar a carteira");clr.type="button";clr.addEventListener("click",()=>{if(clr.dataset.c){tpWSave([]);try{localStorage.removeItem(TP_WK);}catch(e){}toast("Carteira apagada.");tpRender(true);}else{clr.dataset.c="1";clr.textContent="Toque de novo para apagar tudo";tpSay("Toque de novo para apagar tudo da Carteira.");}});d.append(clr);}
   d.append(tpEl("p","sm muted","É só o seu placar: o app não guarda, não recebe e não vê dinheiro. Fica só neste aparelho, fora da planilha e de qualquer ranking. Ganho fora do app pode ter imposto: veja \"Recebi sem CNPJ\" na Primeira Renda."));
   return d;}
 // aba própria: botão na barra, só para 18+
 const TP_ICON='<svg viewBox="0 0 24 24"><path d="M12 3l3 5 5 1-3.5 4 1 5.5L12 16l-5.5 2.5 1-5.5L4 9l5-1z"/></svg>';
 function tpTab(){const bar=$("tabbar");if(!bar)return;let b=bar.querySelector('[data-go="lenda"]');
-  if(!b){b=document.createElement("button");b.type="button";b.dataset.go="lenda";b.className="tplbar";b.innerHTML=TP_ICON+"Lendárias";
+  if(!b){b=document.createElement("button");b.type="button";b.dataset.go="lenda";b.className="tplbar";b.innerHTML=TP_ICON.replace("<svg ",'<svg aria-hidden="true" focusable="false" ')+"Lendárias";
     b.addEventListener("click",()=>{goTab("lenda");tpRender();});const mais=bar.querySelector('[data-go="mais"]');bar.insertBefore(b,mais||null);
     try{if(sessionStorage.getItem("asc-tab")==="lenda")setTimeout(()=>{if(tpOn())goTab("lenda");},0);}catch(e){}}
-  b.hidden=!tpOn();b.classList.toggle("lock",!tpOpenTab());if(b.hidden&&document.body.dataset.tab==="lenda")goTab("hoje");}
+  b.hidden=!tpOn();b.classList.toggle("lock",!tpOpenTab());if(tpOpenTab())b.removeAttribute("aria-label");else b.setAttribute("aria-label","Lendárias, trancada");if(b.hidden&&document.body.dataset.tab==="lenda")goTab("hoje");}
 function tpRender(keepW){try{tpTab();}catch(e){}let p=$("tpPanel");if(!tpOn()){if(p)p.hidden=true;return;}
   if(!p){const w=document.querySelector(".wrap");if(!w)return;p=tpEl("section","panel tppanel");p.id="tpPanel";p.dataset.tab="lenda";w.append(p);}
-  const wo=keepW||((p.querySelector(".tpwreg")||{}).open);p.hidden=false;p.textContent="";
+  const wo=keepW||((p.querySelector(".tpwreg")||{}).open);const fk=tpFocusKey();p.hidden=false;p.textContent="";
+  tpBuild(p,wo);tpRefocus(p,fk);}
+function tpBuild(p,wo){
   const hd=tpEl("div","qhead");p.append(hd);
   if(!tpOpenTab()){p.classList.add("tplock");
-    hd.append(tpEl("h2",null,"⚜️ Tasks Lendárias"),tpEl("span","sm mono","🔒"));
-    const v=tpEl("div","tpvault");v.append(tpEl("div","tpsig","🔒"),tpEl("p","tpq","O Sistema guarda tarefas que pagam de verdade."),tpEl("p","sm muted","Só se revelam para quem já provou constância."));
-    const ul=tpEl("ul","tpreq");ul.append(tpEl("li","ok","✓ 18+ confirmado"),tpEl("li",null,"○ Conclua 1 missão de hoje"));v.append(ul);
+    hd.append(tpEl("h2",null,"⚜️ Tasks Lendárias"),tpEl("span","sm mono","🔒 trancada"));
+    const sig=tpEl("div","tpsig","🔒");sig.setAttribute("aria-hidden","true");const v=tpEl("div","tpvault");v.append(sig,tpEl("p","tpq","O Sistema guarda tarefas que pagam de verdade."),tpEl("p","sm muted","Só se revelam para quem já provou constância."));
+    const ul=tpEl("ul","tpreq");const r1=tpEl("li","ok"),r2=tpEl("li");r1.append(tpIc("✓ "),tpSr("Feito: "),"Idade 18+ confirmada");r2.append(tpIc("○ "),tpSr("Falta: "),"Concluir 1 missão de hoje");ul.append(r1,r2);v.append(ul);
     const go=tpEl("button","go","Ir para as missões de hoje");go.type="button";go.addEventListener("click",()=>goTab("hoje"));v.append(go);p.append(v);return;}
   p.classList.remove("tplock");
   const dn=tpDone(),vis=tpVis();
-  hd.append(tpEl("h2",null,"⚜️ Tasks Lendárias"),tpEl("span","sm mono",dn+" concluídas · "+vis+"/"+TP_L.length+" reveladas"));
+  hd.append(tpEl("h2",null,"⚜️ Tasks Lendárias"),tpEl("span","sm mono",tpPl(dn,"concluída","concluídas")+" · "+vis+"/"+TP_L.length+" reveladas"));
+  if(dn===TP_L.length)p.append(tpEl("div","tpmeta tpall","✓ Você concluiu todas as Tasks Lendárias. Quando surgir uma nova, ela aparece aqui."));
+  if(!navigator.onLine)p.append(tpEl("div","sm tpoff","📡 Sem internet. Os passos funcionam e ficam salvos; as páginas oficiais abrem quando a conexão voltar."));
   if(tpWal()){const w=tpWallet();const wr=w.querySelector(".tpwreg");if(wr)wr.open=!!wo;p.append(w);}
   if(tpWal()){const td=tpToday(),pc=Math.min(100,Math.round(td/TP_META*100));const mt=tpEl("div","tpmeta");
     mt.append(tpEl("div","tpmt","🎯 Meta de hoje: seus primeiros "+tpBRL(TP_META).replace(",00","")),tpEl("div","sm mono tpmv",td>=TP_META?"✓ Meta batida: "+tpBRL(td)+" anotados hoje":"Anotado hoje: "+tpBRL(td)+" de "+tpBRL(TP_META)));
-    const bar=tpEl("div","tpbar");bar.setAttribute("role","progressbar");bar.setAttribute("aria-label","Meta de hoje");bar.setAttribute("aria-valuemin","0");bar.setAttribute("aria-valuemax","100");bar.setAttribute("aria-valuenow",String(pc));const fill=tpEl("i");fill.style.width=pc+"%";bar.append(fill);mt.append(bar);
+    const bar=tpEl("div","tpbar");bar.setAttribute("role","progressbar");bar.setAttribute("aria-label","Meta de hoje");bar.setAttribute("aria-valuemin","0");bar.setAttribute("aria-valuemax","100");bar.setAttribute("aria-valuenow",String(pc));bar.setAttribute("aria-valuetext",tpBRL(Math.min(td,TP_META))+" de "+tpBRL(TP_META));const fill=tpEl("i");fill.style.width=pc+"%";bar.append(fill);mt.append(bar);
     p.append(mt);}
   else p.append(tpEl("div","tpmeta tpwlock","🔒 Conclua 1 Task Lendária para abrir a Carteira e a meta do dia."));
-  p.append(tpEl("div","sm muted tpintro","Quem paga é o comprador ou a plataforma, direto para você. Comece pelo Desapega: é o único que cai hoje."));
+  p.append(tpEl("div","sm muted tpintro","Comece pelo Desapega: é a única que pode pagar hoje. Marque cada passo quando fizer."));
   const fl=tpEl("div","tpfil");fl.setAttribute("role","group");fl.setAttribute("aria-label","Filtrar por raridade");
-  for(const [k,lb] of [["all","Todas"],["l","Lendária"],["r","Rara"],["c","Comum"]]){const b=tpEl("button","tpchip"+(k!=="all"?" t-"+k:"")+(tpF===k?" on":""),lb);b.type="button";b.setAttribute("aria-pressed",tpF===k?"true":"false");b.addEventListener("click",()=>{tpF=k;tpRender();});fl.append(b);}
+  for(const [k,lb] of [["all","Todas"],["l","Lendária"],["r","Rara"],["c","Comum"]]){const b=tpEl("button","tpchip"+(k!=="all"?" t-"+k:"")+(tpF===k?" on":""),lb);b.type="button";b.dataset.f=k;b.setAttribute("aria-pressed",tpF===k?"true":"false");b.addEventListener("click",()=>{tpF=k;tpRender();const n=$("tpPanel").querySelectorAll(".tpm[data-tp]").length;tpSay("Filtro "+lb+": "+tpPl(n,"task revelada","tasks reveladas")+".");});fl.append(b);}
   p.append(fl);
-  const sg=tpEl("div","tpseals");TP_L.forEach((T,k)=>{if(tpF!=="all"&&T.tier!==tpF)return;if(k<vis)p.append(tpCard(T));else sg.append(tpSealed(T,k-vis));});
-  if(sg.children.length){p.append(tpEl("div","sm muted tpslh","🔒 "+sg.children.length+" seladas · cada task concluída revela a próxima"));p.append(sg);}
+  const sg=tpEl("div","tpseals");sg.setAttribute("role","list");let nc=0;TP_L.forEach((T,k)=>{if(tpF!=="all"&&T.tier!==tpF)return;if(k<vis){p.append(tpCard(T));nc++;}else{const x=tpSealed(T,k-vis);const li=tpEl("div","tpsli");li.setAttribute("role","listitem");li.append(x);sg.append(li);}});
+  if(!nc&&tpF!=="all")p.append(tpEl("p","tpempty","Nenhuma task "+TP_TIER[tpF][0]+" revelada ainda. Conclua uma task para revelar a próxima."));
+  if(sg.children.length){p.append(tpEl("div","sm muted tpslh","🔒 "+tpPl(sg.children.length,"selada","seladas")+" · cada task concluída revela a próxima"));p.append(sg);}
   p.append(tpEl("p","sm tpnote",TP_NOTE));}
 // Hoje: uma linha só (integra as Lendárias com o dia). Trancada: pista misteriosa. Aberta: o próximo passo que paga.
 function tpNext(){const r=tpSt(),v=tpVis();for(const T of TP_L.slice(0,v)){const i=T.s.findIndex((x,k)=>!r[T.id].s[k]);if(i>=0)return {T,i};}return null;}
@@ -7978,6 +8041,7 @@ function tpLine(){let l=$("tpLine");if(!tpOn()){if(l)l.hidden=true;return;}
   l.append(b);}
 {const _r=render;render=function(){_r.apply(this,arguments);try{tpRender();}catch(e){}try{tpLine();}catch(e){}};}
 setTimeout(()=>{try{tpRender();}catch(e){}try{tpLine();}catch(e){}},70);
+for(const ev of ["online","offline"])addEventListener(ev,()=>{try{if($("tpPanel"))tpRender();}catch(e){}});
 
 // ---------- Missões de Parceiros: missões lendárias patrocinadas (só 18+, no topo da aba Lendárias; sem a aba, na aba Foco; chamada em Hoje) ----------
 // Lista em missoes-lendarias.json (raiz do site), para trocar parceiro, texto ou link sem trem novo. Missão sem os campos
@@ -8100,6 +8164,72 @@ function mmRender(){let p=$("mmPanel");const ok=typeof ad18==="function"&&ad18()
 {const _r=render;render=function(){_r.apply(this,arguments);try{mmRender();}catch(e){}};}
 setTimeout(()=>{try{mmRender();}catch(e){}},80);
 
+// ---------- Ideia que vale bônus (tools/sug.*) ----------
+// Cada sugestão ganha um código (S-XXXXXXXX) que só existe neste aparelho e na mensagem do WhatsApp.
+// O criador aceita a ideia publicando o SHA-256 do código em sugestoes-aceitas.json (sem nome, sem dado pessoal).
+// O app confere a lista, paga Ouro UMA vez por ideia (chave sug:<código>) e destrava a conquista secreta "Arquiteto do Sistema".
+// Ouro é moeda do jogo: não vale dinheiro. Moderação: sem link, e-mail, telefone ou número de documento; 1 ideia por dia.
+// Só ADICIONA: campos c (código) e n (apelido, opcional, só 18+) nos itens novos de prog.feedback e prog.sug {ok:{código:data}}.
+const SUG_OURO=40,SUG_MAX=100,SUG_KEY="asc-u-sug-cfg",SUG_AB="ABCDEFGHJKLMNPQRSTUVWXYZ23456789";
+if(typeof SEC!=="undefined"&&Array.isArray(SEC)&&!SEC.some(s=>s[0]==="s_arq"))SEC.push(["s_arq","🏛️","Arquiteto do Sistema","Arquiteto do Sistema","Dizem que o Sistema escuta quem sugere.","Sua ideia virou parte do jogo. O Sistema foi construído por você também, Arquiteto.",30]);
+function sugUrl(){return (location.pathname.indexOf("/comecar/")>=0?"../":"")+"sugestoes-aceitas.json";}
+function sugSt(){let s=prog.sug;if(!s||typeof s!=="object"||Array.isArray(s))s=prog.sug={};if(!s.ok||typeof s.ok!=="object")s.ok={};return s;}
+function sugCode(){const a=new Uint8Array(8);crypto.getRandomValues(a);return "S-"+[...a].map(x=>SUG_AB[x%32]).join("");}
+function sugAdult(){try{const a=ageNow();return a==="adult"||a==="senior";}catch(e){return false;}}
+function sugNick(){if(!sugAdult()||!$("sugNkOk")||!$("sugNkOk").checked)return "";const n=String($("sugNk").value||"").trim().replace(/[|,;"<>@\n\r]/g,"").replace(/\s+/g," ").slice(0,16);return n;}
+const sugDay=d=>{try{return dkey(new Date(d));}catch(e){return "";}};
+function sugToday(){const tk=todayKey();return (prog.feedback||[]).filter(f=>f&&f.c&&sugDay(f.d)===tk).length;}
+// moderação local: o Sistema só precisa da ideia, nada que identifique alguém
+function sugCheck(t){t=String(t||"");
+  if(t.replace(/\s/g,"").length<8)return "Conte um pouco mais: pelo menos uma frase curta.";
+  if(/[\w.+-]+@[\w-]+\.\w/.test(t))return "Tire o e-mail: o Sistema só precisa da ideia.";
+  if(/https?:|www\.|\b[\w-]+\.(com|br|net|org|io|me|ly)\b/i.test(t))return "Tire o link: o Sistema só precisa da ideia.";
+  if(/(\d[\s().-]*){8,}/.test(t))return "Tire telefone, CPF ou outros números longos: o Sistema só precisa da ideia.";
+  if(/(.)\1{9,}/.test(t))return "Parece que o teclado travou. Escreva a ideia de novo.";
+  if(sugToday()>=1)return "Hoje você já mandou 1 ideia. Guarde a próxima para amanhã.";
+  return "";}
+async function sugHash(c){const b=await crypto.subtle.digest("SHA-256",new TextEncoder().encode(String(c).trim().toUpperCase()));return [...new Uint8Array(b)].map(x=>x.toString(16).padStart(2,"0")).join("");}
+function sugClean(j){const L=j&&Array.isArray(j.aceitas)?j.aceitas:[];return L.filter(x=>x&&/^[0-9a-f]{64}$/.test(String(x.h||""))).map(x=>({h:x.h,ouro:Math.max(0,Math.min(SUG_MAX,Math.floor(+x.ouro||SUG_OURO))),ideia:String(x.ideia||"").slice(0,80),credito:String(x.credito||"").replace(/[<>]/g,"").slice(0,16),v:String(x.versao||"").slice(0,12)}));}
+let sugList=[];try{const c=JSON.parse(localStorage.getItem(SUG_KEY)||"null");if(c)sugList=sugClean(c);}catch(e){}
+let sugBusy=false;
+async function sugApply(){if(sugBusy||!sugList.length||!(prog.feedback||[]).some(f=>f&&f.c))return;
+  if(typeof secReady==="function"&&!secReady())return;
+  try{if(typeof orReady==="function"&&!orReady())return;}catch(e){}
+  sugBusy=true;try{const st=sugSt();const byH={};for(const x of sugList)byH[x.h]=x;let paid=false;
+    for(const f of prog.feedback||[]){if(!f||!f.c||st.ok[f.c])continue;const x=byH[await sugHash(f.c)];if(!x)continue;
+      let g=0;try{g=orGive("sug:"+f.c,x.ouro,"Ideia aceita");}catch(e){}
+      const done=g>0||!!(prog.ouroX&&prog.ouroX.got&&prog.ouroX.got["sug:"+f.c]);if(!done)continue;// teto do dia: tenta de novo amanhã
+      st.ok[f.c]=todayKey();save();paid=true;
+      try{sysPop("IDEIA ACEITA","🏛️ Sua ideia entrou no jogo","A ideia "+f.c+" foi aprovada pelo criador. +"+g+" 🪙 de Ouro.");}catch(e){}}
+    if(Object.keys(st.ok).length&&!(prog.sec&&prog.sec.s_arq)){try{unlockSec("s_arq");}catch(e){}}
+    if(paid)sugRender();}finally{sugBusy=false;}}
+function sugLoad(){try{fetch(sugUrl(),{cache:"no-cache"}).then(r=>r.ok?r.json():null).then(j=>{if(!j)return;sugList=sugClean(j);try{localStorage.setItem(SUG_KEY,JSON.stringify(j));}catch(e){}sugRender();sugApply();}).catch(()=>{});}catch(e){}}
+function sugEl(t,cl,x){const e=document.createElement(t);if(cl)e.className=cl;if(x!=null)e.textContent=x;return e;}
+function sugRender(){const row=$("sugNkRow");if(row){row.hidden=!sugAdult();$("sugNk").hidden=!($("sugNkOk")&&$("sugNkOk").checked);}
+  const mine=$("sugMine");if(mine){const L=(prog.feedback||[]).filter(f=>f&&f.c).slice(-5).reverse();mine.textContent="";mine.hidden=!L.length;
+    if(L.length){const st=sugSt();mine.append(sugEl("h3","sugh","Suas ideias"));const ul=sugEl("ul","suglist");
+      for(const f of L){const li=sugEl("li",st.ok[f.c]?"ok":"");const b=sugEl("b",null,f.c);const s=sugEl("span","sm",st.ok[f.c]?"✅ Entrou no jogo":"⏳ Com o criador");li.append(b,s);ul.append(li);}mine.append(ul);}}
+  const hall=$("sugHall");if(hall){const H=sugList.filter(x=>x.ideia).slice(-5).reverse();hall.textContent="";hall.hidden=!H.length;
+    if(H.length){hall.append(sugEl("h3","sugh","Ideias de jogadores que viraram app"));const ul=sugEl("ul","suglist");
+      for(const x of H){const li=sugEl("li");li.append(sugEl("span",null,x.ideia+(x.credito?" · ideia de "+x.credito:"")+(x.v?" ("+x.v+")":"")));ul.append(li);}hall.append(ul);}}
+  sugCreator();}
+// Modo Criador (só no app do JV): cola o código da mensagem e copia a linha pronta para sugestoes-aceitas.json
+function sugCreator(){const pn=$("crPanel");if(!pn||$("sugCr"))return;try{if(typeof crOn==="function"&&!crOn())return;}catch(e){return;}
+  const box=sugEl("div","sugcr");box.id="sugCr";box.append(sugEl("h3","crh","Aceitar ideia de jogador"),sugEl("div","sm muted","Cole o código da mensagem (S-…). Sai a linha para o arquivo sugestoes-aceitas.json. O jogador recebe o Ouro na próxima vez que abrir o app."));
+  const r=sugEl("div","add");const i=sugEl("input");i.id="sugCrIn";i.setAttribute("aria-label","Código da ideia");i.placeholder="S-XXXXXXXX";i.maxLength=12;i.autocomplete="off";
+  const b=sugEl("button","go","Gerar linha");b.type="button";b.id="sugCrGo";r.append(i,b);const out=sugEl("pre","sugcrout");out.id="sugCrOut";out.hidden=true;const m=sugEl("div","sm muted");m.id="sugCrMsg";m.setAttribute("aria-live","polite");
+  b.addEventListener("click",async()=>{const c=String(i.value||"").trim().toUpperCase();if(!/^S-[A-Z2-9]{8}$/.test(c)){m.textContent="Código inválido. Formato: S- e 8 letras ou números.";out.hidden=true;return;}
+    const line=JSON.stringify({h:await sugHash(c),ouro:SUG_OURO,ideia:"",credito:"",versao:""});out.textContent=line;out.hidden=false;
+    try{await navigator.clipboard.writeText(line);m.textContent="Linha copiada. Cole dentro de \"aceitas\" e preencha a ideia (curta) e o crédito só se a mensagem pediu.";}catch(e){m.textContent="Copie a linha acima e cole dentro de \"aceitas\".";}});
+  box.append(r,out,m);pn.append(box);}
+setTimeout(()=>{try{sugRender();sugLoad();}catch(e){}},0);
+setTimeout(()=>{try{sugApply();}catch(e){}},3000);
+// "💡 Sugerir uma melhoria" em Hoje: abre o painel dobrado antes de pôr o foco no texto
+if($("fbQuick"))$("fbQuick").addEventListener("click",()=>{const f=$("fbPanel");if(f&&f.classList.contains("fold")&&!f.classList.contains("open")){const h=f.querySelector(":scope>.fhd");if(h)h.click();}setTimeout(()=>{try{f.scrollIntoView({block:"start"});$("fbText").focus();}catch(e){}},90);});
+document.addEventListener("change",e=>{if(e.target&&e.target.id==="sugNkOk")sugRender();});
+document.addEventListener("visibilitychange",()=>{if(!document.hidden)sugLoad();});
+for(const b of document.querySelectorAll('#tabbar [data-go="mais"],#tabbar [data-go="criador"]'))b.addEventListener("click",()=>{try{sugRender();sugApply();}catch(e){}});
+
 // ---------- Arsenal do Herói: vitrine de afiliados (só 18+), pedido da EVA 7219654001 + parecer do ATLAS (7221075738) ----------
 // Só para 18+ pela trava de tools/idade.js. Mesma lista fixa para todo mundo: sem recomendação personalizada e sem rastreio próprio.
 // Selo de publicidade visível sem clique ao lado de cada link (CONAR 2026 + CDC art. 36). Nada sai do aparelho além do toque no link.
@@ -8203,6 +8333,58 @@ function afDica(groups){let p=$("afDica");const L=[];for(const [,g] of groups||[
 {const _r=render;render=function(){_r.apply(this,arguments);try{afRender();}catch(e){}};}
 {const _g=typeof goTab==="function"?goTab:null;if(_g)goTab=function(t){_g.apply(this,arguments);try{if(t==="mais"&&$("afPanel")&&!$("afPanel").hidden)afCount("afv",true);if(t==="hoje"&&$("afDica")&&!$("afDica").hidden)afCount("afd",true);}catch(e){}};}
 setTimeout(()=>{try{afRender();}catch(e){}},90);
+
+// ---------- Pedido de avaliação (tools/aval.*): convite leve depois de uma conquista ----------
+// Só aparece para quem ligou o Teste do app (beta anônimo; 14 a 17 com responsável; até 13 nunca).
+// Nunca no 1º dia de uso, no máximo 1 vez a cada 30 dias, some de vez depois de 2 "Agora não".
+// NUNCA dá XP, Ouro ou item: avaliação não é trocada por recompensa (regra das lojas).
+// Estado só em asc-u-aval (fora do prog). A nota (1 a 5) e o comentário opcional saem pelo mesmo canal do beta.
+const AVL_KEY="asc-u-aval",AVL_GAP=30,AVL_GAP_SENT=90;
+function avlGet(){try{return JSON.parse(localStorage.getItem(AVL_KEY)||"{}")||{};}catch(e){return {};}}
+function avlSet(a){try{localStorage.setItem(AVL_KEY,JSON.stringify(a));}catch(e){}}
+const avlDays=(a,b)=>Math.round((new Date(b)-new Date(a))/864e5);
+// comentário anônimo: sem e-mail, link, @perfil ou número de telefone; no máximo 140 letras
+function avlClean(t){return String(t||"").replace(/\S+@\S+/g,"").replace(/(https?:\/\/|www\.)\S+/gi,"").replace(/@\w+/g,"").replace(/(\d[\s().-]*){6,}/g,"").replace(/[|\r\n]+/g," ").replace(/\s+/g," ").trim().slice(0,140);}
+function avlBeta(){try{const b=betaGet();return !!b.on&&!betaKid()&&!!betaAge()&&!(betaAge()==="teen"&&!b.parent);}catch(e){return false;}}
+function avlFirstDay(){let f="";try{for(const e of entries())if(!/^(ach|checkin|tip|dun|sq|zap|ch|adm):/.test(String(e.q))&&(!f||e.date<f))f=e.date;}catch(e){}return f;}
+function avlOk(){const a=avlGet(),tk=todayKey();if(a.off||(a.no||0)>=2||!cfg||cfg.blank||!avlBeta())return false;
+  const f=avlFirstDay();if(!f||f>=tk)return false;if(activeDays()<2)return false;
+  if(a.last&&avlDays(a.last,tk)<AVL_GAP)return false;if(a.sent&&avlDays(a.sent,tk)<AVL_GAP_SENT)return false;return true;}
+function avlBusy(){let q=0;try{q=sysQ.length;}catch(e){}const b=document.body.classList;
+  return q>0||b.contains("onboarding")||b.contains("inmission")||b.contains("inroom")||b.contains("infz")||!!document.getElementById("lembOffer")||
+    [...document.querySelectorAll(".sysmodal,.levelup,#clsModal,#onb")].some(m=>!m.hidden&&m.getClientRects().length);}
+let avlTry=null,avlSession=false;
+// chamado depois de uma conquista: espera as janelas do Sistema fecharem e só então mostra o cartão
+function avlMaybe(why){if(avlSession||avlTry||!avlOk())return;let n=0;
+  avlTry=setInterval(()=>{if(++n>40||!avlOk()){clearInterval(avlTry);avlTry=null;return;}if(avlBusy())return;clearInterval(avlTry);avlTry=null;avlShow(why);},1500);}
+function avlEl(t,c,x){const e=document.createElement(t);if(c)e.className=c;if(x!=null)e.textContent=x;return e;}
+function avlShow(why){if(document.getElementById("avlCard"))return;avlSession=true;const a=avlGet();a.last=todayKey();a.n=(a.n||0)+1;avlSet(a);
+  let nota=0;const m=avlEl("div","sysmodal avl");m.id="avlCard";m.setAttribute("aria-modal","true");const c=avlEl("div","card");
+  const tag=avlEl("div","tag","[ SISTEMA ] CALIBRAGEM");const h=avlEl("h3",null,"Como está sua jornada?");h.id="avlT";m.setAttribute("aria-labelledby","avlT");
+  const p=avlEl("p","sm","Dê uma nota ao app. É anônimo e não vale XP nem Ouro.");p.id="avlP";m.setAttribute("aria-describedby","avlP");
+  const st=avlEl("div","avlstars");st.setAttribute("role","radiogroup");st.setAttribute("aria-label","Nota de 1 a 5");const bs=[];
+  const lbl=avlEl("div","sm muted avllbl","Toque numa estrela.");lbl.setAttribute("aria-live","polite");
+  const send=avlEl("button","go","Enviar nota");send.type="button";send.disabled=true;
+  for(let i=1;i<=5;i++){const b=avlEl("button","avlstar","★");b.type="button";b.dataset.n=i;b.setAttribute("role","radio");b.setAttribute("aria-checked","false");b.setAttribute("aria-label",i+(i>1?" estrelas":" estrela"));
+    b.addEventListener("click",()=>{nota=i;bs.forEach((x,k)=>{x.classList.toggle("on",k<i);x.setAttribute("aria-checked",k===i-1?"true":"false");});send.disabled=false;lbl.textContent=["","Fraco","Dá para melhorar","Bom","Muito bom","Lendário"][i];});bs.push(b);st.append(b);}
+  const ta=avlEl("textarea","avltxt");ta.maxLength=140;ta.rows=2;ta.placeholder="Comentário (opcional). Sem nome ou contato.";ta.setAttribute("aria-label","Comentário opcional");
+  const no=avlEl("button","ghost","Agora não");no.type="button";
+  const close=cnt=>{if(cnt){const x=avlGet();x.no=(x.no||0)+1;if(x.no>=2)x.off=true;avlSet(x);}m.remove();};
+  no.addEventListener("click",()=>close(true));
+  send.addEventListener("click",()=>{if(!nota)return;const x=avlGet();x.sent=todayKey();x.nota=nota;avlSet(x);
+    try{betaPost([betaGet().id||betaId(),"aval",todayKey().replace(/-/g,""),nota,why||"",avlClean(ta.value)]);}catch(e){}
+    c.textContent="";const t2=avlEl("div","tag","[ SISTEMA ] REGISTRADO");const h2=avlEl("h3",null,"Nota recebida");h2.id="avlT";
+    const p2=avlEl("p","sm","Obrigado. O Sistema usa isso para ficar melhor para você.");p2.id="avlP";
+    const f=avlEl("button","go","Fechar");f.type="button";f.dataset.esc="1";f.addEventListener("click",()=>close(false));c.append(t2,h2,p2,f);setTimeout(()=>{try{f.focus({preventScroll:true});}catch(e){}},30);});
+  // Esc fecha sem contar como "Agora não" (o intervalo de 30 dias já vale)
+  m.addEventListener("keydown",e=>{if(e.key==="Escape"&&!m.querySelector("[data-esc]")){e.preventDefault();e.stopPropagation();close(false);}});
+  const row=avlEl("div","avlrow");row.append(send,no);c.append(tag,h,p,st,lbl,ta,row);m.append(c);document.body.append(m);
+  setTimeout(()=>{try{bs[0].focus({preventScroll:true});}catch(e){}},80);}
+// conquistas que podem abrir o convite: missão concluída (com 3+ dias de sequência ou 3+ dias ativos) e Task que paga concluída
+{const _tg=toggle;toggle=function(q,kind){const k=todayKey(),b=(prog.log[k]||[]).length;const r=_tg.apply(this,arguments);
+  try{if((prog.log[k]||[]).length>b&&(streakDays()>=3||activeDays()>=3))setTimeout(()=>avlMaybe("missao"),1200);}catch(e){}return r;};}
+if(typeof tpStep==="function"){const _ts=tpStep;tpStep=function(T){const was=!!(tpSt()[T.id]||{}).f;const r=_ts.apply(this,arguments);
+  try{if(!was&&(tpSt()[T.id]||{}).f)setTimeout(()=>avlMaybe("task"),1500);}catch(e){}return r;};}
 
 // ---------- Indique a Bellardi (só 18+): pacote "jogador e criador ganham", recado da EVA 7227438601 ----------
 // Cartão em Mais: o jogador indica alguém que precisa de planta ou de regularizar imóvel; se virar contrato pago, recebe 10%.

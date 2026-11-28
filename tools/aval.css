@@ -1,0 +1,15 @@
+/* pedido de avaliação (tools/aval.js): estrelas e botões com 44px de toque */
+.avl .card{gap:8px}
+.avlstars{display:flex;justify-content:center;gap:4px}
+.avlstar{min-width:48px;min-height:48px;font-size:1.7rem;line-height:1;background:none;border:1px solid transparent;border-radius:10px;color:var(--muted,#7d8ea3);cursor:pointer;transition:color .15s,transform .15s}
+.avlstar.on{color:var(--glow,#6fb1ff);text-shadow:0 0 10px rgba(0,212,255,.55)}
+.avlstar:focus-visible{outline:2px solid var(--accent,#00d4ff);outline-offset:2px}
+.avlstar:active{transform:scale(.92)}
+.avllbl{min-height:1.2em}
+.avltxt{width:100%;box-sizing:border-box;min-height:56px;font:inherit;font-size:.9rem;padding:8px 10px;border-radius:8px;border:1px solid var(--line,#28415c);background:rgba(0,0,0,.25);color:inherit;resize:none}
+.avlrow{display:flex;flex-direction:column;gap:6px}
+.avlrow button{min-height:44px}
+.avlrow .go:disabled{opacity:.45;cursor:default}
+@media (prefers-reduced-motion:reduce){.avlstar{transition:none}.avlstar:active{transform:none}}
+/* o atalho "Colar figurinha" não fica por cima do cartão */
+body:has(#avlCard) #muChip{display:none}

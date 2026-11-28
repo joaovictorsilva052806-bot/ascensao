@@ -37,6 +37,10 @@ Pontos de entrada no JS: `render()` desenha tudo; `toggle(quest, "full"|"min")` 
 
 `tools/secret.js` e `tools/secret.css` (entram nos dois geradores): 25 conquistas ocultas (8 delas são piscadelas de cultura pop: só a referência, com nomes e textos nossos, sem personagens, falas ou marcas) com títulos raros, Terminal do Sistema (em Mais) para códigos e Modo Zen. Grava só `prog.sec` e `prog.secTitle`; o XP entra como `ach:<id>`. Teste: `node qa/segredos.test.js` com o servidor local ligado.
 
+## Ideia que vale bônus
+
+`tools/sug.js`/`sug.css` (nos dois apps, no painel Sugerir melhoria): cada ideia ganha um código `S-XXXXXXXX` que vai na mensagem do WhatsApp. Moderação no aparelho (sem link, e-mail, telefone ou número longo) e 1 ideia por dia. Para aceitar, o criador cola o código em Criador > Aceitar ideia e põe a linha (SHA-256 do código, sem nome) em `sugestoes-aceitas.json`; o app do jogador paga Ouro 1 vez (`sug:<código>`) e destrava o segredo "Arquiteto do Sistema". Crédito com apelido só 18+ e com o aceite marcado. Grava só `c`/`n` nos itens novos de `prog.feedback` e `prog.sug`. Teste: `node qa/sug.test.js`.
+
 ## Marcos da coleção
 
 `tools/colecao.js` e `tools/colecao.css` (entram nos dois geradores, depois do baú): cada segredo, moldura e título conta para a Coleção. Aos 3, 8, 15 e 25 itens sai uma moldura exclusiva que não cai no baú (barra com "faltam N" na Coleção do baú e no prêmio do baú). Grava só ids novos em `prog.chest.frames` (lista que já existe). Teste: `node qa/colecao.test.js`.
@@ -152,3 +156,7 @@ Hoje o app é PWA (instala pelo navegador, grátis). Para entrar nas lojas depoi
 ## Cobrar com Pix (só no Criador)
 
 `tools/pix.js` e `tools/pix.css` (só no app da raiz, aba Criador): gera o Pix copia e cola (BR Code do Banco Central, com CRC16) e o QR Code no próprio aparelho, com valor e descrição, mais a mensagem pronta para o WhatsApp. Sem servidor, sem taxa de plataforma e sem dependência (o QR é escrito à mão: byte, correção M, versões 1 a 10). Chave Pix, nome e cobranças ficam só em `ascensao-pix`, fora do progresso, e nada vai para a rede. "Recebi" e "Apagar" pedem 2 toques; o recibo sai com a data real de emissão. Teste: `node qa/pix.test.js`.
+
+## Pedido de avaliação
+
+`tools/aval.js` e `tools/aval.css` (nos dois apps): depois de uma conquista (missão concluída com 3+ dias de uso ou Task que paga concluída), um cartão curto pede nota de 1 a 5 e um comentário opcional. Só aparece com o Teste do app (beta anônimo) ligado, 14 a 17 com responsável e nunca até 13; nunca no 1º dia de uso, no máximo 1 vez a cada 30 dias (90 depois de avaliar) e some de vez depois de 2 "Agora não". Não dá XP, Ouro nem item (avaliação não é trocada por recompensa). A nota sai pelo canal do beta (linha `B|id|aval|data|nota|motivo|comentário`), com e-mail, link, @perfil e telefone tirados do comentário. Estado só em `asc-u-aval` / `ascensao-aval`, fora do progresso. Teste: `PORT=8002 node qa/aval.test.js`.
