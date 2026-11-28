@@ -24,13 +24,13 @@ const prog=p=>p.evaluate(()=>JSON.parse(localStorage.getItem('asc-u-prog')));
 const xpOf=(st,id)=>Object.values(st.log).flat().filter(e=>e.q==='ach:key:'+id).reduce((a,e)=>a+e.xp,0);
 (async()=>{const b=await chromium.launch();
 // 0) 2 dias jogados: nada aparece
-{const {ctx,p}=await abre(b,base({'2026-11-21':[],'2026-11-22':[]}));ok('2 dias: sem Crônicas nem Mapa',!(await p.locator('#crPanel:visible, #kyPanel:visible').count()));await ctx.close();}
+{const {ctx,p}=await abre(b,base({'2026-11-21':[],'2026-11-22':[]}));ok('2 dias: sem Crônicas nem Mapa',!(await p.locator('#cnPanel:visible, #kyPanel:visible').count()));await ctx.close();}
 // 1) Crônicas e Mapa
 let {ctx,p,errs}=await abre(b,base());
-ok('3º dia: Crônicas em Mais',await p.locator('#crPanel').isVisible());
-ok('Crônicas pág. 1 "O Véu"',/O Véu/.test(await p.textContent('#crPanel')));
-for(let i=0;i<4;i++){await p.locator('#crPanel .crnav .go').click();await p.clock.runFor(100);}
-const pg5=await p.textContent('#crPanel');ok('pág. 5 tem o acróstico de ARES sem negrito',/Comece pequeno/.test(pg5)&&/Aço não nasce aço/.test(pg5)&&!(await p.locator('#crPanel b, #crPanel strong').count()));
+ok('3º dia: Crônicas em Mais',await p.locator('#cnPanel').isVisible());
+ok('Crônicas pág. 1 "O Véu"',/O Véu/.test(await p.textContent('#cnPanel')));
+for(let i=0;i<4;i++){await p.locator('#cnPanel .crnav .go').click();await p.clock.runFor(100);}
+const pg5=await p.textContent('#cnPanel');ok('pág. 5 tem o acróstico de ARES sem negrito',/Comece pequeno/.test(pg5)&&/Aço não nasce aço/.test(pg5)&&!(await p.locator('#cnPanel b, #cnPanel strong').count()));
 ok('Mapa das Chaves: 3 fechaduras + Portão, 0/3',await p.locator('#kyPanel .kyslot').count()===4&&/0\/3/.test(await p.textContent('#kyPanel')));
 ok('Mapa não entrega a palavra',!/chama|saber|elo\b/i.test((await p.textContent('#kyPanel')).replace(/Chave/g,'')));
 // palavra sem ação

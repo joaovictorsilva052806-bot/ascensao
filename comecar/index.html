@@ -3800,7 +3800,7 @@ setTimeout(secMount,0);
 // ---------- Telas enxutas: cada aba mostra uma coisa principal; o resto vira linha que abre com um toque ----------
 // Não apaga nada: só recolhe. O que fica aberto é lembrado nesta sessão (preferência de tela, não é progresso).
 (function(){
-  const KEEP=new Set(["focusPanel","dunPanel","invPanel","onb","quick","syncCard","zapPanel","gdPanel","chPanel","tpLine","tpPanel","mqPanel","crPanel","kyPanel"]);
+  const KEEP=new Set(["focusPanel","dunPanel","invPanel","onb","quick","syncCard","zapPanel","gdPanel","chPanel","tpLine","tpPanel","mqPanel","cnPanel","kyPanel"]);
   // cabeçalhos que viram linha: .qhead/h2 e os dos painéis de Progresso feitos em JS (Atributos, Arena, Meta de leitura)
   const HD=".qhead,h2,.athd,.arhd,.lrhd";
   const openKey="asc-ui-open";let opened={};try{opened=JSON.parse(sessionStorage.getItem(openKey)||"{}")||{};}catch(e){}
@@ -8400,9 +8400,9 @@ document.addEventListener("submit",ev=>{const f=ev.target;if(!f||f.id!=="secForm
 function kyHint(){if(!kyOpen())return;const s=kySt();for(const K of KY_L){if(s.k[K[0]]||s.hint[K[0]])continue;if(kyCond(K[0])){s.hint[K[0]]=todayKey();save();toast("🗝️ Uma fechadura reconheceu você. Abra o Terminal.");return;}}}
 // --- Crônicas (Mais), a partir do 3º dia ---
 let crPage=0;
-function crUI(){let p=$("crPanel");const mais=$("secTerm")||[...document.querySelectorAll('.wrap>section[data-tab="mais"]')].pop();if(!mais)return;
+function crUI(){let p=$("cnPanel");const mais=$("secTerm")||[...document.querySelectorAll('.wrap>section[data-tab="mais"]')].pop();if(!mais)return;
   if(!kyOpen()){if(p)p.hidden=true;const m=$("kyPanel");if(m)m.hidden=true;return;}
-  if(!p){p=kyEl("section","panel crpanel");p.id="crPanel";p.dataset.tab="mais";mais.before(p);}
+  if(!p){p=kyEl("section","panel crpanel");p.id="cnPanel";p.dataset.tab="mais";mais.before(p);}
   p.hidden=false;p.textContent="";const pg=CR_PAGES[crPage];
   const hd=kyEl("div","qhead");hd.append(kyEl("h2",null,"📜 Crônicas"),kyEl("span","sm mono","pág. "+(crPage+1)+" de "+CR_PAGES.length));p.append(hd);
   const body=kyEl("div","crbody");body.setAttribute("aria-live","polite");body.append(kyEl("h3","crh",pg[0]));for(const t of pg[1]){const para=kyEl("p","crp",t);body.append(para);}p.append(body);
@@ -8410,7 +8410,7 @@ function crUI(){let p=$("crPanel");const mais=$("secTerm")||[...document.querySe
   const next=kyEl("button","go",crPage<CR_PAGES.length-1?"Próxima ›":"Voltar ao início");next.type="button";next.addEventListener("click",()=>{crPage=crPage<CR_PAGES.length-1?crPage+1:0;crUI();});
   nav.append(prev,next);p.append(nav);kyUI();}
 // --- Mapa das Chaves (Mais), junto com as Crônicas ---
-function kyUI(){let p=$("kyPanel");const cr=$("crPanel");if(!cr||cr.hidden)return;
+function kyUI(){let p=$("kyPanel");const cr=$("cnPanel");if(!cr||cr.hidden)return;
   if(!p){p=kyEl("section","panel kypanel");p.id="kyPanel";p.dataset.tab="mais";cr.after(p);}
   const s=kySt();if(!s.m){s.m=todayKey();save();}p.hidden=false;p.textContent="";
   const hd=kyEl("div","qhead");hd.append(kyEl("h2",null,"🗝️ Mapa das Chaves"),kyEl("span","sm mono",kyHave()+"/3"));p.append(hd);
