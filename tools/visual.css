@@ -86,3 +86,8 @@ body:has(#arPanel.tbrk-A) #arModal{--rk:#f2c14e}body:has(#arPanel.tbrk-S) #arMod
 /* rank S: fundo quase preto com halo vermelho */
 :root:root #arPanel.tbrk-S{background:linear-gradient(180deg,#0b0b10,#140810)}
 body:has(#arPanel.tbrk-S) #arModal,#arModal.tbrk-S{background:radial-gradient(ellipse at 50% 30%,rgba(255,61,110,.14),transparent 70%),#0b0b10}
+
+/* 16. Títulos de painel numa linha só em celular estreito (Baú de recompensas, Revisão da semana…) */
+@media (max-width:420px){:root:root .panel h2{letter-spacing:.1em}:root:root .fhd{gap:6px}
+  :root:root .fhd>:not(h2):not(.muted){font-size:var(--fs-cap);letter-spacing:0}}
+@media (max-width:360px){:root:root .panel h2{letter-spacing:.07em}:root:root .fhd{gap:6px}}
