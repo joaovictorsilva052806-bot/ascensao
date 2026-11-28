@@ -19,6 +19,11 @@ rep('\nlet saveTimer=null, SYNC="";','\n'+R('estudo.js')+'\nlet saveTimer=null, 
 rep('\nlet saveTimer=null, SYNC="";','\n'+R('slot.js')+'\nlet saveTimer=null, SYNC="";')
 rep('<title>Ascension</title>','<title>Ascension</title>')
 rep('<h2>Quests de hoje</h2>','<h2>Tarefas de hoje</h2>')
+# prévia do link no WhatsApp/Instagram (só /comecar/, o link que os testadores mandam): dinheiro na frente, 18+, sem promessa de valor
+OG_T="Ascension: missões que pagam de verdade (18+)"
+OG_D="Tarefas simples em apps que pagam direto pra você, passo a passo. E a sua rotina vira um RPG. Grátis e sem conta. O app nunca guarda o seu dinheiro."
+OG_U="https://joaovictorsilva052806-bot.github.io/ascensao/comecar/"
+if not ROOT: rep('<title>Ascension</title>','<title>Ascension</title><meta name="description" content="'+OG_D+'"><meta property="og:type" content="website"><meta property="og:site_name" content="Ascension"><meta property="og:locale" content="pt_BR"><meta property="og:url" content="'+OG_U+'"><meta property="og:title" content="'+OG_T+'"><meta property="og:description" content="'+OG_D+'"><meta property="og:image" content="'+OG_U+'og.jpg"><meta property="og:image:type" content="image/jpeg"><meta property="og:image:width" content="1200"><meta property="og:image:height" content="630"><meta property="og:image:alt" content="Ascension: missões que pagam de verdade. 18+, grátis, sem conta."><meta name="twitter:card" content="summary_large_image"><meta name="twitter:title" content="'+OG_T+'"><meta name="twitter:description" content="'+OG_D+'"><meta name="twitter:image" content="'+OG_U+'og.jpg">')
 if not ROOT: rep('href="icon-180.png"','href="../icon-180.png"');s=s.replace('href="icons/splash/','href="../icons/splash/');rep('<link rel="icon" href="icon-192.png">','<link rel="icon" href="../icon-192.png">')
 if not ROOT: s=s.replace('"ascensao-prog"','"asc-u-prog"').replace('"ascensao-cfg"','"asc-u-cfg"').replace('"ascensao-sync"','"asc-u-sync"')
 rep('placeholder="Ex.: mandar a proposta pro cliente"','placeholder="Ex.: entregar a lista de Cálculo"')

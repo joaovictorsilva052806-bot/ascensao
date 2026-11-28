@@ -5440,10 +5440,16 @@ function tmCard(n){const me=!n||tmN(n)===tmN(rankName());const d=me?cdMine():cdO
 // --- convite pessoal ---
 // link fixo da turma: o mesmo link serve para quantas pessoas quiser (grupo do WhatsApp, Instagram etc.)
 function cdLink(){const me=rankName();if(!tmOn()||!me)return "";const s=tmSt();if(!s.inv){const a=new Uint8Array(8);crypto.getRandomValues(a);s.inv=[...a].map(x=>(x%36).toString(36)).join("");save();}return CD_URL+"?amigo="+encodeURIComponent(me)+"&c="+s.inv;}
-async function cdInvite(){const me=rankName();if(!tmOn()||!me){toast("Entre no ranking primeiro: o convite usa o seu apelido.");return;}
-  const url=cdLink();const text="Bora jogar comigo no Ascension? É um jogo pra subir de nível na vida real. Entra pelo meu link que a gente já vira amigo lá dentro:";
+// Convite: texto curto já preenchido, com o código da Guilda quando existe. Nunca envia sozinho:
+// abre o compartilhar do celular, ou copia, ou abre o WhatsApp com o texto para a pessoa apertar Enviar.
+function cdInvText(){const me=rankName();const on=tmOn()&&!!me&&!(typeof tmKid==="function"&&tmKid());let k="";try{if(on&&typeof kdMine==="function")k=kdMine();}catch(e){}
+  const adult=typeof ad18==="function"&&ad18();
+  const t=(adult?"Achei um app com missões que pagam de verdade (tarefas simples em apps que pagam direto pra você, 18+) e que transforma a rotina num RPG.":"Bora subir de nível comigo no Ascension? É um jogo que transforma a rotina num RPG.")
+    +(on?" Entra pelo link que a gente já vira amigo"+(k?" (ou digita "+kdShow(k)+" em Amigos → Entrar numa Guilda)":"")+":":" É grátis e sem conta:");
+  return {text:t,url:on?cdLink():CD_URL};}
+async function cdInvite(){const {text,url}=cdInvText();
   try{if(navigator.share){await navigator.share({title:"Ascension",text,url});return;}}catch(e){if(e&&e.name==="AbortError")return;}
-  try{await navigator.clipboard.writeText(text+" "+url);toast("Link copiado. Cole no WhatsApp do seu amigo.");}catch(e){window.open("https://wa.me/?text="+encodeURIComponent(text+" "+url),"_blank","noopener");}}
+  try{await navigator.clipboard.writeText(text+" "+url);toast("Convite copiado. Cole no WhatsApp do seu amigo.");}catch(e){window.open("https://wa.me/?text="+encodeURIComponent(text+" "+url),"_blank","noopener");}}
 async function cdSig(tk,n){const b=await crypto.subtle.digest("SHA-256",new TextEncoder().encode(tk+"|"+tmN(n)));return "cv"+[...new Uint8Array(b)].slice(0,6).map(x=>x.toString(16).padStart(2,"0")).join("");}
 // quem chegou por convite: guarda quem convidou até poder virar amigo
 (function(){try{const u=new URLSearchParams(location.search);const a=cleanNick(u.get("amigo")||"");if(a){localStorage.setItem("asc-amigo",a);localStorage.setItem("asc-amigo-c",String(u.get("c")||"").replace(/[^a-z0-9]/g,"").slice(0,12));u.delete("amigo");u.delete("c");history.replaceState(null,"",location.pathname+(u.toString()?"?"+u:""));}}catch(e){}})();
