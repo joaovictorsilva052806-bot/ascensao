@@ -215,6 +215,8 @@ rep('\nlet saveTimer=null, SYNC="";','\n'+R('arsenal.js')+'\nlet saveTimer=null,
 # Indique a Bellardi 18+ em Mais (tools/indique.*): INDIQUE_WA vazio = some; não grava nada e não envia dado do indicado
 rep('</style></head>',R('indique.css')+'</style></head>')
 rep('\nlet saveTimer=null, SYNC="";','\n'+R('indique.js')+'\nlet saveTimer=null, SYNC="";')
+# acabamento visual (tools/visual.css): só CSS, por último para valer sobre os módulos
+rep('</style></head>',R('visual.css')+'</style></head>')
 if not ROOT: open('comecar/index.html','w').write(s)
 pass
 
