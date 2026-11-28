@@ -1678,6 +1678,12 @@ body:not([data-tab=lenda]) .wrap>section[data-tab=lenda]{display:none}
 /* 1º uso enxuto (tools/tasks.js tpFresh) */
 body.asc-fresh #gtHero,body.asc-fresh #chPanel{display:none!important}
 .tpline.tplock .tplgo{font-size:.85rem;white-space:nowrap}
+/* código curto da Guilda (tools/codigo.js) */
+.kdbox{margin-top:10px;padding-top:10px;border-top:1px dashed rgba(255,255,255,.14);display:flex;flex-direction:column;gap:6px}
+.kdrow{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+.kdcode{font:700 22px/1.2 ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;letter-spacing:.12em;color:var(--gold,#f5c84c);padding:6px 10px;border:1px solid rgba(245,200,76,.45);border-radius:10px;user-select:all;-webkit-user-select:all}
+.kdrow button{min-height:44px}
+#clIn{text-transform:none}
 /* ---- Missões de Parceiros (tools/lendaria.*): moldura de raridade lendária, ouro + violeta; brilho some com reduce-motion ---- */
 .lnpanel{display:grid;gap:12px;position:relative;border:1px solid rgba(255,200,87,.55);background:linear-gradient(160deg,rgba(40,24,6,.85),rgba(18,8,34,.88) 55%,rgba(6,20,30,.85));box-shadow:0 0 0 1px rgba(170,110,255,.25) inset,0 0 22px rgba(255,190,70,.18)}
 .lnpanel::before,.lnpanel::after{content:"";position:absolute;width:16px;height:16px;border:2px solid var(--gold);pointer-events:none}
@@ -5344,7 +5350,7 @@ function gtGo(id){const g=gtSt();g.cur=id;try{tmSt().view="turma";}catch(e){}sav
 function gtSheet(id){const g=gtSt();const novo=!id;const t=novo?{id:"",n:"",e:GT_EM[g.l.length%GT_EM.length],c:"",m:[]}:g.l.find(x=>x.id===id);if(!t)return;
   let fr=[];try{fr=frSt().l.slice();}catch(e){}
   const m=gtEl("div","sysmodal gtmodal");m.setAttribute("role","dialog");m.setAttribute("aria-modal","true");m.setAttribute("aria-label",novo?"Nova guilda":"Editar guilda");
-  const c=gtEl("div","card gtcard");c.append(gtEl("div","tag",novo?"[ SISTEMA ] NOVA TURMA":"[ SISTEMA ] EDITAR TURMA"));
+  const c=gtEl("div","card gtcard");c.append(gtEl("div","tag",novo?"[ SISTEMA ] NOVA GUILDA":"[ SISTEMA ] EDITAR GUILDA"));
   const close=()=>{m.remove();};m.addEventListener("click",e=>{if(e.target===m)close();});
   const lb=gtEl("label","gtlbl","Nome da guilda");const inp=gtEl("input","gtname");inp.maxLength=20;inp.autocomplete="off";inp.placeholder="Ex.: Igreja, Família, Trabalho";inp.value=t.n;lb.append(inp);c.append(lb);
   const ems=gtEl("div","gtems");ems.setAttribute("role","radiogroup");ems.setAttribute("aria-label","Ícone da guilda");let em=t.e;
@@ -5580,7 +5586,7 @@ function tbPlace(){const wrap=document.querySelector(".wrap");if(!wrap)return nu
 function tbUI(){const p=tbPlace();if(!p)return;if(!tbOn()){p.hidden=true;tbStrip();return;}p.hidden=false;
   const st=tbState();const s=tbSt();const ws=tbWk();const b=st.boss;const dead=st.left<=0;const prev=s.seen[ws]||0;const gain=st.dmg-prev;
   p.textContent="";
-  const hd=tbEl("div","tbhd");hd.append(tbEl("span","tbtag",tbSocial()?"CHEFÃO DA TURMA":"CHEFÃO DA SEMANA"),tbEl("span","tbclock",dead?"✔ derrotado":"⏳ até domingo · "+(typeof tmLeft==="function"?tmLeft():"")));p.append(hd);
+  const hd=tbEl("div","tbhd");hd.append(tbEl("span","tbtag",tbSocial()?"CHEFÃO DA GUILDA":"CHEFÃO DA SEMANA"),tbEl("span","tbclock",dead?"✔ derrotado":"⏳ até domingo · "+(typeof tmLeft==="function"?tmLeft():"")));p.append(hd);
   const stage=tbEl("div","tbstage"+(dead?" dead":""));stage.innerHTML=tbArt(b,st.pct,dead);if(dead)stage.append(tbEl("span","tbstamp","DERROTADO"));p.append(stage);
   p.append(tbEl("h3","tbname",b[0]));
   const hp=tbEl("div","tbhp");const fill=tbEl("i");fill.style.width=st.pct+"%";if(st.pct<20)fill.className="crit";else if(st.pct<50)fill.className="hurt";hp.append(fill);
@@ -5835,7 +5841,7 @@ function muAlbumUI(){let p=$("muAlbum");const anchor=$("bxCol")||$("avPanel")||d
 // --- consentimento (1ª vez) e aviso curto nas próximas ---
 function muConsent(done){const s=muSt();const teen=muBand()==="teen";
   const m=muEl("div","sysmodal mumodal");m.setAttribute("role","dialog");m.setAttribute("aria-modal","true");const c=muEl("div","card");
-  c.append(muEl("div","tag","[ SISTEMA ] MURAL DA TURMA"),muEl("h3",null,"Antes da 1ª foto"));
+  c.append(muEl("div","tag","[ SISTEMA ] MURAL DA GUILDA"),muEl("h3",null,"Antes da 1ª foto"));
   const ul=muEl("ul","sm mulist");for(const t of ["Só seus amigos confirmados veem. Nunca fica público nem vai para o ranking.","A foto some sozinha em 7 dias. Você pode apagar antes, quando quiser.","Não mostre rosto (nem o seu, nem de ninguém), uniforme, nome da escola, endereço, número da casa, placa ou documento.","Sem comentários: só reações 🔥 💪 👏. Viu algo errado? Toque em Denunciar."])ul.append(muEl("li",null,t));c.append(ul);
   const l1=muEl("label","chk sm");const c1=muEl("input");c1.type="checkbox";l1.append(c1,document.createTextNode(" Entendi as regras"));c.append(l1);
   let c2=null;if(teen){const l2=muEl("label","chk sm");c2=muEl("input");c2.type="checkbox";l2.append(c2,document.createTextNode(" Meu responsável autorizou eu postar fotos para meus amigos"));c.append(l2);}
@@ -7366,7 +7372,7 @@ function clTurma(inv,go){if(!inv||!inv.t||typeof gtSt!=="function"||typeof gtCle
 setTimeout(function(){try{if(clStandalone())return;if(typeof tmKid==="function"&&tmKid())return;const nav=(performance.getEntriesByType&&performance.getEntriesByType("navigation")[0])||{};
   const inv=clParse(nav.name||"");if(!inv)return;const box=clEl("div","clbar");box.id="clBar";box.setAttribute("role","region");box.setAttribute("aria-label","Convite de "+inv.a);
   box.append(clEl("b",null,"🤝 Convite de "+inv.a+(inv.t?" · guilda "+inv.t:"")));
-  box.append(clEl("span","sm","Já tem o Ascension instalado? Copie o convite, abra o app e cole em Amigos → Recebeu um convite?"));
+  box.append(clEl("span","sm","Já tem o Ascension instalado? Copie o convite, abra o app e cole em Amigos → Entrar numa Guilda."));
   const row=clEl("div","row");const cp=clEl("button","go","Copiar convite");cp.type="button";
   cp.addEventListener("click",async()=>{const u=clLink(inv.a,inv.c,inv.t);let ok=false;try{await navigator.clipboard.writeText(u);ok=true;}catch(e){}
     if(!ok){try{const i=document.createElement("textarea");i.value=u;document.body.append(i);i.select();ok=document.execCommand("copy");i.remove();}catch(e){}}
@@ -7378,13 +7384,18 @@ setTimeout(function(){try{if(clStandalone())return;if(typeof tmKid==="function"&
 let clOpen=false,clVal="",clMsg="";
 function clUI(){const p=$("tmPanel");if(!p||p.hidden)return;if(typeof tmKid==="function"&&tmKid())return;
   let d=p.querySelector(".clpaste");if(d&&d.parentNode===p&&p.lastElementChild===d)return;if(d)d.remove();
-  d=clEl("details","clpaste");d.open=clOpen;d.addEventListener("toggle",()=>{clOpen=d.open;});const sm=clEl("summary",null,"🔗 Recebeu um convite? Cole aqui");d.append(sm);
-  d.append(clEl("div","sm muted","Cole o link que te mandaram (pode ser a mensagem inteira). Você vira amigo e entra na guilda, sem perder nada do seu jogo."));
-  const row=clEl("div","row");const i=clEl("input");i.type="text";i.id="clIn";i.placeholder="Cole o link aqui";i.setAttribute("aria-label","Link do convite");i.autocomplete="off";i.value=clVal;
+  d=clEl("details","clpaste");d.open=clOpen;d.addEventListener("toggle",()=>{clOpen=d.open;});const sm=clEl("summary",null,"🗝️ Entrar numa Guilda");d.append(sm);
+  d.append(clEl("div","sm muted","Digite o código que te passaram (ex.: 7KQM-4XHT) ou cole o link do convite. Você vira amigo e entra na guilda, sem perder nada do seu jogo."));
+  const row=clEl("div","row");const i=clEl("input");i.type="text";i.id="clIn";i.placeholder="Código ou link";i.setAttribute("aria-label","Código ou link do convite");i.autocapitalize="characters";i.spellcheck=false;i.autocomplete="off";i.value=clVal;
   i.addEventListener("input",()=>{clVal=i.value;});
   const b=clEl("button","go","Entrar");b.type="button";const msg=clEl("div","sm clmsg",clMsg);msg.setAttribute("role","status");
   const say=t=>{clMsg=t;msg.textContent=t;};
-  b.addEventListener("click",()=>{const inv=clParse(i.value);if(!inv){say("Não achei um convite nesse texto. Cole o link inteiro que começa com https://");return;}
+  b.addEventListener("click",()=>{const inv=clParse(i.value);
+    if(!inv&&typeof kdParse==="function"){const k=kdParse(i.value);if(k){if(!kdValid(k)){say("Confira o código: são 8 letras e números, sem 0, O, 1, I ou L.");return;}
+      try{localStorage.setItem("asc-guilda-k",k);}catch(e){}i.value="";clVal="";
+      if(typeof tmOn==="function"&&tmOn()&&typeof rankName==="function"&&rankName()){say("🗝️ Código "+kdShow(k)+" enviado. Quando o dono da guilda abrir o app, vocês viram amigos.");kdTick();}
+      else{say("Código guardado. Entre no ranking com um apelido e o pedido sai na hora.");try{renderRankUI();}catch(e){}}return;}}
+    if(!inv){say("Não achei um convite nesse texto. Digite o código (ex.: 7KQM-4XHT) ou cole o link inteiro que começa com https://");return;}
     const me=typeof rankName==="function"?rankName():"";if(me&&typeof tmN==="function"&&tmN(me)===tmN(inv.a)){say("Esse convite é seu. Mande para um amigo.");return;}
     clApply(inv);i.value="";clVal="";
     if(typeof tmOn==="function"&&tmOn()&&me){const tn=clTurma(inv);say("Pronto: convite de "+inv.a+" aceito"+(tn?" (guilda "+tn+")":"")+".");try{cdInvDo();}catch(e){}try{clTurma(inv,1);}catch(e){}}
@@ -8122,6 +8133,76 @@ function tpLine(){let l=$("tpLine");if(!tpOn()){if(l)l.hidden=true;return;}
 function tpFresh(){try{document.body.classList.toggle("asc-fresh",!!(cfg&&!cfg.blank&&cfg.quests&&cfg.quests.length)&&!tpMission());}catch(e){}}
 {const _r=render;render=function(){_r.apply(this,arguments);try{tpRender();}catch(e){}try{tpLine();}catch(e){}tpFresh();};}
 setTimeout(()=>{try{tpRender();}catch(e){}try{tpLine();}catch(e){}},70);
+
+// ---------- Código curto da Guilda (28/11, dica do JV) ----------
+// Em vez do link inteiro, o dono da guilda passa um código de 8 letras (ex.: 7KQM-4XHT) e quem vai entrar digita em
+// Amigos → "Entrar numa Guilda". Os links antigos continuam valendo (card.js, grupos.js, colar.js não mudam o formato).
+// Segurança (o canal F/G é público na planilha):
+// - O código nunca vai para a planilha. Vai só "#"+hash lento (PBKDF2, 100 mil voltas) para o dono achar o pedido,
+//   e a assinatura cdSig(código, apelido) que só quem sabe o código consegue fazer (mesma regra do link).
+// - O dono confere e responde com G assinado com o código; quem entrou confere a assinatura antes de virar amigo
+//   (G solto, sem o código, não vira amizade). Depois manda o F normal, para o servidor também ver a amizade (mural).
+// - Alfabeto sem 0/O/1/I/L (não confunde ao digitar). Menor de 14: nada aparece (mesma regra do ranking).
+// Só ADICIONA: t.k em cada guilda de prog.turmas, prog.team.ik (código pessoal) e prog.team.kq (pedidos feitos com código).
+const KD_AB="23456789abcdefghjkmnpqrstuvwxyz",KD_LEN=8,KD_MAXQ=5;
+function kdNew(){const out=[];while(out.length<KD_LEN){const a=new Uint8Array(16);crypto.getRandomValues(a);for(const x of a)if(x<248&&out.length<KD_LEN)out.push(KD_AB[x%31]);}return out.join("");}
+function kdShow(k){k=String(k||"").toUpperCase();return k.slice(0,4)+"-"+k.slice(4);}
+function kdNorm(v){return String(v||"").toLowerCase().replace(/[^a-z0-9]/g,"");}
+// acha um código num texto: só o código (com ou sem hífen/espaço) ou "XXXX-XXXX" dentro de uma mensagem
+function kdParse(txt){const s=String(txt||"").trim();let m=/^([a-z0-9]{4})[\s-]?([a-z0-9]{4})$/i.exec(s);if(!m)m=/(?:^|[^a-z0-9])([a-z0-9]{4})-([a-z0-9]{4})(?:$|[^a-z0-9])/i.exec(s);
+  if(!m)return null;const k=kdNorm(m[1]+m[2]);return k.length===KD_LEN?k:null;}
+function kdValid(k){return typeof k==="string"&&k.length===KD_LEN&&[...k].every(c=>KD_AB.includes(c));}
+// código da guilda aberta (a "Minha guilda" usa o código pessoal)
+function kdMine(){if(!tmOn()||!rankName())return "";const t=gtCur();if(t.id==="t0"){const s=tmSt();if(!kdValid(s.ik)){s.ik=kdNew();save();}return s.ik;}
+  if(!kdValid(t.k)){t.k=kdNew();save();}return t.k;}
+function kdAll(){const L=[];const s=tmSt();if(kdValid(s.ik))L.push({k:s.ik,t:null});try{for(const t of gtSt().l)if(kdValid(t.k))L.push({k:t.k,t:t.id==="t0"?null:t});}catch(e){}return L;}
+const kdHc={};
+async function kdHash(k){if(kdHc[k])return kdHc[k];const E=new TextEncoder();const key=await crypto.subtle.importKey("raw",E.encode(k),"PBKDF2",false,["deriveBits"]);
+  const b=await crypto.subtle.deriveBits({name:"PBKDF2",salt:E.encode("ascension-guilda-v1"),iterations:100000,hash:"SHA-256"},key,48);
+  return kdHc[k]="#"+[...new Uint8Array(b)].map(x=>x.toString(16).padStart(2,"0")).join("");}
+function kdQ(){const s=tmSt();if(!Array.isArray(s.kq))s.kq=[];const lim=new Date();lim.setDate(lim.getDate()-14);const lk=dkey(lim);
+  s.kq=s.kq.filter(x=>x&&kdValid(x.k)&&typeof x.d==="string"&&x.d>=lk).slice(-KD_MAXQ);return s.kq;}
+// --- quem digita o código ---
+function kdPendGet(){try{return localStorage.getItem("asc-guilda-k")||"";}catch(e){return "";}}
+let kdBusy=false;
+async function kdJoin(){const k=kdPendGet();const me=rankName();if(!k||kdBusy||!tmOn()||!me||tmKid())return false;
+  try{localStorage.removeItem("asc-guilda-k");}catch(e){}if(!kdValid(k))return false;
+  if(kdAll().some(x=>x.k===k)){toast("Esse código é da sua guilda. Mande para um amigo.");return false;}
+  kdBusy=true;try{const h=await kdHash(k),sg=await cdSig(k,me);const q=kdQ();if(!q.some(x=>x.k===k))q.push({k,d:todayKey()});if(q.length>KD_MAXQ)q.shift();
+    sqiPost(["F",me,h,sg,sqiDk()]);save();toast("🗝️ Pedido enviado. Quando o dono da guilda abrir o app, vocês viram amigos.");return true;}
+  catch(e){return false;}finally{kdBusy=false;}}
+async function kdAccepted(){const me=rankName();const q=kdQ();if(!me||!q.length||typeof sqInvRows==="undefined")return;const f=frSt();let ch=false;
+  for(const r of sqInvRows){if(r.k!=="G"||tmN(r.b)!==tmN(me)||!r.a||frHas(r.a)||tmN(r.a)===tmN(me)||!/^cv[0-9a-f]{12}$/.test(r.s))continue;
+    for(const x of q.slice()){let ok=false;try{ok=r.s===await cdSig(x.k,"g|"+r.a);}catch(e){}if(!ok)continue;
+      if(!frHas(r.a))f.l.push(r.a);delete f.pend[r.a];q.splice(q.indexOf(x),1);ch=true;
+      try{sqiPost(["F",me,r.a,await cdSig(x.k,me),sqiDk()]);}catch(e){}
+      tmFeedAdd("conv",r.a,"🗝️ Você entrou na guilda de "+r.a+". Agora são amigos");toast("🗝️ "+r.a+" aceitou. Agora vocês são amigos!");break;}}
+  if(ch){save();try{frUI();tmUI();}catch(e){}}}
+// --- dono da guilda: acha os pedidos pelo hash e confere a assinatura ---
+async function kdInbox(){const me=rankName();if(!me||!tmOn()||typeof sqInvRows==="undefined")return;const C=kdAll();if(!C.length)return;
+  const rows=sqInvRows.filter(r=>r.k==="F"&&/^#[0-9a-f]{12}$/.test(r.b)&&r.a&&!frHas(r.a)&&tmN(r.a)!==tmN(me)&&/^cv[0-9a-f]{12}$/.test(r.s)).slice(-30);if(!rows.length)return;
+  const f=frSt();let ch=false;
+  for(const x of C){const h=await kdHash(x.k);
+    for(const r of rows){if(r.b!==h||frHas(r.a))continue;let ok=false;try{ok=r.s===await cdSig(x.k,r.a);}catch(e){}if(!ok)continue;
+      f.l.push(r.a);delete f.pend[r.a];const t=x.t;if(t&&!t.m.some(n=>gtN(n)===gtN(r.a)))t.m.push(r.a);
+      try{sqiPost(["G",me,r.a,await cdSig(x.k,"g|"+me),sqiDk()]);}catch(e){}ch=true;
+      tmFeedAdd("conv",r.a,"🗝️ "+r.a+" entrou com o código"+(t?" da guilda "+t.n:""));try{cdBadge(1);}catch(e){}toast("🗝️ "+r.a+" entrou"+(t?" na guilda "+t.n:" na sua guilda")+". Agora são amigos!");}}
+  if(ch){save();try{frUI();tmUI();}catch(e){}}}
+let kdRun=false;async function kdTick(){if(kdRun)return;kdRun=true;try{await kdJoin();await kdInbox();await kdAccepted();}catch(e){}finally{kdRun=false;}}
+{const _ck=sqiCheck;sqiCheck=function(){_ck.apply(this,arguments);kdTick();};}
+{const _rr=renderRankUI;renderRankUI=function(){_rr.apply(this,arguments);try{if(kdPendGet())kdTick();}catch(e){}};}
+// --- tela: código na caixa do link da guilda ---
+function kdUI(){const p=$("tmPanel");if(!p||p.hidden||tmKid()||!tmOn())return;const bx=p.querySelector(".cdlink");if(!bx)return;const k=kdMine();if(!k)return;
+  let c=bx.querySelector(".kdbox");if(c&&c.dataset.k===k)return;if(c)c.remove();
+  c=cdEl("div","kdbox");c.dataset.k=k;const t=gtCur();
+  c.append(cdEl("span","sm muted","Ou passe só o código"+(t.id==="t0"?"":" da guilda "+t.n)+". A pessoa digita em Amigos → Entrar numa Guilda."));
+  const row=cdEl("div","kdrow");const v=cdEl("b","kdcode",kdShow(k));v.setAttribute("aria-label","Código "+[...k.toUpperCase()].join(" "));
+  const cp=cdEl("button","ghost","Copiar código");cp.type="button";
+  cp.addEventListener("click",async()=>{const txt="Entra na minha guilda no Ascension: abre o app, vai em Amigos → Entrar numa Guilda e digita "+kdShow(k);
+    let ok=false;try{await navigator.clipboard.writeText(txt);ok=true;}catch(e){}toast(ok?"Código copiado.":"Anote o código: "+kdShow(k));});
+  row.append(v,cp);c.append(row);const r=bx.querySelector(".cdlbtn");(r||bx.lastChild).after(c);}
+{const _tu=tmUI;tmUI=function(){_tu.apply(this,arguments);try{kdUI();}catch(e){}};}
+setTimeout(()=>{try{kdUI();}catch(e){}},0);
 
 // ---------- Missões de Parceiros: missões lendárias patrocinadas (só 18+, no topo da aba Lendárias; sem a aba, na aba Foco; chamada em Hoje) ----------
 // Lista em missoes-lendarias.json (raiz do site), para trocar parceiro, texto ou link sem trem novo. Missão sem os campos
