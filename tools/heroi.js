@@ -112,4 +112,7 @@ setTimeout(()=>{try{hrGuide();}catch(e){}},80);
 function hrPh(){const i=$("addInput");if(!i||!i.clientWidth||!/^(Quest rápida|Nova quest)/.test(i.placeholder))return;const cs=getComputedStyle(i);const c=document.createElement("canvas").getContext("2d");c.font=cs.fontSize+" "+cs.fontFamily;
   const box=i.clientWidth-parseFloat(cs.paddingLeft)-parseFloat(cs.paddingRight)-2;const opts=["Quest rápida (vale 10 XP)","Quest rápida (+10 XP)","Quest rápida +10","Quest rápida"];
   const want=opts.find(t=>c.measureText(t).width<=box)||opts[opts.length-1];if(i.placeholder!==want)i.placeholder=want;}
-addEventListener("resize",()=>{try{hrPh();}catch(e){}});setTimeout(()=>{try{hrPh();}catch(e){}},0);{const _r5=render;render=function(){_r5.apply(this,arguments);try{hrPh();}catch(e){}};}
+// desempenho: medir o campo força o navegador a recalcular o layout da tela inteira. Antes isso rodava a cada render()
+// (8x só na abertura, ~150 ms de trava num celular rápido). Agora junta tudo em 1 medida por quadro, logo antes de pintar.
+let hrPhQ=0;function hrPhSoon(){if(hrPhQ)return;hrPhQ=1;const go=()=>{hrPhQ=0;try{hrPh();}catch(e){}};try{requestAnimationFrame(go);}catch(e){setTimeout(go,16);}}
+addEventListener("resize",hrPhSoon);hrPhSoon();{const _r5=render;render=function(){_r5.apply(this,arguments);hrPhSoon();};}

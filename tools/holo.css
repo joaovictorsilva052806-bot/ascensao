@@ -22,7 +22,8 @@
 .levelup:not([hidden]) .card .big{animation:hxGlitch .5s linear .3s both,lvPulse 1.6s ease-in-out .8s infinite}
 /* Modo Sistema e Foco: sem mudar tamanho (o ACEITAR responde e mede certo na hora), só tremulação de holograma e a varredura */
 .smsheet:not([hidden]) .smcard{animation:hxFlick .45s linear both}
-.hx-rel{position:relative}
+/* especificidade zero: card que já tem position (relative/absolute/fixed) mantém a dele; só o "static" vira relative */
+:where(.hx-rel){position:relative}
 /* película holográfica por cima do card: scanlines, cantos e uma varredura de luz (não recebe toque) */
 .hxfx{position:absolute;inset:0;pointer-events:none;overflow:hidden;border-radius:inherit;z-index:3;
   background:

@@ -3,7 +3,7 @@
 const HX_RM=()=>{try{return matchMedia("(prefers-reduced-motion: reduce)").matches;}catch(e){return false;}};
 // película (scanlines + cantos + varredura) em cada card de janela que aparece
 function hxFilm(card){if(!card||card.querySelector(":scope>.hxfx"))return;
-  if(getComputedStyle(card).position==="static")card.classList.add("hx-rel");
+  card.classList.add("hx-rel"); // sem getComputedStyle: ele forçava recálculo da tela a cada janela; o CSS (:where) só vale para card sem posição própria
   const f=document.createElement("i");f.className="hxfx";f.setAttribute("aria-hidden","true");f.append(document.createElement("b"));card.append(f);}
 function hxReplay(card){const b=card&&card.querySelector(":scope>.hxfx>b");if(!b)return;b.style.animation="none";void b.offsetWidth;b.style.animation="";}
 function hxScanAll(root){for(const m of (root||document).querySelectorAll(".sysmodal,.levelup,.smsheet")){const c=m.querySelector(".card,.smcard");if(c)hxFilm(c);}}
