@@ -217,8 +217,9 @@ function f30Box(p,full){const f=f30St();const box=orEl("div","f30box");box.id=fu
 if(typeof fjCard==="function"){const _fc=fjCard;fjCard=function(){_fc.apply(this,arguments);const p=$("fjCard");if(!p||p.hidden||!f30Ok())return;const old=$("f30Box");if(old)old.remove();
   const f=fjS();if(!f30On()&&!f30St().win&&!f.ses.length)return; // antes do 1º treino, o card fica só com o treino
   f30Box(p,false);};}
-if(typeof fjPanel==="function"){const _fp=fjPanel;fjPanel=function(){_fp.apply(this,arguments);const b=$("fjBody");if(!b||!f30Ok())return;const old=$("f30BoxP");if(old)old.remove();
-  const h=orEl("div","f30wrap");h.id="f30BoxP";f30Box(h,true);const first=b.querySelector(".fjmov");first?first.before(h):b.append(h);};}
+if(typeof fjPanel==="function"){const _fp=fjPanel;fjPanel=function(){_fp.apply(this,arguments);const b=$("fjBody");if(!b||!f30Ok())return;const old=$("f30WrapP");if(old)old.remove();
+  const h=orEl("div","f30wrap");h.id="f30WrapP"; // id próprio: o quadro de dentro já é #f30BoxP (id único na página)
+  f30Box(h,true);const first=b.querySelector(".fjmov");first?first.before(h):b.append(h);};}
 // ---------- Hall da Fama: o do aparelho sempre; o da turma (só amigos, regras do Mural) quando o servidor tiver as ações hall/hlist ----------
 function hlCan(){try{return typeof muPhotoOn==="function"&&muPhotoOn();}catch(e){return false;}}
 let hlRows=null,hlAt=0,hlBusy=false,hlOff=false;
