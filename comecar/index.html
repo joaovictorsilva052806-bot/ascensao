@@ -701,6 +701,23 @@ body.avmkon{overflow:hidden}
 .status{min-width:0}.wrap{max-width:100%}
 .avmkc{padding-left:max(14px,env(safe-area-inset-left));padding-right:max(14px,env(safe-area-inset-right));height:min(94dvh,calc(100dvh - env(safe-area-inset-top)))}
 .tmoff{min-height:44px;display:flex;align-items:center;justify-content:center;text-align:center;padding:6px 10px;border:1px dashed var(--line);border-radius:10px;margin:6px 0}
+/* Miniaturas do criador de avatar (tools/avthumb.*) */
+.avmk .avchips.avths{display:grid;grid-template-columns:repeat(auto-fill,minmax(86px,1fr));gap:8px}
+.avmk .avchip.hasth{display:flex;flex-direction:column;align-items:center;justify-content:flex-start;gap:6px;padding:8px 6px 9px;min-height:104px;line-height:1.2;text-align:center;white-space:normal;font-size:.75rem}
+.avmk .avth{display:block;width:56px;height:56px;border-radius:50%;overflow:hidden;flex:none;background:radial-gradient(circle at 50% 35%,rgba(0,212,255,.12),rgba(0,212,255,0) 70%);pointer-events:none}
+.avmk .avth svg{display:block;width:56px;height:56px}
+.avmk .avth.head svg{transform:scale(1.7) translateY(10%);transform-origin:50% 38%}
+.avmk .avchip.hasth.on{box-shadow:0 0 0 2px var(--accent),0 0 16px rgba(0,212,255,.35)}
+.avmk .avchip.hasth.on .avth{background:radial-gradient(circle at 50% 35%,rgba(0,212,255,.3),rgba(0,212,255,0) 72%)}
+.avmk .avchip.hasth.lock .avth{filter:grayscale(.85) brightness(.8)}
+.avmk .avchip.hasth.cls{border-color:rgba(245,197,66,.7)}
+/* raridade: mesma régua de cor em todo o app (comum cinza, raro azul, épico roxo, lendário dourado) */
+.avmk .avchip[data-rar]{position:relative}
+.avmk .avrar{font-family:var(--f-hud);font-size:.55rem;font-weight:700;letter-spacing:.08em;padding:2px 6px;border-radius:999px;line-height:1.2}
+.avmk .avchip[data-rar=raro]{border-color:rgba(77,163,255,.7)}.avmk .avchip[data-rar=raro] .avrar{color:#8cc4ff;background:rgba(77,163,255,.14)}
+.avmk .avchip[data-rar=epico]{border-color:rgba(199,125,255,.7)}.avmk .avchip[data-rar=epico] .avrar{color:#dcb8ff;background:rgba(160,100,255,.16)}
+.avmk .avchip[data-rar=lend]{border-color:rgba(245,197,66,.75);box-shadow:inset 0 0 14px rgba(245,197,66,.12)}.avmk .avchip[data-rar=lend] .avrar{color:#ffd76a;background:rgba(245,197,66,.14)}
+.avmk .avchip[data-rar].lock .avrar{opacity:.85}
 /* ---- Tarefas limpas + horário (tools/qtidy.js) ---- */
 .quest:not(.open) .tag,.quest:not(.open) .if,.quest:not(.open) .qlink,.quest:not(.open) .qtmin,.quest:not(.open) .mshint{display:none!important}
 .quest:not(.open) .btns .ghost{display:none}
@@ -1782,8 +1799,8 @@ a.inlink{min-height:44px;display:inline-flex;align-items:center;padding:0 14px;b
 .tabbar button[data-go=lenda].on svg{stroke:#ffd76a;filter:drop-shadow(0 0 5px rgba(245,197,66,.7))}
 .tabbar button[data-go=lenda]::before{background:#f5c542;box-shadow:0 0 10px rgba(245,197,66,.8)}
 /* 3. Rótulos da barra de abas um pouco maiores (9 px → 9,6 px) e sem cortar em telas estreitas */
-.tabbar button{font-size:.6rem;letter-spacing:.08em;white-space:nowrap;min-width:0}
-@media (max-width:360px){.tabbar{column-gap:2px;padding-inline:4px}.tabbar button{font-size:.48rem;letter-spacing:.02em}}
+:root:root .tabbar button{font-size:.6rem;letter-spacing:.08em;white-space:nowrap;min-width:0}
+@media (max-width:360px){.tabbar{column-gap:2px;padding-inline:4px}:root:root .tabbar button{font-size:.48rem;letter-spacing:.02em}}
 /* 4. Frases não levam espaçamento de título: leitura mais fácil */
 .gd .tx,.gd .tx *,.tbstx,.tbstx *,.zapc .tt,.swipehint,.gd .link{letter-spacing:normal}
 /* 5. Dias perdidos na masmorra: legíveis (contraste AA) sem perder o tom apagado */
@@ -1793,6 +1810,55 @@ a:focus-visible,summary:focus-visible,[role=button]:focus-visible,select:focus-v
 /* 7. Barra do topo numa linha só em telas estreitas (iPhone SE / 320 px) */
 .hudtop>span{white-space:nowrap}
 @media (max-width:360px){.hudtop{letter-spacing:.12em;font-size:.56rem}.hudtop i{margin:0 3px}}
+/* 8. Tela de entrada (#quick): luz ambiente no topo, coluna centrada em tela larga, escolhas com toque e foco claros */
+.quick{background:radial-gradient(120% 55% at 50% 0%,rgba(0,212,255,.16),rgba(0,212,255,0) 60%),var(--bg)}
+.quick>*{width:100%;max-width:520px;margin-inline:auto}
+.qstep h2{text-shadow:0 0 14px rgba(0,212,255,.35)}
+.qstep input:focus,.qstep input:focus-visible{border-color:var(--accent);box-shadow:0 0 0 3px rgba(0,212,255,.18),0 0 18px rgba(0,212,255,.2);outline:none}
+.qgrid button{border-radius:8px;line-height:1.25;transition:border-color .15s,background-color .15s,box-shadow .15s}
+.qgrid button:not(.on):active{border-color:var(--accent);background:rgba(0,212,255,.1)}
+.qgrid button.on{font-weight:600}
+#q_full{opacity:.85}
+.quick .qstep:not(.qperm){margin-top:4vh}
+#quick button.go.big{background:linear-gradient(180deg,rgba(0,212,255,.34),rgba(0,212,255,.14));font-weight:600;letter-spacing:.02em;border-radius:6px}
+/* 9. Chamada "???" das Lendárias em Hoje: faixa dourada à esquerda, lê como prêmio, não como aviso */
+.tpline.tplock{background:linear-gradient(90deg,rgba(245,197,66,.12),rgba(245,197,66,0) 55%),var(--panel)}
+/* 10. Uma tela, um foco: a faixa do chefão fica só em Hoje (em Progresso o chefão já tem painel próprio); nas outras abas sobra só a linha do [SISTEMA] */
+body[data-tab]:not([data-tab=hoje]) .wrap>#tbStrip{display:none}
+/* 11. Sistema tipográfico (padrão único)
+   Orbitron = só rótulos e títulos de painel em CAIXA ALTA, números grandes (timer, nível).
+   Inter = todo o resto. 4 tamanhos de texto: 12 (legenda) · 13 (apoio) · 15 (texto e botões) · 16+ (destaque).
+   3 pesos: 400 texto · 600 botões, rótulos e ênfase · 700 só números/títulos. */
+:root{--fs-cap:.75rem;--fs-sm:.8125rem;--fs-md:.9375rem;--fs-lg:1rem;--fs-lbl:.6875rem}
+:root:root :is(.sm,.wrap li,.note,.fzleg,.debt,.tplgo,.smbg,.zapc .tt,.zaprank,.quest .xp){font-size:var(--fs-sm)}
+:root:root :is(.pill,.who .xp,.sysline,.swipehint,.hrnx,.tbssub,.tbclock,.tbhpn,.tmclock,.tbmx,.tplk,.wrap small,button.link.sm){font-size:var(--fs-cap)}
+:root :is(button,.go,.ghost):not(.big){font-size:var(--fs-sm)}
+:root:root :is(.quest button.go,.quest .ghost,button.big,.tbsay,.tbmn,.smbn,.tplx){font-size:var(--fs-md)}
+.wrap b,.wrap strong{font-weight:600}
+button.link{font-weight:500}
+.panel h2,.fhd,.nextlbl,.smbt,.fzk,.tbtag,.qstep .tag,.smtag,.hudtop{font-family:var(--f-hud)}
+.panel h2,.fhd h2{font-size:var(--fs-lbl);font-weight:600}
+:root:root :is(.smbt,.fzk,.tbtag,.nextlbl){font-size:.65rem;font-weight:600}
+:root:root :is(.pill,.xp){font-family:var(--f-body);font-variant-numeric:tabular-nums}
+/* 12. Menos ruído: a dica de arrastar só aparece no 1º uso */
+body:not(.asc-fresh) .swipehint{display:none}
+:root:root .quest .msgo{font-size:var(--fs-lg)}
+/* 13. Itens do baú com cor de raridade clara (comum cinza · raro azul · épico roxo · lendário dourado) */
+.bxf:not(.lock){border-color:color-mix(in srgb,var(--rc) 60%,transparent);background:radial-gradient(circle at 50% 28%,color-mix(in srgb,var(--rc) 20%,transparent),transparent 68%),#0a1222;box-shadow:0 0 14px color-mix(in srgb,var(--rc) 22%,transparent)}
+.bxf.eq{box-shadow:0 0 0 2px var(--rc),0 0 18px color-mix(in srgb,var(--rc) 45%,transparent)}
+.bxf.lock .bxfr{opacity:.8}
+.bxtt{border-left:3px solid var(--rc)}
+.bxtt.eq{box-shadow:0 0 14px color-mix(in srgb,var(--rc) 30%,transparent)}
+/* 14. Telas baixas (iPhone SE 375x667, Android 360x640): janela alta rola em vez de cortar o topo; entrada mais compacta */
+.sysmodal{place-items:start center;overflow-y:auto;overscroll-behavior:contain}
+.sysmodal>*{margin-block:auto}
+@media (max-height:700px){
+  .quick{gap:10px;padding-top:max(14px,env(safe-area-inset-top))}
+  .quick .qstep:not(.qperm){margin-top:0;gap:10px}
+  .qstep h2{font-size:1.3rem}
+  .qgrid{gap:8px}.qgrid button{min-height:48px;padding:10px 8px}.qgrid.sm3 button{min-height:44px;padding:8px 6px}
+}
+@media (max-height:700px){#bxModal .bxbtn{max-width:min(100%,30vh);margin-inline:auto}#bxModal h3{font-size:1.15rem;margin-block:4px}}
 </style></head><body>
 
 <div class="hudtop"><span>ASCENSION<i>//</i>SISTEMA ONLINE</span><span class="mono" id="clock">--:--</span></div>
@@ -4919,6 +4985,29 @@ function frRankAv(){for(const li of document.querySelectorAll("#rkList li")){con
 {const _rr=renderRankUI;renderRankUI=function(){_rr();try{frUI();frRankAv();}catch(e){}};}
 setTimeout(()=>{try{frUI();}catch(e){}},0);
 
+// ---- Miniaturas no criador de avatar (tools/avthumb.js): cada opção mostra como VOCÊ fica com ela ----
+// Só visual: lê prog.avatar, troca um campo por um instante para desenhar e devolve o valor na hora (nada é salvo aqui).
+const AVT_K={"Formato do rosto":"r","Olhos":"es","Sobrancelha":"bw","Expressão":"mo","Barba":"bd","Corte":"h","Roupa":"o","Na cabeça":"hw","Na mão":"it","Corpo":"bt","Óculos":"gl","Brinco e piercing":"er","Acessório do Sistema":"a","Moldura":"f"};
+const AVT_HEAD={r:1,es:1,bw:1,mo:1,bd:1,h:1,hw:1,gl:1,er:1};
+function avtDraw(row){const k=row.dataset.avk;if(!k)return;let st;try{st=avSt();}catch(e){return;}const old=st[k],oh=st.hw;
+  try{if(k==="h")st.hw=1; // corte: mostra sem chapéu para dar para ver o cabelo
+    for(const b of row.querySelectorAll("button.avchip[data-i]")){if(b.closest("details:not([open])"))continue;const i=+b.dataset.i;st[k]=i;let th=b.querySelector(".avth");
+      if(!th){th=document.createElement("span");th.className="avth"+(AVT_HEAD[k]?" head":"");th.setAttribute("aria-hidden","true");b.prepend(th);b.classList.add("hasth");}
+      th.innerHTML=avMine(56);}}
+  catch(e){}finally{st[k]=old;st.hw=oh;}}
+function avtPane(pane){if(!pane||pane.hidden)return;for(const r of pane.querySelectorAll(".avrow[data-avk]"))avtDraw(r);}
+function avtInit(){const m=document.querySelector(".avmk");if(!m||m.dataset.avt)return;m.dataset.avt="1";
+  for(const r of m.querySelectorAll(".avrow")){const l=r.querySelector(".avrl");const k=l&&AVT_K[l.textContent.trim()];if(k){r.dataset.avk=k;const ch=r.querySelector(".avchips");if(ch)ch.classList.add("avths");for(const ch2 of r.querySelectorAll(".avchips"))ch2.classList.add("avths");}}
+  // raridade pelo nível que destrava: raro (azul), épico (roxo), lendário (dourado)
+  const RAR=[["a",typeof AV_ACC!=="undefined"?AV_ACC:[]],["f",typeof AV_FRAME!=="undefined"?AV_FRAME:[]]];
+  for(const [k,arr] of RAR){const r=m.querySelector('.avrow[data-avk="'+k+'"]');if(!r)continue;
+    for(const b of r.querySelectorAll("button.avchip[data-i]")){const n=(arr[+b.dataset.i]||[])[1]||1;const t=n>=12?"lend":n>=6?"epico":n>=2?"raro":"";if(t){b.dataset.rar=t;const g=document.createElement("span");g.className="avrar";g.setAttribute("aria-hidden","true");g.textContent=t==="lend"?"LENDÁRIO":t==="epico"?"ÉPICO":"RARO";b.append(g);}}}
+  const cur=()=>[...m.querySelectorAll(".avpane")].find(p=>!p.hidden);
+  let t=0;const later=()=>{clearTimeout(t);t=setTimeout(()=>avtPane(cur()),90);};
+  m.addEventListener("click",e=>{if(e.target.closest(".avtab")||e.target.closest("button.avchip")||e.target.closest(".avmkf button")||e.target.closest("summary"))later();});
+  avtPane(cur());}
+{const _avm=avMaker;avMaker=function(){const r=_avm.apply(this,arguments);try{avtInit();}catch(e){}return r;};}
+
 // ---------- Tarefas mais limpas + horário certo ----------
 // Cada tarefa mostra só o título, o XP e os botões. Tocar no título abre os detalhes (tipo, gatilho, mínimo, link).
 // Tarefas com hora certa ficam com cadeado até o horário: "antes de dormir" libera às 20h, as da manhã às 5h,
@@ -5565,7 +5654,7 @@ const BX_TT=[// [id, título, raridade]
  ["t_crep","Guardião do Crepúsculo",1],["t_fech","Fechador de Dias",1],["t_aco","Mente de Aço",1],
  ["t_chama","Chama Constante",2],["t_lamina","Lâmina Silenciosa",2],["t_desp","O Despertado",2],
  ["t_sob","Soberano da Rotina",3],["t_ecl","Filho do Eclipse",3]];
-const BX_RAR=["","Raro","Épico","Lendário"],BX_RCOL=["#9fb0c8","#00d4ff","#c77dff","#f2c14e"];
+const BX_RAR=["","Raro","Épico","Lendário"],BX_RCOL=["#9fb0c8","#4da3ff","#c77dff","#f2c14e"];
 function bxSt(){if(!prog.chest||typeof prog.chest!=="object")prog.chest={};const c=prog.chest;c.roll=c.roll||{};c.got=c.got||{};c.frames=c.frames||[];c.titles=c.titles||[];c.dry=c.dry||0;return c;}
 function bxEl(t,cl,x){const e=document.createElement(t);if(cl)e.className=cl;if(x!=null)e.textContent=x;return e;}
 function bxMotion(){return !matchMedia("(prefers-reduced-motion: reduce)").matches;}
