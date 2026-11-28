@@ -55,7 +55,7 @@ function silenceUI(){$("fSilence").hidden=!F_IOS||!!dev.sc;$("fSilenceOn").hidde
   $("fScGet").hidden=!SC_LINK;$("fScSteps").hidden=!!SC_LINK;$("fScOk").textContent=SC_LINK?"2. Pronto, adicionei":"Pronto, criei";}
 $("fSilence").addEventListener("click",()=>{$("fSc").hidden=false;$("fSilence").hidden=true;});
 $("fScClose").addEventListener("click",()=>{$("fSc").hidden=true;silenceUI();});
-$("fScGet").addEventListener("click",()=>{if(!SC_LINK)return;const w=window.open(SC_LINK,"_blank");if(!w)location.href=SC_LINK;});
+$("fScGet").addEventListener("click",()=>{if(!SC_LINK)return;const w=window.open(SC_LINK,"_blank");if(w)try{w.opener=null;}catch(e){}if(!w)location.href=SC_LINK;});
 $("fScTest").addEventListener("click",()=>runShortcut(1));
 $("fScOk").addEventListener("click",()=>{dev.sc=true;devSave();$("fSc").hidden=true;silenceUI();haptic([10,30,10]);toast("Pronto. No próximo foco o iPhone fica em silêncio.");});
 $("fScOff").addEventListener("click",()=>{dev.sc=false;devSave();silenceUI();});

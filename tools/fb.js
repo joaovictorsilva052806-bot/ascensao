@@ -2,7 +2,7 @@
 $("fbSend").addEventListener("click",()=>{const t=$("fbText").value.trim();if(!t){$("fbMsg").textContent="Escreva a sugestão primeiro.";return;}
   prog.feedback=(prog.feedback||[]).concat([{t,d:new Date().toISOString()}]);save();
   const lv=levelOf(totalXP());const msg="💡 Sugestão para o app Ascension\n\n"+t+"\n\n(nível "+lv+", "+activeDays()+" dias ativos, "+(cfg&&cfg.quests?cfg.quests.length:0)+" quests)";
-  window.open("https://wa.me/?text="+encodeURIComponent(msg),"_blank");$("fbText").value="";$("fbMsg").textContent="Valeu! Sugestão salva ("+prog.feedback.length+" no total).";});
+  window.open("https://wa.me/?text="+encodeURIComponent(msg),"_blank","noopener");$("fbText").value="";$("fbMsg").textContent="Valeu! Sugestão salva ("+prog.feedback.length+" no total).";});
 $("fbQuick").addEventListener("click",()=>{goTab("mais");setTimeout(()=>$("fbText").focus(),60);});
 // ---------- Dica de instalação (iPhone e Android fora da tela de início) ----------
 const UA=navigator.userAgent,IOS=/iphone|ipad|ipod/i.test(UA),AND=/android/i.test(UA);let instEvt=null;
