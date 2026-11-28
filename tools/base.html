@@ -405,7 +405,14 @@ const todayKey=()=>dkey(new Date());
 function weekStart(key){const [y,m,d]=key.split("-").map(Number);const dt=new Date(y,m-1,d);const wd=(dt.getDay()+6)%7;dt.setDate(dt.getDate()-wd);return dkey(dt);}
 // Nível n exige 50*n*(n-1) XP acumulado: 0,100,300,600,1000...
 const xpFor=n=>50*n*(n-1);
-function levelOf(xp){let n=1;while(xp>=xpFor(n+1))n++;return n;}
+// conta fechada (o laço antigo travava a tela com XP gigante vindo de backup ou de armazenamento corrompido)
+function levelOf(xp){if(!(xp>=0))return 1;let n=Math.max(1,Math.floor((1+Math.sqrt(1+xp/12.5))/2));if(!isFinite(n))return 1e6;n=Math.min(n,1e6);while(n>1&&xpFor(n)>xp)n--;while(n<1e6&&xpFor(n+1)<=xp)n++;return n;}
+// Saneamento do que vem de fora (localStorage, backup, planilha): formatos errados não podem derrubar o app. Só corrige formato, nunca apaga entrada válida.
+function sanProg(p){if(!p||typeof p!=="object"||Array.isArray(p))return null;const L=p.log;if(!L||typeof L!=="object"||Array.isArray(L))p.log={};
+  else for(const k in L){if(!Array.isArray(L[k])){delete L[k];continue;}L[k]=L[k].filter(e=>e&&typeof e==="object"&&e.q!=null);
+    for(const e of L[k])if("xp" in e){const x=+e.xp;e.xp=isFinite(x)?Math.max(-1e5,Math.min(1e5,x)):0;}}
+  return p;}
+function sanCfg(c){if(!c||typeof c!=="object"||Array.isArray(c))return null;if(!Array.isArray(c.quests))return null;c.quests=c.quests.filter(q=>q&&typeof q==="object"&&q.id!=null);return c;}
 function rankOf(l){let r=RANKS[0];for(const x of RANKS)if(l>=x[0])r=x;return r;}
 
 function entries(){const out=[];for(const k in prog.log){for(const e of (prog.log[k]||[]))out.push(Object.assign({date:k},e));}return out;}
@@ -649,8 +656,8 @@ function restoreBackup(raw){let d=JSON.parse(String(raw||"").trim());let c=null;
   if(!nb)throw 0;
   if(!confirm("Restaurar este backup ("+nb+" dia"+(nb>1?"s":"")+" de progresso)? Ele substitui o progresso atual ("+na+" dia"+(na!==1?"s":"")+"). Uma cópia do atual fica guardada neste aparelho."))return null;
   try{localStorage.setItem("ascensao-prog"+"-prebackup",JSON.stringify(prog));}catch(e){}
-  prog=Object.assign({log:{},extra:{},faith:{},energy:{},mit:{},reviews:{}},d);
-  if(c&&c.quests&&c.quests.length){cfg=c;try{localStorage.setItem(CFG_KEY,JSON.stringify(cfg));}catch(e){}if(cfg.name)$("titleName").textContent=cfg.name;}
+  prog=Object.assign({log:{},extra:{},faith:{},energy:{},mit:{},reviews:{}},sanProg(d)||{});
+  c=sanCfg(c);if(c&&c.quests&&c.quests.length){cfg=c;try{localStorage.setItem(CFG_KEY,JSON.stringify(cfg));}catch(e){}if(cfg.name)$("titleName").textContent=cfg.name;}
   save();render();return !!c;}
 const CFG_KEY="ascensao-cfg";
 $("bkRestore").addEventListener("click",()=>{try{const withCfg=restoreBackup($("bkText").value);if(withCfg===null)return;toast(withCfg?"Backup restaurado, com suas tarefas.":"Backup restaurado.");$("bkText").value="";}catch(e){toast("Esse texto não é um backup válido.");}});
@@ -747,7 +754,7 @@ function syncFirst(){try{return localStorage.getItem(SYNC_FIRST)==="1";}catch(e)
 function markSyncFirst(){try{localStorage.setItem(SYNC_FIRST,"1");}catch(e){}}
 function adoptSheet(p){const loc=prog;
   try{if(loc&&loc.log&&Object.keys(loc.log).length)localStorage.setItem("ascensao-prog"+"-prelink",JSON.stringify(loc));}catch(e){}
-  prog=Object.assign({log:{},extra:{},faith:{},energy:{},mit:{},reviews:{},money:[],rest:{},ach:{}},p);delete prog.totalXP;delete prog.level;
+  prog=Object.assign({log:{},extra:{},faith:{},energy:{},mit:{},reviews:{},money:[],rest:{},ach:{}},sanProg(p)||{});delete prog.totalXP;delete prog.level;
   if(!prog.rpg&&loc&&loc.rpg)prog.rpg=loc.rpg;
   try{localStorage.setItem("ascensao-prog",JSON.stringify(prog));}catch(e){}}
 async function pull(force){
@@ -756,10 +763,10 @@ async function pull(force){
   $("sync").textContent="Sincronizando…";
   try{const r=await fetch(SYNC+(SYNC.includes("?")?"&":"?")+"t="+Date.now());const d=await r.json();
     if(d.config&&d.config.painel){try{localStorage.setItem("ascensao-painel",JSON.stringify(d.config.painel));}catch(e){}}
-    if(d.config&&d.config.quests&&(d.config.version||1)>=DEFAULT_CFG.version){cfg=d.config;try{localStorage.setItem("ascensao-cfg",JSON.stringify(cfg));}catch(e){}}
+    if(sanCfg(d.config)&&d.config.quests.length&&(d.config.version||1)>=DEFAULT_CFG.version){cfg=d.config;try{localStorage.setItem("ascensao-cfg",JSON.stringify(cfg));}catch(e){}}
     const p=d.progress;
     if(syncFirst()){if(p&&p.log&&Object.keys(p.log).length)adoptSheet(p);try{localStorage.removeItem(SYNC_FIRST);}catch(e){}if(!(p&&p.log&&Object.keys(p.log).length))save();}
-    else if(p&&p.log&&(!prog.updatedAt||(p.updatedAt&&p.updatedAt>prog.updatedAt))){prog=Object.assign({log:{},extra:{},faith:{},energy:{},mit:{},reviews:{},money:[],rest:{},ach:{}},p);delete prog.totalXP;delete prog.level;try{localStorage.setItem("ascensao-prog",JSON.stringify(prog));}catch(e){}}
+    else if(p&&p.log&&(!prog.updatedAt||(p.updatedAt&&p.updatedAt>prog.updatedAt))){prog=Object.assign({log:{},extra:{},faith:{},energy:{},mit:{},reviews:{},money:[],rest:{},ach:{}},sanProg(p)||{});delete prog.totalXP;delete prog.level;try{localStorage.setItem("ascensao-prog",JSON.stringify(prog));}catch(e){}}
     else if(prog.updatedAt&&(!p||!p.updatedAt||prog.updatedAt>p.updatedAt))save();
     if(cfg&&cfg.name)$("titleName").textContent=cfg.name;
     $("sync").textContent="Sincronizado com a planilha às "+new Date().toTimeString().slice(0,5)+".";render();
@@ -787,9 +794,9 @@ try{const m=location.hash.match(/[#&]c=([^&]+)/);if(m){const c=JSON.parse(decode
   history.replaceState(null,"",location.pathname);let had=null;try{had=JSON.parse(localStorage.getItem("ascensao-cfg")||"null");}catch(e){}
   if(c&&c.quests&&c.quests.length&&confirm((had&&had.quests&&had.quests.length?"Este link substitui as tarefas deste app":"Este link configura este app")+" com "+c.quests.length+" tarefa"+(c.quests.length>1?"s":"")+(c.name?" de "+String(c.name).slice(0,30):"")+". Só aceite se foi você quem pediu. Continuar?")){delete c.painel;localStorage.setItem("ascensao-cfg",JSON.stringify(c));}}}catch(e){}
 addEventListener("hashchange",()=>{if(/[#&][csk]=/.test(location.hash))location.reload();});
-try{const c=JSON.parse(localStorage.getItem("ascensao-cfg")||"null");cfg=(c&&(c.version||1)>=DEFAULT_CFG.version)?c:DEFAULT_CFG;}catch(e){cfg=DEFAULT_CFG;}
+try{const c=sanCfg(JSON.parse(localStorage.getItem("ascensao-cfg")||"null"));cfg=(c&&(c.version||1)>=DEFAULT_CFG.version)?c:DEFAULT_CFG;}catch(e){cfg=DEFAULT_CFG;}
 if(cfg.name)$("titleName").textContent=cfg.name;
-try{const s=JSON.parse(localStorage.getItem("ascensao-prog")||"null");if(s&&s.log)prog=Object.assign({log:{},extra:{},faith:{},energy:{},mit:{},reviews:{}},s);}catch(e){}
+try{const s=sanProg(JSON.parse(localStorage.getItem("ascensao-prog")||"null"));if(s&&s.log)prog=Object.assign({log:{},extra:{},faith:{},energy:{},mit:{},reviews:{}},s);}catch(e){}
 try{if(navigator.storage&&navigator.storage.persist)navigator.storage.persist().catch(()=>{});}catch(e){}
 render();
 setInterval(()=>{if($("today").dataset.k!==todayKey()){$("today").dataset.k=todayKey();render();pull(true);}},60000);

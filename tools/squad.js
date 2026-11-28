@@ -19,7 +19,7 @@ function sqShare(){const s=sqSt();if(!s)return;const me=rankName()||"eu";
   const url=location.origin+location.pathname.replace(/(comecar\/)?(index\.html)?$/,"")+"x/";
   const t="[ ESQUADRÃO "+s.n.toUpperCase()+" ] Anomalia da semana detectada. Entra no Ascension, vai em Progresso > Esquadrão e me recruta: "+me+". "+url;
   if(navigator.share){navigator.share({title:"Ascension",text:t}).catch(()=>{});return;}
-  window.open("https://wa.me/?text="+encodeURIComponent(t),"_blank");}
+  window.open("https://wa.me/?text="+encodeURIComponent(t),"_blank","noopener");}
 function sqUI(){let p=$("sqPanel");const rp=$("rankPanel");if(!rp)return;
   if(!p){p=sqEl("section","panel sq");p.id="sqPanel";p.dataset.tab="prog";rp.after(p);}
   const kid=ageNow()==="kid";p.hidden=kid||!cfg||cfg.blank;if(p.hidden)return;p.textContent="";
