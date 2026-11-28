@@ -1,10 +1,10 @@
 // ---------- Versão do app e tela "Novidades" (1x por versão, só para quem já jogava) ----------
 // Quem é novo não vê: o onboarding já apresenta o jogo, e a versão fica marcada como vista ao terminar.
 // Não abre para navegador automatizado (navigator.webdriver), para não travar os testes da qa/. Nunca abre em cima de outro modal, do onboarding ou de missão ativa. Grava só a chave *-ver, fora do progresso.
-const APP_VERSION="1.0.0";
+const APP_VERSION="1.1.0";
 const VS_KEY=location.pathname.includes("/comecar/")?"asc-u-ver":"ascensao-ver";
 const VS_BASE=location.pathname.includes("/comecar/")?"../":"./";
-const VS_NEWS=[["⚔️","Classes","que evoluem com você nos níveis 10 e 20"],["▶️","Missão ativa","com timer e a ferramenta certa em 1 toque"],["🐉","Chefão, masmorra e baú","toda semana"],["⚡","Desafios relâmpago","e Quebrar correntes"],["👥","Esquadrão, liga da semana","e desafio em dupla com amigos"],["🔒","Política de Privacidade e Termos","novos, em Mais"]];
+const VS_NEWS=[["⚜️","Tasks Lendárias","tarefas que pagam de verdade, direto de quem paga (só 18+)"],["💰","Carteira","o placar do que você já ganhou fora do app"],["❓","Tasks seladas","cada task concluída revela a próxima"],["🤝","Missões de Parceiros","no topo da aba Lendárias"],["⌨️","Mais acessível","Esc fecha as janelas e o leitor de tela lê o Sistema"]];
 function vsGet(){try{return localStorage.getItem(VS_KEY)||"";}catch(e){return "";}}
 function vsSet(){try{localStorage.setItem(VS_KEY,APP_VERSION);}catch(e){}}
 function vsPlaying(){return !!(typeof cfg!=="undefined"&&cfg&&!cfg.blank&&cfg.quests&&cfg.quests.length);}
@@ -16,7 +16,7 @@ function vsOpen(){if(document.getElementById("vsModal"))return;const prev=docume
   const m=document.createElement("div");m.className="sysmodal vsnews";m.id="vsModal";m.setAttribute("role","dialog");m.setAttribute("aria-modal","true");m.setAttribute("aria-labelledby","vsTitle");
   const c=document.createElement("div");c.className="card";const t=document.createElement("div");t.className="tag";t.textContent="[ SISTEMA ] ATUALIZAÇÃO "+APP_VERSION.replace(/\.0$/,"");
   const h=document.createElement("h3");h.id="vsTitle";h.textContent="Ascension "+APP_VERSION.replace(/\.0$/,"");
-  const p=document.createElement("p");p.className="sm";p.textContent="O jogo saiu do beta. Obrigado por testar com a gente.";
+  const p=document.createElement("p");p.className="sm";p.textContent="Agora o Sistema também mostra tarefas que pagam de verdade.";
   const ul=document.createElement("ul");ul.className="vsl";for(const [i,b,r] of VS_NEWS){const li=document.createElement("li");const e=document.createElement("span");e.className="vsi";e.setAttribute("aria-hidden","true");e.textContent=i;const s=document.createElement("span");const bb=document.createElement("b");bb.textContent=b;s.append(bb," "+r);li.append(e,s);ul.append(li);}
   const k=document.createElement("p");k.className="sm muted";k.textContent="Seu XP, sua sequência e seu histórico continuam iguais.";
   const go=document.createElement("button");go.type="button";go.className="go";go.textContent="Continuar";

@@ -14,39 +14,39 @@ const TP_NOTE="Quem paga é sempre o comprador ou a plataforma, direto para voc�
 const TP_WREF="Proibido criar conta no lugar de outra pessoa, usar dados de outra pessoa ou mandar o link em massa ou em grupo: a plataforma cancela o prêmio e a conta. Indique só quem realmente vai usar.";
 const TP_WJOB="Ninguém sério cobra para você começar. Se pedirem taxa, depósito ou \"kit\", é golpe: saia.";
 const TP_L=[
- {id:"desapega",tier:"l",t:"📦 Desapega",pay:"O preço que você combinar, sem comissão na venda direta.",when:"💸 Cai hoje: Pix do comprador na hora da venda.",
+ {id:"desapega",ja:"Nada para vender? Quase toda casa tem: roupa que não serve, celular ou fone antigo, livro, brinquedo, móvel parado, ferramenta, panela, acessório de videogame.",tier:"l",t:"📦 Desapega",pay:"O preço que você combinar, sem comissão na venda direta.",when:"💸 Cai hoje: Pix do comprador na hora da venda.",
   warn:"Nunca entregue antes de o dinheiro cair na sua conta. Confira o Pix no app do seu banco: print de comprovante não vale. Entrega em local público e movimentado.",
   links:[["OLX","https://www.olx.com.br/"],["Facebook Marketplace","https://www.facebook.com/marketplace/"],["Enjoei","https://www.enjoei.com.br/"]],
   s:["Escolher 1 coisa parada e tirar 3 fotos com luz natural, mostrando defeitos se tiver.",
      "Anunciar com preço um pouco abaixo dos anúncios iguais (vende mais rápido).",
      "Vendeu: conferiu o Pix no SEU banco e só então entregou, em local público."]},
- {id:"cashback",tier:"c",t:"🛍️ Cashback da Black Friday",pay:"De volta uma parte da compra que você já ia fazer (costuma ser 3% a 15%).",when:"⏳ Pendente em 1 a 2 dias; libera quando a loja confirma a compra.",
+ {id:"cashback",ja:"Já tem conta? Pule o passo 1: só ative o cashback antes da próxima compra que você já ia fazer.",tier:"c",t:"🛍️ Cashback da Black Friday",pay:"De volta uma parte da compra que você já ia fazer (costuma ser 3% a 15%).",when:"⏳ Pendente em 1 a 2 dias; libera quando a loja confirma a compra.",
   warn:"Só vale para compra que você já ia fazer: não compre só pelo cashback. Abra a loja pelo app de cashback e compre no mesmo acesso, sem bloqueador de anúncio.",
   links:[["Cuponomia","https://www.cuponomia.com.br/"],["Méliuz","https://www.meliuz.com.br/"]],
   s:["Criar a SUA conta na Cuponomia ou no Méliuz.",
      "Achar a loja no app de cashback e ativar o cashback antes de comprar.",
      "Comprar nesse mesmo acesso e conferir o cashback pendente no app."]},
- {id:"mpago",tier:"l",t:"💳 Indique a maquininha",pay:"Mercado Pago: até R$ 30 por contato que usar o app e prêmio maior se ele comprar a maquininha (campanha de hoje). PagBank também paga por maquininha ativada.",when:"⏳ Poucos dias depois que a pessoa cumpre a regra.",
+ {id:"mpago",ja:"Já tem conta? Ótimo: o link de Convide e ganhe já está no seu app. Não conhece ninguém que vende? Faça o Cashback, que não depende de indicar.",tier:"l",t:"💳 Indique a maquininha",pay:"Mercado Pago: até R$ 30 por contato que usar o app e prêmio maior se ele comprar a maquininha (campanha de hoje). PagBank também paga por maquininha ativada.",when:"⏳ Poucos dias depois que a pessoa cumpre a regra.",
   warn:TP_WREF,links:[["Mercado Pago","https://www.mercadopago.com.br/"],["PagBank","https://pagbank.com.br/"]],
   s:["Abrir \"Convide e ganhe\" no app e ler quanto paga, a regra e o prazo.",
      "Listar até 3 pessoas que vendem e precisam de maquininha (comércio, autônomo, personal).",
      "Mandar o link no WhatsApp, uma pessoa por vez, explicando o benefício dela."]},
- {id:"prolific",tier:"r",t:"🔬 Pesquisas acadêmicas (Prolific)",pay:"Estudos pagos em libra ou dólar. Saque a partir de £6 / US$ 6.",when:"⏳ Depois de aprovado, saque no PayPal no mesmo dia (os 4 primeiros têm 72 h de espera). Pode ter fila para entrar.",
+ {id:"prolific",ja:"Já tem conta? Ative as notificações de estudo: as vagas somem em minutos.",tier:"r",t:"🔬 Pesquisas acadêmicas (Prolific)",pay:"Estudos pagos em libra ou dólar. Saque a partir de £6 / US$ 6.",when:"⏳ Depois de aprovado, saque no PayPal no mesmo dia (os 4 primeiros têm 72 h de espera). Pode ter fila para entrar.",
   warn:"Precisa de PayPal e de verificação de identidade. Responda com atenção: resposta apressada é rejeitada e não paga.",links:[["Prolific","https://www.prolific.com/"]],
   s:["Criar a conta de participante e fazer a verificação de identidade.",
      "Completar o perfil inteiro (mais estudos aparecem para quem tem perfil completo).",
      "Fazer 1 estudo do começo ao fim e conferir o saldo aprovado."]},
- {id:"inter",tier:"c",t:"🟠 Indique o Inter",pay:"1.000 pontos Loop por conta aprovada (2.000 pontos ≈ R$ 40). É ponto, não dinheiro: troca por cashback.",when:"⏳ Quando a conta do amigo é aprovada.",
+ {id:"inter",ja:"Já tem conta? Vá direto ao link de indicação. Não conhece ninguém? Pule para a próxima task.",tier:"c",t:"🟠 Indique o Inter",pay:"1.000 pontos Loop por conta aprovada (2.000 pontos ≈ R$ 40). É ponto, não dinheiro: troca por cashback.",when:"⏳ Quando a conta do amigo é aprovada.",
   warn:TP_WREF,links:[["Inter","https://inter.co/"]],
   s:["No app do Inter, abrir \"Indique e ganhe\" e ler a regra.",
      "Pensar em até 3 pessoas que querem uma conta digital.",
      "Mandar o link, uma pessoa por vez, e acompanhar os pontos no Loop."]},
- {id:"meliuz",tier:"r",t:"🎟️ Indique o cashback",pay:"Méliuz (campanha de hoje): R$ 50 para você e R$ 5 para quem entra. Cuponomia também tem Indique e ganhe.",when:"⏳ Lento: só libera quando o indicado gasta R$ 500 em compras válidas em até 90 dias.",
+ {id:"meliuz",ja:"Já tem conta? O seu link de indicação já está no app; mande para 1 pessoa por vez. Não conhece ninguém? Use o cashback na sua próxima compra.",tier:"r",t:"🎟️ Indique o cashback",pay:"Méliuz (campanha de hoje): R$ 50 para você e R$ 5 para quem entra. Cuponomia também tem Indique e ganhe.",when:"⏳ Lento: só libera quando o indicado gasta R$ 500 em compras válidas em até 90 dias.",
   warn:TP_WREF+" O Méliuz proíbe anunciar o link em buscadores.",links:[["Méliuz","https://www.meliuz.com.br/"],["Cuponomia","https://www.cuponomia.com.br/"]],
   s:["Abrir \"Indique e ganhe\" no app de cashback e ler a regra de hoje.",
      "Pensar em até 3 pessoas que compram online com frequência.",
      "Mandar o link, uma pessoa por vez, explicando o cashback que ela ganha."]},
- {id:"outlier",tier:"l",t:"🤖 Treinar IA em português (Outlier)",pay:"Até US$ 10 por hora em projetos de português, mais bônus.",when:"⏳ Semanal, por PayPal ou AirTM, depois de passar no teste.",
+ {id:"outlier",ja:"Já tem conta? Veja se abriu projeto novo em português nesta semana.",tier:"l",t:"🤖 Treinar IA em português (Outlier)",pay:"Até US$ 10 por hora em projetos de português, mais bônus.",when:"⏳ Semanal, por PayPal ou AirTM, depois de passar no teste.",
   warn:TP_WJOB,links:[["Outlier","https://outlier.ai/"]],
   s:["Criar a conta e escolher projetos de português.",
      "Fazer a avaliação inicial com calma (é ela que libera as tarefas).",
@@ -66,7 +66,7 @@ const TP_L=[
   s:["Criar o perfil com 1 coisa que você faz bem (texto, design, planilha, vídeo).",
      "Mandar proposta em 3 projetos pequenos, com prazo curto e exemplo do seu trabalho.",
      "Entregou e o cliente aprovou: sacar por Pix."]},
- {id:"motorista",tier:"r",t:"🚗 Indique motorista (Uber ou 99)",pay:"Valor definido por cidade, mostrado no app. Uber paga até 50 indicações.",when:"⏳ Na semana seguinte ao indicado cumprir as viagens (até 90 dias).",
+ {id:"motorista",ja:"Não é motorista? Essa não paga para você: pule para a próxima task.",tier:"r",t:"🚗 Indique motorista (Uber ou 99)",pay:"Valor definido por cidade, mostrado no app. Uber paga até 50 indicações.",when:"⏳ Na semana seguinte ao indicado cumprir as viagens (até 90 dias).",
   warn:TP_WREF+" Só para quem já é motorista ativo.",links:[["Uber","https://www.uber.com/br/"],["99","https://99app.com/"]],
   s:["No app de motorista, abrir \"Indicar\" e ver o valor da sua cidade.",
      "Pensar em até 3 pessoas que querem dirigir e têm carro e CNH.",
@@ -91,12 +91,12 @@ const TP_L=[
   s:["Criar 1 serviço com título claro, preço de entrada e 3 exemplos.",
      "Responder rápido e entregar antes do prazo.",
      "1ª entrega aprovada: conferir o saldo liberado."]},
- {id:"banco",tier:"c",t:"🏦 Indique o banco (PicPay ou C6)",pay:"Varia por campanha (saldo ou pontos), na aba \"Indicar amigos\".",when:"⏳ Depende da campanha (o C6 já levou até 45 dias).",
+ {id:"banco",ja:"Já tem conta? Vá direto à aba Indicar amigos. Não conhece ninguém? Pule para a próxima task.",tier:"c",t:"🏦 Indique o banco (PicPay ou C6)",pay:"Varia por campanha (saldo ou pontos), na aba \"Indicar amigos\".",when:"⏳ Depende da campanha (o C6 já levou até 45 dias).",
   warn:TP_WREF,links:[["PicPay","https://picpay.com/"],["C6 Bank","https://www.c6bank.com.br/"]],
   s:["Abrir \"Indicar amigos\" no app e ler a campanha de hoje.",
      "Pensar em até 3 pessoas que querem abrir conta.",
      "Mandar o link, uma pessoa por vez, e acompanhar no app."]},
- {id:"sofisa",tier:"c",t:"📈 Indique quem investe (Sofisa)",pay:"R$ 50 para você e R$ 50 para quem entra.",when:"⏳ Cerca de 30 dias depois que o indicado aplica R$ 1.000 por 12 meses ou mais.",
+ {id:"sofisa",ja:"Não conhece quem investe? Essa não paga para você: pule para a próxima.",tier:"c",t:"📈 Indique quem investe (Sofisa)",pay:"R$ 50 para você e R$ 50 para quem entra.",when:"⏳ Cerca de 30 dias depois que o indicado aplica R$ 1.000 por 12 meses ou mais.",
   warn:TP_WREF+" Indique só quem já investe: nunca convença alguém a aplicar só pelo prêmio.",links:[["Sofisa Direto","https://www.sofisadireto.com.br/"]],
   s:["No app, abrir a área de indicação e ler a regra.",
      "Pensar em quem já investe e procura CDB.",
@@ -122,9 +122,9 @@ const TP_WK=(location.pathname.indexOf("/comecar/")>=0?"asc-u":"ascensao")+"-rea
 function tpW(){try{const a=JSON.parse(localStorage.getItem(TP_WK)||"[]");return Array.isArray(a)?a.filter(x=>x&&isFinite(+x.v)&&+x.v>0):[];}catch(e){return [];}}
 function tpWSave(a){try{localStorage.setItem(TP_WK,JSON.stringify(a.slice(0,200)));}catch(e){}}
 function tpBRL(v){return "R$ "+(+v).toFixed(2).replace(".",",");}
-function tpAdd(src,raw){const v=Math.round(parseFloat(String(raw).replace(/\s|R\$/g,"").replace(",","."))*100)/100;if(!(v>0&&v<1e6)){toast("Digite um valor maior que zero.");return false;}
-  const b=tpW();b.unshift({d:todayKey(),src,v});tpWSave(b);toast("Anotado: "+tpBRL(v)+". Fica só neste aparelho.");return true;}
-function tpToday(){const d=todayKey();return tpW().filter(x=>x.d===d).reduce((a,y)=>a+(+y.v),0);}
+function tpAdd(src,raw,st){const v=Math.round(parseFloat(String(raw).replace(/\s|R\$/g,"").replace(",","."))*100)/100;if(!(v>0&&v<1e6)){toast("Digite um valor maior que zero.");return false;}
+  const b=tpW();const e={d:todayKey(),src,v};if(st==="p")e.st="p";b.unshift(e);tpWSave(b);toast((st==="p"?"Pendente: ":"Anotado: ")+tpBRL(v)+". Fica só neste aparelho.");return true;}
+function tpToday(){const d=todayKey();return tpW().filter(x=>x.d===d&&x.st!=="p").reduce((a,y)=>a+(+y.v),0);}
 let tpOpen=null,tpF="all";
 function tpStep(T,i){const r=tpSt(),s=r[T.id].s;
   if(s[i])delete s[i];else s[i]=todayKey();
@@ -141,11 +141,12 @@ function tpStep(T,i){const r=tpSt(),s=r[T.id].s;
 // "Quanto ganhei" dentro de cada card: alimenta a Carteira real (só no aparelho)
 function tpGot(T){const f=tpEl("form","tpwf tpgot");const inp=tpEl("input");inp.type="text";inp.inputMode="decimal";inp.maxLength=12;inp.autocomplete="off";inp.placeholder="Quanto ganhei (R$)";inp.setAttribute("aria-label","Quanto ganhei com "+tpName(T)+", em reais");
   const add=tpEl("button","go tpwadd","Anotar");add.type="submit";f.append(inp,add);
-  f.addEventListener("submit",ev=>{ev.preventDefault();if(tpAdd(T.id,inp.value)){tpOpen=T.id;tpRender();try{tpLine();}catch(e){}}});return f;}
+  f.addEventListener("submit",ev=>{ev.preventDefault();if(tpAdd(T.id,inp.value)){tpOpen=T.id;const w=$("tpPanel")&&$("tpPanel").querySelector(".tpwallet");if(w){tpCoins(w);}setTimeout(()=>{tpRender();try{tpLine();}catch(e){}},w?400:0);}});return f;}
 function tpCard(T){const r=tpSt(),s=r[T.id].s,n=tpN(T),done=n===T.s.length,tier=TP_TIER[T.tier];
   const c=tpEl("details","tpm t-"+T.tier+(done?" ok":""));c.dataset.tp=T.id;c.open=tpOpen===T.id;c.addEventListener("toggle",()=>{if(c.open)tpOpen=T.id;else if(tpOpen===T.id)tpOpen=null;});
   const sm=tpEl("summary","tpt");const nm=tpEl("span","tpnm");nm.append(tpEl("span","tptier",tier[0]),tpEl("span",null,(done?"✓ ":"")+T.t));sm.append(nm,tpEl("span","sm mono",n+"/"+T.s.length));c.append(sm);
   c.append(tpEl("p","tpwhen",T.when),tpEl("p","tpsub","💰 "+T.pay));
+  if(T.ja)c.append(tpEl("p","sm tpja","🔁 "+T.ja));
   const ol=tpEl("ol","tpsteps");T.s.forEach((x,i)=>{const li=tpEl("li");const b=tpEl("button",(s[i]?"ghost":"go")+" tpbtn",(s[i]?"✓ ":"")+x);b.type="button";b.dataset.i=i;
     b.setAttribute("aria-pressed",s[i]?"true":"false");b.addEventListener("click",()=>tpStep(T,i));li.append(b);ol.append(li);});c.append(ol);
   const lk=tpEl("div","tplinks");lk.append(tpEl("span","sm muted","Páginas oficiais:"));for(const [nm2,u] of T.links){const a=tpEl("a","tplink",nm2+" ↗");a.href=u;a.target="_blank";a.rel="noopener noreferrer";lk.append(a);}c.append(lk);
@@ -155,16 +156,36 @@ function tpCard(T){const r=tpSt(),s=r[T.id].s,n=tpN(T),done=n===T.s.length,tier=
   return c;}
 function tpSealed(T,k){const d=tpEl("div","tpm tpseal t-"+T.tier+(k===0?" nx":""));d.setAttribute("role","img");d.setAttribute("aria-label","Task selada, raridade "+TP_TIER[T.tier][0]+(k===0?", é a próxima a se revelar":""));
   d.append(tpEl("span","tptier",TP_TIER[T.tier][0]),tpEl("span","tpq","???"));if(k===0)d.append(tpEl("span","tpnx","próxima"));return d;}
-function tpWallet(){const a=tpW();const d=tpEl("details","tpwallet");d.append(tpEl("summary",null,"💰 Carteira (só neste aparelho)"));
-  const tot=a.reduce((x,y)=>x+(+y.v),0);d.append(tpEl("p","tpwtot",a.length?"Total anotado: "+tpBRL(tot):"Nada anotado ainda."));
+// Carteira = PLACAR do que o jogador anotou que recebeu fora do app. O app não guarda dinheiro.
+const TP_MARCOS=[[50,"Primeiro Saque"],[100,"Caçador de Recompensas"],[500,"Lenda da Carteira"]];
+function tpSum(a,f){return a.filter(f).reduce((x,y)=>x+(+y.v),0);}
+function tpCoins(el){try{if(matchMedia("(prefers-reduced-motion: reduce)").matches)return;for(let k=0;k<8;k++){const c=tpEl("span","tpcoin","🪙");c.style.left=(10+Math.random()*80)+"%";c.style.animationDelay=(k*45)+"ms";el.append(c);setTimeout(()=>c.remove(),1300);}}catch(e){}}
+function tpWallet(){const a=tpW(),rec=a.filter(x=>x.st!=="p"),pen=a.filter(x=>x.st==="p");const d=tpEl("div","tpwallet");
+  const tot=tpSum(rec,()=>true),mes=todayKey().slice(0,7),tm=tpSum(rec,x=>String(x.d).slice(0,7)===mes),td=tpSum(rec,x=>x.d===todayKey()),pv=tpSum(pen,()=>true);
+  const top=tpEl("div","tpwtop");top.append(tpEl("div","tpwlbl","💰 CARTEIRA · recebido fora do app"),tpEl("div","tpwbig",tpBRL(tot)),
+    tpEl("div","sm mono tpwsub","Este mês: "+tpBRL(tm)+" · Hoje: "+tpBRL(td)+(pv?" · Pendente: "+tpBRL(pv):"")));d.append(top);
+  // marcos: títulos que destravam com o total recebido
+  const nx=TP_MARCOS.find(m=>tot<m[0]);const got=TP_MARCOS.filter(m=>tot>=m[0]);
+  if(got.length){const tg=tpEl("div","tpwtit");for(const m of got)tg.append(tpEl("span","tpwbadge","🏅 "+m[1]));d.append(tg);}
+  if(nx){const prev=got.length?got[got.length-1][0]:0,pc=Math.max(0,Math.min(100,Math.round((tot-prev)/(nx[0]-prev)*100)));
+    d.append(tpEl("div","sm tpwnx","Próximo marco: "+tpBRL(nx[0]).replace(",00","")+" · título \""+(tot>0?nx[1]:"???")+"\""));
+    const bar=tpEl("div","tpbar");bar.setAttribute("role","progressbar");bar.setAttribute("aria-label","Próximo marco da Carteira");bar.setAttribute("aria-valuemin","0");bar.setAttribute("aria-valuemax","100");bar.setAttribute("aria-valuenow",String(pc));const fill=tpEl("i");fill.style.width=pc+"%";bar.append(fill);d.append(bar);}
+  else d.append(tpEl("div","sm tpwnx","Todos os marcos batidos. Lenda."));
+  // registrar ganho em 2 toques
+  const rg=tpEl("details","tpwreg");rg.append(tpEl("summary",null,"＋ Registrar ganho"));
   const f=tpEl("form","tpwf");const sel=tpEl("select");sel.setAttribute("aria-label","De onde veio");for(const T of TP_L.slice(0,tpVis()))sel.append(new Option(tpName(T),T.id));sel.append(new Option("Outro","outro"));
-  const inp=tpEl("input");inp.type="text";inp.inputMode="decimal";inp.maxLength=12;inp.autocomplete="off";inp.placeholder="Valor em R$";inp.setAttribute("aria-label","Valor recebido em reais");
-  const add=tpEl("button","go tpwadd","Anotar");add.type="submit";f.append(sel,inp,add);
-  f.addEventListener("submit",ev=>{ev.preventDefault();if(tpAdd(sel.value,inp.value))tpRender(true);});
-  d.append(f);
-  if(a.length){const ul=tpEl("ul","tpwl");for(const x of a.slice(0,10)){const T=TP_L.find(t=>t.id===x.src);ul.append(tpEl("li","sm",x.d+" · "+(T?tpName(T):"Outro")+" · "+tpBRL(x.v)));}d.append(ul);
+  const stt=tpEl("select","tpwst");stt.setAttribute("aria-label","Situação");stt.append(new Option("Recebido","r"),new Option("Pendente","p"));
+  const inp=tpEl("input");inp.type="text";inp.inputMode="decimal";inp.maxLength=12;inp.autocomplete="off";inp.placeholder="Valor em R$";inp.setAttribute("aria-label","Valor em reais");
+  const add=tpEl("button","go tpwadd","Anotar");add.type="submit";f.append(sel,stt,inp,add);
+  f.addEventListener("submit",ev=>{ev.preventDefault();if(tpAdd(sel.value,inp.value,stt.value)){if(stt.value!=="p")tpCoins(d);setTimeout(()=>tpRender(true),stt.value!=="p"?500:0);}});
+  rg.append(f);d.append(rg);
+  if(a.length){const ul=tpEl("ul","tpwl");a.slice(0,12).forEach((x,k)=>{const T=TP_L.find(t=>t.id===x.src);const li=tpEl("li","sm"+(x.st==="p"?" pen":""));
+      li.append(tpEl("span","tpwi",(T?T.t.split(" ")[0]:"✨")),tpEl("span","tpwn",(T?tpName(T):"Outro")+" · "+x.d.slice(8,10)+"/"+x.d.slice(5,7)),tpEl("span","mono tpwv",(x.st==="p"?"⏳ ":"✓ ")+tpBRL(x.v)));
+      if(x.st==="p"){const ok=tpEl("button","ghost tpwok","Caiu ✓");ok.type="button";ok.setAttribute("aria-label","Marcar "+tpBRL(x.v)+" como recebido");
+        ok.addEventListener("click",()=>{const b=tpW();const y=b.find(z=>z.d===x.d&&z.src===x.src&&+z.v===+x.v&&z.st==="p");if(y){delete y.st;tpWSave(b);}toast("Recebido: "+tpBRL(x.v));tpCoins(d);setTimeout(()=>tpRender(true),500);});li.append(ok);}
+      ul.append(li);});d.append(ul);
     const clr=tpEl("button","ghost tpwclr","Apagar a carteira");clr.type="button";clr.addEventListener("click",()=>{if(clr.dataset.c){tpWSave([]);try{localStorage.removeItem(TP_WK);}catch(e){}toast("Carteira apagada.");tpRender(true);}else{clr.dataset.c="1";clr.textContent="Toque de novo para apagar tudo";}});d.append(clr);}
-  d.append(tpEl("p","sm muted","Não sobe para a planilha, não entra em ranking e ninguém vê. Ganho fora do app pode ter imposto: veja a missão \"Recebi sem CNPJ\" na Primeira Renda."));
+  d.append(tpEl("p","sm muted","É só o seu placar: o app não guarda, não recebe e não vê dinheiro. Fica só neste aparelho, fora da planilha e de qualquer ranking. Ganho fora do app pode ter imposto: veja \"Recebi sem CNPJ\" na Primeira Renda."));
   return d;}
 // aba própria: botão na barra, só para 18+
 const TP_ICON='<svg viewBox="0 0 24 24"><path d="M12 3l3 5 5 1-3.5 4 1 5.5L12 16l-5.5 2.5 1-5.5L4 9l5-1z"/></svg>';
@@ -175,7 +196,7 @@ function tpTab(){const bar=$("tabbar");if(!bar)return;let b=bar.querySelector('[
   b.hidden=!tpOn();b.classList.toggle("lock",!tpOpenTab());if(b.hidden&&document.body.dataset.tab==="lenda")goTab("hoje");}
 function tpRender(keepW){try{tpTab();}catch(e){}let p=$("tpPanel");if(!tpOn()){if(p)p.hidden=true;return;}
   if(!p){const w=document.querySelector(".wrap");if(!w)return;p=tpEl("section","panel tppanel");p.id="tpPanel";p.dataset.tab="lenda";w.append(p);}
-  const wo=keepW||((p.querySelector(".tpwallet")||{}).open);p.hidden=false;p.textContent="";
+  const wo=keepW||((p.querySelector(".tpwreg")||{}).open);p.hidden=false;p.textContent="";
   const hd=tpEl("div","qhead");p.append(hd);
   if(!tpOpenTab()){p.classList.add("tplock");
     hd.append(tpEl("h2",null,"⚜️ Tasks Lendárias"),tpEl("span","sm mono","🔒"));
@@ -185,6 +206,7 @@ function tpRender(keepW){try{tpTab();}catch(e){}let p=$("tpPanel");if(!tpOn()){i
   p.classList.remove("tplock");
   const dn=tpDone(),vis=tpVis();
   hd.append(tpEl("h2",null,"⚜️ Tasks Lendárias"),tpEl("span","sm mono",dn+" concluídas · "+vis+"/"+TP_L.length+" reveladas"));
+  if(tpWal()){const w=tpWallet();const wr=w.querySelector(".tpwreg");if(wr)wr.open=!!wo;p.append(w);}
   if(tpWal()){const td=tpToday(),pc=Math.min(100,Math.round(td/TP_META*100));const mt=tpEl("div","tpmeta");
     mt.append(tpEl("div","tpmt","🎯 Meta de hoje: seus primeiros "+tpBRL(TP_META).replace(",00","")),tpEl("div","sm mono tpmv",td>=TP_META?"✓ Meta batida: "+tpBRL(td)+" anotados hoje":"Anotado hoje: "+tpBRL(td)+" de "+tpBRL(TP_META)));
     const bar=tpEl("div","tpbar");bar.setAttribute("role","progressbar");bar.setAttribute("aria-label","Meta de hoje");bar.setAttribute("aria-valuemin","0");bar.setAttribute("aria-valuemax","100");bar.setAttribute("aria-valuenow",String(pc));const fill=tpEl("i");fill.style.width=pc+"%";bar.append(fill);mt.append(bar);
@@ -196,7 +218,6 @@ function tpRender(keepW){try{tpTab();}catch(e){}let p=$("tpPanel");if(!tpOn()){i
   p.append(fl);
   const sg=tpEl("div","tpseals");TP_L.forEach((T,k)=>{if(tpF!=="all"&&T.tier!==tpF)return;if(k<vis)p.append(tpCard(T));else sg.append(tpSealed(T,k-vis));});
   if(sg.children.length){p.append(tpEl("div","sm muted tpslh","🔒 "+sg.children.length+" seladas · cada task concluída revela a próxima"));p.append(sg);}
-  if(tpWal()){const w=tpWallet();w.open=!!wo;p.append(w);}
   p.append(tpEl("p","sm tpnote",TP_NOTE));}
 // Hoje: uma linha só (integra as Lendárias com o dia). Trancada: pista misteriosa. Aberta: o próximo passo que paga.
 function tpNext(){const r=tpSt(),v=tpVis();for(const T of TP_L.slice(0,v)){const i=T.s.findIndex((x,k)=>!r[T.id].s[k]);if(i>=0)return {T,i};}return null;}
@@ -205,7 +226,7 @@ function tpGo(id){goTab("lenda");if(id){tpOpen=id;tpF="all";}tpRender();const p=
 function tpLine(){let l=$("tpLine");if(!tpOn()){if(l)l.hidden=true;return;}
   const open=tpOpenTab(),nx=open?tpNext():null;if(open&&!nx){if(l)l.hidden=true;return;}
   if(!l){const q=$("quests")&&$("quests").closest("section");if(!q)return;l=tpEl("section","panel tpline");l.id="tpLine";l.dataset.tab="hoje";
-    const anchor=$("chPanel")||$("fjCard")||q;anchor.after(l);}
+    q.after(l);} // logo abaixo das missões (tools/heroi.js HR_AFTER mantém aqui)
   l.hidden=false;l.textContent="";l.classList.toggle("tplock",!open);const b=tpEl("button","tplbtn");b.type="button";
   if(!open){b.append(tpEl("span","tplk","⚜️ ??? · Algo foi selado no Sistema"),tpEl("span","tplx","Conclua 1 missão de hoje para ver o que paga de verdade."),tpEl("span","tplgo","Ver ›"));
     b.setAttribute("aria-label","Tasks Lendárias, trancadas: conclua 1 missão de hoje");b.addEventListener("click",()=>tpGo(null));}

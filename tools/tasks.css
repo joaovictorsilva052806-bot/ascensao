@@ -66,3 +66,19 @@ body:not([data-tab=lenda]) .wrap>section[data-tab=lenda]{display:none}
 .tpline.tplock .tplk{letter-spacing:.08em}
 .tabbar .tplbar{color:#f5c542}
 .tabbar .tplbar.lock{opacity:.75}
+/* Carteira: placar */
+.tpwallet{position:relative;overflow:hidden;border:1px solid color-mix(in srgb,#f5c542 55%,var(--line));border-radius:14px;padding:14px;margin:10px 0;background:linear-gradient(160deg,color-mix(in srgb,#f5c542 14%,transparent),transparent 70%);display:grid;gap:8px}
+.tpwlbl{font-size:.7rem;letter-spacing:.14em;color:#f5c542;font-weight:700}
+.tpwbig{font-size:2.2rem;font-weight:800;line-height:1.1;color:#ffe39a;text-shadow:0 0 14px color-mix(in srgb,#f5c542 50%,transparent)}
+.tpwtit{display:flex;flex-wrap:wrap;gap:6px}
+.tpwbadge{font-size:.75rem;padding:4px 10px;border-radius:12px;border:1px solid #f5c542;color:#f5c542}
+.tpwreg>summary{min-height:44px;display:flex;align-items:center;cursor:pointer;font-weight:700;color:#f5c542}
+.tpwl{list-style:none;padding:0;margin:0;display:grid;gap:4px}
+.tpwl li{display:grid;grid-template-columns:auto 1fr auto;gap:8px;align-items:center;padding:6px 0;border-bottom:1px solid var(--line)}
+.tpwl li.pen{opacity:.85}
+.tpwl .tpwok{grid-column:1/-1;min-height:44px}
+.tpwv{font-weight:700}
+.tpwclr{min-height:44px}
+.tpcoin{position:absolute;top:30%;font-size:1.3rem;pointer-events:none;animation:tpcoin 1.1s ease-out forwards}
+@keyframes tpcoin{0%{transform:translateY(0) scale(.6);opacity:0}20%{opacity:1}100%{transform:translateY(-90px) scale(1.1);opacity:0}}
+.tpja{margin:4px 0;padding:6px 10px;border-radius:10px;background:color-mix(in srgb,var(--glow) 8%,transparent)}
