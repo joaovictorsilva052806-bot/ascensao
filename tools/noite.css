@@ -14,3 +14,9 @@ body:has(#muChip) .toast{bottom:calc(146px + env(safe-area-inset-bottom,0px))}
 .ntvolta h2{margin:0 0 4px}
 .ntvolta .row{display:flex;gap:12px;align-items:center;flex-wrap:wrap;margin-top:8px}
 .ntvolta .row button{min-height:44px}
+/* barra de abas (revisão horária 28/11 13h23): rótulo no maior tamanho que cabe na aba (8 a 11,5px), calculado por ntTabFit em tools/noite.js */
+/* Chakra Petch (2ª fonte do HUD) é ~20% mais estreita que Orbitron: o rótulo ganha tamanho sem sair da aba */
+:root:root:root .tabbar button{font-family:"Chakra Petch",var(--f-hud);font-weight:600}
+:root:root:root .tabbar[style*="--tbfs"] button{font-size:var(--tbfs)!important;letter-spacing:var(--tbls)!important}
+/* altura da linha fixa: trocar o tamanho do rótulo não muda a altura da barra (sem laço no ResizeObserver) */
+:root:root:root .tabbar button{line-height:14px}

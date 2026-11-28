@@ -589,6 +589,12 @@ body:has(#muChip) .toast{bottom:calc(146px + env(safe-area-inset-bottom,0px))}
 .ntvolta h2{margin:0 0 4px}
 .ntvolta .row{display:flex;gap:12px;align-items:center;flex-wrap:wrap;margin-top:8px}
 .ntvolta .row button{min-height:44px}
+/* barra de abas (revisão horária 28/11 13h23): rótulo no maior tamanho que cabe na aba (8 a 11,5px), calculado por ntTabFit em tools/noite.js */
+/* Chakra Petch (2ª fonte do HUD) é ~20% mais estreita que Orbitron: o rótulo ganha tamanho sem sair da aba */
+:root:root:root .tabbar button{font-family:"Chakra Petch",var(--f-hud);font-weight:600}
+:root:root:root .tabbar[style*="--tbfs"] button{font-size:var(--tbfs)!important;letter-spacing:var(--tbls)!important}
+/* altura da linha fixa: trocar o tamanho do rótulo não muda a altura da barra (sem laço no ResizeObserver) */
+:root:root:root .tabbar button{line-height:14px}
 /* ---- Quebrar correntes (tools/chain.*) ---- */
 .chc{display:grid;gap:8px;padding:12px;border:1px solid var(--line);border-radius:12px;background:linear-gradient(160deg,#0f1d38,#0a1222);margin-bottom:10px}
 .chc.done{border-color:var(--good)}
@@ -748,7 +754,8 @@ body.avmkon{overflow:hidden}
 #streak::before,#shieldPill::before,#clsPill::before{content:"";position:absolute;left:-2px;right:-2px;top:-8px;bottom:-8px}
 /* ---- Aba Amigos (tools/turma.js) ---- */
 .tabbar{grid-template-columns:none!important;grid-auto-flow:column;grid-auto-columns:minmax(0,1fr)}
-.tabbar:has(> button:nth-of-type(6):not([hidden])) button{letter-spacing:.03em;font-size:.5rem}
+/* 6 abas VISÍVEIS (a de Lendárias escondida contava como 6ª e deixava todo mundo em 8px); o tamanho fino vem de ntTabFit (tools/noite.js) */
+.tabbar:has(> button:not([hidden]) ~ button:not([hidden]) ~ button:not([hidden]) ~ button:not([hidden]) ~ button:not([hidden]) ~ button:not([hidden])) button{letter-spacing:.03em;font-size:.5rem}
 .tabbar button[hidden]{display:none}
 body[data-tab=amigos] .wrap>section[data-tab]:not([data-tab=amigos]){display:none}
 .tmhd{display:flex;justify-content:space-between;align-items:center;gap:8px;margin-bottom:10px}
@@ -4512,6 +4519,28 @@ setTimeout(()=>{if(typeof openCls!=="function")return;const _oc=openCls;openCls=
     const busy=(typeof sysQ!=="undefined"&&sysQ.length)||[...document.querySelectorAll(".sysmodal,.levelup")].some(m=>m.id!=="secZen"&&m.getClientRects().length)||Date.now()-ntTgAt<2500;
     if(busy){clearTimeout(ntClsT);ntClsT=setTimeout(()=>{try{openCls();}catch(e){}},1500);return;}}}catch(e){}
   return _oc.apply(this,arguments);};},0); // o original lê openCls.force pelo nome, que agora aponta para este embrulho
+
+// Barra de abas (revisão horária 28/11 13h23): os rótulos (HOJE, FOCO, PROGRESSO...) estavam em 8px para TODO jogador.
+// A regra "6 abas" contava o botão escondido de Lendárias como 6ª aba. Agora o rótulo usa o maior tamanho que cabe
+// na aba (8 a 11,5px), medido depois do layout: muda com a largura da tela, a fonte carregada e as abas visíveis (Amigos, Lendárias, Criador).
+let ntTbRaf=0;
+function ntTabFit(){const bar=document.getElementById("tabbar");if(!bar)return;
+  const bs=[...bar.querySelectorAll("button")].filter(b=>!b.hidden&&b.getClientRects().length);if(!bs.length)return;
+  // só leitura: mede no tamanho atual e converte para 10px/.04em (largura = fs*(base + letras*espaçamento)); escreve 1x, só se mudar
+  let r=0;for(const b of bs){const cs=getComputedStyle(b),fs=parseFloat(cs.fontSize)||10,ls=parseFloat(cs.letterSpacing)||0;let tw=0,nc=0;
+    for(const n of b.childNodes)if(n.nodeType===3&&n.textContent.trim()){const g=document.createRange();g.selectNodeContents(n);tw+=g.getBoundingClientRect().width;nc+=n.textContent.length;}
+    const aw=b.clientWidth-4;if(aw>0&&tw)r=Math.max(r,((tw-nc*ls)*10/fs+nc*.4)/aw);}
+  if(!r)return;const v=Math.floor(Math.min(11.5,Math.max(8,10/r))*4)/4,px=v+"px",sp=v<=8.5?"0":".04em";
+  if(bar.style.getPropertyValue("--tbfs")!==px)bar.style.setProperty("--tbfs",px);if(bar.style.getPropertyValue("--tbls")!==sp)bar.style.setProperty("--tbls",sp);}
+// mede depois do layout do quadro (ResizeObserver), sem forçar recálculo no meio dos render() da abertura (#214)
+const ntTbRO=typeof ResizeObserver==="function"?new ResizeObserver(()=>{try{ntTabFit();}catch(e){}}):null;
+function ntTabFitSoon(){const bar=document.getElementById("tabbar");if(!bar)return;
+  if(ntTbRO){ntTbRO.unobserve(bar);ntTbRO.observe(bar);return;}
+  if(ntTbRaf)return;ntTbRaf=requestAnimationFrame(()=>{ntTbRaf=0;try{ntTabFit();}catch(e){}});}
+(function(){try{const bar=document.getElementById("tabbar");if(!bar)return;
+  new MutationObserver(ntTabFitSoon).observe(bar,{childList:true,subtree:true,attributes:true,attributeFilter:["hidden"]});
+  new MutationObserver(ntTabFitSoon).observe(document.body,{attributes:true,attributeFilter:["class"]});
+  if(document.fonts&&document.fonts.ready)document.fonts.ready.then(ntTabFitSoon);ntTabFitSoon();}catch(e){}})();
 
 // ---------- Convite de Esquadrão: tocar no nome chama o amigo; o aviso aparece no app dele ----------
 // Usa o mesmo formulário do ranking: I|de|para|esquadrão|data (convite) e J|quem|de|esquadrão|data (aceite).

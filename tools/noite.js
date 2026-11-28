@@ -78,3 +78,25 @@ setTimeout(()=>{if(typeof openCls!=="function")return;const _oc=openCls;openCls=
     const busy=(typeof sysQ!=="undefined"&&sysQ.length)||[...document.querySelectorAll(".sysmodal,.levelup")].some(m=>m.id!=="secZen"&&m.getClientRects().length)||Date.now()-ntTgAt<2500;
     if(busy){clearTimeout(ntClsT);ntClsT=setTimeout(()=>{try{openCls();}catch(e){}},1500);return;}}}catch(e){}
   return _oc.apply(this,arguments);};},0); // o original lê openCls.force pelo nome, que agora aponta para este embrulho
+
+// Barra de abas (revisão horária 28/11 13h23): os rótulos (HOJE, FOCO, PROGRESSO...) estavam em 8px para TODO jogador.
+// A regra "6 abas" contava o botão escondido de Lendárias como 6ª aba. Agora o rótulo usa o maior tamanho que cabe
+// na aba (8 a 11,5px), medido depois do layout: muda com a largura da tela, a fonte carregada e as abas visíveis (Amigos, Lendárias, Criador).
+let ntTbRaf=0;
+function ntTabFit(){const bar=document.getElementById("tabbar");if(!bar)return;
+  const bs=[...bar.querySelectorAll("button")].filter(b=>!b.hidden&&b.getClientRects().length);if(!bs.length)return;
+  // só leitura: mede no tamanho atual e converte para 10px/.04em (largura = fs*(base + letras*espaçamento)); escreve 1x, só se mudar
+  let r=0;for(const b of bs){const cs=getComputedStyle(b),fs=parseFloat(cs.fontSize)||10,ls=parseFloat(cs.letterSpacing)||0;let tw=0,nc=0;
+    for(const n of b.childNodes)if(n.nodeType===3&&n.textContent.trim()){const g=document.createRange();g.selectNodeContents(n);tw+=g.getBoundingClientRect().width;nc+=n.textContent.length;}
+    const aw=b.clientWidth-4;if(aw>0&&tw)r=Math.max(r,((tw-nc*ls)*10/fs+nc*.4)/aw);}
+  if(!r)return;const v=Math.floor(Math.min(11.5,Math.max(8,10/r))*4)/4,px=v+"px",sp=v<=8.5?"0":".04em";
+  if(bar.style.getPropertyValue("--tbfs")!==px)bar.style.setProperty("--tbfs",px);if(bar.style.getPropertyValue("--tbls")!==sp)bar.style.setProperty("--tbls",sp);}
+// mede depois do layout do quadro (ResizeObserver), sem forçar recálculo no meio dos render() da abertura (#214)
+const ntTbRO=typeof ResizeObserver==="function"?new ResizeObserver(()=>{try{ntTabFit();}catch(e){}}):null;
+function ntTabFitSoon(){const bar=document.getElementById("tabbar");if(!bar)return;
+  if(ntTbRO){ntTbRO.unobserve(bar);ntTbRO.observe(bar);return;}
+  if(ntTbRaf)return;ntTbRaf=requestAnimationFrame(()=>{ntTbRaf=0;try{ntTabFit();}catch(e){}});}
+(function(){try{const bar=document.getElementById("tabbar");if(!bar)return;
+  new MutationObserver(ntTabFitSoon).observe(bar,{childList:true,subtree:true,attributes:true,attributeFilter:["hidden"]});
+  new MutationObserver(ntTabFitSoon).observe(document.body,{attributes:true,attributeFilter:["class"]});
+  if(document.fonts&&document.fonts.ready)document.fonts.ready.then(ntTabFitSoon);ntTabFitSoon();}catch(e){}})();
