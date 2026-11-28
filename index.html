@@ -1876,6 +1876,26 @@ body:not(.asc-fresh) .swipehint{display:none}
   .qgrid{gap:8px}.qgrid button{min-height:48px;padding:10px 8px}.qgrid.sm3 button{min-height:44px;padding:8px 6px}
 }
 @media (max-height:700px){#bxModal .bxbtn{max-width:min(100%,30vh);margin-inline:auto}#bxModal h3{font-size:1.15rem;margin-block:4px}}
+
+/* 15. Torre do Véu: cor do rank (--rk + .tbrk-E…S, postos pela torre.js) no painel e na luta */
+#arPanel .arhd{flex-wrap:wrap;row-gap:2px}
+#arPanel .arhd h2{flex:1 0 100%}
+#arPanel .arhd>span{white-space:normal}
+:root:root #arPanel[class*="tbrk-"]{border-color:color-mix(in srgb,var(--rk) 55%,transparent);box-shadow:0 0 0 1px color-mix(in srgb,var(--rk) 18%,transparent),0 0 22px color-mix(in srgb,var(--rk) 22%,transparent)}
+#arPanel[class*="tbrk-"]::before,#arPanel[class*="tbrk-"]::after{border-color:var(--rk)}
+#arPanel[class*="tbrk-"] .arhd h2{color:var(--rk)}
+#arPanel[class*="tbrk-"] .arnext{border-color:color-mix(in srgb,var(--rk) 45%,transparent);background:linear-gradient(90deg,color-mix(in srgb,var(--rk) 16%,transparent),transparent)}
+#arPanel[class*="tbrk-"] .arGo{background:linear-gradient(180deg,color-mix(in srgb,var(--rk) 85%,#fff 15%),var(--rk));color:#05080f;border-color:var(--rk);font-weight:600}
+/* a janela da luta pega o rank do painel mesmo antes da torre.js repintar */
+body:has(#arPanel.tbrk-E) #arModal{--rk:#9fb0c8}body:has(#arPanel.tbrk-D) #arModal{--rk:#3ddc97}
+body:has(#arPanel.tbrk-C) #arModal{--rk:#4da3ff}body:has(#arPanel.tbrk-B) #arModal{--rk:#c77dff}
+body:has(#arPanel.tbrk-A) #arModal{--rk:#f2c14e}body:has(#arPanel.tbrk-S) #arModal{--rk:#ff3d6e}
+#arModal .artag{color:var(--rk,var(--glow,#7cf4ff));border-color:color-mix(in srgb,var(--rk,#7cf4ff) 60%,transparent);background:color-mix(in srgb,var(--rk,#7cf4ff) 10%,transparent)}
+#arModal .arstage{border-radius:14px;background:radial-gradient(ellipse at 50% 70%,color-mix(in srgb,var(--rk,#7cf4ff) 22%,transparent),transparent 68%)}
+#arModal .arcard{border-top:2px solid color-mix(in srgb,var(--rk,#7cf4ff) 70%,transparent)}
+/* rank S: fundo quase preto com halo vermelho */
+:root:root #arPanel.tbrk-S{background:linear-gradient(180deg,#0b0b10,#140810)}
+body:has(#arPanel.tbrk-S) #arModal,#arModal.tbrk-S{background:radial-gradient(ellipse at 50% 30%,rgba(255,61,110,.14),transparent 70%),#0b0b10}
 .bpgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(96px,1fr));gap:6px;margin:6px 0}
 .bptile{border:1px solid var(--line);border-radius:8px;padding:8px;display:flex;flex-direction:column;gap:2px;background:rgba(0,0,0,.15);color:var(--fg)}
 .bptile b{font-size:1.25rem;color:var(--glow);font-variant-numeric:tabular-nums}.bptile span{font-size:.7rem;line-height:1.2}
