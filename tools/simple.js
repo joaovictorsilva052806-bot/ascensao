@@ -25,7 +25,10 @@
     // delegado na seção: o cabeçalho pode ser recriado (Amigos, Esquadrão, Álbum) e continua abrindo
     const onHd=e=>{const h=sec.firstElementChild;return h&&e.target.closest(".fhd")===h;};
     sec.addEventListener("click",e=>{if(!onHd(e))return;if(e.target.closest("a,input,select,textarea")||(e.target.closest("button")&&e.target.closest("button")!==sec.firstElementChild))return;flip();});
-    sec.addEventListener("keydown",e=>{if(!onHd(e))return;if(e.key==="Enter"||e.key===" "){e.preventDefault();flip();}});
+    // botão dentro do cabeçalho (ex.: "+ Nova" em Minhas tarefas): abre o painel ANTES do clique dele, senão o que ele mostra fica escondido
+    sec.addEventListener("click",e=>{if(!onHd(e))return;const b=e.target.closest("button");if(b&&b!==sec.firstElementChild&&!sec.classList.contains("open"))flip();},true);
+    // Enter/Espaço só dobram quando o foco está no próprio cabeçalho; num botão de dentro, o botão faz o trabalho dele
+    sec.addEventListener("keydown",e=>{if(!onHd(e)||e.target!==sec.firstElementChild)return;if(e.key==="Enter"||e.key===" "){e.preventDefault();flip();}});
     }}
   function markHd(sec){const h=sec.firstElementChild;if(!h||h.classList.contains("fhd"))return;if(!h.matches(HD))return;
     h.classList.add("fhd");h.setAttribute("role","button");h.tabIndex=0;h.setAttribute("aria-expanded",sec.classList.contains("open")?"true":"false");}

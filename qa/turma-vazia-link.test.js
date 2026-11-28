@@ -25,7 +25,7 @@ for(const [route,pre,tag] of [['comecar/','asc-u','/comecar/'],['','ascensao','/
   let {ctx,p,errs}=await open(route,pre,CFG('adult'),PROG({rank:{on:true,asked:true,uid:'lari1234',nick:'Lari'}}));
   await p.evaluate(()=>{window.__sh=[];navigator.share=async o=>{window.__sh.push(o);};});
   await p.evaluate(()=>{const t=document.querySelector('#tabbar [data-go="amigos"]');if(t)t.click();});await p.waitForTimeout(500);
-  await p.evaluate(()=>{const s=[...document.querySelectorAll('#tmPanel .tmseg button')].find(x=>/Turma/.test(x.textContent));if(s)s.click();});await p.waitForTimeout(300);
+  await p.evaluate(()=>{const s=[...document.querySelectorAll('#tmPanel .tmseg button')].find(x=>/Guilda/.test(x.textContent));if(s)s.click();});await p.waitForTimeout(300);
   ok(tag+' A: turma vazia mostra "Mandar o link da turma"',await p.locator('#tmPanel .tmempty .tminv').count()===1);
   ok(tag+' A: por apelido continua como opção secundária',await p.locator('#tmPanel .tmempty .tmnick').count()===1);
   await p.locator('#tmPanel .tmempty .tminv').click();await p.waitForTimeout(300);

@@ -69,7 +69,7 @@ function tbHitFx(box,n){if(!box||n<=0||!tbMotion())return;const f=tbEl("span","t
   setTimeout(()=>f.remove(),1300);try{haptic([8,20,8]);}catch(e){}}
 function tbCheckWin(st){const s=tbSt();const ws=tbWk();if(st.left>0||s.won[ws]||st.rows.length<1)return;s.won[ws]=1;save();const b=st.boss;
   const solo=st.rows.length===1;if(!tbSocial())s.won[ws]=1;
-  sysPop("CHEFÃO DERROTADO",b[0]+" caiu!",(solo?"Você derrubou o chefão sozinho.":"A turma ("+st.rows.length+" pessoas) derrubou o chefão antes de domingo.")+" Recompensa: +"+TB_PRIZE+" XP e o título raro « Ruína de "+b[1]+" »"+(typeof clsGrantScroll==="function"&&!tbSt().scroll?" + 1 Pergaminho de Renascimento (1ª vitória).":"."),()=>{
+  sysPop("CHEFÃO DERROTADO",b[0]+" caiu!",(solo?"Você derrubou o chefão sozinho.":"A guilda ("+st.rows.length+" pessoas) derrubou o chefão antes de domingo.")+" Recompensa: +"+TB_PRIZE+" XP e o título raro « Ruína de "+b[1]+" »"+(typeof clsGrantScroll==="function"&&!tbSt().scroll?" + 1 Pergaminho de Renascimento (1ª vitória).":"."),()=>{
     if(!entries().some(e=>e.q==="ach:tb:"+ws))addXP({q:"ach:tb:"+ws,kind:"full",xp:TB_PRIZE,stat:"foco",bonus:0,t:new Date().toISOString()},"Chefão derrotado: +"+TB_PRIZE+" XP");
     try{if(typeof clsGrantScroll==="function"&&!tbSt().scroll){tbSt().scroll=1;save();clsGrantScroll(1,"chefão");}}catch(e){}
     try{if(typeof bxGiveTitle==="function")bxGiveTitle("tb_"+tbN(b[1]),"Ruína de "+b[1],"chefão");}catch(e){}
@@ -89,7 +89,7 @@ function tbUI(){const p=tbPlace();if(!p)return;if(!tbOn()){p.hidden=true;tbStrip
   const hp=tbEl("div","tbhp");const fill=tbEl("i");fill.style.width=st.pct+"%";if(st.pct<20)fill.className="crit";else if(st.pct<50)fill.className="hurt";hp.append(fill);
   const lbl=tbEl("span","tbhpn",dead?"0 HP":st.left+" / "+st.hp+" HP");hp.append(lbl);p.append(hp);
   p.append(tbEl("p","tbsay",dead?"« Isso… não estava nos meus planos. »":"« "+b[5]+" »"));
-  p.append(tbEl("div","sm muted tbrule",dead?"Recompensa coletada por quem estava na turma. Novo chefão na segunda.":(tbSocial()?"Cada tarefa feita por alguém da turma tira vida dele (1 XP = 1 de dano). Derrotem até domingo: +"+TB_PRIZE+" XP e título raro para cada um.":"Cada tarefa sua tira vida dele (1 XP = 1 de dano). Derrote até domingo: +"+TB_PRIZE+" XP e um título raro.")));
+  p.append(tbEl("div","sm muted tbrule",dead?"Recompensa coletada por quem estava na guilda. Novo chefão na segunda.":(tbSocial()?"Cada tarefa feita por alguém da guilda tira vida dele (1 XP = 1 de dano). Derrotem até domingo: +"+TB_PRIZE+" XP e título raro para cada um.":"Cada tarefa sua tira vida dele (1 XP = 1 de dano). Derrote até domingo: +"+TB_PRIZE+" XP e um título raro.")));
   // quem bateu mais
   const ol=tbEl("ol","tbm");const mx=Math.max(1,...st.rows.map(r=>r.xp));st.rows.slice(0,8).forEach((r,i)=>{const li=tbEl("li",r.me?"me":"");
     li.append(tbEl("span","tbmn",(i===0&&r.xp>0?"👑 ":"")+r.n+(r.me?" (você)":"")),tbEl("span","tbmx",r.xp+" de dano"));
@@ -109,7 +109,7 @@ function tbStrip(st){let el=$("tbStrip");const hoje=document.querySelector('.wra
   const ic=tbEl("span","tbsico");ic.innerHTML=tbArt(b,st.pct,dead);
   const tx=tbEl("span","tbstx");tx.append(tbEl("b",null,dead?"Vitória sobre "+b[1]+" ✔":"🐉 "+b[1]+" · "+st.pct+"% de vida"));
   const bar=tbEl("span","tbsbar");const f=tbEl("i");f.style.width=st.pct+"%";bar.append(f);tx.append(bar);
-  tx.append(tbEl("span","tbssub",dead?(tbSocial()?"A turma venceu esta semana.":"Você venceu esta semana."):"Cada tarefa sua tira vida dele."));
+  tx.append(tbEl("span","tbssub",dead?(tbSocial()?"A guilda venceu esta semana.":"Você venceu esta semana."):"Cada tarefa sua tira vida dele."));
   el.append(ic,tx);el.setAttribute("aria-label",dead?"Chefão derrotado. Abrir o chefão":"Chefão "+b[1]+" com "+st.pct+"% de vida. Abrir o chefão");}
 // quando você conclui uma tarefa, o chefão sente na hora (faixa treme e mostra o dano)
 {const _tg=toggle;toggle=function(q,kind){const a=tbOn()?tbMyXP():0;_tg.apply(this,arguments);if(!tbOn())return;const d=tbMyXP()-a;
