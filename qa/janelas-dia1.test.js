@@ -12,12 +12,12 @@ async function watch(p,seen,ms){for(let t=0;t<ms;t+=300){await p.clock.runFor(30
     return out;},NO.source);
   for(const k of r)seen.add(k);}}
 (async()=>{const b=await chromium.launch();
-for(const [tag,age] of [['adulto',3],['14-17',2]]){
+for(const [tag,age,hr] of [['adulto',3,'10:00'],['14-17',2,'10:00'],['14-17 madrugada',2,'00:56'],['adulto madrugada',3,'00:56']]){
   const ctx=await b.newContext({viewport:{width:375,height:667},deviceScaleFactor:1,isMobile:true,hasTouch:true});
   await ctx.addInitScript(()=>Object.defineProperty(navigator,'webdriver',{get:()=>false}));
   await ctx.route(/fonts/,r=>r.abort());await ctx.route('https://docs.google.com/**',r=>r.fulfill({status:200,contentType:'text/csv',body:''}));
   const p=await ctx.newPage();const errs=[];p.on('pageerror',e=>errs.push(e.message));
-  await p.clock.install({time:new Date('2026-11-28T10:00:00')});
+  await p.clock.install({time:new Date('2026-11-28T'+hr+':00')});
   await p.goto(U+'comecar/');await p.clock.runFor(500);await p.click('#q_perm');await p.fill('#q_name','Bia');await p.click('#q_n0');await p.clock.runFor(300);
   await p.click(`#q_age button:nth-child(${age})`);await p.clock.runFor(300);
   if(await p.locator('#q_occ button').count())await p.click('#q_occ button:nth-child(3)');await p.clock.runFor(300);

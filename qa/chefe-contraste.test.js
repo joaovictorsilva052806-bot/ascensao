@@ -13,9 +13,9 @@ for(const [route,pre] of [['comecar/','asc-u'],['','ascensao']]){
   const ctx=await b.newContext({viewport:{width:390,height:844}});const p=await ctx.newPage();const errs=[];
   p.on('pageerror',e=>errs.push(e.message));p.on('console',m=>{if(m.type()==='error'&&!/Failed to load resource|ERR_|navigator.vibrate/.test(m.text()))errs.push(m.text())});
   await p.route(/^https?:\/\/(?!localhost)/,r=>r.abort());
-  await p.clock.install({time:new Date('2026-11-26T10:00:00')});await p.goto(U+route);
+  await p.clock.install({time:new Date('2026-11-26T10:00:00')});await p.goto(U+'privacidade/');
   await p.evaluate(([c,o,pre])=>{localStorage.clear();localStorage.setItem(pre+'-cfg',JSON.stringify(c));localStorage.setItem(pre+'-prog',JSON.stringify(o));localStorage.setItem(pre+'-season','2');localStorage.setItem('asc-u-perm','1');localStorage.setItem('asc-u-intro','1');localStorage.setItem(pre+'-tele',JSON.stringify({asked:1}));},[CFG,PROG,pre]);
-  await p.reload();await p.waitForSelector('.tbhpn',{state:'attached',timeout:8000});
+  await p.goto(U+route);await p.waitForSelector('.tbhpn',{state:'attached',timeout:8000});
   await p.evaluate(()=>{const t=[...document.querySelectorAll('nav button')].find(b=>/Progresso/i.test(b.textContent));t&&t.click();});await p.waitForTimeout(500);
   const tag=(route||'/')+': ';
   ok(tag+'número de vida aparece',/\d+ \/ \d+ HP/.test(await p.$eval('.tbhpn',e=>e.textContent)));

@@ -45,7 +45,7 @@ function secMotion(){return !matchMedia("(prefers-reduced-motion: reduce)").matc
 function unlockSec(id){if(!secReady())return false;prog.sec=prog.sec||{};if(prog.sec[id])return false;const s=secById(id);if(!s)return false;
   prog.sec[id]=todayKey();pushEntry({q:"ach:"+id,kind:"full",xp:s[6],stat:"mente",bonus:0,t:new Date().toISOString()},"");
   renderSec();secReveal(s);return true;}
-function secReveal(s){sysPop("SEGREDO DESBLOQUEADO",s[1]+" "+s[2],s[5]+" (+"+s[6]+" XP · título raro: « "+s[3]+" »)",()=>secEquip(s[0]),"Equipar título « "+s[3]+" »");}
+function secReveal(s){if(ascQuietD1()){toast("🔓 Segredo: "+s[1]+" "+s[2]+" · +"+s[6]+" XP · título « "+s[3]+" » liberado");return;}sysPop("SEGREDO DESBLOQUEADO",s[1]+" "+s[2],s[5]+" (+"+s[6]+" XP · título raro: « "+s[3]+" »)",()=>secEquip(s[0]),"Equipar título « "+s[3]+" »");}
 function renderSec(){const box=$("secList");if(!box)return;prog.sec=prog.sec||{};box.textContent="";let got=0;
   for(const s of SEC){const on=!!prog.sec[s[0]];if(on)got++;const d=document.createElement("button");d.type="button";d.className="badge secb"+(on?" on":"")+(prog.secTitle===s[0]?" eq":"");
     const b=document.createElement("b");b.textContent=on?s[1]+" "+s[2]:"🔒 ???";d.append(b,document.createTextNode(on?"« "+s[3]+" »"+(prog.secTitle===s[0]?" · em uso":" · toque para usar"):s[4]));
