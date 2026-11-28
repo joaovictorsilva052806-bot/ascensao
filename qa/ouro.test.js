@@ -6,9 +6,7 @@ const {chromium}=require('playwright');const U='http://localhost:8000/';const SP
 const R=[];const ok=(n,c,x)=>R.push((c?'PASS ':'FAIL ')+n+(x&&!c?' · '+x:''));
 const CFG={version:3,name:'Teste',startDate:'2026-11-01',quests:[{id:'q1',title:'Ler 10 min',xp:10,stat:'mente',main:true},{id:'q2',title:'Beber água',xp:5,stat:'corpo',main:true},{id:'s_treino',title:'Mexer o corpo 20 min',xp:25,stat:'corpo',minTitle:'5 min'}]};
 const E=(q,d,xp)=>({q,kind:'full',xp:xp||10,stat:'mente',bonus:0,t:d+'T10:00:00'});
-// Cartas do Sistema (tools/misterio.js) já reveladas e pagas: aqui o Ouro conta só o que este teste mede
-const MYST=(()=>{const c={},p={};for(const k of ['m_3d','m_q10','m_lv5','m_boss','m_7d','m_tp']){c[k]='2026-11-01';p[k]='2026-11-01';}return {c,p};})();
-const P=(extra={})=>Object.assign({myst:MYST,log:{'2026-11-20':[E('q1','2026-11-20')]},extra:{},faith:{},energy:{},mit:{},reviews:{},money:[],rest:{},ach:{a_first:'2026-11-01'},rpg:{cls:{id:'mago',style:'fant',name:'Mago'},spent:999},velho:'fica',shield:{n:1,used:{},ms:{1:'antes'},chk:'2026-11-27'}},extra);
+const P=(extra={})=>Object.assign({log:{'2026-11-20':[E('q1','2026-11-20')]},extra:{},faith:{},energy:{},mit:{},reviews:{},money:[],rest:{},ach:{a_first:'2026-11-01'},rpg:{cls:{id:'mago',style:'fant',name:'Mago'},spent:999},velho:'fica',shield:{n:1,used:{},ms:{1:'antes'},chk:'2026-11-27'}},extra);
 const FJ=(o={})=>Object.assign({ok:true,pt:1,pil:false,lv:{},last:{},ses:[{d:'2026-11-24',tipo:'B',min:30,r:0}],dias:[0,2,4]},o);
 async function drain(p){for(let k=0;k<2;k++){for(let i=0;i<10;i++){const m=p.locator('.sysmodal:not(#orModal):not(#f30Walk) button.go');if(await m.count()){await m.first().dispatchEvent('click');await p.waitForTimeout(150);continue;}
   if(await p.locator('#levelup').isVisible()){await p.locator('#luClose').dispatchEvent('click');continue;}await p.waitForTimeout(250);if(!(await m.count()))break;}await p.waitForTimeout(500);}}

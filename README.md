@@ -45,10 +45,6 @@ Pontos de entrada no JS: `render()` desenha tudo; `toggle(quest, "full"|"min")` 
 
 `tools/colecao.js` e `tools/colecao.css` (entram nos dois geradores, depois do baú): cada segredo, moldura e título conta para a Coleção. Aos 3, 8, 15 e 25 itens sai uma moldura exclusiva que não cai no baú (barra com "faltam N" na Coleção do baú e no prêmio do baú). Grava só ids novos em `prog.chest.frames` (lista que já existe). Teste: `node qa/colecao.test.js`.
 
-## Cartas do Sistema (mistério sem sorteio)
-
-`tools/misterio.js` e `tools/misterio.css` (entram nos dois geradores): 6 cartas "???" na aba Progresso que se revelam por conquista (3 e 7 dias seguidos, 10 missões, nível 5, chefão, 1ª Task que paga só para 18+). Prêmio fixo, 1 vez por carta: Ouro por `orGive("myst:<id>")` e XP como `ach:myst:<id>`. Nada é aleatório e nada se compra (ECA Digital, art. 20). Sinal da semana (até 12 palavras) em Hoje, no máximo 1 por dia, nunca junto da linha das Tasks que pagam; o ✕ esconde até amanhã. Grava só `prog.myst`. Teste: `PORT=8003 node qa/misterio.test.js`.
-
 ## Sequência (estilo Duolingo)
 
 `tools/streak.js` e `tools/streak.css` (entram nos dois geradores): escudo de sequência automático (começa com 1, +1 nos marcos de 7, 14, 30…, máx. 2), marcos comemorados (1, 3, 7…), "Dia perfeito" quando todas as principais saem, e aviso de risco depois das 18h. Grava só `prog.shield`; dia com escudo conta como descanso em `isRest()`. Teste: `node qa/sequencia.test.js`.

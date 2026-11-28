@@ -203,9 +203,6 @@ rep('\nlet saveTimer=null, SYNC="";','\n'+R('idade.js')+R('renda.js')+'\nlet sav
 # Tasks que pagam 18+ na aba Foco (tools/tasks.*): só adiciona prog.tp; Carteira real fica fora do prog, só no aparelho
 rep('</style></head>',R('tasks.css')+'</style></head>')
 rep('\nlet saveTimer=null, SYNC="";','\n'+R('tasks.js')+'\nlet saveTimer=null, SYNC="";')
-# Cartas do Sistema (tools/misterio.*): mistério sem sorteio, carta revelada por conquista, prêmio fixo 1 vez; só adiciona prog.myst
-rep('</style></head>',R('misterio.css')+'</style></head>')
-rep('\nlet saveTimer=null, SYNC="";','\n'+R('misterio.js')+'\nlet saveTimer=null, SYNC="";')
 # Missões Lendárias 18+ (tools/lendaria.*; lista em missoes-lendarias.json): área das tasks que pagam na aba Foco + chamada em Hoje; só adiciona prog.lend
 rep('</style></head>',R('lendaria.css')+'</style></head>')
 rep('\nlet saveTimer=null, SYNC="";','\n'+R('lendaria.js')+'\nlet saveTimer=null, SYNC="";')

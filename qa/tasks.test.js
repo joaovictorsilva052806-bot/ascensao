@@ -6,9 +6,7 @@ const {chromium}=require('playwright');const U='http://localhost:8000/';
 const R=[];const ok=(n,c,x)=>R.push((c?'PASS ':'FAIL ')+n+(x&&!c?' · '+x:''));
 const CFG=age=>({version:3,name:'Teste',startDate:'2026-11-01',profile:age==null?{}:{age},quests:[{id:'q1',title:'Ler 10 min',xp:10,stat:'mente',main:true}]});
 const MISSAO={'2026-11-26':[{q:'q1',xp:10}]};
-// Cartas do Sistema (tools/misterio.js) já reveladas e pagas: aqui o Ouro conta só o que este teste mede
-const MYST=(()=>{const c={},p={};for(const k of ['m_3d','m_q10','m_lv5','m_boss','m_7d','m_tp']){c[k]='2026-11-01';p[k]='2026-11-01';}return {c,p};})();
-const P=(extra={})=>Object.assign({myst:MYST,log:MISSAO,extra:{},velho:'fica',rpg:{cls:{id:'mago',style:'fant',name:'Mago'},spent:0},ouroX:{t0:'2026-11-01',d:{},got:{},buy:{},h:[],mig:{d:'2026-11-01',c:0}}},extra);
+const P=(extra={})=>Object.assign({log:MISSAO,extra:{},velho:'fica',rpg:{cls:{id:'mago',style:'fant',name:'Mago'},spent:0},ouroX:{t0:'2026-11-01',d:{},got:{},buy:{},h:[],mig:{d:'2026-11-01',c:0}}},extra);
 const LS=(p,k)=>p.evaluate(k=>JSON.parse(localStorage.getItem(k)),k);
 (async()=>{const b=await chromium.launch();
 async function open(route,pre,cfg,prog,o={}){const ctx=await b.newContext({viewport:o.vp||{width:390,height:844},reducedMotion:o.rm||'no-preference'});const p=await ctx.newPage();const errs=[];
