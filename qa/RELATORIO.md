@@ -1,5 +1,12 @@
 # Relatório de QA (ATENA)
 
+## 28/11/2026 · Missões de parceiros dentro das Tasks Lendárias (fim da duplicação do #189 com o #191)
+
+- Pedido da EVA (#22, 7230140007): a lista do `missoes-lendarias.json` entra no `TP_L` de `tools/tasks.js` (mesmo cartão, trava `ad18()`, cofre e "Cashback não dá Ouro"). Sai `tools/lendaria.*` e a 2ª chamada em Hoje. Sem o JSON, fica a lista fixa.
+- A Cuponomia do JV segue só no Modo Criador, com o link de indicação dele e aviso de comissão; agora com `"compra": true` (não dá Ouro, #196). Antes dava +80, o que contrariava o #196.
+- Dados: `prog.lend` (#189) é copiado para `prog.tp` (`p_<id>`) uma vez, sem apagar.
+- `qa/lendaria.test.js` reescrito 48/48; `qa/tasks.test.js` 76/76. Cache `ascensao-v144` / `ascensao-u-v156`.
+
 ## 27/11/2026 · Missões de Parceiros (lendárias, 18+) + Cuponomia em teste · PR #189
 
 - Novo: área com moldura lendária no topo da aba Lendárias (#191; sem a aba, na aba Foco) e chamada de 1 toque em Hoje. Link de indicação do criador vem com aviso de comissão (`"indicacao": true`). Lista em `missoes-lendarias.json`; a Cuponomia entra com `"teste": true` (só o Modo Criador vê) e o link de indicação do JV. Só adiciona `prog.lend`.
