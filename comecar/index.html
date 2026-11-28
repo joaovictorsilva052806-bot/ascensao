@@ -3022,7 +3022,7 @@ function slotHeavy(q){return !!q&&(/^(s_rev|s_bloco|s_foco|s_carr|s_meta|q_estud
 function slotWakeHour(d){d=d||new Date();const r=slotRoutine(),m=d.getHours()*60+d.getMinutes();return m>=r.wake&&m<r.wake+60;}
 // ---------- Perfil e geração de quests (onboarding) ----------
 const DN=["seg","ter","qua","qui","sex","sáb","dom"];
-const FOCI=[["estudos","Estudos"],["sono","Dormir melhor"],["corpo","Saúde e corpo"],["carreira","Carreira"],["dinheiro","Dinheiro"],["relac","Pessoas que amo"],["casa","Casa em ordem"],["remedio","Remédios no horário"],["agua","Beber água"],["tela","Menos tempo de tela"],["leitura","Ler mais"]];
+const FOCI=[["estudos","Estudos"],["sono","Dormir melhor"],["corpo","Saúde e corpo"],["carreira","Carreira"],["dinheiro","Dinheiro"],["relac","Família"],["casa","Casa em ordem"],["remedio","Remédios"],["agua","Beber água"],["tela","Menos tempo de tela"],["leitura","Ler mais"]];
 const AGE=[["kid","Até 13"],["teen","14 a 17"],["young","18 a 29"],["adult","30 a 59"],["senior","60 ou mais"]];
 const isMinorAge=v=>v==="kid"||v==="teen";
 const OCC=[["escola","Estudante (escola)"],["estudante","Faculdade / curso"],["clt","Trabalho fixo (CLT)"],["autonomo","Autônomo / Empreendedor"],["casa","Dono(a) de casa"],["motorista","Motorista / caminhoneiro"],["aposentado","Aposentado(a)"],["outro","Outro"]];
@@ -3635,7 +3635,7 @@ function dailyCheckin(){if(document.body.classList.contains("insm")){clearTimeou
   if(s===1&&cfg.startDate===tk&&!Object.keys(prog.log||{}).some(k=>k!==tk&&(prog.log[k]||[]).length)){
     addXP({q:"checkin:"+tk,kind:"checkin",xp:10,stat:"foco",bonus:0,t:new Date().toISOString()},"Check-in do dia 1: +10 XP");
     if(typeof sendRank==="function")sendRank("checkin",true);return;}
-  sysPop("CHECK-IN DIÁRIO",s>1?s+" dias de check-in":"Dia 1","Você apareceu, e isso já conta. +10 XP"+(bonus?" e +"+bonus+" de bônus pela sequência de check-ins.":". Volte amanhã para ganhar bônus."),()=>{
+  sysPop("CHECK-IN DIÁRIO",s>1?s+" dias de check-in":"Dia 1","Você apareceu, e isso já conta. +10 XP"+(bonus?" e +"+bonus+" de bônus pela sequência de check-ins.":". Amanhã tem bônus de sequência."),()=>{
     if((prog.log[todayKey()]||[]).some(e=>String(e.q).startsWith("checkin:")))return;
     addXP({q:"checkin:"+todayKey(),kind:"checkin",xp:10,stat:"foco",bonus,t:new Date().toISOString()},"Check-in feito: +"+(10+bonus)+" XP");
     if(typeof sendRank==="function")sendRank("checkin",true);},"Fazer check-in");}
@@ -3740,7 +3740,7 @@ function secMotion(){return !matchMedia("(prefers-reduced-motion: reduce)").matc
 function unlockSec(id){if(!secReady())return false;prog.sec=prog.sec||{};if(prog.sec[id])return false;const s=secById(id);if(!s)return false;
   prog.sec[id]=todayKey();pushEntry({q:"ach:"+id,kind:"full",xp:s[6],stat:"mente",bonus:0,t:new Date().toISOString()},"");
   renderSec();secReveal(s);return true;}
-function secReveal(s){sysPop("SEGREDO DESBLOQUEADO",s[1]+" "+s[2],s[5]+" (+"+s[6]+" XP · título raro: « "+s[3]+" »)",()=>secEquip(s[0]),"Equipar título « "+s[3]+" »");}
+function secReveal(s){if(ascQuietD1()){toast("🔓 Segredo: "+s[1]+" "+s[2]+" · +"+s[6]+" XP · título « "+s[3]+" » liberado");return;}sysPop("SEGREDO DESBLOQUEADO",s[1]+" "+s[2],s[5]+" (+"+s[6]+" XP · título raro: « "+s[3]+" »)",()=>secEquip(s[0]),"Equipar título « "+s[3]+" »");}
 function renderSec(){const box=$("secList");if(!box)return;prog.sec=prog.sec||{};box.textContent="";let got=0;
   for(const s of SEC){const on=!!prog.sec[s[0]];if(on)got++;const d=document.createElement("button");d.type="button";d.className="badge secb"+(on?" on":"")+(prog.secTitle===s[0]?" eq":"");
     const b=document.createElement("b");b.textContent=on?s[1]+" "+s[2]:"🔒 ???";d.append(b,document.createTextNode(on?"« "+s[3]+" »"+(prog.secTitle===s[0]?" · em uso":" · toque para usar"):s[4]));
@@ -4011,13 +4011,13 @@ function shieldAuto(){if(!cfg||cfg.blank||($("onb")&&!$("onb").hidden))return;co
   if(gap.length>s.n){save();if(before>=3)sysPop("NOVA SEQUÊNCIA","Recomeço, sem culpa","Sua sequência de "+before+(before===1?" dia":" dias")+" parou, e tudo bem: o seu XP e o seu nível continuam. Hoje é o dia 1 de novo. Uma tarefa já acende o fogo.",null,"Bora");return;}
   for(const k of gap)s.used[k]=1;s.n-=gap.length;save();render();
   sysPop("ESCUDO ATIVADO","🛡️ Sequência salva: "+streakDays()+(streakDays()===1?" dia":" dias"),(gap.length>1?"Dois dias ficaram":"Ontem ficou")+" sem tarefa e o escudo segurou o fogo sozinho. Faça 1 tarefa hoje para ela seguir. Escudos restantes: "+s.n+".",null,"Valeu, Sistema");}
-const ST_TXT={1:["Sequência iniciada 🔥","Dia 1. Volte amanhã e vira 2. Uma tarefa por dia já mantém o fogo aceso."],
+const ST_TXT={1:["Sequência iniciada 🔥","Fogo aceso. Amanhã, 1 tarefa e vira 2."],
   3:["3 dias seguidos 🔥","Seu cérebro já está pegando o ritmo. Com 7 dias você ganha um escudo de sequência."],
   7:["1 semana! 🛡️ +1 escudo","Se um dia passar em branco, o escudo salva sua sequência sozinho. Você guarda até 2."]};
 function stMilestone(){if(!cfg||cfg.blank)return;const s=shieldSt();const n=streakDays();for(const m in s.ms)if(+m>n)delete s.ms[m];if(!stAct(todayKey()))return;
   let hit=0;for(const m of ST_MS)if(m<=n&&!s.ms[m]){s.ms[m]=todayKey();hit=m;if(m>=7&&s.n<ST_MAX)s.n++;}
   if(!hit)return;save();const t=ST_TXT[hit]||[hit+" dias seguidos 🔥"+(s.n?" 🛡️":""),"Marco de "+hit+" dias. Pouca gente chega aqui. Escudos guardados: "+s.n+" de "+ST_MAX+"."];
-  if(hit===1&&ascQuietD1()){toast("🔥 "+t[0]+". Volte amanhã e vira 2.");return;}
+  if(hit===1&&ascQuietD1()){toast("🔥 "+t[0]+". Amanhã, 1 tarefa e vira 2.");return;}
   sysPop("MARCO DE SEQUÊNCIA",t[0],t[1],null,"Continuar");}
 function stRisk(){const h=new Date().getHours();return h>=18&&!stAct(todayKey())&&!isRest(todayKey())&&streakDays()>0;}
 {const _rp=renderPills;renderPills=function(){_rp();const st=$("streak");if(!st)return;const s=shieldSt();
@@ -4161,7 +4161,7 @@ function tlAsk(){if(document.body.classList.contains("insm")){setTimeout(tlAsk,5
     el("p","sm muted","Nunca: localização, contatos, telefone, documentos ou fotos. Dá para sair e apagar em Mais > Painel do criador."));
   const lb=el("label","sm tll","Apelido que ele vai ver");const nk=el("input");nk.maxLength=16;nk.autocomplete="off";nk.value=teen?cleanNick(prog.rank&&prog.rank.nick):(rankName()||firstName());nk.placeholder=teen?"Um apelido (não use seu nome real)":"Seu apelido";lb.append(nk);c.append(lb);
   let par=null;if(teen){const l2=el("label","chk sm");par=el("input");par.type="checkbox";l2.append(par,document.createTextNode(" Meu responsável autorizou"));c.append(l2);}
-  const msg=el("div","sm tlmsg","");const row=el("div","row");const ok=el("button","ghost tlb","Aceito");ok.type="button";const no=el("button","ghost tlb","Agora não");no.type="button";row.append(ok,no);c.append(msg,row);
+  const msg=el("div","sm tlmsg","");const row=el("div","row");const ok=el("button","ghost tlb","Sim, liberar");ok.type="button";const no=el("button","ghost tlb","Não, obrigado");no.type="button";row.append(no,ok);c.append(msg,row,el("p","sm muted tlwarn","Não escreva nas notas nada de saúde, documento ou de outra pessoa. Você muda isso quando quiser em Mais > Ajustes."));
   ok.addEventListener("click",()=>{const n=cleanNick(nk.value);if(!n){msg.textContent="Escolha um apelido.";nk.focus();return;}if(teen&&!(par&&par.checked)){msg.textContent="Marque que seu responsável autorizou.";return;}
     const t2=tlGet();Object.assign(t2,{on:true,asked:true,nick:n,uid:t2.uid||("u"+Math.random().toString(36).slice(2,10)),since:tlDk(),parent:teen?1:0});tlSet(t2);
     m.remove();tlSend("aceite");anon("5-aceitou");Object.assign(t2,{last:tlDk()});tlSet(t2);try{haptic([15,40,15]);}catch(e){}toast("Acesso liberado. Valeu, "+n+"!");tlUI();});
@@ -5095,7 +5095,7 @@ function qtTidy(){const box=$("quests");if(!box)return;let nextMoved=false;
   // grupo das principais todo travado (ex.: só "Fechar o dia", que libera à noite): desce para depois das extras liberadas
   {const g0=box.querySelector(":scope > .qgroup");const qs=g0?[...g0.querySelectorAll(":scope > .quest")]:[];
     if(qs.length&&qs.every(c=>c.classList.contains("qtlock"))){const ex=[...box.querySelectorAll(":scope > details")].find(d=>d.querySelector(".quest:not(.done):not(.min):not(.qtlock)"));
-      if(ex&&(g0.compareDocumentPosition(ex)&Node.DOCUMENT_POSITION_FOLLOWING)){ex.after(g0);nextMoved=true;}}}
+      if(ex){ex.open=true;if(g0.compareDocumentPosition(ex)&Node.DOCUMENT_POSITION_FOLLOWING){ex.after(g0);nextMoved=true;}}}}
   if(nextMoved||!box.querySelector(".quest.next")){const cand=[...box.querySelectorAll(".qgroup .quest[data-q]")].find(c=>!c.classList.contains("qtlock")&&!c.classList.contains("done")&&!c.classList.contains("min"));
     if(cand&&!cand.classList.contains("next")){cand.classList.add("next");const nx=document.createElement("div");nx.className="nextlbl";nx.textContent="PRÓXIMA";cand.prepend(nx);}}}
 {const _r=render;render=function(){_r.apply(this,arguments);try{qtTidy();}catch(e){}};}
@@ -5752,7 +5752,7 @@ function bxOpen(){if($("bxModal"))return;const c=bxSt();const tk=todayKey();if(c
   if(!c.roll[tk]){c.roll[tk]=bxRoll();for(const k in c.roll)if(k<tk)delete c.roll[k];save();}
   const rw=c.roll[tk];const tier=rw.tier||0;
   const m=bxEl("div","sysmodal bxmodal");m.id="bxModal";m.setAttribute("role","dialog");m.setAttribute("aria-modal","true");m.setAttribute("aria-label","Baú do dia");
-  const card=bxEl("div","card bxcard");card.append(bxEl("div","tag","[ SISTEMA ] BAÚ DO DIA"),bxEl("h3",null,"Dia fechado. "+BX_TIER[tier][0]+" liberado."));
+  const card=bxEl("div","card bxcard");card.append(bxEl("div","tag","[ SISTEMA ] BAÚ DO DIA"),bxEl("h3",null,BX_TIER[tier][0]+" aberto"));
   const hint=bxEl("p","sm muted bxhint",tier<2?"Sequência de "+(tier?7:3)+" dias melhora o baú.":"Sequência de 7+ dias: chance maior de item lendário.");
   const btn=bxEl("button","bxbtn t"+tier);btn.type="button";btn.innerHTML=bxArt(tier);btn.setAttribute("aria-label","Abrir o baú");
   const tap=bxEl("div","bxtap",bxMotion()?"Toque 3 vezes para abrir":"Toque para abrir");
@@ -5847,7 +5847,7 @@ function colBar(){const p=$("bxCol");if(!p||p.hidden)return;let b=$("colBar");co
   const dots=bxEl("div","coldots");for(const m of COL_M){const d=bxEl("span","coldot"+(n>=m[0]?" on":"")+(nx===m?" nx":""),m[0]);d.title=m[2]+" aos "+m[0]+" itens";dots.append(d);}
   b.append(top,bar,dots,bxEl("div","sm muted","Segredos, molduras e títulos contam. Cada marco dá uma moldura que não sai no baú."));}
 function colChestLine(){const o=document.querySelector("#bxModal .bxout");if(!o||o.hidden||o.querySelector(".colnext"))return;const nx=colNext();
-  o.append(bxEl("span","sm colnext",nx?"Coleção "+colCount()+"/"+nx[0]+" · faltam "+(nx[0]-colCount())+" para « "+nx[2]+" »":"Coleção: todos os marcos ✓"));}
+  o.append(bxEl("span","sm colnext",nx?"Faltam "+(nx[0]-colCount())+" para « "+nx[2]+" »":"Coleção: todos os marcos ✓"));}
 {const _c=bxColUI;bxColUI=function(){_c.apply(this,arguments);try{colBar();colChestLine();colCheck();}catch(e){}};}
 {const _r=renderSec;renderSec=function(){_r.apply(this,arguments);try{colCheck();}catch(e){}};}
 setTimeout(()=>{try{colBar();colCheck();}catch(e){}},50);
@@ -7378,15 +7378,15 @@ try{window.arQA={hero:()=>arHero(),foe:n=>arFoe(n),b:l=>arB(l),lv:()=>atLevels()
   const s0=$("q_name")&&$("q_name").closest(".qstep");if(s0)tx(s0.querySelector("h2"),"Como eu te chamo?");
   tx($("q_n0"),"Bora ▸");
   tx($("q_bk"),"Já jogava? Recuperar meu progresso");
-  const fp=$("q_h3")&&$("q_h3").nextElementSibling;if(fp&&fp.tagName==="P")tx(fp,"Já marquei o que combina. Toque para trocar (até 3).");
+  const fp=$("q_h3")&&$("q_h3").nextElementSibling;if(fp&&fp.tagName==="P")tx(fp,"Escolha até 3.");
   tx($("q_done"),"Começar a jogar ⚡");
-  tx($("q_full"),"Prefiro responder com detalhes");
+  tx($("q_full"),"Responder com mais detalhes");
   tx(document.querySelector(".swipehint"),"Dica: arraste a tarefa para a direita para concluir →");}
 // Perguntas com o nome da pessoa
 if(typeof qHead==="function"){const _qh=qHead;qHead=function(){_qh.apply(this,arguments);const n=qData.name?qData.name.split(" ")[0]:"";
   if($("q_h1"))$("q_h1").textContent=n?n+", qual a sua idade?":"Qual a sua idade?";
   if($("q_h2"))$("q_h2").textContent="O que ocupa o seu dia?";
-  if($("q_h3"))$("q_h3").textContent=n?n+", o que você quer subir de nível?":"O que você quer subir de nível?";};}
+  if($("q_h3"))$("q_h3").textContent=n?n+", o que vamos melhorar?":"O que vamos melhorar?";};}
 // Jogo criado: primeiro nome e o próximo passo, sem número de tarefas para assustar
 {const _t=toast;toast=function(msg){const m=/^Pronto, (.+?)! \d+ quests criadas para o seu dia\.$/.exec(String(msg||""));
   if(m)msg="Jogo pronto, "+m[1].split(" ")[0]+". Sua 1ª missão te espera.";return _t.call(this,msg);};}
@@ -7842,7 +7842,7 @@ function orMerge(){if(!orReady())return;const x=orX();if(x.mig)return;let c=0;tr
   // como a tela de Novidades (tools/versao.js): não abre em navegador automatizado, para não travar os testes da qa/
   // perfil novo (criado hoje ou ontem) nunca viu moedas: migra calado (QA 60 s, 28/11: "Suas 1 moedas…" no 1º minuto)
   let novo=false;try{const sd=cfg&&cfg.startDate;novo=!sd||(new Date(todayKey()+"T12:00")-new Date(sd+"T12:00"))/864e5<=1;}catch(e){}
-  if(c>0&&!novo&&!navigator.webdriver)sysPop("UMA MOEDA SÓ",(c===1?"Sua 1 moeda virou":"Suas "+c+" moedas viraram")+" 🪙 "+c+" de Ouro","Agora é tudo Ouro: o Baú de recompensas e a Loja usam o mesmo saldo. Nada se perdeu.",null,"Entendi");}
+  if(c>0&&!novo&&!navigator.webdriver)sysPop("UMA MOEDA SÓ",(c===1?"Sua moeda virou":"Suas "+c+" moedas viraram")+" 🪙 "+c+" de Ouro","Agora o Baú e a Loja usam o mesmo saldo. Nada se perdeu.",null,"Entendi");}
 function orUnmerge(){const x=orX();const m=x.mig;if(!m||m.off)return;const back=Math.min(orBal(),+m.c||0);prog.ouro=orBal()-back;m.off=todayKey();
   if(back){x.h.unshift({d:todayKey(),v:-back,w:"Ouro voltou a ser moedas"});x.h=x.h.slice(0,30);}save();try{render();}catch(e){}toast("Baú de volta às moedas. O Ouro ganho em tarefas continua.");}
 // Baú de recompensas com Ouro (mesma lista, mesmos preços)

@@ -38,7 +38,7 @@ function qtTidy(){const box=$("quests");if(!box)return;let nextMoved=false;
   // grupo das principais todo travado (ex.: só "Fechar o dia", que libera à noite): desce para depois das extras liberadas
   {const g0=box.querySelector(":scope > .qgroup");const qs=g0?[...g0.querySelectorAll(":scope > .quest")]:[];
     if(qs.length&&qs.every(c=>c.classList.contains("qtlock"))){const ex=[...box.querySelectorAll(":scope > details")].find(d=>d.querySelector(".quest:not(.done):not(.min):not(.qtlock)"));
-      if(ex&&(g0.compareDocumentPosition(ex)&Node.DOCUMENT_POSITION_FOLLOWING)){ex.after(g0);nextMoved=true;}}}
+      if(ex){ex.open=true;if(g0.compareDocumentPosition(ex)&Node.DOCUMENT_POSITION_FOLLOWING){ex.after(g0);nextMoved=true;}}}}
   if(nextMoved||!box.querySelector(".quest.next")){const cand=[...box.querySelectorAll(".qgroup .quest[data-q]")].find(c=>!c.classList.contains("qtlock")&&!c.classList.contains("done")&&!c.classList.contains("min"));
     if(cand&&!cand.classList.contains("next")){cand.classList.add("next");const nx=document.createElement("div");nx.className="nextlbl";nx.textContent="PRÓXIMA";cand.prepend(nx);}}}
 {const _r=render;render=function(){_r.apply(this,arguments);try{qtTidy();}catch(e){}};}

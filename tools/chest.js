@@ -58,7 +58,7 @@ function bxOpen(){if($("bxModal"))return;const c=bxSt();const tk=todayKey();if(c
   if(!c.roll[tk]){c.roll[tk]=bxRoll();for(const k in c.roll)if(k<tk)delete c.roll[k];save();}
   const rw=c.roll[tk];const tier=rw.tier||0;
   const m=bxEl("div","sysmodal bxmodal");m.id="bxModal";m.setAttribute("role","dialog");m.setAttribute("aria-modal","true");m.setAttribute("aria-label","Baú do dia");
-  const card=bxEl("div","card bxcard");card.append(bxEl("div","tag","[ SISTEMA ] BAÚ DO DIA"),bxEl("h3",null,"Dia fechado. "+BX_TIER[tier][0]+" liberado."));
+  const card=bxEl("div","card bxcard");card.append(bxEl("div","tag","[ SISTEMA ] BAÚ DO DIA"),bxEl("h3",null,BX_TIER[tier][0]+" aberto"));
   const hint=bxEl("p","sm muted bxhint",tier<2?"Sequência de "+(tier?7:3)+" dias melhora o baú.":"Sequência de 7+ dias: chance maior de item lendário.");
   const btn=bxEl("button","bxbtn t"+tier);btn.type="button";btn.innerHTML=bxArt(tier);btn.setAttribute("aria-label","Abrir o baú");
   const tap=bxEl("div","bxtap",bxMotion()?"Toque 3 vezes para abrir":"Toque para abrir");
