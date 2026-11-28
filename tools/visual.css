@@ -30,3 +30,5 @@ a:focus-visible,summary:focus-visible,[role=button]:focus-visible,select:focus-v
 #quick button.go.big{background:linear-gradient(180deg,rgba(0,212,255,.34),rgba(0,212,255,.14));font-weight:600;letter-spacing:.02em;border-radius:6px}
 /* 9. Chamada "???" das Lendárias em Hoje: faixa dourada à esquerda, lê como prêmio, não como aviso */
 .tpline.tplock{background:linear-gradient(90deg,rgba(245,197,66,.12),rgba(245,197,66,0) 55%),var(--panel)}
+/* 10. Uma tela, um foco: a faixa do chefão fica só em Hoje (em Progresso o chefão já tem painel próprio); nas outras abas sobra só a linha do [SISTEMA] */
+body[data-tab]:not([data-tab=hoje]) .wrap>#tbStrip{display:none}
