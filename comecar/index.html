@@ -6343,11 +6343,15 @@ function smRecDone(){return !!smSt().rec[smTk()];}
 function smRecClaim(){if(!smRecNeeded()||smRecDone())return false;const y=smDay(-1);prog.rest=prog.rest||{};prog.rest[y]="rec";smSt().rec[smTk()]=y;
   addXP({q:"rec:"+smTk(),kind:"full",xp:SM_REC,stat:"foco"},"🔥 Sequência salva. +"+SM_REC+" XP de recuperação.");return true;}
 // ---- quem é a próxima ----
+// Sistema = "faça isto AGORA": período atual, depois "qualquer hora", depois o que ficou de um período que já passou
+// (ainda dá para fazer, sem castigo) e só no fim o que é de um período que ainda não chegou (ex.: "Deitar até 23h" às 12h30).
+// A lista de Hoje segue a ordem do slotSort; aqui só muda a missão que o Sistema oferece.
+function smSlotRank(q,cur){const r=slotRank(q,cur);return r===9?4:r>=2?5+r:r;}
 function smCands(){const now=Date.now(),s=smSt(),e=smEnergy();
   let L=todaysQuests().filter(q=>!smDone(q)&&smLocked(q)==null&&!((s.snz[q.id]||0)>now)&&!/^(s_fech|q_fech)$/.test(q.id));
   if(e==="baixa"){const m=L.filter(q=>q.main);if(m.length)L=m;}
   const cur=slotNow(),wk=slotWakeHour()&&L.some(q=>!slotHeavy(q));
-  const w=q=>(wk&&slotHeavy(q)?100000:0)+slotRank(q,cur)*1000+(q.main?0:q.once?1:2)*100+(e==="baixa"?(q.xp||0):0);
+  const w=q=>(wk&&slotHeavy(q)?100000:0)+smSlotRank(q,cur)*1000+(q.main?0:q.once?1:2)*100+(e==="baixa"?(q.xp||0):0);
   return L.map((q,i)=>[q,i]).sort((a,b)=>w(a[0])-w(b[0])||a[1]-b[1]).map(x=>x[0]);}
 let smIdx=0,smQ=null,smIv=null,smEnd=0;
 function smPick(){const L=smCands();if(!L.length)return null;smIdx=smIdx%L.length;return L[smIdx];}
