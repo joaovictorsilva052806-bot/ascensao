@@ -6258,6 +6258,17 @@ function smAuto(n){n=n||0;try{if(!cfg||cfg.blank||smSt().off||!smAutoOk())return
 document.addEventListener("keydown",e=>{if(e.key==="Escape"&&$("smSheet")&&!$("smSheet").hidden)smClose();});
 document.addEventListener("visibilitychange",()=>{if(!document.hidden)setTimeout(smAuto,1200);});
 setTimeout(()=>{try{smBar();}catch(e){}smAuto();},1800);
+// ---- uma só "próxima" na tela (28/11): a linha do [SISTEMA] no cartão e o selo PRÓXIMA da lista seguem a mesma escolha da barra ----
+// Antes eram 3 regras (só principais na ordem da lista, 1ª liberada da lista, e a do Sistema com hora/energia/adiadas): às 23h o cartão
+// dizia "Bloco de estudo" e a barra "Deitar até 23h". Não grava nada; sem escolha do Sistema, fica tudo como era.
+function smNext(){try{return cfg&&!cfg.blank?smPick():null;}catch(e){return null;}}
+function smMark(){const q=smNext();if(!q)return;const c=document.querySelector('#quests .quest[data-q="'+q.id+'"]:not(.qtlock):not(.done):not(.min)');if(!c||c.classList.contains("next"))return;
+  for(const o of document.querySelectorAll("#quests .quest.next")){o.classList.remove("next");const l=o.querySelector(".nextlbl");if(l)l.remove();}
+  c.classList.add("next");const l=smEl("div","nextlbl","PRÓXIMA");c.prepend(l);}
+{const _r=render;render=function(){_r.apply(this,arguments);try{smMark();}catch(e){}};}
+setTimeout(()=>{try{smMark();}catch(e){}if(typeof sysLine!=="function")return;const _sl=sysLine;sysLine=function(){const t=_sl.apply(this,arguments);try{const q=smNext();if(!q)return t;const nm=smName(q);
+  if(/Próxima missão(?: libera às \d+h)?: /.test(t))return t.replace(/Próxima missão(?: libera às \d+h)?: .*$/,"Próxima missão: "+nm+".");
+  if(/Sugestão: /.test(t))return t.replace(/Sugestão: .*$/,"Sugestão: "+(q.minTitle?nm+" (mínimo: "+q.minTitle+")":nm)+". O mínimo já vale.");}catch(e){}return t;};},0);
 
 // ---------- Foco com mais utilidade: missão do Sistema, mais tempos, barra de progresso na sala, estacionamento de distrações,
 // reflexão no fim do bloco e mapa de calor de 4 semanas ----------
