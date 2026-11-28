@@ -3559,15 +3559,19 @@ const DUN_NEED=5,DUN_XP=50;
 function dunWeek(){const d=new Date();d.setHours(0,0,0,0);d.setDate(d.getDate()-((d.getDay()+6)%7));return d;}
 function dunFloor(dt){const k=dkey(dt);if(cfg&&cfg.startDate&&k<cfg.startDate)return "pre";if(isRest(k))return "rest";const L=(prog.log[k]||[]).filter(e=>!/^(ach|checkin|tip|dun):/.test(String(e.q)));const ms=mainsFor(dt);
   if(ms.length?ms.every(q=>L.some(e=>e.q===q.id)):L.length>0)return "ok";return k<todayKey()?"miss":k===todayKey()?"now":"lock";}
-function renderDun(){const box=$("dunFloors");if(!box)return;const w=dunWeek(),wk=dkey(w);let n=0,pre=0;box.textContent="";const DN=["seg","ter","qua","qui","sex","sáb","dom"];
-  for(let i=0;i<7;i++){const d=new Date(w);d.setDate(w.getDate()+i);const st=dunFloor(d);if(st==="ok"||st==="rest")n++;if(st==="pre")pre++;const c=document.createElement("div");c.className=st;
-    const b=document.createElement("b");b.textContent=st==="pre"?"·":st==="ok"?"✓":st==="rest"?"☾":st==="miss"?"✗":st==="now"?"⚔":"🔒";c.append(b,document.createTextNode(DN[i]));box.append(c);}
+// leitor de tela: a grade é uma lista e cada andar diz o dia e o estado por extenso (o símbolo fica escondido dele)
+const DUN_DIA=["segunda","terça","quarta","quinta","sexta","sábado","domingo"],DUN_EST={ok:"limpo",rest:"descanso, andar protegido",miss:"não limpo",now:"hoje, em aberto",lock:"ainda não chegou",pre:"antes do seu começo"};
+function renderDun(){const box=$("dunFloors");if(!box)return;const w=dunWeek(),wk=dkey(w);let n=0,pre=0;box.textContent="";box.setAttribute("role","list");box.setAttribute("aria-label","Andares da semana");const DN=["seg","ter","qua","qui","sex","sáb","dom"];
+  for(let i=0;i<7;i++){const d=new Date(w);d.setDate(w.getDate()+i);const st=dunFloor(d);if(st==="ok"||st==="rest")n++;if(st==="pre")pre++;const c=document.createElement("div");c.className=st;c.setAttribute("role","listitem");c.setAttribute("aria-label",DUN_DIA[i]+": "+DUN_EST[st]);
+    const b=document.createElement("b");b.setAttribute("aria-hidden","true");b.textContent=st==="pre"?"·":st==="ok"?"✓":st==="rest"?"☾":st==="miss"?"✗":st==="now"?"⚔":"🔒";const t=document.createElement("span");t.setAttribute("aria-hidden","true");t.textContent=DN[i];c.append(b,t);box.append(c);}
   const got=Object.keys(prog.log).some(k=>k>=wk&&(prog.log[k]||[]).some(e=>e.q==="dun:"+wk));
   const need=Math.max(1,Math.min(DUN_NEED,7-pre-1));renderDun.need=need;$("dunCount").textContent=n+"/"+need+" andares";
   $("dunOpen").hidden=got||n<need;
   $("dunText").textContent=got?"Baú aberto. A masmorra renasce na segunda.":n>=need?"Masmorra vencida! Abra o baú.":"Andar limpo = todas as principais do dia (o mínimo vale). Descanso protege o andar. Limpe "+need+" para abrir o baú: +"+DUN_XP+" XP.";}
 $("dunOpen").addEventListener("click",()=>{const wk=dkey(dunWeek());if(Object.keys(prog.log).some(k=>(prog.log[k]||[]).some(e=>e.q==="dun:"+wk)))return;
-  addXP({q:"dun:"+wk,kind:"dun",xp:DUN_XP,stat:"foco",bonus:0,t:new Date().toISOString()},"");sysPop("MASMORRA VENCIDA","Baú aberto: +"+DUN_XP+" XP","Cinco andares numa semana. Isso é constância de verdade. A próxima masmorra abre na segunda.");});
+  addXP({q:"dun:"+wk,kind:"dun",xp:DUN_XP,stat:"foco",bonus:0,t:new Date().toISOString()},"");const nd=renderDun.need||DUN_NEED;
+  // quem começou no meio da semana precisa de menos andares (need < 5): o texto conta os andares de verdade
+  sysPop("MASMORRA VENCIDA","Baú aberto: +"+DUN_XP+" XP",nd>=DUN_NEED?"Cinco andares numa semana. Isso é constância de verdade. A próxima masmorra abre na segunda.":(nd===1?"1 andar":nd+" andares")+" já na sua 1ª semana. Bom começo. A próxima masmorra abre na segunda, com 5 andares.");});
 
 // ---------- Aviso diário do Sistema: vai pela agenda do celular (arquivo .ics com todos os lembretes) ----------
 const SYSTIP_KEY=document.getElementById("o_go")?"asc-"+"u-systip":"ascensao-systip";
