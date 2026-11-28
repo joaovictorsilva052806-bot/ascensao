@@ -432,6 +432,9 @@ button.big{padding:16px;font-size:1.05rem}
 .qsync{font-family:var(--f-mono);font-size:.68rem;letter-spacing:.2em;color:var(--accent);text-align:right;margin-top:-8px;min-height:1em}
 .quick.waking .qbar,.quick.waking .qsync{visibility:hidden}
 @media (prefers-reduced-motion:reduce){.qorb,.qtype .cur::after{animation:none}.qwake{transition:none}}
+
+.qerr{margin:6px 2px 0;font-size:14px;line-height:1.35;color:#ffb4a8}.qerr[hidden]{display:none}
+#quick input[aria-invalid=true],#quick input[aria-invalid=true]:focus{border-color:#ff8a7a!important;box-shadow:0 0 0 2px rgba(255,138,122,.35)}
 #betaTip,#bossPanel{display:none!important}
 /* ---------- Segredos ---------- */
 .sectitle{font-family:var(--f-hud,monospace);font-size:.68rem;letter-spacing:.12em;color:var(--gold);margin:-2px 0 2px;text-shadow:0 0 8px rgba(242,193,78,.35)}
@@ -3519,7 +3522,7 @@ function qGo(n){qStep=n;for(const s of document.querySelectorAll("#quick .qstep"
 function qBtns(id,items,cb){const box=$(id);box.textContent="";for(const [v,l] of items){const b=document.createElement("button");b.type="button";b.textContent=(Q_ICON[v]||Q_FOC_ICON[v]||"")+" "+l;b.dataset.v=v;b.addEventListener("click",()=>cb(v,b));box.append(b);}}
 function qFocus(){const minor=qData.age==="kid"||qData.age==="teen";const pref=(OCC_SET[qData.occ]||{}).focus||[];
   const order=FOCI.map(x=>x[0]).sort((a,b)=>(pref.includes(b)-pref.includes(a)));const list=order.map(v=>FOCI.find(x=>x[0]===v)).filter(x=>!(minor&&(x[0]==="remedio"||x[0]==="carreira"))).slice(0,8);
-  qBtns("q_focus",list,(v,b)=>{const on=[...$("q_focus").querySelectorAll(".on")];if(!b.classList.contains("on")&&on.length>=3){on[0].classList.remove("on");}b.classList.toggle("on");});
+  qBtns("q_focus",list,(v,b)=>{const on=[...$("q_focus").querySelectorAll(".on")];if(!b.classList.contains("on")&&on.length>=3){on[0].classList.remove("on");}b.classList.toggle("on");if($("q_goalErr"))qErr($("q_goal"),"");});
   for(const b of $("q_focus").children)if(pref.slice(0,2).includes(b.dataset.v))b.classList.add("on");
   $("q_goal").placeholder=minor?"Ou escreva a sua (ex.: passar de ano)":"Ou escreva a sua (ex.: emprego novo)";}
 function qPermSeen(){try{return !!localStorage.getItem("asc-u-perm");}catch(e){return true;}}
@@ -3542,12 +3545,18 @@ $("q_perm").addEventListener("click",async()=>{let ok=false;try{if(navigator.sto
   $("qPerm").hidden=true;$("quick").classList.remove("waking");qGo(0);});
 // 1ª abertura: sem slides de apresentação, direto para o jogo (a apresentação continua em Mais).
 {const _showIntro=showIntro;showIntro=function(only){if(!only&&!(cfg&&!cfg.blank)){openQuick();return;}return _showIntro(only);};}
-function qNameNext(){const n=$("q_name").value.trim();if(!n){$("q_name").focus();$("q_name").classList.add("shake");setTimeout(()=>$("q_name").classList.remove("shake"),400);return;}qData.name=n.replace(/[<>]/g,"").slice(0,24);qGo(1);}
+// Campo vazio: além do tremor, um aviso curto em texto (aparece com reduce-motion e é lido pelo leitor de tela).
+function qErr(inp,msg){if(!inp)return;let e=document.getElementById(inp.id+"Err");
+  if(!e){e=document.createElement("p");e.id=inp.id+"Err";e.className="qerr";e.setAttribute("aria-live","polite");inp.insertAdjacentElement("afterend",e);
+    inp.addEventListener("input",()=>qErr(inp,""));}
+  e.textContent=msg;e.hidden=!msg;
+  if(msg){inp.setAttribute("aria-invalid","true");inp.setAttribute("aria-describedby",e.id);}else{inp.removeAttribute("aria-invalid");inp.removeAttribute("aria-describedby");}}
+function qNameNext(){const n=$("q_name").value.trim();if(!n){$("q_name").focus();qErr($("q_name"),"Digite um nome ou apelido para continuar.");$("q_name").classList.add("shake");setTimeout(()=>$("q_name").classList.remove("shake"),400);return;}qErr($("q_name"),"");qData.name=n.replace(/[<>]/g,"").slice(0,24);qGo(1);}
 $("q_n0").addEventListener("click",qNameNext);$("q_name").addEventListener("keydown",e=>{if(e.key==="Enter"){e.preventDefault();qNameNext();}});
 qBtns("q_age",AGE,v=>{qData.age=v;qGo(2);});
 qBtns("q_occ",OCC,v=>{qData.occ=v;qGo(3);});
 $("q_done").addEventListener("click",()=>{qData.focus=[...$("q_focus").querySelectorAll(".on")].map(b=>b.dataset.v);qData.goal=$("q_goal").value.trim().replace(/[<>]/g,"").slice(0,60);
-  if(!qData.focus.length&&!qData.goal){$("q_goal").focus();return;}
+  if(!qData.focus.length&&!qData.goal){$("q_goal").focus();qErr($("q_goal"),"Toque em 1 foco acima ou escreva a sua meta.");return;}qErr($("q_goal"),"");
   qGo(4);const msgs=["Lendo sua rotina…","Calibrando dificuldade…","Forjando suas missões…"];let i=0;const t=setInterval(()=>{i++;if(msgs[i])$("q_load").textContent=msgs[i];},450);
   setTimeout(()=>{clearInterval(t);
     $("o_name").value=qData.name;pickAge(qData.age,true);pickOcc(qData.occ,true);
