@@ -1,4 +1,4 @@
-const C="ascensao-v121";const FILES=["./","index.html","manifest.webmanifest","icon-192.png","icon-512.png","icon-180.png"];
+const C="ascensao-v122";const FILES=["./","index.html","manifest.webmanifest","icon-192.png","icon-512.png","icon-180.png"];
 try{importScripts("sw-push.js");}catch(e){} // aviso diário com o app fechado (Web Push)
 self.addEventListener("install",e=>{e.waitUntil(caches.open(C).then(c=>c.addAll(FILES)));self.skipWaiting();});
 self.addEventListener("activate",e=>{e.waitUntil(caches.keys().then(ks=>Promise.all(ks.filter(k=>k!==C&&k!=="asc-fonts").map(k=>caches.delete(k)))));self.clients.claim();});
