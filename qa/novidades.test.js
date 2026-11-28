@@ -17,7 +17,7 @@ for(const [route,pre] of [['comecar/','asc-u-'],['','ascensao-']]){
   ok('/'+route+' antigo: sozinha na tela',others===0,'outros modais: '+others);
   await p.keyboard.press('Escape');await p.waitForTimeout(300);ok('/'+route+' Esc fecha',!(await vis(p)));
   ok('/'+route+' cartão antigo de Novidades aposentado',await p.evaluate(()=>{const n=document.getElementById('newsCard');return !n||n.hidden;}));
-  ok('/'+route+' grava versão',await p.evaluate(k=>localStorage.getItem(k),pre+'ver')==='1.0.0');
+  ok('/'+route+' grava versão',await p.evaluate(k=>localStorage.getItem(k),pre+'ver')==='1.1.0');
   await p.reload();await p.waitForTimeout(6000);ok('/'+route+' não volta ao recarregar',!(await vis(p)));
   const foot=await p.evaluate(()=>{const f=document.getElementById('vsFoot');return f?[...f.querySelectorAll('a')].map(a=>a.getAttribute('href')).join(','):'';});
   ok('/'+route+' rodapé com Privacidade e Termos',foot===(route?'../privacidade/,../termos/':'./privacidade/,./termos/'),foot);
