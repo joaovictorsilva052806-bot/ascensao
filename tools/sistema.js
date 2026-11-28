@@ -130,7 +130,15 @@ setTimeout(()=>{try{smBar();}catch(e){}smAuto();},1800);
 function smNext(){try{return cfg&&!cfg.blank?smPick():null;}catch(e){return null;}}
 function smMark(){const q=smNext();if(!q)return;const c=document.querySelector('#quests .quest[data-q="'+q.id+'"]:not(.qtlock):not(.done):not(.min)');if(!c||c.classList.contains("next"))return;
   for(const o of document.querySelectorAll("#quests .quest.next")){o.classList.remove("next");const l=o.querySelector(".nextlbl");if(l)l.remove();}
-  c.classList.add("next");const l=smEl("div","nextlbl","PRÓXIMA");c.prepend(l);}
+  c.classList.add("next");const l=smEl("div","nextlbl","PRÓXIMA");c.prepend(l);smLift(c);}
+// a PRÓXIMA nunca fica escondida (28/11 14h23): no dia 1 o Sistema escolhia "10 min na minha missão" (tarefa de qualquer hora),
+// mas ela morava em "Extras de hoje", fechado: a barra dizia ACEITAR e a lista não mostrava o cartão. Agora o cartão sobe para
+// o topo das tarefas de hoje (só na tela; nada é gravado). O contador do "Extras" acompanha e o grupo some se ficar vazio.
+function smLift(c){const d=c.parentElement;if(!d||d.tagName!=="DETAILS"||d.open)return;const box=$("quests");const g=box&&box.querySelector(":scope > .qgroup");
+  if(!g){d.open=true;return;}
+  // à noite o "Fechar o dia" liberado segue no topo (regra do slot); a PRÓXIMA vem logo abaixo dele
+  const f=g.querySelector(":scope > .quest");if(f&&/^(s_fech|q_fech)$/.test(f.dataset.q)&&!f.classList.contains("qtlock"))f.after(c);else g.prepend(c);const n=d.querySelectorAll(":scope > .quest").length;const s=d.querySelector(":scope > summary");
+  if(!n)d.remove();else if(s)s.textContent=s.textContent.replace(/\(\d+\)/,"("+n+")");}
 {const _r=render;render=function(){_r.apply(this,arguments);try{smMark();}catch(e){}};}
 setTimeout(()=>{try{smMark();}catch(e){}if(typeof sysLine!=="function")return;const _sl=sysLine;sysLine=function(){const t=_sl.apply(this,arguments);try{const q=smNext();if(!q)return t;const nm=smName(q);
   if(/Próxima missão(?: libera às \d+h)?: /.test(t))return t.replace(/Próxima missão(?: libera às \d+h)?: .*$/,"Próxima missão: "+nm+".");

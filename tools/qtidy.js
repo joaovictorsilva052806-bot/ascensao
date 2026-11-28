@@ -16,7 +16,9 @@ const QT_SHORT={s_fech:"🌙 Fechar o dia",q_fech:"🌙 Fechar o dia"};
 const QT_SHORT_RE=[[/^antes de dormir/i,"🌙 Fechar o dia"],[/^fechamento/i,"🌙 Fechar o dia"],[/trabalhar 90 min/i,"Bloco de foco: 90 min"],[/oferecer desenho/i,"Oferecer desenho técnico"],[/abordar 3 corretores/i,"Abordar 3 corretores"]];
 // título longo: corta o parêntese ou o que vem depois de ":" (o texto inteiro fica nos detalhes)
 function qtAuto(t){t=String(t||"");if(t.length<=34)return null;let s=t.replace(/\s*\([^)]*\)/g,"").trim();if(s.length>40&&t.indexOf(": ")>8){const c=t.slice(0,t.indexOf(": "));if(!/\s(para|de|do|da|dos|das|com|em|no|na|a|o|e|ou|pra|por|sobre)$/i.test(c))s=c;}return s&&s!==t&&s.length<t.length?s:null;}
-function qtShort(q){return q.short||QT_SHORT[q.id]||(String(q.title).length>46&&QT_SHORT_RE.find(r=>r[0].test(q.title))||[])[1]||qtAuto(q.title);}
+// "10 min na minha missão: <meta>" ocupava 2 linhas no topo de Hoje (28/11 14h23); o texto inteiro segue nos detalhes
+function qtMeta(q){const m=/^10 min na minha missão: (.+)$/.exec(String(q.title||""));return m?"10 min · "+m[1]:null;}
+function qtShort(q){return q.short||QT_SHORT[q.id]||qtMeta(q)||(String(q.title).length>46&&QT_SHORT_RE.find(r=>r[0].test(q.title))||[])[1]||qtAuto(q.title);}
 function qtTidy(){const box=$("quests");if(!box)return;let nextMoved=false;
   for(const c of box.querySelectorAll(".quest[data-q]")){const q=((cfg&&cfg.quests)||[]).find(x=>x.id===c.dataset.q);if(!q)continue;
     const nm=c.querySelector(".t > div:not(.xp)");const x=c.querySelector(".t .xp");
