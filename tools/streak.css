@@ -3,3 +3,6 @@
 .pill.fire.risk{filter:none;opacity:1;border-color:#ff6b4a;color:#ffd0c2;animation:strisk 1.6s ease-in-out infinite}
 @keyframes strisk{50%{box-shadow:0 0 16px rgba(255,107,74,.6)}}
 @media (prefers-reduced-motion:reduce){.pill.fire.risk{animation:none;box-shadow:0 0 0 2px rgba(255,107,74,.6)}}
+
+/* volta no dia seguinte: o fogo fica aceso (não cinza) até as 18h, chamando a 1ª tarefa */
+.pill.fire.back{filter:none;opacity:1;border-color:#ffb020;color:#ffe2a8}
