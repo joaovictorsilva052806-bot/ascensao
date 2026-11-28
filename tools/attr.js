@@ -102,7 +102,7 @@ function atBonus(q,e){const k=atCls();if(!k||!e)return 0;const as=atOf(q,q&&q.st
     atCheckUp();}catch(e){}};}
 // --- aviso quando um atributo sobe de nível ---
 function atCheckUp(){const s=atSt();const l=atLevels();if(!Object.keys(s.seen).length){s.seen=l;save();return;}let ch=false;
-  for(const a of AT_IDS){if(l[a]>(s.seen[a]||1)){const x=AT_BY[a];try{sysPop("ATRIBUTO",x[1]+" "+x[2]+" nível "+l[a],"Você treinou "+x[2]+" ("+x[4]+"). Continue que o radar cresce.");}catch(e){}s.seen[a]=l[a];ch=true;}}if(ch)save();}
+  for(const a of AT_IDS){if(l[a]>(s.seen[a]||1)){const x=AT_BY[a];try{if(ascQuietD1())toast(x[1]+" "+x[2]+" nível "+l[a]);else sysPop("ATRIBUTO",x[1]+" "+x[2]+" nível "+l[a],"Você treinou "+x[2]+" ("+x[4]+"). Continue que o radar cresce.");}catch(e){}s.seen[a]=l[a];ch=true;}}if(ch)save();}
 // --- radar (SVG) ---
 function atRadar(lv,size,col){const n=8,cx=50,cy=50,R=36;const mx=Math.max(5,...AT_IDS.map(a=>lv[a]||1));const pt=(i,r)=>{const t=-Math.PI/2+i*2*Math.PI/n;return [cx+Math.cos(t)*r,cy+Math.sin(t)*r];};
   let g="";for(const f of [.25,.5,.75,1])g+='<polygon points="'+AT_IDS.map((a,i)=>pt(i,R*f).map(v=>v.toFixed(1)).join(",")).join(" ")+'" fill="none" stroke="#1f2e4d" stroke-width=".6"/>';

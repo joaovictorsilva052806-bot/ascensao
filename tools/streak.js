@@ -19,6 +19,7 @@ const ST_TXT={1:["Sequência iniciada 🔥","Dia 1. Volte amanhã e vira 2. Uma 
 function stMilestone(){if(!cfg||cfg.blank)return;const s=shieldSt();const n=streakDays();for(const m in s.ms)if(+m>n)delete s.ms[m];if(!stAct(todayKey()))return;
   let hit=0;for(const m of ST_MS)if(m<=n&&!s.ms[m]){s.ms[m]=todayKey();hit=m;if(m>=7&&s.n<ST_MAX)s.n++;}
   if(!hit)return;save();const t=ST_TXT[hit]||[hit+" dias seguidos 🔥"+(s.n?" 🛡️":""),"Marco de "+hit+" dias. Pouca gente chega aqui. Escudos guardados: "+s.n+" de "+ST_MAX+"."];
+  if(hit===1&&ascQuietD1()){toast("🔥 "+t[0]+". Volte amanhã e vira 2.");return;}
   sysPop("MARCO DE SEQUÊNCIA",t[0],t[1],null,"Continuar");}
 function stRisk(){const h=new Date().getHours();return h>=18&&!stAct(todayKey())&&!isRest(todayKey())&&streakDays()>0;}
 {const _rp=renderPills;renderPills=function(){_rp();const st=$("streak");if(!st)return;const s=shieldSt();

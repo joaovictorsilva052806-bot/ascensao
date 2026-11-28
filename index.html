@@ -1678,6 +1678,9 @@ body:not([data-tab=lenda]) .wrap>section[data-tab=lenda]{display:none}
 /* 1º uso enxuto (tools/tasks.js tpFresh) */
 body.asc-fresh #gtHero,body.asc-fresh #chPanel{display:none!important}
 .tpline.tplock .tplgo{font-size:.85rem;white-space:nowrap}
+/* QA 60 s, P1-5: no 1º uso o 1º ▶ cabe na 1ª tela do iPhone SE. Antes da 1ª missão, sai o que repete a barra do Sistema
+   (linha do Sistema e "Ficha do personagem"), a linha "Nenhuma tarefa ainda" e o atalho da Classe, se ainda não tem (ela fica para o dia 2). Só no dia 1 do perfil. Voltam sozinhos depois da 1ª missão. */
+body.asc-d1 #sysLine,body.asc-d1 #hrTog,body.asc-d1 #dayxp,body.asc-d1nc #clsPill{display:none!important}
 /* código curto da Guilda (tools/codigo.js) */
 .kdbox{margin-top:10px;padding-top:10px;border-top:1px dashed rgba(255,255,255,.14);display:flex;flex-direction:column;gap:6px}
 .kdrow{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
@@ -3426,6 +3429,10 @@ $("adjLight").addEventListener("click",()=>{const q=adjQ&&(cfg.quests||[]).find(
 $("adjUnmain").addEventListener("click",()=>{const q=adjQ&&(cfg.quests||[]).find(x=>x.id===adjQ.id);if(!q)return;delete q.main;cfg.startDate=todayKey();edSave();adjSnooze(q.id,7);render();toast("Agora ela é extra: sem dívida se ficar para depois.");});
 $("adjNo").addEventListener("click",()=>{if(adjQ)adjSnooze(adjQ.id,7);$("adjCard").hidden=true;});
 
+// Dia 1 calmo (QA dos 60 s, P1-1): no 1º dia do perfil, num celular de verdade, a Classe e o Aviso diário não abrem sozinhos.
+// Ficam para o dia 2 (a Classe segue a 1 toque no painel). Robôs de teste (navigator.webdriver) mantêm o fluxo antigo.
+function ascDay1(){try{const tk=todayKey();if(!cfg||cfg.startDate!==tk)return false;const L=prog&&prog.log||{};return !Object.keys(L).some(k=>k<tk&&(L[k]||[]).length);}catch(e){return false;}}
+function ascQuietD1(){try{if(navigator.webdriver&&localStorage.getItem("asc-d1-qa")!=="1")return false;}catch(e){}return ascDay1();}
 // ---------- RPG da vida real: atributos com nível, habilidades, classe, baú, treino diário ----------
 const RPG_IC={foco:"🎯",vendas:"🏁",mente:"🧠",corpo:"💪"};
 const SKILLS={
@@ -3506,7 +3513,7 @@ function renderRPG(){renderDun();sysTipUI();const r=rpgState();const st=statXP()
   else{let ch=false;for(const k in STATS){const was=r.seen[k]||1;if(cur[k]>was){for(const [lvN,nm,tx] of SKILLS[k])if(lvN>was&&lvN<=cur[k]){if(cfg&&cfg.startDate===todayKey())toast("✨ Habilidade nova: "+nm+" ("+STATS[k]+" nv "+lvN+")");else sysPop("HABILIDADE DESBLOQUEADA",nm,STATS[k]+" nível "+lvN+". "+tx);}r.seen[k]=cur[k];ch=true;}}if(ch)try{save();}catch(e){}}
   if(typeof r.cls==="string")r.cls=null;
   if(r.cls){const t=lv>=20?2:lv>=10?1:0;if(t>(r.evo||0)){r.evo=t;sysPop("EVOLUÇÃO DE CLASSE",clsName(r.cls,lv),"Nível "+lv+". Sua classe evoluiu. Continue no seu ritmo.");}}
-  else if(cfg&&!cfg.blank&&(!$("onb")||$("onb").hidden)&&!clsOpen&&!sysQ.length)setTimeout(()=>{if(!sysQ.length)openCls();},400);
+  else if(cfg&&!cfg.blank&&(!$("onb")||$("onb").hidden)&&!clsOpen&&!sysQ.length&&!ascQuietD1())setTimeout(()=>{if(!sysQ.length)openCls();},400);
   if(!r.rew)r.rew=[{t:"Um episódio da série",c:8},{t:"Lanche favorito",c:12},{t:"1 hora de jogo sem culpa",c:15}];
   const sl=$("sysLine");if(sl)typeSys(sl,sysLine());
   $("rpgCls").textContent=r.cls?clsName(r.cls,lv):"";
@@ -4030,6 +4037,7 @@ const ST_TXT={1:["Sequência iniciada 🔥","Dia 1. Volte amanhã e vira 2. Uma 
 function stMilestone(){if(!cfg||cfg.blank)return;const s=shieldSt();const n=streakDays();for(const m in s.ms)if(+m>n)delete s.ms[m];if(!stAct(todayKey()))return;
   let hit=0;for(const m of ST_MS)if(m<=n&&!s.ms[m]){s.ms[m]=todayKey();hit=m;if(m>=7&&s.n<ST_MAX)s.n++;}
   if(!hit)return;save();const t=ST_TXT[hit]||[hit+" dias seguidos 🔥"+(s.n?" 🛡️":""),"Marco de "+hit+" dias. Pouca gente chega aqui. Escudos guardados: "+s.n+" de "+ST_MAX+"."];
+  if(hit===1&&ascQuietD1()){toast("🔥 "+t[0]+". Volte amanhã e vira 2.");return;}
   sysPop("MARCO DE SEQUÊNCIA",t[0],t[1],null,"Continuar");}
 function stRisk(){const h=new Date().getHours();return h>=18&&!stAct(todayKey())&&!isRest(todayKey())&&streakDays()>0;}
 {const _rp=renderPills;renderPills=function(){_rp();const st=$("streak");if(!st)return;const s=shieldSt();
@@ -4864,7 +4872,7 @@ function avClsNameId(id){try{const x=CLS_REAL.concat(CLS_FANT).find(y=>y[0]===id
 function avBusy(){return document.body.classList.contains("insm")||[...document.querySelectorAll(".sysmodal,.mssheet,.smsheet")].some(m=>!m.hidden&&m.getClientRects().length)||($("levelup")&&!$("levelup").hidden)||(()=>{const o=$("onb");return !!(o&&!o.hidden&&o.offsetParent);})();}
 let avAskT=null,avAsked=false;
 // automação (testes) não recebe os convites automáticos; gente de verdade recebe
-function avAskNow(){try{if(avAsked||!cfg||cfg.blank||navigator.webdriver)return;if(avSt().ok||prog.avAsk){avAsked=true;clsNotice();return;}if(avBusy()){avAskSoon(4000);return;}avAsked=true;avMaker(true);}catch(e){}}
+function avAskNow(){try{if(avAsked||!cfg||cfg.blank||navigator.webdriver||ascQuietD1())return;if(avSt().ok||prog.avAsk){avAsked=true;clsNotice();return;}if(avBusy()){avAskSoon(4000);return;}avAsked=true;avMaker(true);}catch(e){}}
 function avAskSoon(ms){if(avAsked||avAskT)return;avAskT=setTimeout(()=>{avAskT=null;avAskNow();},ms||1500);}
 // ---- Galeria de classes + regra de troca ----
 // Regra: 1ª escolha grátis e troca livre nas primeiras 24 h. Depois, 1 troca a cada 30 dias, ou usando um 📜 Pergaminho de Renascimento
@@ -5081,6 +5089,10 @@ function qtTidy(){const box=$("quests");if(!box)return;let nextMoved=false;
     if(c.classList.contains("next")&&lk!=null){c.classList.remove("next");const l=c.querySelector(".nextlbl");if(l)l.remove();nextMoved=true;}}
   // travadas vão para o fim da lista: o que dá para fazer agora fica em cima
   for(const g of box.querySelectorAll(".qgroup")){const L=[...g.querySelectorAll(":scope > .quest.qtlock")];L.sort((a,b)=>(qtLocked(questById(a.dataset.q))||0)-(qtLocked(questById(b.dataset.q))||0));for(const c of L)g.append(c);}
+  // grupo das principais todo travado (ex.: só "Fechar o dia", que libera à noite): desce para depois das extras liberadas
+  {const g0=box.querySelector(":scope > .qgroup");const qs=g0?[...g0.querySelectorAll(":scope > .quest")]:[];
+    if(qs.length&&qs.every(c=>c.classList.contains("qtlock"))){const ex=[...box.querySelectorAll(":scope > details")].find(d=>d.querySelector(".quest:not(.done):not(.min):not(.qtlock)"));
+      if(ex&&(g0.compareDocumentPosition(ex)&Node.DOCUMENT_POSITION_FOLLOWING)){ex.after(g0);nextMoved=true;}}}
   if(nextMoved||!box.querySelector(".quest.next")){const cand=[...box.querySelectorAll(".qgroup .quest[data-q]")].find(c=>!c.classList.contains("qtlock")&&!c.classList.contains("done")&&!c.classList.contains("min"));
     if(cand&&!cand.classList.contains("next")){cand.classList.add("next");const nx=document.createElement("div");nx.className="nextlbl";nx.textContent="PRÓXIMA";cand.prepend(nx);}}}
 {const _r=render;render=function(){_r.apply(this,arguments);try{qtTidy();}catch(e){}};}
@@ -6071,7 +6083,7 @@ function atBonus(q,e){const k=atCls();if(!k||!e)return 0;const as=atOf(q,q&&q.st
     atCheckUp();}catch(e){}};}
 // --- aviso quando um atributo sobe de nível ---
 function atCheckUp(){const s=atSt();const l=atLevels();if(!Object.keys(s.seen).length){s.seen=l;save();return;}let ch=false;
-  for(const a of AT_IDS){if(l[a]>(s.seen[a]||1)){const x=AT_BY[a];try{sysPop("ATRIBUTO",x[1]+" "+x[2]+" nível "+l[a],"Você treinou "+x[2]+" ("+x[4]+"). Continue que o radar cresce.");}catch(e){}s.seen[a]=l[a];ch=true;}}if(ch)save();}
+  for(const a of AT_IDS){if(l[a]>(s.seen[a]||1)){const x=AT_BY[a];try{if(ascQuietD1())toast(x[1]+" "+x[2]+" nível "+l[a]);else sysPop("ATRIBUTO",x[1]+" "+x[2]+" nível "+l[a],"Você treinou "+x[2]+" ("+x[4]+"). Continue que o radar cresce.");}catch(e){}s.seen[a]=l[a];ch=true;}}if(ch)save();}
 // --- radar (SVG) ---
 function atRadar(lv,size,col){const n=8,cx=50,cy=50,R=36;const mx=Math.max(5,...AT_IDS.map(a=>lv[a]||1));const pt=(i,r)=>{const t=-Math.PI/2+i*2*Math.PI/n;return [cx+Math.cos(t)*r,cy+Math.sin(t)*r];};
   let g="";for(const f of [.25,.5,.75,1])g+='<polygon points="'+AT_IDS.map((a,i)=>pt(i,R*f).map(v=>v.toFixed(1)).join(",")).join(" ")+'" fill="none" stroke="#1f2e4d" stroke-width=".6"/>';
@@ -6987,7 +6999,7 @@ setTimeout(fjUI,0);
     return [...document.querySelectorAll(".sysmodal:not([hidden]),#levelup:not([hidden]),[aria-modal='true']:not([hidden]),#fzRef:not([hidden])")].some(m=>m.getClientRects().length);};
   let tries=0,tmr=0,calm=0; // calm: a tela precisa ficar livre por 2 checagens seguidas (o baú do dia abre logo depois da fila do Sistema)
   function auto(){tmr=0;try{if(!cfg||cfg.blank)return;const s=rd();if(s.r==="sim")return;let st="";try{st=localStorage.getItem(SYSTIP)||"";}catch(e){}if(st==="1")return;
-    const n=diaN();if(n!==1&&n!==2)return;const a=s.a||{};if(a[n])return;if(n===2&&a[1]===todayKey())return;
+    const n=diaN();if(n!==1&&n!==2)return;if(n===1&&typeof ascQuietD1==="function"&&ascQuietD1())return;const a=s.a||{};if(a[n])return;if(n===2&&a[1]===todayKey())return;
     if(busy()){calm=0;if(++tries<40)tmr=setTimeout(auto,1500);return;}
     if(!calm){calm=1;tmr=setTimeout(auto,1200);return;}calm=0;tries=0;
     a[n]=todayKey();wr({a});
@@ -8193,7 +8205,9 @@ function tpLine(){let l=$("tpLine");if(!tpOn()){if(l)l.hidden=true;return;}
     b.setAttribute("aria-label","Abrir a task "+tpName(nx.T)+": passo "+(nx.i+1)+" de "+nx.T.s.length);b.addEventListener("click",()=>tpGo(nx.T.id));}
   l.append(b);}
 // 1º uso enxuto: até a 1ª missão concluída, o ranking e o Quebrar correntes esperam (aparecem sozinhos depois). Só esconde, não apaga nada.
-function tpFresh(){try{document.body.classList.toggle("asc-fresh",!!(cfg&&!cfg.blank&&cfg.quests&&cfg.quests.length)&&!tpMission());}catch(e){}}
+function tpFresh(){try{const f=!!(cfg&&!cfg.blank&&cfg.quests&&cfg.quests.length)&&!tpMission();document.body.classList.toggle("asc-fresh",f);
+  // 1ª tela enxuta no dia 1 (tools/tasks.css): mesma regra do "dia 1 calmo" (tools/rpg.js)
+  const d1=f&&typeof ascQuietD1==="function"&&ascQuietD1();document.body.classList.toggle("asc-d1",d1);document.body.classList.toggle("asc-d1nc",d1&&!rpgState().cls);}catch(e){}}
 {const _r=render;render=function(){_r.apply(this,arguments);try{tpRender();}catch(e){}try{tpLine();}catch(e){}tpFresh();};}
 setTimeout(()=>{try{tpRender();}catch(e){}try{tpLine();}catch(e){}},70);
 

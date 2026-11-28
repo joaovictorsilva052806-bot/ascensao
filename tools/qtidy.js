@@ -35,6 +35,10 @@ function qtTidy(){const box=$("quests");if(!box)return;let nextMoved=false;
     if(c.classList.contains("next")&&lk!=null){c.classList.remove("next");const l=c.querySelector(".nextlbl");if(l)l.remove();nextMoved=true;}}
   // travadas vão para o fim da lista: o que dá para fazer agora fica em cima
   for(const g of box.querySelectorAll(".qgroup")){const L=[...g.querySelectorAll(":scope > .quest.qtlock")];L.sort((a,b)=>(qtLocked(questById(a.dataset.q))||0)-(qtLocked(questById(b.dataset.q))||0));for(const c of L)g.append(c);}
+  // grupo das principais todo travado (ex.: só "Fechar o dia", que libera à noite): desce para depois das extras liberadas
+  {const g0=box.querySelector(":scope > .qgroup");const qs=g0?[...g0.querySelectorAll(":scope > .quest")]:[];
+    if(qs.length&&qs.every(c=>c.classList.contains("qtlock"))){const ex=[...box.querySelectorAll(":scope > details")].find(d=>d.querySelector(".quest:not(.done):not(.min):not(.qtlock)"));
+      if(ex&&(g0.compareDocumentPosition(ex)&Node.DOCUMENT_POSITION_FOLLOWING)){ex.after(g0);nextMoved=true;}}}
   if(nextMoved||!box.querySelector(".quest.next")){const cand=[...box.querySelectorAll(".qgroup .quest[data-q]")].find(c=>!c.classList.contains("qtlock")&&!c.classList.contains("done")&&!c.classList.contains("min"));
     if(cand&&!cand.classList.contains("next")){cand.classList.add("next");const nx=document.createElement("div");nx.className="nextlbl";nx.textContent="PRÓXIMA";cand.prepend(nx);}}}
 {const _r=render;render=function(){_r.apply(this,arguments);try{qtTidy();}catch(e){}};}

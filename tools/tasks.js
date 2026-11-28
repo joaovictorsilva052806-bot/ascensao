@@ -235,6 +235,8 @@ function tpLine(){let l=$("tpLine");if(!tpOn()){if(l)l.hidden=true;return;}
     b.setAttribute("aria-label","Abrir a task "+tpName(nx.T)+": passo "+(nx.i+1)+" de "+nx.T.s.length);b.addEventListener("click",()=>tpGo(nx.T.id));}
   l.append(b);}
 // 1º uso enxuto: até a 1ª missão concluída, o ranking e o Quebrar correntes esperam (aparecem sozinhos depois). Só esconde, não apaga nada.
-function tpFresh(){try{document.body.classList.toggle("asc-fresh",!!(cfg&&!cfg.blank&&cfg.quests&&cfg.quests.length)&&!tpMission());}catch(e){}}
+function tpFresh(){try{const f=!!(cfg&&!cfg.blank&&cfg.quests&&cfg.quests.length)&&!tpMission();document.body.classList.toggle("asc-fresh",f);
+  // 1ª tela enxuta no dia 1 (tools/tasks.css): mesma regra do "dia 1 calmo" (tools/rpg.js)
+  const d1=f&&typeof ascQuietD1==="function"&&ascQuietD1();document.body.classList.toggle("asc-d1",d1);document.body.classList.toggle("asc-d1nc",d1&&!rpgState().cls);}catch(e){}}
 {const _r=render;render=function(){_r.apply(this,arguments);try{tpRender();}catch(e){}try{tpLine();}catch(e){}tpFresh();};}
 setTimeout(()=>{try{tpRender();}catch(e){}try{tpLine();}catch(e){}},70);

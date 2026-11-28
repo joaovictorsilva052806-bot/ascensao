@@ -317,7 +317,7 @@ function avClsNameId(id){try{const x=CLS_REAL.concat(CLS_FANT).find(y=>y[0]===id
 function avBusy(){return document.body.classList.contains("insm")||[...document.querySelectorAll(".sysmodal,.mssheet,.smsheet")].some(m=>!m.hidden&&m.getClientRects().length)||($("levelup")&&!$("levelup").hidden)||(()=>{const o=$("onb");return !!(o&&!o.hidden&&o.offsetParent);})();}
 let avAskT=null,avAsked=false;
 // automação (testes) não recebe os convites automáticos; gente de verdade recebe
-function avAskNow(){try{if(avAsked||!cfg||cfg.blank||navigator.webdriver)return;if(avSt().ok||prog.avAsk){avAsked=true;clsNotice();return;}if(avBusy()){avAskSoon(4000);return;}avAsked=true;avMaker(true);}catch(e){}}
+function avAskNow(){try{if(avAsked||!cfg||cfg.blank||navigator.webdriver||ascQuietD1())return;if(avSt().ok||prog.avAsk){avAsked=true;clsNotice();return;}if(avBusy()){avAskSoon(4000);return;}avAsked=true;avMaker(true);}catch(e){}}
 function avAskSoon(ms){if(avAsked||avAskT)return;avAskT=setTimeout(()=>{avAskT=null;avAskNow();},ms||1500);}
 // ---- Galeria de classes + regra de troca ----
 // Regra: 1ª escolha grátis e troca livre nas primeiras 24 h. Depois, 1 troca a cada 30 dias, ou usando um 📜 Pergaminho de Renascimento
