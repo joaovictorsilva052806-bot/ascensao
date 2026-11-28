@@ -82,6 +82,10 @@ for(const [route,pre] of [['comecar/','asc-u'],['','ascensao']]){const tag=route
   ok(tag+' "Caiu ✓" move para recebido',/R\$ 35,50/.test(await p.textContent('#tpPanel .tpwbig'))&&!(await p.locator('#tpPanel .tpwok').count()));
   await p.evaluate(k=>{const a=JSON.parse(localStorage.getItem(k));a.shift();localStorage.setItem(k,JSON.stringify(a));},pre+'-real');
   await p.click('#tpPanel .tpchip:not([class*="t-"])');await p.waitForTimeout(200);
+  // cashback depende de compra: concluir não dá Ouro
+  {const o0=(await LS(p,pre+'-prog')).ouro;await p.evaluate(()=>{const c=document.querySelector('#tpPanel .tpm[data-tp="cashback"]');c.open=true;});await p.waitForTimeout(100);
+   for(let i=0;i<3;i++){await p.click('#tpPanel .tpm[data-tp="cashback"] .tpbtn[data-i="'+i+'"]');await p.waitForTimeout(150);}await pop(p);
+   const s2=await LS(p,pre+'-prog');ok(tag+' cashback (compra) concluído não dá Ouro',s2.ouro===o0&&!!s2.tp.cashback.f&&/nunca premia compra/.test(await p.textContent('#tpPanel .tpm[data-tp="cashback"]')),JSON.stringify({o0,o:s2.ouro}));}
   ok(tag+' meta de hoje soma o anotado hoje',/Anotado hoje: R\$ 25,50 de R\$ 50,00/.test(await p.textContent('#tpPanel .tpmeta')));
   await p.evaluate(()=>{const c=document.querySelector('#tpPanel .tpm[data-tp="cashback"]');c.open=true;});await p.waitForTimeout(100);
   await p.fill('#tpPanel .tpm[data-tp="cashback"] .tpgot input','30');await p.click('#tpPanel .tpm[data-tp="cashback"] .tpgot .tpwadd');await p.waitForTimeout(800);

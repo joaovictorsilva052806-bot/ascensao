@@ -1,6 +1,7 @@
 // ---------- Tasks Lendárias (só 18+, aba própria): spec da EVA (#22) ----------
 // O app NUNCA guarda, recebe ou repassa dinheiro. Quem paga é sempre um terceiro, direto ao jogador (comprador, plataforma).
 // O app só guia o passo a passo (3 passos), o jogador marca cada passo e ganha Ouro ao concluir (uma vez por task, valor pela raridade).
+// Task que depende de compra (buy:true, ex.: cashback) NÃO dá Ouro: o app nunca premia compra.
 // Sem link de afiliado do criador: só as páginas oficiais. Nada de Ouro/XP por convidar jogador do app. Sem ranking de dinheiro.
 // Só ADICIONA prog.tp = {id:{s:{n:dia}, f:dia}} e prog.tpwal (dia em que a Carteira abriu). A Carteira real (o que o jogador
 // anotou que recebeu) fica só no aparelho, numa chave própria FORA do prog (nunca sobe para a planilha).
@@ -20,7 +21,7 @@ const TP_L=[
   s:["Escolher 1 coisa parada e tirar 3 fotos com luz natural, mostrando defeitos se tiver.",
      "Anunciar com preço um pouco abaixo dos anúncios iguais (vende mais rápido).",
      "Vendeu: conferiu o Pix no SEU banco e só então entregou, em local público."]},
- {id:"cashback",ja:"Já tem conta? Pule o passo 1: só ative o cashback antes da próxima compra que você já ia fazer.",tier:"c",t:"🛍️ Cashback da Black Friday",pay:"De volta uma parte da compra que você já ia fazer (costuma ser 3% a 15%).",when:"⏳ Pendente em 1 a 2 dias; libera quando a loja confirma a compra.",
+ {id:"cashback",buy:true,ja:"Já tem conta? Pule o passo 1: só ative o cashback antes da próxima compra que você já ia fazer.",tier:"c",t:"🛍️ Cashback da Black Friday",pay:"De volta uma parte da compra que você já ia fazer (costuma ser 3% a 15%).",when:"⏳ Pendente em 1 a 2 dias; libera quando a loja confirma a compra.",
   warn:"Só vale para compra que você já ia fazer: não compre só pelo cashback. Abra a loja pelo app de cashback e compre no mesmo acesso, sem bloqueador de anúncio.",
   links:[["Cuponomia","https://www.cuponomia.com.br/"],["Méliuz","https://www.meliuz.com.br/"]],
   s:["Criar a SUA conta na Cuponomia ou no Méliuz.",
@@ -130,7 +131,7 @@ function tpStep(T,i){const r=tpSt(),s=r[T.id].s;
   if(s[i])delete s[i];else s[i]=todayKey();
   const all=T.s.every((x,k)=>s[k]);let g=0;
   if(all&&!r[T.id].f){const before=tpVis();r[T.id].f=todayKey();const tier=TP_TIER[T.tier];
-    try{if(typeof orGive==="function")g=orGive("tp:"+T.id,tier[1],"Task "+tier[0]);}catch(e){}
+    if(!T.buy)try{if(typeof orGive==="function")g=orGive("tp:"+T.id,tier[1],"Task "+tier[0]);}catch(e){}
     const first=!prog.tpwal;if(first)prog.tpwal=todayKey();
     try{haptic([10,30,10]);}catch(e){}save();
     const nx=tpVis()>before?TP_L[tpVis()-1]:null;
@@ -152,7 +153,7 @@ function tpCard(T){const r=tpSt(),s=r[T.id].s,n=tpN(T),done=n===T.s.length,tier=
   const lk=tpEl("div","tplinks");lk.append(tpEl("span","sm muted","Páginas oficiais:"));for(const [nm2,u] of T.links){const a=tpEl("a","tplink",nm2+" ↗");a.href=u;a.target="_blank";a.rel="noopener noreferrer";lk.append(a);}c.append(lk);
   c.append(tpEl("p","sm tpwarn","⚠️ "+T.warn));
   if(tpWal())c.append(tpGot(T));
-  c.append(tpEl("p","sm muted",done?"✓ Concluída. +"+tier[1]+" 🪙 já entrou (uma vez só).":"Ao marcar os "+T.s.length+" passos: +"+tier[1]+" 🪙 de Ouro (uma vez só)."));
+  c.append(tpEl("p","sm muted",T.buy?"Esta task não dá Ouro: o app nunca premia compra. O ganho é só o cashback da plataforma.":done?"✓ Concluída. +"+tier[1]+" 🪙 já entrou (uma vez só).":"Ao marcar os "+T.s.length+" passos: +"+tier[1]+" 🪙 de Ouro (uma vez só)."));
   return c;}
 function tpSealed(T,k){const d=tpEl("div","tpm tpseal t-"+T.tier+(k===0?" nx":""));d.setAttribute("role","img");d.setAttribute("aria-label","Task selada, raridade "+TP_TIER[T.tier][0]+(k===0?", é a próxima a se revelar":""));
   d.append(tpEl("span","tptier",TP_TIER[T.tier][0]),tpEl("span","tpq","???"));if(k===0)d.append(tpEl("span","tpnx","próxima"));return d;}
