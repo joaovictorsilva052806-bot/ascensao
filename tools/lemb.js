@@ -72,7 +72,7 @@
     return [...document.querySelectorAll(".sysmodal:not([hidden]),#levelup:not([hidden]),[aria-modal='true']:not([hidden]),#fzRef:not([hidden])")].some(m=>m.getClientRects().length);};
   let tries=0,tmr=0,calm=0; // calm: a tela precisa ficar livre por 2 checagens seguidas (o baú do dia abre logo depois da fila do Sistema)
   function auto(){tmr=0;try{if(!cfg||cfg.blank)return;const s=rd();if(s.r==="sim")return;let st="";try{st=localStorage.getItem(SYSTIP)||"";}catch(e){}if(st==="1")return;
-    const n=diaN();if(n!==1&&n!==2)return;const a=s.a||{};if(a[n])return;if(n===2&&a[1]===todayKey())return;
+    const n=diaN();if(n!==1&&n!==2)return;if(n===1&&typeof ascQuietD1==="function"&&ascQuietD1())return;const a=s.a||{};if(a[n])return;if(n===2&&a[1]===todayKey())return;
     if(busy()){calm=0;if(++tries<40)tmr=setTimeout(auto,1500);return;}
     if(!calm){calm=1;tmr=setTimeout(auto,1200);return;}calm=0;tries=0;
     a[n]=todayKey();wr({a});

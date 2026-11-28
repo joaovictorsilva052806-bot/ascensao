@@ -231,10 +231,12 @@ function tpLine(){let l=$("tpLine");if(!tpOn()){if(l)l.hidden=true;return;}
   l.hidden=false;l.textContent="";l.classList.toggle("tplock",!open);const b=tpEl("button","tplbtn");b.type="button";
   if(!open){b.append(tpEl("span","tplk","⚜️ TASKS LENDÁRIAS · ???"),tpEl("span","tplx","Falta 1 missão para abrir. Tarefas que pagam de verdade."),tpEl("span","tplgo","🔒 1"));
     b.setAttribute("aria-label","Tasks Lendárias, trancadas: falta 1 missão para abrir");b.addEventListener("click",()=>tpGo(null));}
-  else{b.append(tpEl("span","tplk","⚜️ Task "+TP_TIER[nx.T.tier][0]+" · "+tpName(nx.T)+" "+(nx.i+1)+"/"+nx.T.s.length),tpEl("span","tplx",nx.T.s[nx.i]),tpEl("span","tplgo","Abrir ›"));
+  else{b.append(tpEl("span","tplk","⚜️ Task "+TP_TIER[nx.T.tier][0]+" · "+tpName(nx.T)+" · passo "+(nx.i+1)+" de "+nx.T.s.length),tpEl("span","tplx",nx.T.s[nx.i]),tpEl("span","tplgo","Abrir ›"));
     b.setAttribute("aria-label","Abrir a task "+tpName(nx.T)+": passo "+(nx.i+1)+" de "+nx.T.s.length);b.addEventListener("click",()=>tpGo(nx.T.id));}
   l.append(b);}
 // 1º uso enxuto: até a 1ª missão concluída, o ranking e o Quebrar correntes esperam (aparecem sozinhos depois). Só esconde, não apaga nada.
-function tpFresh(){try{document.body.classList.toggle("asc-fresh",!!(cfg&&!cfg.blank&&cfg.quests&&cfg.quests.length)&&!tpMission());}catch(e){}}
+function tpFresh(){try{const f=!!(cfg&&!cfg.blank&&cfg.quests&&cfg.quests.length)&&!tpMission();document.body.classList.toggle("asc-fresh",f);
+  // 1ª tela enxuta no dia 1 (tools/tasks.css): mesma regra do "dia 1 calmo" (tools/rpg.js)
+  const d1=f&&typeof ascQuietD1==="function"&&ascQuietD1();document.body.classList.toggle("asc-d1",d1);document.body.classList.toggle("asc-d1nc",d1&&!rpgState().cls);}catch(e){}}
 {const _r=render;render=function(){_r.apply(this,arguments);try{tpRender();}catch(e){}try{tpLine();}catch(e){}tpFresh();};}
 setTimeout(()=>{try{tpRender();}catch(e){}try{tpLine();}catch(e){}},70);

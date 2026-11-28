@@ -85,3 +85,6 @@ body:not([data-tab=lenda]) .wrap>section[data-tab=lenda]{display:none}
 /* 1º uso enxuto (tools/tasks.js tpFresh) */
 body.asc-fresh #gtHero,body.asc-fresh #chPanel{display:none!important}
 .tpline.tplock .tplgo{font-size:.85rem;white-space:nowrap}
+/* QA 60 s, P1-5: no 1º uso o 1º ▶ cabe na 1ª tela do iPhone SE. Antes da 1ª missão, sai o que repete a barra do Sistema
+   (linha do Sistema e "Ficha do personagem"), a linha "Nenhuma tarefa ainda" e o atalho da Classe, se ainda não tem (ela fica para o dia 2). Só no dia 1 do perfil. Voltam sozinhos depois da 1ª missão. */
+body.asc-d1 #sysLine,body.asc-d1 #hrTog,body.asc-d1 #dayxp,body.asc-d1nc #clsPill{display:none!important}

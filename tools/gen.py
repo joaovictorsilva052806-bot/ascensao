@@ -212,6 +212,12 @@ rep('\nlet saveTimer=null, SYNC="";','\n'+R('codigo.js')+'\nlet saveTimer=null, 
 # Quadro de Missões: 30 missões curtas (estudo ATLAS, treino ARES), 3 por dia, opcionais (tools/quadro.*)
 rep('</style></head>',R('quadro.css')+'</style></head>')
 rep('\nlet saveTimer=null, SYNC="";','\n'+R('quadro.js')+'\nlet saveTimer=null, SYNC="";')
+# Crônicas (lore) e Caça das 3 Chaves pelo Terminal: palavra + ação real no log, prêmio só simbólico (tools/chaves.*)
+rep('</style></head>',R('chaves.css')+'</style></head>')
+rep('\nlet saveTimer=null, SYNC="";','\n'+R('chaves.js')+'\nlet saveTimer=null, SYNC="";')
+# Torre do Véu: Arena com 100 andares, curva atrelada ao nível de referência, marcos fixos 1 vez (tools/torre.*)
+rep('</style></head>',R('torre.css')+'</style></head>')
+rep('\nlet saveTimer=null, SYNC="";','\n'+R('torre.js')+'\nlet saveTimer=null, SYNC="";')
 # Missões Lendárias 18+ (tools/lendaria.*; lista em missoes-lendarias.json): área das tasks que pagam na aba Foco + chamada em Hoje; só adiciona prog.lend
 rep('</style></head>',R('lendaria.css')+'</style></head>')
 rep('\nlet saveTimer=null, SYNC="";','\n'+R('lendaria.js')+'\nlet saveTimer=null, SYNC="";')

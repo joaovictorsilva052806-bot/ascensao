@@ -3,7 +3,7 @@
 const {chromium}=require('playwright');const U='http://localhost:8000/';
 const R=[];const ok=(n,c,x)=>R.push((c?'PASS ':'FAIL ')+n+(x&&!c?' · '+x:''));
 const CFG={version:3,name:'Teste',startDate:'2026-11-20',profile:{age:'adult'},quests:[{id:'q1',title:'Ler',xp:10,stat:'mente',main:true}]};
-const PROG={log:{'2026-11-26':[{q:'checkin:2026-11-26',kind:'checkin',xp:10,stat:'foco',bonus:0,t:'x'}]},extra:{},faith:{},energy:{},mit:{},reviews:{},money:[],rest:{},ach:{},rpg:{cls:{id:'mago',style:'fant',name:'Mago'}},velho:'fica'};
+const PROG={log:{'2026-11-26':[{q:'checkin:2026-11-26',kind:'checkin',xp:10,stat:'foco',bonus:0,t:'x'},{q:'q1',kind:'full',xp:10,stat:'mente',bonus:0,t:'x'}]},extra:{},faith:{},energy:{},mit:{},reviews:{},money:[],rest:{},ach:{},rpg:{cls:{id:'mago',style:'fant',name:'Mago'}},velho:'fica'};
 (async()=>{const b=await chromium.launch();
 async function ctxNew(){const ctx=await b.newContext({viewport:{width:390,height:844}});const posts=[];const errs=[];
   await ctx.route('https://fonts.googleapis.com/**',r=>r.fulfill({status:200,contentType:'text/css',body:''}));
@@ -18,7 +18,7 @@ for(const r of ['convite/','x/']){const {ctx,p,posts,errs}=await ctxNew();await 
 {const {ctx,p,posts,errs}=await ctxNew();await p.goto(U+'comecar/'+'__seed__');
   await p.evaluate(([c,o])=>{localStorage.setItem('asc-u-cfg',JSON.stringify(c));localStorage.setItem('asc-u-prog',JSON.stringify(o));localStorage.setItem('asc-u-season','2');localStorage.setItem('asc-u-perm','1');localStorage.setItem('asc-u-intro','1');},[CFG,PROG]);
   await p.goto(U+'comecar/');await p.waitForTimeout(1500);
-  for(let i=0;i<30;i++){await p.waitForTimeout(400);const no=p.locator('#tlModal button.ghost');if(await no.count()){await no.dispatchEvent('click');break;}const g=p.locator('.sysmodal:not(#tlModal) button');if(await g.count())await g.first().dispatchEvent('click');}
+  for(let i=0;i<30;i++){await p.waitForTimeout(400);const no=p.locator('#tlModal button',{hasText:'Agora não'});if(await no.count()){await no.dispatchEvent('click');break;}const g=p.locator('.sysmodal:not(#tlModal) button');if(await g.count()){const n=p.locator('.sysmodal:not(#tlModal) button',{hasText:'Agora não'});await (await n.count()?n.first():g.first()).dispatchEvent('click');}}
   await p.waitForTimeout(1500);
   ok('comecar sem aceite: nenhuma etapa anônima enviada',!A(posts).length,A(posts).join(' / '));
   ok('comecar sem aceite: recusa registrada no aparelho',await p.evaluate(()=>JSON.parse(localStorage.getItem('asc-u-tele')||'{}').asked===true));
@@ -29,7 +29,7 @@ for(const r of ['convite/','x/']){const {ctx,p,posts,errs}=await ctxNew();await 
 {const {ctx,p,posts,errs}=await ctxNew();await p.goto(U+'comecar/'+'__seed__');
   await p.evaluate(([c,o])=>{localStorage.setItem('asc-u-cfg',JSON.stringify(c));localStorage.setItem('asc-u-prog',JSON.stringify(o));localStorage.setItem('asc-u-season','2');localStorage.setItem('asc-u-perm','1');localStorage.setItem('asc-u-intro','1');},[CFG,PROG]);
   await p.goto(U+'comecar/');let done=false;
-  for(let i=0;i<30&&!done;i++){await p.waitForTimeout(400);if(await p.locator('#tlModal').count()){await p.fill('#tlModal input','Tester');await p.locator('#tlModal button.go').dispatchEvent('click');done=true;break;}const g=p.locator('.sysmodal:not(#tlModal) button');if(await g.count())await g.first().dispatchEvent('click');}
+  for(let i=0;i<60&&!done;i++){await p.waitForTimeout(400);if(await p.locator('#tlModal').count()){await p.fill('#tlModal input','Tester');await p.locator('#tlModal button',{hasText:'Aceito'}).dispatchEvent('click');done=true;break;}const g=p.locator('.sysmodal:not(#tlModal) button');if(await g.count()){const n=p.locator('.sysmodal:not(#tlModal) button',{hasText:'Agora não'});await (await n.count()?n.first():g.first()).dispatchEvent('click');}}
   await p.waitForTimeout(800);
   ok('comecar com aceite: modal apareceu',done);
   ok('comecar com aceite: etapa "5-aceitou" enviada',A(posts).some(x=>/\|5-aceitou\|/.test(x)),A(posts).join(' / '));
