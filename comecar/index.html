@@ -4361,7 +4361,13 @@ function ntAttach(){const t=$("toast");if(!t||!ntPend||Date.now()>ntPend.until||
   const row=document.createElement("span");row.className="ntrow";row.textContent="✓ "+(((typeof qtShort==="function"&&qtShort(q))||q.title)+"").slice(0,32);
   const u=document.createElement("button");u.type="button";u.className="link ntundo";u.textContent="Desfazer";row.append(" ",u);
   u.addEventListener("click",()=>{ntPend=null;const on=(prog.log[todayKey()]||[]).find(e=>e.q===q.id&&e.kind===kind);if(on)toggle(q,kind);const c=$("muChip");if(c)c.remove();toast("Desfeito.");});
-  t.append(row);clearTimeout(toast._t);toast._t=setTimeout(()=>{t.hidden=true;},Math.max(1500,ntPend.until-Date.now()));}
+  t.append(row);clearTimeout(toast._t);toast._t=setTimeout(ntTick,Math.max(1500,ntPend.until-Date.now()));}
+// Janela do Sistema aberta (atributo, nível, baú) cobre o aviso: o "Desfazer" não some atrás dela.
+// Os 5 s recomeçam quando a última janela fecha (antes: a 1ª missão do dia 1 abria "Intelecto nível 2" e o Desfazer expirava escondido).
+function ntCovered(){return [...document.querySelectorAll(".sysmodal,#levelup,.avmk")].some(m=>!m.hidden&&m.getClientRects().length);}
+function ntTick(){const t=$("toast");if(!t||t.hidden||!ntPend||!t.querySelector(".ntundo"))return;
+  if(ntCovered()){ntPend.until=Date.now()+5000;toast._t=setTimeout(ntTick,400);return;}
+  const left=ntPend.until-Date.now();if(left>50){toast._t=setTimeout(ntTick,left);return;}t.hidden=true;}
 function ntUndo(q,kind){ntPend={q,kind,until:Date.now()+5000};setTimeout(()=>{try{const t=$("toast");if(!t)return;
   if(t.hidden||!t.textContent.trim())toast("Feito!");else ntAttach();}catch(e){}},120);}
 // outro aviso no meio dos 5 s (conquista, baú, check-in) não some com o "Desfazer"
