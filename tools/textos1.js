@@ -7,15 +7,15 @@
   const s0=$("q_name")&&$("q_name").closest(".qstep");if(s0)tx(s0.querySelector("h2"),"Como eu te chamo?");
   tx($("q_n0"),"Bora ▸");
   tx($("q_bk"),"Já jogava? Recuperar meu progresso");
-  const fp=$("q_h3")&&$("q_h3").nextElementSibling;if(fp&&fp.tagName==="P")tx(fp,"Já marquei o que combina. Toque para trocar (até 3).");
+  const fp=$("q_h3")&&$("q_h3").nextElementSibling;if(fp&&fp.tagName==="P")tx(fp,"Escolha até 3.");
   tx($("q_done"),"Começar a jogar ⚡");
-  tx($("q_full"),"Prefiro responder com detalhes");
+  tx($("q_full"),"Responder com mais detalhes");
   tx(document.querySelector(".swipehint"),"Dica: arraste a tarefa para a direita para concluir →");}
 // Perguntas com o nome da pessoa
 if(typeof qHead==="function"){const _qh=qHead;qHead=function(){_qh.apply(this,arguments);const n=qData.name?qData.name.split(" ")[0]:"";
   if($("q_h1"))$("q_h1").textContent=n?n+", qual a sua idade?":"Qual a sua idade?";
   if($("q_h2"))$("q_h2").textContent="O que ocupa o seu dia?";
-  if($("q_h3"))$("q_h3").textContent=n?n+", o que você quer subir de nível?":"O que você quer subir de nível?";};}
+  if($("q_h3"))$("q_h3").textContent=n?n+", o que vamos melhorar?":"O que vamos melhorar?";};}
 // Jogo criado: primeiro nome e o próximo passo, sem número de tarefas para assustar
 {const _t=toast;toast=function(msg){const m=/^Pronto, (.+?)! \d+ quests criadas para o seu dia\.$/.exec(String(msg||""));
   if(m)msg="Jogo pronto, "+m[1].split(" ")[0]+". Sua 1ª missão te espera.";return _t.call(this,msg);};}

@@ -43,7 +43,7 @@ ok('raiz: console sem erros',errs.length===0,errs.join(' | '));await ctx.close()
 ({ctx,p,errs,key}=await open(base({sec:{s_larica:'2026-11-01'},chest:{roll:{'2026-11-25':{k:'x',xp:15,r:0,tier:0}},got:{},frames:[],titles:[],dry:0}}),'2026-11-25T21:00:00'));await drain(p);await s3off(p);await drain(p);
 await p.locator('#tabbar [data-go="hoje"]').dispatchEvent('click');await p.locator('#quests .quest[data-q="s_fech"] button.go').first().dispatchEvent('click');await p.waitForTimeout(1500);await drain(p);await p.waitForTimeout(800);
 if(await p.locator('#bxModal').count()){for(let i=0;i<3;i++){await p.locator('#bxModal .bxbtn').click();await p.waitForTimeout(250);}await p.waitForTimeout(900);}
-const out=await p.textContent('#bxModal .bxout').catch(()=>'');ok('baú: linha da coleção no prêmio',/Coleção 1\/3 · faltam 2/.test(out),out);
+const out=await p.textContent('#bxModal .bxout').catch(()=>'');ok('baú: linha da coleção no prêmio',/Faltam 2 para/.test(out),out);
 await p.screenshot({path:OUT+'/colecao-bau.png'});ok('baú: console sem erros',errs.length===0,errs.join(' | '));await ctx.close();
 // 5: reduce-motion + desktop
 ({ctx,p,errs,key}=await open(base({sec:{s_larica:'2026-11-01'}}),'2026-11-25T14:00:00',{rm:'reduce',vp:{width:1280,height:800}}));await drain(p);await s3off(p);await drain(p);

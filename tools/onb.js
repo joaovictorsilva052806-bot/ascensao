@@ -1,6 +1,6 @@
 // ---------- Perfil e geração de quests (onboarding) ----------
 const DN=["seg","ter","qua","qui","sex","sáb","dom"];
-const FOCI=[["estudos","Estudos"],["sono","Dormir melhor"],["corpo","Saúde e corpo"],["carreira","Carreira"],["dinheiro","Dinheiro"],["relac","Pessoas que amo"],["casa","Casa em ordem"],["remedio","Remédios no horário"],["agua","Beber água"],["tela","Menos tempo de tela"],["leitura","Ler mais"]];
+const FOCI=[["estudos","Estudos"],["sono","Dormir melhor"],["corpo","Saúde e corpo"],["carreira","Carreira"],["dinheiro","Dinheiro"],["relac","Família"],["casa","Casa em ordem"],["remedio","Remédios"],["agua","Beber água"],["tela","Menos tempo de tela"],["leitura","Ler mais"]];
 const AGE=[["kid","Até 13"],["teen","14 a 17"],["young","18 a 29"],["adult","30 a 59"],["senior","60 ou mais"]];
 const isMinorAge=v=>v==="kid"||v==="teen";
 const OCC=[["escola","Estudante (escola)"],["estudante","Faculdade / curso"],["clt","Trabalho fixo (CLT)"],["autonomo","Autônomo / Empreendedor"],["casa","Dono(a) de casa"],["motorista","Motorista / caminhoneiro"],["aposentado","Aposentado(a)"],["outro","Outro"]];

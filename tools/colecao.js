@@ -34,7 +34,7 @@ function colBar(){const p=$("bxCol");if(!p||p.hidden)return;let b=$("colBar");co
   const dots=bxEl("div","coldots");for(const m of COL_M){const d=bxEl("span","coldot"+(n>=m[0]?" on":"")+(nx===m?" nx":""),m[0]);d.title=m[2]+" aos "+m[0]+" itens";dots.append(d);}
   b.append(top,bar,dots,bxEl("div","sm muted","Segredos, molduras e títulos contam. Cada marco dá uma moldura que não sai no baú."));}
 function colChestLine(){const o=document.querySelector("#bxModal .bxout");if(!o||o.hidden||o.querySelector(".colnext"))return;const nx=colNext();
-  o.append(bxEl("span","sm colnext",nx?"Coleção "+colCount()+"/"+nx[0]+" · faltam "+(nx[0]-colCount())+" para « "+nx[2]+" »":"Coleção: todos os marcos ✓"));}
+  o.append(bxEl("span","sm colnext",nx?"Faltam "+(nx[0]-colCount())+" para « "+nx[2]+" »":"Coleção: todos os marcos ✓"));}
 {const _c=bxColUI;bxColUI=function(){_c.apply(this,arguments);try{colBar();colChestLine();colCheck();}catch(e){}};}
 {const _r=renderSec;renderSec=function(){_r.apply(this,arguments);try{colCheck();}catch(e){}};}
 setTimeout(()=>{try{colBar();colCheck();}catch(e){}},50);

@@ -18,7 +18,7 @@ for(const vp of [{width:390,height:844},{width:1280,height:800}]){const tag=vp.w
   await p.locator('#q_occ button').nth(1).click();await p.waitForTimeout(200);
   // com o #67 entram perguntas de toque (Ajuste fino) antes do foco: pula até o botão final aparecer
   for(let i=0;i<6&&!(await p.locator('#q_done').isVisible());i++){const sk=p.locator('#q_xskip');if(await sk.isVisible())await sk.click();await p.waitForTimeout(150);}
-  ok(tag+': foco com gancho',(await p.textContent('#q_h3')).includes('subir de nível'));
+  ok(tag+': foco com gancho',(await p.textContent('#q_h3')).includes('o que vamos melhorar'));
   ok(tag+': botão final',(await p.textContent('#q_done')).includes('Começar a jogar'));
   await p.click('#q_done');await p.waitForTimeout(1500);
   const toastTxt=await p.textContent('#toast').catch(()=>'');

@@ -13,13 +13,13 @@ function shieldAuto(){if(!cfg||cfg.blank||($("onb")&&!$("onb").hidden))return;co
   if(gap.length>s.n){save();if(before>=3)sysPop("NOVA SEQUÊNCIA","Recomeço, sem culpa","Sua sequência de "+before+(before===1?" dia":" dias")+" parou, e tudo bem: o seu XP e o seu nível continuam. Hoje é o dia 1 de novo. Uma tarefa já acende o fogo.",null,"Bora");return;}
   for(const k of gap)s.used[k]=1;s.n-=gap.length;save();render();
   sysPop("ESCUDO ATIVADO","🛡️ Sequência salva: "+streakDays()+(streakDays()===1?" dia":" dias"),(gap.length>1?"Dois dias ficaram":"Ontem ficou")+" sem tarefa e o escudo segurou o fogo sozinho. Faça 1 tarefa hoje para ela seguir. Escudos restantes: "+s.n+".",null,"Valeu, Sistema");}
-const ST_TXT={1:["Sequência iniciada 🔥","Dia 1. Volte amanhã e vira 2. Uma tarefa por dia já mantém o fogo aceso."],
+const ST_TXT={1:["Sequência iniciada 🔥","Fogo aceso. Amanhã, 1 tarefa e vira 2."],
   3:["3 dias seguidos 🔥","Seu cérebro já está pegando o ritmo. Com 7 dias você ganha um escudo de sequência."],
   7:["1 semana! 🛡️ +1 escudo","Se um dia passar em branco, o escudo salva sua sequência sozinho. Você guarda até 2."]};
 function stMilestone(){if(!cfg||cfg.blank)return;const s=shieldSt();const n=streakDays();for(const m in s.ms)if(+m>n)delete s.ms[m];if(!stAct(todayKey()))return;
   let hit=0;for(const m of ST_MS)if(m<=n&&!s.ms[m]){s.ms[m]=todayKey();hit=m;if(m>=7&&s.n<ST_MAX)s.n++;}
   if(!hit)return;save();const t=ST_TXT[hit]||[hit+" dias seguidos 🔥"+(s.n?" 🛡️":""),"Marco de "+hit+" dias. Pouca gente chega aqui. Escudos guardados: "+s.n+" de "+ST_MAX+"."];
-  if(hit===1&&ascQuietD1()){toast("🔥 "+t[0]+". Volte amanhã e vira 2.");return;}
+  if(hit===1&&ascQuietD1()){toast("🔥 "+t[0]+". Amanhã, 1 tarefa e vira 2.");return;}
   sysPop("MARCO DE SEQUÊNCIA",t[0],t[1],null,"Continuar");}
 function stRisk(){const h=new Date().getHours();return h>=18&&!stAct(todayKey())&&!isRest(todayKey())&&streakDays()>0;}
 {const _rp=renderPills;renderPills=function(){_rp();const st=$("streak");if(!st)return;const s=shieldSt();

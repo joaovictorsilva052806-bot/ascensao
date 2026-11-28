@@ -7,7 +7,7 @@ function dailyCheckin(){if(document.body.classList.contains("insm")){clearTimeou
   if(s===1&&cfg.startDate===tk&&!Object.keys(prog.log||{}).some(k=>k!==tk&&(prog.log[k]||[]).length)){
     addXP({q:"checkin:"+tk,kind:"checkin",xp:10,stat:"foco",bonus:0,t:new Date().toISOString()},"Check-in do dia 1: +10 XP");
     if(typeof sendRank==="function")sendRank("checkin",true);return;}
-  sysPop("CHECK-IN DIÁRIO",s>1?s+" dias de check-in":"Dia 1","Você apareceu, e isso já conta. +10 XP"+(bonus?" e +"+bonus+" de bônus pela sequência de check-ins.":". Volte amanhã para ganhar bônus."),()=>{
+  sysPop("CHECK-IN DIÁRIO",s>1?s+" dias de check-in":"Dia 1","Você apareceu, e isso já conta. +10 XP"+(bonus?" e +"+bonus+" de bônus pela sequência de check-ins.":". Amanhã tem bônus de sequência."),()=>{
     if((prog.log[todayKey()]||[]).some(e=>String(e.q).startsWith("checkin:")))return;
     addXP({q:"checkin:"+todayKey(),kind:"checkin",xp:10,stat:"foco",bonus,t:new Date().toISOString()},"Check-in feito: +"+(10+bonus)+" XP");
     if(typeof sendRank==="function")sendRank("checkin",true);},"Fazer check-in");}
