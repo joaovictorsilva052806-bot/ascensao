@@ -2300,7 +2300,7 @@ body:has(#arPanel.tbrk-S) #arModal,#arModal.tbrk-S{background:radial-gradient(el
     </details>
   </section>
 </div>
-<nav class="tabbar" id="tabbar">
+<nav class="tabbar" id="tabbar" aria-label="Abas do app">
   <button type="button" data-go="hoje"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="8"/><circle cx="12" cy="12" r="3"/></svg>Hoje</button>
   <button type="button" data-go="foco"><svg viewBox="0 0 24 24"><circle cx="12" cy="13" r="8"/><path d="M12 9v4l3 2M9 2h6"/></svg>Foco</button>
   <button type="button" data-go="prog"><svg viewBox="0 0 24 24"><path d="M4 20V10M10 20V4M16 20v-7M22 20H2"/></svg>Progresso</button>
@@ -8823,7 +8823,7 @@ render();
 setTimeout(betaDaily,3000);setInterval(()=>{betaDaily();if($("today").dataset.k!==todayKey()){$("today").dataset.k=todayKey();render();pull(true);}},60000);
 $("today").dataset.k=todayKey();
 focusUI();
-function goTab(t){document.body.dataset.tab=t;for(const b of document.querySelectorAll("#tabbar button"))b.classList.toggle("on",b.dataset.go===t);window.scrollTo(0,0);try{sessionStorage.setItem("asc-tab",t);}catch(e){}}
+function goTab(t){document.body.dataset.tab=t;for(const b of document.querySelectorAll("#tabbar button")){const on=b.dataset.go===t;b.classList.toggle("on",on);if(on)b.setAttribute("aria-current","page");else b.removeAttribute("aria-current");}window.scrollTo(0,0);try{sessionStorage.setItem("asc-tab",t);}catch(e){}}
 for(const b of document.querySelectorAll("#tabbar button"))b.addEventListener("click",()=>goTab(b.dataset.go));
 let t0="hoje";try{t0=sessionStorage.getItem("asc-tab")||"hoje";}catch(e){}goTab(t0);
 try{const u=new URLSearchParams(location.search),fm=+u.get("foco"),tb=u.get("tab");if(fm||tb){history.replaceState(null,"",location.pathname);if(tb==="hoje"||tb==="foco"||tb==="prog")goTab(tb);
