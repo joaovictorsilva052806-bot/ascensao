@@ -2322,7 +2322,14 @@ const todayKey=()=>dkey(new Date());
 function weekStart(key){const [y,m,d]=key.split("-").map(Number);const dt=new Date(y,m-1,d);const wd=(dt.getDay()+6)%7;dt.setDate(dt.getDate()-wd);return dkey(dt);}
 // Nível n exige 50*n*(n-1) XP acumulado: 0,100,300,600,1000...
 const xpFor=n=>50*n*(n-1);
-function levelOf(xp){let n=1;while(xp>=xpFor(n+1))n++;return n;}
+// conta fechada (o laço antigo travava a tela com XP gigante vindo de backup ou de armazenamento corrompido)
+function levelOf(xp){if(!(xp>=0))return 1;let n=Math.max(1,Math.floor((1+Math.sqrt(1+xp/12.5))/2));if(!isFinite(n))return 1e6;n=Math.min(n,1e6);while(n>1&&xpFor(n)>xp)n--;while(n<1e6&&xpFor(n+1)<=xp)n++;return n;}
+// Saneamento do que vem de fora (localStorage, backup, planilha): formatos errados não podem derrubar o app. Só corrige formato, nunca apaga entrada válida.
+function sanProg(p){if(!p||typeof p!=="object"||Array.isArray(p))return null;const L=p.log;if(!L||typeof L!=="object"||Array.isArray(L))p.log={};
+  else for(const k in L){if(!Array.isArray(L[k])){delete L[k];continue;}L[k]=L[k].filter(e=>e&&typeof e==="object"&&e.q!=null);
+    for(const e of L[k])if("xp" in e){const x=+e.xp;e.xp=isFinite(x)?Math.max(-1e5,Math.min(1e5,x)):0;}}
+  return p;}
+function sanCfg(c){if(!c||typeof c!=="object"||Array.isArray(c))return null;if(!Array.isArray(c.quests))return null;c.quests=c.quests.filter(q=>q&&typeof q==="object"&&q.id!=null);return c;}
 function rankOf(l){let r=RANKS[0];for(const x of RANKS)if(l>=x[0])r=x;return r;}
 
 function entries(){const out=[];for(const k in prog.log){for(const e of (prog.log[k]||[]))out.push(Object.assign({date:k},e));}return out;}
@@ -2597,7 +2604,7 @@ function silenceUI(){$("fSilence").hidden=!F_IOS||!!dev.sc;$("fSilenceOn").hidde
   $("fScGet").hidden=!SC_LINK;$("fScSteps").hidden=!!SC_LINK;$("fScOk").textContent=SC_LINK?"2. Pronto, adicionei":"Pronto, criei";}
 $("fSilence").addEventListener("click",()=>{$("fSc").hidden=false;$("fSilence").hidden=true;});
 $("fScClose").addEventListener("click",()=>{$("fSc").hidden=true;silenceUI();});
-$("fScGet").addEventListener("click",()=>{if(!SC_LINK)return;const w=window.open(SC_LINK,"_blank");if(!w)location.href=SC_LINK;});
+$("fScGet").addEventListener("click",()=>{if(!SC_LINK)return;const w=window.open(SC_LINK,"_blank");if(w)try{w.opener=null;}catch(e){}if(!w)location.href=SC_LINK;});
 $("fScTest").addEventListener("click",()=>runShortcut(1));
 $("fScOk").addEventListener("click",()=>{dev.sc=true;devSave();$("fSc").hidden=true;silenceUI();haptic([10,30,10]);toast("Pronto. No próximo foco o iPhone fica em silêncio.");});
 $("fScOff").addEventListener("click",()=>{dev.sc=false;devSave();silenceUI();});
@@ -2642,8 +2649,8 @@ function restoreBackup(raw){let d=JSON.parse(String(raw||"").trim());let c=null;
   if(!nb)throw 0;
   if(!confirm("Restaurar este backup ("+nb+" dia"+(nb>1?"s":"")+" de progresso)? Ele substitui o progresso atual ("+na+" dia"+(na!==1?"s":"")+"). Uma cópia do atual fica guardada neste aparelho."))return null;
   try{localStorage.setItem("ascensao-prog"+"-prebackup",JSON.stringify(prog));}catch(e){}
-  prog=Object.assign({log:{},extra:{},faith:{},energy:{},mit:{},reviews:{}},d);
-  if(c&&c.quests&&c.quests.length){cfg=c;try{localStorage.setItem(CFG_KEY,JSON.stringify(cfg));}catch(e){}if(cfg.name)$("titleName").textContent=cfg.name;}
+  prog=Object.assign({log:{},extra:{},faith:{},energy:{},mit:{},reviews:{}},sanProg(d)||{});
+  c=sanCfg(c);if(c&&c.quests&&c.quests.length){cfg=c;try{localStorage.setItem(CFG_KEY,JSON.stringify(cfg));}catch(e){}if(cfg.name)$("titleName").textContent=cfg.name;}
   save();render();return !!c;}
 const CFG_KEY="ascensao-cfg";
 $("bkRestore").addEventListener("click",()=>{try{const withCfg=restoreBackup($("bkText").value);if(withCfg===null)return;toast(withCfg?"Backup restaurado, com suas tarefas.":"Backup restaurado.");$("bkText").value="";}catch(e){toast("Esse texto não é um backup válido.");}});
@@ -3148,7 +3155,7 @@ $("o_bkGo").addEventListener("click",()=>{let withCfg=false;try{withCfg=restoreB
 $("fbSend").addEventListener("click",()=>{const t=$("fbText").value.trim();if(!t){$("fbMsg").textContent="Escreva a sugestão primeiro.";return;}
   prog.feedback=(prog.feedback||[]).concat([{t,d:new Date().toISOString()}]);save();
   const lv=levelOf(totalXP());const msg="💡 Sugestão para o app Ascension\n\n"+t+"\n\n(nível "+lv+", "+activeDays()+" dias ativos, "+(cfg&&cfg.quests?cfg.quests.length:0)+" quests)";
-  window.open("https://wa.me/?text="+encodeURIComponent(msg),"_blank");$("fbText").value="";$("fbMsg").textContent="Valeu! Sugestão salva ("+prog.feedback.length+" no total).";});
+  window.open("https://wa.me/?text="+encodeURIComponent(msg),"_blank","noopener");$("fbText").value="";$("fbMsg").textContent="Valeu! Sugestão salva ("+prog.feedback.length+" no total).";});
 $("fbQuick").addEventListener("click",()=>{goTab("mais");setTimeout(()=>$("fbText").focus(),60);});
 // ---------- Dica de instalação (iPhone e Android fora da tela de início) ----------
 const UA=navigator.userAgent,IOS=/iphone|ipad|ipod/i.test(UA),AND=/android/i.test(UA);let instEvt=null;
@@ -4031,7 +4038,7 @@ function sqShare(){const s=sqSt();if(!s)return;const me=rankName()||"eu";
   const url=location.origin+location.pathname.replace(/(comecar\/)?(index\.html)?$/,"")+"x/";
   const t="[ ESQUADRÃO "+s.n.toUpperCase()+" ] Anomalia da semana detectada. Entra no Ascension, vai em Progresso > Esquadrão e me recruta: "+me+". "+url;
   if(navigator.share){navigator.share({title:"Ascension",text:t}).catch(()=>{});return;}
-  window.open("https://wa.me/?text="+encodeURIComponent(t),"_blank");}
+  window.open("https://wa.me/?text="+encodeURIComponent(t),"_blank","noopener");}
 function sqUI(){let p=$("sqPanel");const rp=$("rankPanel");if(!rp)return;
   if(!p){p=sqEl("section","panel sq");p.id="sqPanel";p.dataset.tab="prog";rp.after(p);}
   const kid=ageNow()==="kid";p.hidden=kid||!cfg||cfg.blank;if(p.hidden)return;p.textContent="";
@@ -5232,7 +5239,7 @@ function cdLink(){const me=rankName();if(!tmOn()||!me)return "";const s=tmSt();i
 async function cdInvite(){const me=rankName();if(!tmOn()||!me){toast("Entre no ranking primeiro: o convite usa o seu apelido.");return;}
   const url=cdLink();const text="Bora jogar comigo no Ascension? É um jogo pra subir de nível na vida real. Entra pelo meu link que a gente já vira amigo lá dentro:";
   try{if(navigator.share){await navigator.share({title:"Ascension",text,url});return;}}catch(e){if(e&&e.name==="AbortError")return;}
-  try{await navigator.clipboard.writeText(text+" "+url);toast("Link copiado. Cole no WhatsApp do seu amigo.");}catch(e){window.open("https://wa.me/?text="+encodeURIComponent(text+" "+url),"_blank");}}
+  try{await navigator.clipboard.writeText(text+" "+url);toast("Link copiado. Cole no WhatsApp do seu amigo.");}catch(e){window.open("https://wa.me/?text="+encodeURIComponent(text+" "+url),"_blank","noopener");}}
 async function cdSig(tk,n){const b=await crypto.subtle.digest("SHA-256",new TextEncoder().encode(tk+"|"+tmN(n)));return "cv"+[...new Uint8Array(b)].slice(0,6).map(x=>x.toString(16).padStart(2,"0")).join("");}
 // quem chegou por convite: guarda quem convidou até poder virar amigo
 (function(){try{const u=new URLSearchParams(location.search);const a=cleanNick(u.get("amigo")||"");if(a){localStorage.setItem("asc-amigo",a);localStorage.setItem("asc-amigo-c",String(u.get("c")||"").replace(/[^a-z0-9]/g,"").slice(0,12));u.delete("amigo");u.delete("c");history.replaceState(null,"",location.pathname+(u.toString()?"?"+u:""));}}catch(e){}})();
@@ -5269,7 +5276,7 @@ document.addEventListener("click",e=>{const li=e.target.closest&&e.target.closes
   if(!p.querySelector(".cdlink")){const u=cdLink();if(u){const bx=cdEl("div","cdlink");bx.append(cdEl("b",null,"🔗 Link da sua turma"),cdEl("span","sm muted","Mande no grupo: quem entrar por ele vira seu amigo na hora. Serve para quantas pessoas quiser."));
       const lk=cdEl("div","cdurl",u.replace(/^https:\/\//,""));bx.append(lk);const r=cdEl("div","cdlbtn");
       const c1=cdEl("button","ghost","Copiar link");c1.type="button";c1.addEventListener("click",async()=>{try{await navigator.clipboard.writeText(u);toast("Link da turma copiado.");}catch(e){const sel=getSelection();const rg=document.createRange();rg.selectNodeContents(lk);sel.removeAllRanges();sel.addRange(rg);toast("Segure no link para copiar.");}});
-      const c2=cdEl("button","ghost","WhatsApp");c2.type="button";c2.addEventListener("click",()=>window.open("https://wa.me/?text="+encodeURIComponent("Bora jogar comigo no Ascension? É um jogo pra subir de nível na vida real. Entra pela minha turma: "+u),"_blank"));
+      const c2=cdEl("button","ghost","WhatsApp");c2.type="button";c2.addEventListener("click",()=>window.open("https://wa.me/?text="+encodeURIComponent("Bora jogar comigo no Ascension? É um jogo pra subir de nível na vida real. Entra pela minha turma: "+u),"_blank","noopener"));
       r.append(c1,c2);bx.append(r);const ac=p.querySelector(".cdacts");(ac||p.querySelector(".tmseg")).after(bx);}}
   for(const li of p.querySelectorAll(".tmlist li:not(.tmzone)"))li.classList.add("tap");
   const lg=p.querySelector(".tmlg");if(lg&&!lg.querySelector(".cdme")){const ps=cdPos(rankName());if(ps.g){const x=cdEl("div","cdme");x.append(cdEl("b",null,(ps.t||ps.g)+"º"),cdEl("span",null,ps.t?"de "+ps.tof+" na turma":"de "+ps.gof+" no geral"));lg.append(x);}}}catch(e){}cdBadgeUI();};}
@@ -8870,7 +8877,7 @@ function syncFirst(){try{return localStorage.getItem(SYNC_FIRST)==="1";}catch(e)
 function markSyncFirst(){try{localStorage.setItem(SYNC_FIRST,"1");}catch(e){}}
 function adoptSheet(p){const loc=prog;
   try{if(loc&&loc.log&&Object.keys(loc.log).length)localStorage.setItem("ascensao-prog"+"-prelink",JSON.stringify(loc));}catch(e){}
-  prog=Object.assign({log:{},extra:{},faith:{},energy:{},mit:{},reviews:{},money:[],rest:{},ach:{}},p);delete prog.totalXP;delete prog.level;
+  prog=Object.assign({log:{},extra:{},faith:{},energy:{},mit:{},reviews:{},money:[],rest:{},ach:{}},sanProg(p)||{});delete prog.totalXP;delete prog.level;
   if(!prog.rpg&&loc&&loc.rpg)prog.rpg=loc.rpg;
   try{localStorage.setItem("ascensao-prog",JSON.stringify(prog));}catch(e){}}
 async function pull(force){
@@ -8879,10 +8886,10 @@ async function pull(force){
   $("sync").textContent="Sincronizando…";
   try{const r=await fetch(SYNC+(SYNC.includes("?")?"&":"?")+"t="+Date.now());const d=await r.json();
     if(d.config&&d.config.painel){try{localStorage.setItem("ascensao-painel",JSON.stringify(d.config.painel));}catch(e){}}
-    if(d.config&&d.config.quests&&(d.config.version||1)>=DEFAULT_CFG.version){cfg=d.config;try{localStorage.setItem("ascensao-cfg",JSON.stringify(cfg));}catch(e){}}
+    if(sanCfg(d.config)&&d.config.quests.length&&(d.config.version||1)>=DEFAULT_CFG.version){cfg=d.config;try{localStorage.setItem("ascensao-cfg",JSON.stringify(cfg));}catch(e){}}
     const p=d.progress;
     if(syncFirst()){if(p&&p.log&&Object.keys(p.log).length)adoptSheet(p);try{localStorage.removeItem(SYNC_FIRST);}catch(e){}if(!(p&&p.log&&Object.keys(p.log).length))save();}
-    else if(p&&p.log&&(!prog.updatedAt||(p.updatedAt&&p.updatedAt>prog.updatedAt))){prog=Object.assign({log:{},extra:{},faith:{},energy:{},mit:{},reviews:{},money:[],rest:{},ach:{}},p);delete prog.totalXP;delete prog.level;try{localStorage.setItem("ascensao-prog",JSON.stringify(prog));}catch(e){}}
+    else if(p&&p.log&&(!prog.updatedAt||(p.updatedAt&&p.updatedAt>prog.updatedAt))){prog=Object.assign({log:{},extra:{},faith:{},energy:{},mit:{},reviews:{},money:[],rest:{},ach:{}},sanProg(p)||{});delete prog.totalXP;delete prog.level;try{localStorage.setItem("ascensao-prog",JSON.stringify(prog));}catch(e){}}
     else if(prog.updatedAt&&(!p||!p.updatedAt||prog.updatedAt>p.updatedAt))save();
     if(cfg&&cfg.name)$("titleName").textContent=cfg.name;
     $("sync").textContent="Sincronizado com a planilha às "+new Date().toTimeString().slice(0,5)+".";render();
@@ -8910,9 +8917,9 @@ try{const m=location.hash.match(/[#&]c=([^&]+)/);if(m){const c=JSON.parse(decode
   history.replaceState(null,"",location.pathname);let had=null;try{had=JSON.parse(localStorage.getItem("ascensao-cfg")||"null");}catch(e){}
   if(c&&c.quests&&c.quests.length&&confirm((had&&had.quests&&had.quests.length?"Este link substitui as tarefas deste app":"Este link configura este app")+" com "+c.quests.length+" tarefa"+(c.quests.length>1?"s":"")+(c.name?" de "+String(c.name).slice(0,30):"")+". Só aceite se foi você quem pediu. Continuar?")){delete c.painel;localStorage.setItem("ascensao-cfg",JSON.stringify(c));}}}catch(e){}
 addEventListener("hashchange",()=>{if(/[#&][csk]=/.test(location.hash))location.reload();});
-try{const c=JSON.parse(localStorage.getItem("ascensao-cfg")||"null");cfg=(c&&(c.version||1)>=DEFAULT_CFG.version)?c:DEFAULT_CFG;}catch(e){cfg=DEFAULT_CFG;}
+try{const c=sanCfg(JSON.parse(localStorage.getItem("ascensao-cfg")||"null"));cfg=(c&&(c.version||1)>=DEFAULT_CFG.version)?c:DEFAULT_CFG;}catch(e){cfg=DEFAULT_CFG;}
 if(cfg.name)$("titleName").textContent=cfg.name;
-try{const s=JSON.parse(localStorage.getItem("ascensao-prog")||"null");if(s&&s.log)prog=Object.assign({log:{},extra:{},faith:{},energy:{},mit:{},reviews:{}},s);}catch(e){}
+try{const s=sanProg(JSON.parse(localStorage.getItem("ascensao-prog")||"null"));if(s&&s.log)prog=Object.assign({log:{},extra:{},faith:{},energy:{},mit:{},reviews:{}},s);}catch(e){}
 // ---------- Nova temporada: zera XP uma vez por aparelho, com cópia de segurança local ----------
 const SEASON="2";
 (function(){let cur="";try{cur=localStorage.getItem("ascensao-season")||"";}catch(e){}

@@ -40,7 +40,7 @@ function cdLink(){const me=rankName();if(!tmOn()||!me)return "";const s=tmSt();i
 async function cdInvite(){const me=rankName();if(!tmOn()||!me){toast("Entre no ranking primeiro: o convite usa o seu apelido.");return;}
   const url=cdLink();const text="Bora jogar comigo no Ascension? É um jogo pra subir de nível na vida real. Entra pelo meu link que a gente já vira amigo lá dentro:";
   try{if(navigator.share){await navigator.share({title:"Ascension",text,url});return;}}catch(e){if(e&&e.name==="AbortError")return;}
-  try{await navigator.clipboard.writeText(text+" "+url);toast("Link copiado. Cole no WhatsApp do seu amigo.");}catch(e){window.open("https://wa.me/?text="+encodeURIComponent(text+" "+url),"_blank");}}
+  try{await navigator.clipboard.writeText(text+" "+url);toast("Link copiado. Cole no WhatsApp do seu amigo.");}catch(e){window.open("https://wa.me/?text="+encodeURIComponent(text+" "+url),"_blank","noopener");}}
 async function cdSig(tk,n){const b=await crypto.subtle.digest("SHA-256",new TextEncoder().encode(tk+"|"+tmN(n)));return "cv"+[...new Uint8Array(b)].slice(0,6).map(x=>x.toString(16).padStart(2,"0")).join("");}
 // quem chegou por convite: guarda quem convidou até poder virar amigo
 (function(){try{const u=new URLSearchParams(location.search);const a=cleanNick(u.get("amigo")||"");if(a){localStorage.setItem("asc-amigo",a);localStorage.setItem("asc-amigo-c",String(u.get("c")||"").replace(/[^a-z0-9]/g,"").slice(0,12));u.delete("amigo");u.delete("c");history.replaceState(null,"",location.pathname+(u.toString()?"?"+u:""));}}catch(e){}})();
@@ -77,7 +77,7 @@ document.addEventListener("click",e=>{const li=e.target.closest&&e.target.closes
   if(!p.querySelector(".cdlink")){const u=cdLink();if(u){const bx=cdEl("div","cdlink");bx.append(cdEl("b",null,"🔗 Link da sua turma"),cdEl("span","sm muted","Mande no grupo: quem entrar por ele vira seu amigo na hora. Serve para quantas pessoas quiser."));
       const lk=cdEl("div","cdurl",u.replace(/^https:\/\//,""));bx.append(lk);const r=cdEl("div","cdlbtn");
       const c1=cdEl("button","ghost","Copiar link");c1.type="button";c1.addEventListener("click",async()=>{try{await navigator.clipboard.writeText(u);toast("Link da turma copiado.");}catch(e){const sel=getSelection();const rg=document.createRange();rg.selectNodeContents(lk);sel.removeAllRanges();sel.addRange(rg);toast("Segure no link para copiar.");}});
-      const c2=cdEl("button","ghost","WhatsApp");c2.type="button";c2.addEventListener("click",()=>window.open("https://wa.me/?text="+encodeURIComponent("Bora jogar comigo no Ascension? É um jogo pra subir de nível na vida real. Entra pela minha turma: "+u),"_blank"));
+      const c2=cdEl("button","ghost","WhatsApp");c2.type="button";c2.addEventListener("click",()=>window.open("https://wa.me/?text="+encodeURIComponent("Bora jogar comigo no Ascension? É um jogo pra subir de nível na vida real. Entra pela minha turma: "+u),"_blank","noopener"));
       r.append(c1,c2);bx.append(r);const ac=p.querySelector(".cdacts");(ac||p.querySelector(".tmseg")).after(bx);}}
   for(const li of p.querySelectorAll(".tmlist li:not(.tmzone)"))li.classList.add("tap");
   const lg=p.querySelector(".tmlg");if(lg&&!lg.querySelector(".cdme")){const ps=cdPos(rankName());if(ps.g){const x=cdEl("div","cdme");x.append(cdEl("b",null,(ps.t||ps.g)+"º"),cdEl("span",null,ps.t?"de "+ps.tof+" na turma":"de "+ps.gof+" no geral"));lg.append(x);}}}catch(e){}cdBadgeUI();};}
