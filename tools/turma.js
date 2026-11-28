@@ -58,8 +58,8 @@ function tmLeftDay(){const d=new Date();const nx=new Date(d);nx.setHours(24,0,0,
 function tmUI(){const p=tmPlace();if(!p)return;if(tmKid()||!cfg||cfg.blank){p.hidden=true;return;}p.hidden=false;
   if(p.contains(document.activeElement)&&document.activeElement.tagName==="INPUT")return;p.textContent="";const s=tmSt();
   let tier="";try{tier=lgName(lgSt().t);}catch(e){}
-  const hd=tmEl("div","tmhd");hd.append(tmEl("h2",null,"👥 Turma"),tmEl("span","tmclock","⏳ "+(s.view==="hoje"?"o dia fecha em "+tmLeftDay():"fecha em "+tmLeft())));p.append(hd);
-  if(!tmOn()){const c=tmEl("div","tmjoin");c.append(tmEl("b",null,"Entre na turma"),tmEl("p","sm muted","Cada um faz as suas tarefas. Aqui vocês veem o nível, a sequência e o XP uns dos outros, sobem de liga juntos e mandam parabéns. Só aparece o seu apelido."));
+  const hd=tmEl("div","tmhd");hd.append(tmEl("h2",null,"👥 Guilda"),tmEl("span","tmclock","⏳ "+(s.view==="hoje"?"o dia fecha em "+tmLeftDay():"fecha em "+tmLeft())));p.append(hd);
+  if(!tmOn()){const c=tmEl("div","tmjoin");c.append(tmEl("b",null,"Entre na guilda"),tmEl("p","sm muted","Cada um faz as suas tarefas. Aqui vocês veem o nível, a sequência e o XP uns dos outros, sobem de liga juntos e mandam parabéns. Só aparece o seu apelido."));
     const b=tmEl("button","go","Entrar no ranking");b.type="button";b.addEventListener("click",()=>{const j=$("rkJoin");if(j&&!j.hidden){j.click();setTimeout(tmUI,600);}else{const r=$("rankPanel");if(r)r.scrollIntoView({block:"start",behavior:"smooth"});}});c.append(b);p.append(c);return;}
   // liga + seletor
   const lg=tmEl("div","tmlg");lg.append(tmEl("b",null,tier||"Liga"),tmEl("span","sm muted","Os 3 primeiros da semana sobem. Ninguém cai."));p.append(lg);
@@ -68,12 +68,12 @@ function tmUI(){const p=tmPlace();if(!p)return;if(tmKid()||!cfg||cfg.blank){p.hi
   const L=tmBoard(s.view);
   if(s.view==="hoje"){const box=tmEl("div","dybox");const rv=typeof dyRival==="function"?dyRival():null;box.append(tmEl("div","dyriv",rv?rv.txt:"Ranking de hoje: zera à meia-noite. Cada XP de hoje conta."));
     const nt=dyNote();if(nt)box.append(tmEl("div","sm muted",nt));box.append(dyNtfBtn());p.append(box);}
-  if(s.view==="turma"&&!gr.length){const e=tmEl("div","tmempty");e.append(tmEl("p",null,"Sua turma ainda está vazia. Chame alguém para jogar com você."));
+  if(s.view==="turma"&&!gr.length){const e=tmEl("div","tmempty");e.append(tmEl("p",null,"Sua guilda ainda está vazia. Chame alguém para jogar com você."));
     // turma vazia: o botão principal manda o LINK da turma (mesmo dos botões Copiar link/WhatsApp); por apelido fica como opção secundária
-    if(typeof cdInvite==="function"&&tmOn()&&!(typeof tmKid==="function"&&tmKid())&&rankName()){const iv=tmEl("button","go tminv","📨 Mandar o link da turma");iv.type="button";iv.addEventListener("click",()=>cdInvite());e.append(iv);}
+    if(typeof cdInvite==="function"&&tmOn()&&!(typeof tmKid==="function"&&tmKid())&&rankName()){const iv=tmEl("button","go tminv","📨 Mandar o link da guilda");iv.type="button";iv.addEventListener("click",()=>cdInvite());e.append(iv);}
     const b=tmEl("button",e.querySelector(".tminv")?"link tmnick":"go",e.querySelector(".tminv")?"ou adicionar por apelido":"+ Adicionar amigo");b.type="button";b.addEventListener("click",()=>{try{frAdd=true;frUI();}catch(e){}setTimeout(()=>{const f=$("frPanel");if(!f)return;if(f.classList.contains("fold")&&!f.classList.contains("open")){const h=f.querySelector(":scope>.fhd");if(h)h.click();}f.scrollIntoView({block:"start",behavior:matchMedia("(prefers-reduced-motion: reduce)").matches?"auto":"smooth"});const i=f.querySelector("input");if(i)setTimeout(()=>i.focus(),80);},0);});e.append(b);p.append(e);}
   if(rankRows&&typeof rankErr!=="undefined"&&rankErr){const w=tmEl("div","sm muted tmoff","Sem conexão · mostrando a última lista. Toque para tentar de novo.");w.setAttribute("role","button");w.tabIndex=0;w.style.cursor="pointer";w.addEventListener("click",()=>{rankErr=false;try{tmUI();}catch(e){}loadRank();});const f0=p.firstElementChild;if(f0)f0.after(w);else p.append(w);}
-  if(!rankRows){const w=tmEl("div","sm muted",(typeof rankErr!=="undefined"&&rankErr)?"Sem conexão com o ranking. Toque aqui para tentar de novo.":"Carregando a turma…");if(typeof rankErr!=="undefined"&&rankErr){w.style.cursor="pointer";w.addEventListener("click",()=>{rankErr=false;try{tmUI();}catch(e){}loadRank();});}p.append(w);}
+  if(!rankRows){const w=tmEl("div","sm muted",(typeof rankErr!=="undefined"&&rankErr)?"Sem conexão com o ranking. Toque aqui para tentar de novo.":"Carregando a guilda…");if(typeof rankErr!=="undefined"&&rankErr){w.style.cursor="pointer";w.addEventListener("click",()=>{rankErr=false;try{tmUI();}catch(e){}loadRank();});}p.append(w);}
   const ol=tmEl("ol","tmlist");L.slice(0,300).forEach((r,i)=>{const li=tmEl("li",(r.me?"me ":"")+(i<3&&L.length>=2?"up":""));
     li.append(tmEl("span","tmpos",i<3?["🥇","🥈","🥉"][i]:String(i+1)));const av=tmEl("span","tmav");av.innerHTML=tmAv(r.av,44);li.append(av);
     const tx=tmEl("div","tmtx");const cls=tmCls(r.av);tx.append(tmEl("b",null,r.n+(r.me?" (você)":"")),tmEl("span","tmmeta",(r.lv?"Nv "+r.lv:"")+(cls?" · "+cls:"")+(r.seq?" · 🔥 "+r.seq:"")+(!r.me&&r.on===false&&s.view==="turma"?" · ainda não pontuou na semana":"")));li.append(tx);
@@ -88,7 +88,7 @@ function tmUI(){const p=tmPlace();if(!p)return;if(tmKid()||!cfg||cfg.blank){p.hi
   try{dyClimb(ol,s.view);}catch(e){}
   if(fr.length)p.append(tmEl("div","sm muted tmhint","Toque num amigo para ver o card dele. 🎉 dá parabéns, 👉 cutuca (1 de cada por dia)."));
   // novidades
-  const F=s.feed.slice(0,6);if(F.length){const fd=tmEl("div","tmfeed");fd.append(tmEl("h3",null,"Novidades da turma"));
+  const F=s.feed.slice(0,6);if(F.length){const fd=tmEl("div","tmfeed");fd.append(tmEl("h3",null,"Novidades da guilda"));
     for(const f of F){const r=tmEl("div","tmfi");r.append(tmEl("span",null,f.t));
       if((f.k==="lv"||f.k==="seq")&&!s.sent["p:"+tmN(f.n)+":"+todayKey()]){const b=tmEl("button","tmbtn","🎉");b.type="button";b.setAttribute("aria-label","Dar parabéns para "+f.n);b.addEventListener("click",()=>tmSend(f.n,"p"));r.append(b);}
       fd.append(r);}p.append(fd);}}

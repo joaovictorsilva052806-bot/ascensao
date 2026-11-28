@@ -29,12 +29,13 @@ for(const [route,pre] of [['comecar/','asc-u'],['','ascensao']]){const tag=route
   // 18+ sem nenhuma missão: aba trancada, com mistério
   let {ctx,p,errs}=await open(route,pre,CFG('adult'),P({log:{}}),{tab:false});
   await p.evaluate(()=>document.querySelector('#tabbar [data-go="hoje"]').click());await p.waitForTimeout(250);
-  ok(tag+' 18+ sem missão: Hoje mostra a linha selada',await p.evaluate(()=>{const l=document.getElementById('tpLine');return !!l&&!l.hidden&&l.getClientRects().length>0&&/\?\?\?/.test(l.textContent)&&/Conclua 1 missão/.test(l.textContent);}));
+  ok(tag+' 18+ sem missão: Hoje mostra a linha selada',await p.evaluate(()=>{const l=document.getElementById('tpLine');return !!l&&!l.hidden&&l.getClientRects().length>0&&/\?\?\?/.test(l.textContent)&&/Falta 1 missão para abrir/.test(l.textContent)&&document.body.classList.contains('asc-fresh');}));
   await p.click('#tpLine button');await p.waitForTimeout(300);
   ok(tag+' a linha leva à aba Lendárias trancada, sem nenhuma task à vista',await tabOn(p)&&await p.evaluate(()=>document.body.dataset.tab==='lenda'&&!!document.querySelector('#tpPanel .tpvault')&&!document.querySelector('#tpPanel .tpm')&&!document.querySelector('#tpPanel a')));
   ok(tag+' console limpo (trancada)',errs.length===0,errs.join(' | '));await ctx.close();
   // 18+ com 1 missão: aberta
   ({ctx,p,errs}=await open(route,pre,CFG('adult'),P()));
+  ok(tag+' com 1 missão feita: ranking e correntes voltam (sem asc-fresh)',!(await p.evaluate(()=>document.body.classList.contains('asc-fresh'))));
   ok(tag+' 18+: aba Lendárias aberta, 3 tasks reveladas e o resto selado',await vis(p)&&(await p.locator('#tpPanel .tpm[data-tp]').count())===3&&(await p.locator('#tpPanel .tpseal').count())>=15);
   ok(tag+' ordem: Desapega (cai hoje), Cashback, Maquininha',await p.evaluate(()=>[...document.querySelectorAll('#tpPanel .tpm[data-tp]')].map(e=>e.dataset.tp).join()==='desapega,cashback,mpago'&&/Cai hoje/.test(document.querySelector('#tpPanel .tpm[data-tp="desapega"] .tpwhen').textContent)));
   ok(tag+' cada card tem raridade, quanto paga e quando cai',await p.evaluate(()=>[...document.querySelectorAll('#tpPanel .tpm[data-tp]')].every(c=>c.querySelector('.tptier')&&/💰/.test(c.querySelector('.tpsub').textContent)&&c.querySelector('.tpwhen').textContent.length>8&&c.querySelectorAll('.tpbtn').length===3)));

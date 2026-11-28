@@ -1,7 +1,7 @@
 // ---------- Várias turmas (igreja, família, trabalho...) + ranking semanal em destaque ----------
 // Turma = grupo de amigos que você organiza. Tudo fica neste aparelho: o canal público (F/G/K) não muda e nada novo sai do celular.
 // Só ADICIONA prog.turmas = {l:[{id,n,e,c,m:[apelidos]}], cur:id, hx:"AAAA-MM-DD"}.
-// Migração: quem já joga ganha a turma "Minha turma" com todos os amigos de hoje e o mesmo link de convite (links já enviados continuam valendo).
+// Migração: quem já joga ganha a turma "Minha guilda" com todos os amigos de hoje e o mesmo link de convite (links já enviados continuam valendo).
 // Link por turma: ...?amigo=APELIDO&c=CÓDIGO-DA-TURMA&t=NOME. Quem entra vira amigo (mesma assinatura do card.js) e cai na turma certa dos dois lados.
 // LGPD: até 13 anos, nada disso aparece. 14-17 (e idade não informada no /comecar) só entram no ranking com apelido e "meu responsável autorizou".
 const GT_EM=["⭐","⛪","🏠","⚽","🎓","💼","🎮","💪","🎸","❤️"];
@@ -12,8 +12,8 @@ function gtEl(t,cl,x){const e=document.createElement(t);if(cl)e.className=cl;if(
 function gtCode(){const a=new Uint8Array(8);crypto.getRandomValues(a);return [...a].map(x=>(x%36).toString(36)).join("");}
 function gtSt(){let g=prog.turmas;
   if(!g||typeof g!=="object"||!Array.isArray(g.l)||!g.l.length){let fr=[];try{fr=frSt().l.slice();}catch(e){}
-    g=prog.turmas={l:[{id:"t0",n:"Minha turma",e:"⭐",c:"",m:fr}],cur:"t0"};save();}
-  for(const t of g.l){t.m=Array.isArray(t.m)?t.m:[];t.n=gtClean(t.n)||"Turma";if(!GT_EM.includes(t.e))t.e="⭐";}
+    g=prog.turmas={l:[{id:"t0",n:"Minha guilda",e:"⭐",c:"",m:fr}],cur:"t0"};save();}
+  for(const t of g.l){t.m=Array.isArray(t.m)?t.m:[];if(t.n==="Minha turma")t.n="Minha guilda"; /* Turma virou Guilda (27/11): só o nome padrão muda */t.n=gtClean(t.n)||"Guilda";if(!GT_EM.includes(t.e))t.e="⭐";}
   if(!g.l.some(t=>t.id===g.cur))g.cur=g.l[0].id;return g;}
 function gtCur(){const g=gtSt();return g.l.find(t=>t.id===g.cur)||g.l[0];}
 function gtByName(n){return gtSt().l.find(t=>gtN(t.n)===gtN(n));}
@@ -24,12 +24,12 @@ function gtSync(){const g=gtSt();let fr=[];try{fr=frSt().l;}catch(e){return;}let
   const pd=gtPendGet();
   for(const n of fr){if(g.l.some(t=>t.m.some(x=>gtN(x)===gtN(n))))continue;let t=gtCur();
     if(pd&&gtN(pd.a)===gtN(n)&&pd.t){t=gtByName(pd.t);if(!t&&g.l.length<GT_MAX){t={id:"t"+Date.now().toString(36),n:gtClean(pd.t),e:"⭐",c:"",m:[]};g.l.push(t);}t=t||gtCur();
-      try{localStorage.removeItem("asc-amigo-t");}catch(e){}setTimeout(()=>toast("🤝 "+n+" entrou na turma "+t.n+"."),1800);}
+      try{localStorage.removeItem("asc-amigo-t");}catch(e){}setTimeout(()=>toast("🤝 "+n+" entrou na guilda "+t.n+"."),1800);}
     t.m.push(n);ch=true;}
   if(ch)save();}
 // a lista "turma" da aba Amigos passa a ser a turma escolhida
 tmGroup=function(){try{gtSync();}catch(e){}const t=gtCur();return t.m.map(n=>frRow(n));};
-tmGroupName=function(){const t=gtCur();return t.e+" Turma";};
+tmGroupName=function(){const t=gtCur();return t.e+" Guilda";};
 // --- link de convite por turma ---
 {const _cl=cdLink;cdLink=function(){const u=_cl();if(!u)return u;const t=gtCur();if(t.id==="t0"&&!t.c)return u;
   if(!t.c){t.c=gtCode();save();}return u.replace(/&c=[a-z0-9]*/,"&c="+t.c)+"&t="+encodeURIComponent(t.n);};}
@@ -43,44 +43,44 @@ async function gtInbox(){const me=rankName();if(gtBusy||!me||typeof sqInvRows===
     for(const r of sqInvRows){if(r.k!=="F"||gtN(r.b)!==gtN(me)||!r.a||frHas(r.a)||!/^cv[0-9a-f]{12}$/.test(r.s))continue;
       for(const t of T){let ok=false;try{ok=r.s===await cdSig(t.c,r.a);}catch(e){}if(!ok||frHas(r.a))continue;
         f.l.push(r.a);delete f.pend[r.a];if(!t.m.some(x=>gtN(x)===gtN(r.a)))t.m.push(r.a);sqiPost(["G",me,r.a,"",sqiDk()]);ch=true;
-        tmFeedAdd("conv",r.a,"🤝 "+r.a+" entrou pelo link da turma "+t.n);try{cdBadge(1);}catch(e){}toast("🤝 "+r.a+" entrou na turma "+t.n+". Agora são amigos!");break;}}}
+        tmFeedAdd("conv",r.a,"🤝 "+r.a+" entrou pelo link da guilda "+t.n);try{cdBadge(1);}catch(e){}toast("🤝 "+r.a+" entrou na guilda "+t.n+". Agora são amigos!");break;}}}
   finally{gtBusy=false;}if(ch){save();try{frUI();tmUI();}catch(e){}}}
 {const _ck=sqiCheck;sqiCheck=function(){gtInbox().catch(()=>{});_ck.apply(this,arguments);};}
 // --- criar, editar e trocar de turma ---
 function gtGo(id){const g=gtSt();g.cur=id;try{tmSt().view="turma";}catch(e){}save();try{haptic([8]);}catch(e){}tmUI();}
 function gtSheet(id){const g=gtSt();const novo=!id;const t=novo?{id:"",n:"",e:GT_EM[g.l.length%GT_EM.length],c:"",m:[]}:g.l.find(x=>x.id===id);if(!t)return;
   let fr=[];try{fr=frSt().l.slice();}catch(e){}
-  const m=gtEl("div","sysmodal gtmodal");m.setAttribute("role","dialog");m.setAttribute("aria-modal","true");m.setAttribute("aria-label",novo?"Nova turma":"Editar turma");
+  const m=gtEl("div","sysmodal gtmodal");m.setAttribute("role","dialog");m.setAttribute("aria-modal","true");m.setAttribute("aria-label",novo?"Nova guilda":"Editar guilda");
   const c=gtEl("div","card gtcard");c.append(gtEl("div","tag",novo?"[ SISTEMA ] NOVA TURMA":"[ SISTEMA ] EDITAR TURMA"));
   const close=()=>{m.remove();};m.addEventListener("click",e=>{if(e.target===m)close();});
-  const lb=gtEl("label","gtlbl","Nome da turma");const inp=gtEl("input","gtname");inp.maxLength=20;inp.autocomplete="off";inp.placeholder="Ex.: Igreja, Família, Trabalho";inp.value=t.n;lb.append(inp);c.append(lb);
-  const ems=gtEl("div","gtems");ems.setAttribute("role","radiogroup");ems.setAttribute("aria-label","Ícone da turma");let em=t.e;
+  const lb=gtEl("label","gtlbl","Nome da guilda");const inp=gtEl("input","gtname");inp.maxLength=20;inp.autocomplete="off";inp.placeholder="Ex.: Igreja, Família, Trabalho";inp.value=t.n;lb.append(inp);c.append(lb);
+  const ems=gtEl("div","gtems");ems.setAttribute("role","radiogroup");ems.setAttribute("aria-label","Ícone da guilda");let em=t.e;
   for(const e of GT_EM){const b=gtEl("button",e===em?"on":"",e);b.type="button";b.setAttribute("role","radio");b.setAttribute("aria-checked",e===em?"true":"false");
     b.addEventListener("click",()=>{em=e;for(const x of ems.children){x.classList.toggle("on",x===b);x.setAttribute("aria-checked",x===b?"true":"false");}});ems.append(b);}
   c.append(ems);
   const sel=new Set(t.m.map(gtN));
-  if(fr.length){c.append(gtEl("div","gtlbl","Quem está nesta turma"));const ul=gtEl("div","gtmem");
+  if(fr.length){c.append(gtEl("div","gtlbl","Quem está nesta guilda"));const ul=gtEl("div","gtmem");
     for(const n of fr){const l=gtEl("label","gtchk");const x=gtEl("input");x.type="checkbox";x.checked=sel.has(gtN(n));x.addEventListener("change",()=>{if(x.checked)sel.add(gtN(n));else sel.delete(gtN(n));});
       const av=gtEl("span","gtav");av.innerHTML=tmAv((typeof sqPub!=="undefined"&&sqPub[gtN(n)]||{}).av,28);l.append(x,av,gtEl("span",null,n));ul.append(l);}c.append(ul);
-    c.append(gtEl("p","sm muted","Um amigo pode estar em mais de uma turma. Para chamar gente nova, use o link da turma."));}
-  else c.append(gtEl("p","sm muted","Ainda sem amigos para pôr aqui. Crie a turma e mande o link dela no grupo do WhatsApp: quem entrar cai direto nela."));
+    c.append(gtEl("p","sm muted","Um amigo pode estar em mais de uma guilda. Para chamar gente nova, use o link da guilda."));}
+  else c.append(gtEl("p","sm muted","Ainda sem amigos para pôr aqui. Crie a guilda e mande o link dela no grupo do WhatsApp: quem entrar cai direto nela."));
   const msg=gtEl("div","sm gtmsg");msg.setAttribute("role","status");c.append(msg);inp.addEventListener("input",()=>{msg.textContent="";});
-  const row=gtEl("div","row");const ok=gtEl("button","go",novo?"Criar turma":"Salvar");ok.type="button";const no=gtEl("button","ghost","Cancelar");no.type="button";row.append(ok,no);c.append(row);
-  ok.addEventListener("click",()=>{const n=gtClean(inp.value);if(!n){msg.textContent="Dê um nome para a turma.";inp.focus();return;}
-    if(g.l.some(x=>x!==t&&gtN(x.n)===gtN(n))){msg.textContent="Já existe uma turma com esse nome.";inp.focus();return;}
+  const row=gtEl("div","row");const ok=gtEl("button","go",novo?"Criar guilda":"Salvar");ok.type="button";const no=gtEl("button","ghost","Cancelar");no.type="button";row.append(ok,no);c.append(row);
+  ok.addEventListener("click",()=>{const n=gtClean(inp.value);if(!n){msg.textContent="Dê um nome para a guilda.";inp.focus();return;}
+    if(g.l.some(x=>x!==t&&gtN(x.n)===gtN(n))){msg.textContent="Já existe uma guilda com esse nome.";inp.focus();return;}
     t.n=n;t.e=em;t.m=fr.filter(x=>sel.has(gtN(x)));
-    if(novo){if(g.l.length>=GT_MAX){msg.textContent="Limite de "+GT_MAX+" turmas.";return;}t.id="t"+Date.now().toString(36);g.l.push(t);}
-    g.cur=t.id;try{tmSt().view="turma";}catch(e){}save();close();tmUI();toast(novo?t.e+" Turma "+t.n+" criada. Mande o link dela no grupo.":"Turma salva.");});
+    if(novo){if(g.l.length>=GT_MAX){msg.textContent="Limite de "+GT_MAX+" guildas.";return;}t.id="t"+Date.now().toString(36);g.l.push(t);}
+    g.cur=t.id;try{tmSt().view="turma";}catch(e){}save();close();tmUI();toast(novo?t.e+" Guilda "+t.n+" criada. Mande o link dela no grupo.":"Guilda salva.");});
   no.addEventListener("click",close);
-  if(!novo&&g.l.length>1){const del=gtEl("button","link gtdel","Apagar esta turma");del.type="button";del.addEventListener("click",()=>{
+  if(!novo&&g.l.length>1){const del=gtEl("button","link gtdel","Apagar esta guilda");del.type="button";del.addEventListener("click",()=>{
       if(del.dataset.k!=="1"){del.dataset.k="1";del.textContent="Toque de novo para apagar (os amigos continuam seus amigos)";return;}
-      g.l=g.l.filter(x=>x!==t);g.cur=g.l[0].id;save();close();tmUI();toast("Turma apagada. Os amigos continuam na sua lista.");});c.append(del);}
+      g.l=g.l.filter(x=>x!==t);g.cur=g.l[0].id;save();close();tmUI();toast("Guilda apagada. Os amigos continuam na sua lista.");});c.append(del);}
   m.append(c);document.body.append(m);setTimeout(()=>(novo?inp:ok).focus(),60);}
-function gtBar(){const g=gtSt();const bar=gtEl("div","gtbar");bar.setAttribute("role","tablist");bar.setAttribute("aria-label","Suas turmas");
+function gtBar(){const g=gtSt();const bar=gtEl("div","gtbar");bar.setAttribute("role","tablist");bar.setAttribute("aria-label","Suas guildas");
   for(const t of g.l){const on=t.id===g.cur;const b=gtEl("button","gtchip"+(on?" on":""));b.type="button";b.setAttribute("role","tab");b.setAttribute("aria-selected",on?"true":"false");b.dataset.t=t.id;
     b.append(gtEl("span","gte",t.e),gtEl("span","gtn",t.n),gtEl("span","gtc",String(t.m.length)));
     b.addEventListener("click",()=>{if(on)gtSheet(t.id);else gtGo(t.id);});bar.append(b);}
-  if(g.l.length<GT_MAX){const nb=gtEl("button","gtchip gtnew","+ Nova turma");nb.type="button";nb.addEventListener("click",()=>gtSheet());bar.append(nb);}
+  if(g.l.length<GT_MAX){const nb=gtEl("button","gtchip gtnew","+ Nova guilda");nb.type="button";nb.addEventListener("click",()=>gtSheet());bar.append(nb);}
   return bar;}
 // pódio: os 3 primeiros em destaque, com avatar grande
 function gtPodium(L,view){const top=L.slice(0,3);if(top.length<2)return null;const w=gtEl("div","gtpod");w.setAttribute("aria-label","Pódio da semana");
@@ -89,10 +89,10 @@ function gtPodium(L,view){const top=L.slice(0,3);if(top.length<2)return null;con
   return w;}
 {const _tu=tmUI;tmUI=function(){_tu.apply(this,arguments);try{const p=$("tmPanel");if(!p||p.hidden||!tmOn())return;const s=tmSt();
   const hd=p.querySelector(".tmhd");if(hd&&!p.querySelector(".gtbar"))hd.after(gtBar());
-  if(s.view==="turma"){const t=gtCur();const lk=p.querySelector(".cdlink > b");if(lk)lk.textContent="🔗 Link da turma "+t.e+" "+t.n;
-    const em=p.querySelector(".tmempty p");if(em&&t.id!=="t0")em.textContent="Ninguém na turma "+t.n+" ainda. Mande o link dela no grupo ou toque na turma para pôr amigos que você já tem.";}
+  if(s.view==="turma"){const t=gtCur();const lk=p.querySelector(".cdlink > b");if(lk)lk.textContent="🔗 Link da guilda "+t.e+" "+t.n;
+    const em=p.querySelector(".tmempty p");if(em&&t.id!=="t0")em.textContent="Ninguém na guilda "+t.n+" ainda. Mande o link dela no grupo ou toque na guilda para pôr amigos que você já tem.";}
   const ol=p.querySelector(".tmlist");if(ol&&s.view!=="hoje"&&!p.querySelector(".gtpod")){const L=tmBoard(s.view);const pd=gtPodium(L,s.view);if(pd)ol.before(pd);}
-  if(ol&&!p.querySelector(".gtcount")){const L=tmBoard(s.view);const me=L.findIndex(r=>r.me);if(L.length>1&&me>=0)ol.before(gtEl("div","gtcount",(me+1)+"º de "+L.length+(s.view==="geral"?" no ranking da semana":s.view==="hoje"?" hoje":" na turma")));}}catch(e){}};}
+  if(ol&&!p.querySelector(".gtcount")){const L=tmBoard(s.view);const me=L.findIndex(r=>r.me);if(L.length>1&&me>=0)ol.before(gtEl("div","gtcount",(me+1)+"º de "+L.length+(s.view==="geral"?" no ranking da semana":s.view==="hoje"?" hoje":" na guilda")));}}catch(e){}};}
 // --- destaque em Hoje: ranking da semana sempre à vista ---
 function gtHero(){let h=$("gtHero");const st=$("dayPill");const host=st&&st.closest("section");if(!host)return;
   if(!h){h=gtEl("section","panel gthero");h.id="gtHero";h.dataset.tab="hoje";host.after(h);}
