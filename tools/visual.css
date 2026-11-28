@@ -56,3 +56,13 @@ body:not(.asc-fresh) .swipehint{display:none}
 .bxf.lock .bxfr{opacity:.8}
 .bxtt{border-left:3px solid var(--rc)}
 .bxtt.eq{box-shadow:0 0 14px color-mix(in srgb,var(--rc) 30%,transparent)}
+/* 14. Telas baixas (iPhone SE 375x667, Android 360x640): janela alta rola em vez de cortar o topo; entrada mais compacta */
+.sysmodal{place-items:start center;overflow-y:auto;overscroll-behavior:contain}
+.sysmodal>*{margin-block:auto}
+@media (max-height:700px){
+  .quick{gap:10px;padding-top:max(14px,env(safe-area-inset-top))}
+  .quick .qstep:not(.qperm){margin-top:0;gap:10px}
+  .qstep h2{font-size:1.3rem}
+  .qgrid{gap:8px}.qgrid button{min-height:48px;padding:10px 8px}.qgrid.sm3 button{min-height:44px;padding:8px 6px}
+}
+@media (max-height:700px){#bxModal .bxbtn{max-width:min(100%,30vh);margin-inline:auto}#bxModal h3{font-size:1.15rem;margin-block:4px}}
