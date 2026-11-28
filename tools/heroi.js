@@ -90,7 +90,7 @@ function hrDayCount(){const el=$("dayxp");if(!el)return;const tk=todayKey();cons
 // Aba Hoje: as tarefas sobem para logo depois do cartão. Só ficam entre os dois a barra do Sistema (Próxima missão)
 // e a Forja (que se prende ao topo das tarefas). Desafios relâmpago, Comece por aqui, ranking da semana e chefão vão
 // para depois da lista, nessa ordem; qualquer bloco novo que apareça no meio também desce.
-const HR_AFTER=["zapPanel","gdPanel","gtHero","tbStrip"];
+const HR_AFTER=["zapPanel","tpLine","gdPanel","gtHero","tbStrip"];
 function hrOrder(){const q=$("quests")&&$("quests").closest("section");const st=document.querySelector('.wrap>section[data-tab="hoje"] .status');const hero=st&&st.closest("section");
   if(!q||!hero||hero.parentNode!==q.parentNode)return;
   // 1º uso (guia "Comece por aqui" visto nesta abertura): a Forja também desce, para a 1ª missão caber na primeira tela.

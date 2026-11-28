@@ -68,20 +68,26 @@ for(const [route,pre] of [['comecar/','asc-u'],['','ascensao']]){const tag=route
   ok(tag+' dados antigos intactos',st.velho==='fica'&&st.rpg.cls.id==='mago');
   // Carteira
   ok(tag+' meta de hoje aparece com a Carteira',/Meta de hoje: seus primeiros R\$ 50/.test(await p.textContent('#tpPanel .tpmeta')));
-  await p.click('#tpPanel .tpwallet summary');await p.waitForTimeout(100);
-  await p.fill('#tpPanel .tpwallet .tpwf input','25,50');await p.click('#tpPanel .tpwallet .tpwadd');await p.waitForTimeout(250);
+  await p.click('#tpPanel .tpwallet .tpwreg summary');await p.waitForTimeout(100);
+  await p.fill('#tpPanel .tpwallet .tpwf input','25,50');await p.click('#tpPanel .tpwallet .tpwadd');await p.waitForTimeout(800);
   const w=await LS(p,pre+'-real');st=await LS(p,pre+'-prog');
   ok(tag+' carteira anota fora do prog',Array.isArray(w)&&w.length===1&&w[0].v===25.5&&!JSON.stringify(st).includes('25.5'),JSON.stringify(w));
-  ok(tag+' total aparece',/R\$ 25,50/.test(await p.textContent('#tpPanel .tpwallet')));
+  ok(tag+' total aparece em destaque',/R\$ 25,50/.test(await p.textContent('#tpPanel .tpwallet .tpwbig')));
   await p.fill('#tpPanel .tpwallet .tpwf input','-3');await p.click('#tpPanel .tpwallet .tpwadd');await p.waitForTimeout(200);
   ok(tag+' valor inválido não entra',(await LS(p,pre+'-real')).length===1);
+  // pendente não soma; "Caiu ✓" passa para recebido
+  await p.selectOption('#tpPanel .tpwallet .tpwst','p');await p.fill('#tpPanel .tpwallet .tpwf input','10');await p.click('#tpPanel .tpwallet .tpwadd');await p.waitForTimeout(400);
+  ok(tag+' pendente aparece mas não soma no total',/Pendente: R\$ 10,00/.test(await p.textContent('#tpPanel .tpwallet'))&&/R\$ 25,50/.test(await p.textContent('#tpPanel .tpwbig')));
+  await p.click('#tpPanel .tpwallet .tpwok');await p.waitForTimeout(800);
+  ok(tag+' "Caiu ✓" move para recebido',/R\$ 35,50/.test(await p.textContent('#tpPanel .tpwbig'))&&!(await p.locator('#tpPanel .tpwok').count()));
+  await p.evaluate(k=>{const a=JSON.parse(localStorage.getItem(k));a.shift();localStorage.setItem(k,JSON.stringify(a));},pre+'-real');
+  await p.click('#tpPanel .tpchip:not([class*="t-"])');await p.waitForTimeout(200);
   ok(tag+' meta de hoje soma o anotado hoje',/Anotado hoje: R\$ 25,50 de R\$ 50,00/.test(await p.textContent('#tpPanel .tpmeta')));
   await p.evaluate(()=>{const c=document.querySelector('#tpPanel .tpm[data-tp="cashback"]');c.open=true;});await p.waitForTimeout(100);
-  await p.fill('#tpPanel .tpm[data-tp="cashback"] .tpgot input','30');await p.click('#tpPanel .tpm[data-tp="cashback"] .tpgot .tpwadd');await p.waitForTimeout(250);
+  await p.fill('#tpPanel .tpm[data-tp="cashback"] .tpgot input','30');await p.click('#tpPanel .tpm[data-tp="cashback"] .tpgot .tpwadd');await p.waitForTimeout(800);
   const w2=await LS(p,pre+'-real');
   ok(tag+' "quanto ganhei" do card entra na Carteira com a origem certa e bate a meta',w2.length===2&&w2[0].src==='cashback'&&w2[0].v===30&&/Meta batida/.test(await p.textContent('#tpPanel .tpmeta')),JSON.stringify(w2));
-  await p.evaluate(()=>{document.querySelector('#tpPanel .tpwallet').open=true;});await p.waitForTimeout(100);
-  await p.click('#tpPanel .tpwclr');await p.waitForTimeout(100);await p.click('#tpPanel .tpwclr');await p.waitForTimeout(200);
+    await p.click('#tpPanel .tpwclr');await p.waitForTimeout(100);await p.click('#tpPanel .tpwclr');await p.waitForTimeout(200);
   ok(tag+' apagar a carteira pede 2 toques e apaga',(await p.evaluate(k=>localStorage.getItem(k),pre+'-real'))===null);
   ok(tag+' console limpo',errs.length===0,errs.join(' | '));await ctx.close();
   for(const vp of [{width:320,height:640},{width:1280,height:800}]){({ctx,p,errs}=await open(route,pre,CFG('adult'),P(),{vp,rm:'reduce'}));
