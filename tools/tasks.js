@@ -229,10 +229,12 @@ function tpLine(){let l=$("tpLine");if(!tpOn()){if(l)l.hidden=true;return;}
   if(!l){const q=$("quests")&&$("quests").closest("section");if(!q)return;l=tpEl("section","panel tpline");l.id="tpLine";l.dataset.tab="hoje";
     q.after(l);} // logo abaixo das missões (tools/heroi.js HR_AFTER mantém aqui)
   l.hidden=false;l.textContent="";l.classList.toggle("tplock",!open);const b=tpEl("button","tplbtn");b.type="button";
-  if(!open){b.append(tpEl("span","tplk","⚜️ ??? · Algo foi selado no Sistema"),tpEl("span","tplx","Conclua 1 missão de hoje para ver o que paga de verdade."),tpEl("span","tplgo","Ver ›"));
-    b.setAttribute("aria-label","Tasks Lendárias, trancadas: conclua 1 missão de hoje");b.addEventListener("click",()=>tpGo(null));}
+  if(!open){b.append(tpEl("span","tplk","⚜️ TASKS LENDÁRIAS · ???"),tpEl("span","tplx","Falta 1 missão para abrir. Tarefas que pagam de verdade."),tpEl("span","tplgo","🔒 1"));
+    b.setAttribute("aria-label","Tasks Lendárias, trancadas: falta 1 missão para abrir");b.addEventListener("click",()=>tpGo(null));}
   else{b.append(tpEl("span","tplk","⚜️ Task "+TP_TIER[nx.T.tier][0]+" · "+tpName(nx.T)+" "+(nx.i+1)+"/"+nx.T.s.length),tpEl("span","tplx",nx.T.s[nx.i]),tpEl("span","tplgo","Abrir ›"));
     b.setAttribute("aria-label","Abrir a task "+tpName(nx.T)+": passo "+(nx.i+1)+" de "+nx.T.s.length);b.addEventListener("click",()=>tpGo(nx.T.id));}
   l.append(b);}
-{const _r=render;render=function(){_r.apply(this,arguments);try{tpRender();}catch(e){}try{tpLine();}catch(e){}};}
+// 1º uso enxuto: até a 1ª missão concluída, o ranking e o Quebrar correntes esperam (aparecem sozinhos depois). Só esconde, não apaga nada.
+function tpFresh(){try{document.body.classList.toggle("asc-fresh",!!(cfg&&!cfg.blank&&cfg.quests&&cfg.quests.length)&&!tpMission());}catch(e){}}
+{const _r=render;render=function(){_r.apply(this,arguments);try{tpRender();}catch(e){}try{tpLine();}catch(e){}tpFresh();};}
 setTimeout(()=>{try{tpRender();}catch(e){}try{tpLine();}catch(e){}},70);

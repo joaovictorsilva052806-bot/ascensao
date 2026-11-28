@@ -224,8 +224,8 @@ function hlCan(){try{return typeof muPhotoOn==="function"&&muPhotoOn();}catch(e)
 let hlRows=null,hlAt=0,hlBusy=false,hlOff=false;
 async function hlLoad(){if(!hlCan()||hlOff||hlBusy||!muSt().ok||Date.now()-hlAt<60000)return;hlBusy=true;hlAt=Date.now();
   try{const j=await muApi("hlist");hlRows=Array.isArray(j.hall)?j.hall.slice(0,30):[];}catch(e){if(/acao/.test(String(e.message||"")))hlOff=true;}hlBusy=false;hlUI();}
-async function hlPost(h){if(!muSt().ok)return muConsent(()=>hlPost(h));try{await muApi("hall",{c:"f30",s:h.s,k:h.n});h.pub=1;save();toast("🏆 No Hall da turma. Só seus amigos veem.");hlAt=0;hlLoad();}
-  catch(e){const er=String(e.message||"");if(/acao/.test(er)){hlOff=true;toast("O Hall da turma ainda não está ligado no servidor. O seu continua aqui.");}else toast(/amigo/.test(er)?"Adicione um amigo antes.":"Não deu agora. Tente de novo.");}hlUI();}
+async function hlPost(h){if(!muSt().ok)return muConsent(()=>hlPost(h));try{await muApi("hall",{c:"f30",s:h.s,k:h.n});h.pub=1;save();toast("🏆 No Hall da guilda. Só seus amigos veem.");hlAt=0;hlLoad();}
+  catch(e){const er=String(e.message||"");if(/acao/.test(er)){hlOff=true;toast("O Hall da guilda ainda não está ligado no servidor. O seu continua aqui.");}else toast(/amigo/.test(er)?"Adicione um amigo antes.":"Não deu agora. Tente de novo.");}hlUI();}
 function hlUI(){let p=$("hlPanel");const anchor=$("orPanel")||$("bxCol")||document.querySelector('.wrap>section[data-tab="prog"]');if(!anchor)return;
   if(!p){p=orEl("section","panel hlpanel");p.id="hlPanel";p.dataset.tab="prog";anchor.after(p);}const f=f30St();
   if(!orReady()||(!f.hall.length&&!(hlRows&&hlRows.length))){p.hidden=true;return;}p.hidden=false;
@@ -234,7 +234,7 @@ function hlUI(){let p=$("hlPanel");const anchor=$("orPanel")||$("bxCol")||docume
   const ul=orEl("ul","hllist");for(const h of f.hall){const [,m1,d1]=h.s.split("-"),[,m2,d2]=h.e.split("-");const li=orEl("li",null);li.append(orEl("b",null,"🏆 Você · "+h.n+" dias"),orEl("span","sm muted",d1+"/"+m1+" a "+d2+"/"+m2));
     if(hlCan()&&!hlOff&&!h.pub)li.append(orBtn("link","Mostrar para os amigos",()=>hlPost(h)));else if(h.pub)li.append(orEl("span","sm muted","amigos veem"));ul.append(li);}
   p.append(ul);
-  if(hlRows&&hlRows.length){p.append(orEl("h4","orh","Da turma (só amigos)"));const tl=orEl("ul","hllist");const me=String((typeof rankName==="function"&&rankName())||"").toLowerCase();
+  if(hlRows&&hlRows.length){p.append(orEl("h4","orh","Da guilda (só amigos)"));const tl=orEl("ul","hllist");const me=String((typeof rankName==="function"&&rankName())||"").toLowerCase();
     for(const r of hlRows){const a=String(r.a||"").slice(0,16);if(a.toLowerCase()===me)continue;const li=orEl("li",null);li.append(orEl("b",null,"🏆 "+a),orEl("span","sm muted",muAgo(r.d)));tl.append(li);}
     if(tl.children.length)p.append(tl);}}
 document.addEventListener("click",e=>{const b=e.target.closest&&e.target.closest('#tabbar [data-go="prog"]');if(b)setTimeout(()=>{try{hlLoad();}catch(x){}},0);},true);

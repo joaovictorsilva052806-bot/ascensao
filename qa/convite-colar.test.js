@@ -50,7 +50,7 @@ for(const [route,pre,tag] of [['comecar/','asc-u','/comecar/'],['','ascensao','/
   await p.fill('#clIn',LINK);await p.locator('.clpaste button.go').click();await p.waitForTimeout(1200);
   st=await p.evaluate(pre=>JSON.parse(localStorage.getItem(pre+'-prog')),pre);
   ok(tag+' G: amigo antigo entra na turma do link',((st.turmas&&st.turmas.l)||[]).some(t=>t.n==='Família'&&t.m.includes('JV')),JSON.stringify(st.turmas));
-  ok(tag+' G: e continua na turma antiga',((st.turmas&&st.turmas.l)||[]).some(t=>t.n==='Minha turma'&&t.m.includes('JV')),JSON.stringify(st.turmas));
+  ok(tag+' G: e continua na turma antiga',((st.turmas&&st.turmas.l)||[]).some(t=>t.n==='Minha guilda'&&t.m.includes('JV')),JSON.stringify(st.turmas));
   ok(tag+' G: mensagem cita a turma do link',/Família/.test(await p.textContent('.clmsg')),await p.textContent('.clmsg'));
   ok(tag+' G: amigo não duplicou e progresso intacto',st.friends.l.filter(x=>x==='JV').length===1&&st.velho==='fica'&&st.log['2026-11-25'].length===1);
   ok(tag+' G: console limpo',!errs.length,errs.join(' | '));await ctx.close();
@@ -80,7 +80,7 @@ for(const txt of [LINK+'.','('+LINK+')','entra aí '+LINK+'!','"'+LINK+'"']){
   const st=await p.evaluate(()=>JSON.parse(localStorage.getItem('asc-u-prog')));
   ok('H: amigo antigo entra na turma do link',((st.turmas&&st.turmas.l)||[]).some(t=>t.n==='Família'&&t.m.includes('JV')),JSON.stringify(st.turmas));
   ok('H: continua na turma antiga e sem amigo duplicado',st.turmas.l.find(t=>t.id==='t0').m.includes('JV')&&st.friends.l.filter(x=>x==='JV').length===1,JSON.stringify(st.friends));
-  ok('H: mensagem cita a turma',/turma Família/.test(await p.textContent('.clmsg')),await p.textContent('.clmsg'));
+  ok('H: mensagem cita a turma',/guilda Família/.test(await p.textContent('.clmsg')),await p.textContent('.clmsg'));
   ok('H: console limpo',!errs.length,errs.join(' | '));await ctx.close();}
 // I: 320 px: campo maior que o botão e botão inteiro
 {const {ctx,p,errs}=await open('comecar/','asc-u',CFG('adult'),PROG({rank:{on:true,asked:true,uid:'lari1234',nick:'Lari'}}),{viewport:{width:320,height:640}});await amigos(p);

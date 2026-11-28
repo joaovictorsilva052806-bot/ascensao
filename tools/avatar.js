@@ -402,7 +402,7 @@ function avHome(){const st=document.querySelector('.wrap>section[data-tab="hoje"
     w.addEventListener("click",e=>{if(e.target.closest("#rank"))return;if(typeof tmCard==="function")tmCard();else avMaker(false);});}
   const lv=avLv();{const hv=w.querySelector(".hav"),h=avMine(innerWidth<380?76:88);if(hv._h!==h){hv.innerHTML=h;hv._h=h;}} /* só redesenha o avatar quando ele muda: render() roda a cada toque */w.setAttribute("aria-label","Meu card: nível "+lv+". Toque para abrir");
   const pills=st.querySelector(".pills");if(!pills)return;let pp=$("heroPos");
-  let pos="";try{if(prog.rank&&prog.rank.on&&ageNow&&ageNow()!=="kid"&&typeof cdPos==="function"&&typeof rankName==="function"&&rankName()){const ps=cdPos(rankName());pos=ps.t?"🏆 "+ps.t+"º na turma":ps.g?"🏆 "+ps.g+"º no geral":"";}}catch(e){}
+  let pos="";try{if(prog.rank&&prog.rank.on&&ageNow&&ageNow()!=="kid"&&typeof cdPos==="function"&&typeof rankName==="function"&&rankName()){const ps=cdPos(rankName());pos=ps.t?"🏆 "+ps.t+"º na guilda":ps.g?"🏆 "+ps.g+"º no geral":"";}}catch(e){}
   if(!pp){pp=avEl("span","pill");pp.id="heroPos";pp.setAttribute("role","button");pp.tabIndex=0;pp.addEventListener("click",()=>{const t=document.querySelector('#tabbar [data-go="amigos"]');t&&t.click();});pills.append(pp);}
   pp.hidden=!pos;pp.textContent=pos;}
 {const _r=render;render=function(){_r.apply(this,arguments);try{avUI();}catch(e){}try{avHome();}catch(e){}try{clsTick();}catch(e){}try{avAskSoon();}catch(e){}};}

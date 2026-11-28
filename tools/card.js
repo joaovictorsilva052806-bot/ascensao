@@ -21,7 +21,7 @@ function tmCard(n){const me=!n||tmN(n)===tmN(rankName());const d=me?cdMine():cdO
   c.append(cdEl("h3","cdname",d.n+(me?" (você)":"")),cdEl("div","cdcls",d.cls||"Classe ainda não escolhida"));
   const ps=cdPos(d.n);const kp=cdEl("div","cdkpi");
   const k=(v,l)=>{const x=cdEl("div");x.append(cdEl("b",null,v),cdEl("span",null,l));return x;};
-  kp.append(k(ps.t?ps.t+"º":ps.g?ps.g+"º":"–",ps.t?"na turma":"no geral"),k(String(d.xp||0),"XP semana"),k("🔥 "+(d.seq||0),"sequência"),k("⚡ "+(d.dz||0),"desafios"));c.append(kp);
+  kp.append(k(ps.t?ps.t+"º":ps.g?ps.g+"º":"–",ps.t?"na guilda":"no geral"),k(String(d.xp||0),"XP semana"),k("🔥 "+(d.seq||0),"sequência"),k("⚡ "+(d.dz||0),"desafios"));c.append(kp);
   const at=String(d.at||"").split("-").map(x=>+x||0);const bars=cdEl("div","cdattr");
   if(at.length===4&&at.some(Boolean)){const mx=Math.max(5,...at);CD_ST.forEach(([key,ic,lb],i)=>{const r=cdEl("div","cdbar");r.append(cdEl("span","cdl",ic+" "+lb));const t=cdEl("span","cdt");const f=cdEl("i");f.style.width=Math.round(at[i]/mx*100)+"%";t.append(f);r.append(t,cdEl("span","cdv","nv "+at[i]));bars.append(r);});}
   else bars.append(cdEl("div","sm muted",me?"Seus atributos aparecem aqui assim que o app atualizar sua ficha.":"Os atributos aparecem quando "+d.n+" abrir o app de novo."));
@@ -58,7 +58,7 @@ async function cdInbox(){const me=rankName();if(!me||typeof sqInvRows==="undefin
 function cdInvCard(){const a=cdInvBy();let c=$("cdInv");const host=$("tmPanel");
   if(!a||tmKid()||!cfg||cfg.blank||tmOn()&&(cdInvDo(),true)){if(c)c.remove();return;}
   if(!host)return;if(!c){c=cdEl("div","cdinv");c.id="cdInv";}host.prepend(c);c.textContent="";
-  c.append(cdEl("b",null,"🤝 "+a+" te chamou para a turma"),cdEl("span","sm muted","Entre no ranking e vocês viram amigos na hora: um vê o card do outro, a liga e a sequência."));
+  c.append(cdEl("b",null,"🤝 "+a+" te chamou para a guilda"),cdEl("span","sm muted","Entre no ranking e vocês viram amigos na hora: um vê o card do outro, a liga e a sequência."));
   const b=cdEl("button","go","Entrar e virar amigo de "+a);b.type="button";b.addEventListener("click",()=>{try{joinRank("convite");}catch(e){}setTimeout(()=>{cdInvDo();cdInvCard();},400);});c.append(b);}
 // --- destaque da aba Amigos: bolinha com novidades ---
 function cdBadge(n){const s=tmSt();s.badge=(s.badge||0)+n;save();cdBadgeUI();}
@@ -74,13 +74,13 @@ document.addEventListener("click",e=>{const li=e.target.closest&&e.target.closes
 {const _tu=tmUI;tmUI=function(){_tu();try{const p=$("tmPanel");if(!p||p.hidden)return;cdInvCard();if(!tmOn())return;
   if(!p.querySelector(".cdacts")){const r=cdEl("div","cdacts");const a=cdEl("button","go cdinvb","📨 Convidar amigo");a.type="button";a.addEventListener("click",cdInvite);
     const b=cdEl("button","ghost","🪪 Meu card");b.type="button";b.addEventListener("click",()=>tmCard());r.append(a,b);const seg=p.querySelector(".tmseg");(seg||p.lastChild).before(r);}
-  if(!p.querySelector(".cdlink")){const u=cdLink();if(u){const bx=cdEl("div","cdlink");bx.append(cdEl("b",null,"🔗 Link da sua turma"),cdEl("span","sm muted","Mande no grupo: quem entrar por ele vira seu amigo na hora. Serve para quantas pessoas quiser."));
+  if(!p.querySelector(".cdlink")){const u=cdLink();if(u){const bx=cdEl("div","cdlink");bx.append(cdEl("b",null,"🔗 Link da sua guilda"),cdEl("span","sm muted","Mande no grupo: quem entrar por ele vira seu amigo na hora. Serve para quantas pessoas quiser."));
       const lk=cdEl("div","cdurl",u.replace(/^https:\/\//,""));bx.append(lk);const r=cdEl("div","cdlbtn");
-      const c1=cdEl("button","ghost","Copiar link");c1.type="button";c1.addEventListener("click",async()=>{try{await navigator.clipboard.writeText(u);toast("Link da turma copiado.");}catch(e){const sel=getSelection();const rg=document.createRange();rg.selectNodeContents(lk);sel.removeAllRanges();sel.addRange(rg);toast("Segure no link para copiar.");}});
-      const c2=cdEl("button","ghost","WhatsApp");c2.type="button";c2.addEventListener("click",()=>window.open("https://wa.me/?text="+encodeURIComponent("Bora jogar comigo no Ascension? É um jogo pra subir de nível na vida real. Entra pela minha turma: "+u),"_blank","noopener"));
+      const c1=cdEl("button","ghost","Copiar link");c1.type="button";c1.addEventListener("click",async()=>{try{await navigator.clipboard.writeText(u);toast("Link da guilda copiado.");}catch(e){const sel=getSelection();const rg=document.createRange();rg.selectNodeContents(lk);sel.removeAllRanges();sel.addRange(rg);toast("Segure no link para copiar.");}});
+      const c2=cdEl("button","ghost","WhatsApp");c2.type="button";c2.addEventListener("click",()=>window.open("https://wa.me/?text="+encodeURIComponent("Bora jogar comigo no Ascension? É um jogo pra subir de nível na vida real. Entra pela minha guilda: "+u),"_blank","noopener"));
       r.append(c1,c2);bx.append(r);const ac=p.querySelector(".cdacts");(ac||p.querySelector(".tmseg")).after(bx);}}
   for(const li of p.querySelectorAll(".tmlist li:not(.tmzone)"))li.classList.add("tap");
-  const lg=p.querySelector(".tmlg");if(lg&&!lg.querySelector(".cdme")){const ps=cdPos(rankName());if(ps.g){const x=cdEl("div","cdme");x.append(cdEl("b",null,(ps.t||ps.g)+"º"),cdEl("span",null,ps.t?"de "+ps.tof+" na turma":"de "+ps.gof+" no geral"));lg.append(x);}}}catch(e){}cdBadgeUI();};}
+  const lg=p.querySelector(".tmlg");if(lg&&!lg.querySelector(".cdme")){const ps=cdPos(rankName());if(ps.g){const x=cdEl("div","cdme");x.append(cdEl("b",null,(ps.t||ps.g)+"º"),cdEl("span",null,ps.t?"de "+ps.tof+" na guilda":"de "+ps.gof+" no geral"));lg.append(x);}}}catch(e){}cdBadgeUI();};}
 {const _ck=sqiCheck;sqiCheck=function(){_ck.apply(this,arguments);try{cdInbox();cdInvDo();}catch(e){}};}
 {const _rr=renderRankUI;renderRankUI=function(){_rr();try{cdInvDo();}catch(e){}};}
 setTimeout(()=>{try{cdBadgeUI();tmUI();}catch(e){}},0);

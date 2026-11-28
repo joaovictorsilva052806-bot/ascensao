@@ -15,7 +15,7 @@ const Q_RM=matchMedia("(prefers-reduced-motion: reduce)").matches;
 function qHead(){const n=qData.name?qData.name.split(" ")[0]:"";$("q_h1").textContent=n?n+", quantos anos você tem?":"Quantos anos você tem?";
   $("q_h2").textContent="O que você faz no dia a dia?";$("q_h3").textContent=n?"Onde você quer evoluir, "+n+"?":"No que você quer evoluir?";}
 // Despertar: a 1ª tela do app. Um toque aceita a única permissão que o app usa e já começa.
-function qAwake(){const box=$("qType"),L=["Sinal confirmado.","Jogador detectado.","Pronto para despertar?"];box.textContent="";$("qWake").classList.remove("on");
+function qAwake(){const box=$("qType"),L=["Suba de nível na vida real.","Desbloqueie tarefas que pagam (18+).","Pronto para despertar?"];box.textContent="";$("qWake").classList.remove("on");
   if(Q_RM){box.innerHTML=L.map(x=>"<p>"+x+"</p>").join("");$("qWake").classList.add("on");return;}
   let i=0;(function line(){if(i>=L.length||$("qPerm").hidden){$("qWake").classList.add("on");return;}const p=document.createElement("p");p.className="cur";box.append(p);let n=0;
     const t=setInterval(()=>{n++;p.textContent=L[i].slice(0,n);if(n>=L[i].length){clearInterval(t);p.className="";i++;setTimeout(line,320);}},38);})();}
@@ -23,7 +23,7 @@ function openQuick(){qData={};$("q_name").value="";$("q_goal").value="";$("quick
   if(qPermSeen()){$("qPerm").hidden=true;$("quick").classList.remove("waking");qGo(0);return;}
   for(const s of document.querySelectorAll("#quick .qstep"))s.hidden=s.id!=="qPerm";$("quick").classList.add("waking");$("q_full").hidden=true;qAwake();}
 // pular a digitação com um toque na tela
-$("qPerm").addEventListener("click",e=>{if(e.target.closest("button"))return;const b=$("qType");b.innerHTML="<p>Sinal confirmado.</p><p>Jogador detectado.</p><p>Pronto para despertar?</p>";$("qWake").classList.add("on");});
+$("qPerm").addEventListener("click",e=>{if(e.target.closest("button"))return;const b=$("qType");b.innerHTML="<p>Suba de nível na vida real.</p><p>Desbloqueie tarefas que pagam (18+).</p><p>Pronto para despertar?</p>";$("qWake").classList.add("on");});
 $("q_perm").addEventListener("click",async()=>{let ok=false;try{if(navigator.storage&&navigator.storage.persist)ok=await navigator.storage.persist();}catch(e){}
   try{localStorage.setItem("asc-u-perm",ok?"granted":"asked");localStorage.setItem("asc-u-intro","1");}catch(e){}
   try{if(navigator.vibrate)navigator.vibrate([12,60,24]);}catch(e){}
