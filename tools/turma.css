@@ -1,6 +1,7 @@
 /* ---- Aba Amigos (tools/turma.js) ---- */
 .tabbar{grid-template-columns:none!important;grid-auto-flow:column;grid-auto-columns:minmax(0,1fr)}
-.tabbar:has(> button:nth-of-type(6):not([hidden])) button{letter-spacing:.03em;font-size:.5rem}
+/* 6 abas VISÍVEIS (a de Lendárias escondida contava como 6ª e deixava todo mundo em 8px); o tamanho fino vem de ntTabFit (tools/noite.js) */
+.tabbar:has(> button:not([hidden]) ~ button:not([hidden]) ~ button:not([hidden]) ~ button:not([hidden]) ~ button:not([hidden]) ~ button:not([hidden])) button{letter-spacing:.03em;font-size:.5rem}
 .tabbar button[hidden]{display:none}
 body[data-tab=amigos] .wrap>section[data-tab]:not([data-tab=amigos]){display:none}
 .tmhd{display:flex;justify-content:space-between;align-items:center;gap:8px;margin-bottom:10px}
