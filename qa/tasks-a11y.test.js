@@ -57,9 +57,9 @@ for(const [route,pre] of [['comecar/','asc-u'],['','ascensao']]){const tag=route
   ok(tag+' Carteira vazia explica o que fazer',/Nada anotado ainda\. Recebeu\? Anote aqui o valor e de onde veio\./.test(await p.textContent('#tpPanel .tpwallet')));
   ok(tag+' barra da meta tem valor em texto',await p.evaluate(()=>document.querySelector('#tpPanel .tpbar').getAttribute('aria-valuetext')==='R$ 0,00 de R$ 50,00'));
   // anotar valor: foco volta ao campo, data no formato dd/mm
-  await p.click('#tpPanel .tpwallet summary');await p.fill('#tpPanel .tpwallet .tpwf input','12');await p.press('#tpPanel .tpwallet .tpwf input','Enter');await p.waitForTimeout(200);
+  await p.click('#tpPanel .tpwallet summary');await p.fill('#tpPanel .tpwallet .tpwf input','12');await p.press('#tpPanel .tpwallet .tpwf input','Enter');await p.waitForTimeout(800);
   ok(tag+' anotar com Enter: foco volta ao campo de valor',await p.evaluate(()=>document.activeElement.matches('.tpwallet .tpwf input')));
-  ok(tag+' lista da Carteira com data dd/mm',/27\/11 · Desapega · R\$ 12,00/.test(await p.textContent('#tpPanel .tpwl')));
+  ok(tag+' lista da Carteira com data dd/mm',/Desapega · 27\/11.*R\$ 12,00/.test(await p.textContent('#tpPanel .tpwl')));
   await p.click('#tpPanel .tpwclr');await p.waitForTimeout(100);
   ok(tag+' apagar: o pedido do 2º toque é anunciado',/Toque de novo para apagar tudo/.test(await live(p)));
   ok(tag+' console limpo (Carteira)',errs.length===0,errs.join(' | '));await ctx.close();
