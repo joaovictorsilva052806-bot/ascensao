@@ -95,8 +95,12 @@
     try{if(Notification.permission==="denied"){await stop(true);return;}
       const reg=await swReady();const sub=await reg.pushManager.getSubscription();
       if(!sub||sub.endpoint!==s.ep){if(Notification.permission==="granted")await subscribe(true);else{await stop(true);return;}}
-      else if(st().seen!==hoje()){await api("pw-seen");wr({seen:hoje()});}}catch(e){}
+      else if(st().seen!==hoje()){const q=seq();await api("pw-seen",{s:q});wr({seen:hoje(),sq:q});}}catch(e){}
     ui();}
+  // sequência (28/11): o aviso da noite diz "sua sequência de N dias quebra à meia-noite". Vai só o número de dias, e só quando muda.
+  function seq(){try{const n=typeof streakDays==="function"?+streakDays()||0:0;return Math.max(0,Math.min(999,Math.floor(n)));}catch(e){return 0;}}
+  async function seqSync(){const s=st();if(!s.on||s.seen!==hoje()||seqBusy)return;const q=seq();if(q===s.sq)return;seqBusy=true;try{await api("pw-seen",{s:q});wr({sq:q});}catch(e){}finally{seqBusy=false;}}
+  let seqBusy=false;if(typeof render==="function"){const _r=render;render=function(){_r.apply(this,arguments);setTimeout(()=>{seqSync().catch(()=>{});},800);};}
   if(navigator.serviceWorker)navigator.serviceWorker.addEventListener("message",e=>{if(e.data&&e.data.pw==="renew"&&st().on)subscribe(true).catch(()=>{});});
   document.addEventListener("visibilitychange",()=>{if(!document.hidden&&st().on&&st().seen!==hoje())boot();});
   setTimeout(boot,2500);setTimeout(ui,0);
