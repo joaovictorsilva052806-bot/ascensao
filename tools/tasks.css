@@ -88,3 +88,11 @@ body.asc-fresh #gtHero,body.asc-fresh #chPanel{display:none!important}
 /* QA 60 s, P1-5: no 1º uso o 1º ▶ cabe na 1ª tela do iPhone SE. Antes da 1ª missão, sai o que repete a barra do Sistema
    (linha do Sistema e "Ficha do personagem"), a linha "Nenhuma tarefa ainda" e o atalho da Classe, se ainda não tem (ela fica para o dia 2). Só no dia 1 do perfil. Voltam sozinhos depois da 1ª missão. */
 body.asc-d1 #sysLine,body.asc-d1 #hrTog,body.asc-d1 #dayxp,body.asc-d1 #dayPill,body.asc-d1nc #clsPill{display:none!important}
+
+/* missões de parceiros (missoes-lendarias.json): selo de publicidade sempre visível */
+.tppar{display:grid;gap:8px;padding:10px;border:1px solid rgba(245,197,66,.55);border-radius:12px;background:linear-gradient(150deg,rgba(60,38,8,.45),rgba(30,12,52,.45))}
+.tpparh{font-weight:700;color:#f5c542;letter-spacing:.03em}
+.tpbadges{display:flex;flex-wrap:wrap;gap:4px;margin-top:2px}
+.tpad{font-family:var(--f-mono);font-size:.66rem;letter-spacing:.04em;color:#0b0f17;background:#e9eef7;border-radius:3px;padding:1px 6px}
+.tptest{font-family:var(--f-mono);font-size:.66rem;color:#c98bff;border:1px dashed #c98bff;border-radius:3px;padding:0 5px}
+.tpind{margin:0 0 8px;line-height:1.45;border-left:3px solid #c98bff;padding-left:8px}

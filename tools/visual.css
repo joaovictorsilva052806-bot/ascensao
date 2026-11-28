@@ -1,6 +1,6 @@
 /* ---- Acabamento visual (tools/visual.css): só aparência, entra por último no CSS dos dois geradores ---- */
 /* 1. Painéis dourados (Forja, Comece por aqui, Lendárias, chamada "???"): cantos da moldura na mesma cor da borda */
-.panel:is(.gd,.fjhome,.gthero,.tpline,.tppanel,#lnPanel,#lnTease)::before,.panel:is(.gd,.fjhome,.gthero,.tpline,.tppanel,#lnPanel,#lnTease)::after{border-color:var(--gold)}
+.panel:is(.gd,.fjhome,.gthero,.tpline,.tppanel)::before,.panel:is(.gd,.fjhome,.gthero,.tpline,.tppanel)::after{border-color:var(--gold)}
 /* 2. Aba Lendárias: ativa fica dourada (antes virava azul e perdia a identidade) */
 .tabbar button[data-go=lenda].on{color:#ffd76a;text-shadow:0 0 8px rgba(245,197,66,.55)}
 .tabbar button[data-go=lenda].on svg{stroke:#ffd76a;filter:drop-shadow(0 0 5px rgba(245,197,66,.7))}
