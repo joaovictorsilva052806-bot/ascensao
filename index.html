@@ -1705,6 +1705,14 @@ body.asc-d1 #sysLine,body.asc-d1 #hrTog,body.asc-d1 #dayxp,body.asc-d1 #dayPill,
 /* 1º dinheiro recebido: chamar 1 amigo (tools/tasks.js) */
 .tpshare{margin:10px 0 4px;padding:10px 12px;border:1px dashed color-mix(in srgb,#f5c542 60%,var(--line));border-radius:12px;display:grid;gap:8px}
 .tpshare .row{display:flex;gap:8px;flex-wrap:wrap}
+
+/* missões de parceiros (missoes-lendarias.json): selo de publicidade sempre visível */
+.tppar{display:grid;gap:8px;padding:10px;border:1px solid rgba(245,197,66,.55);border-radius:12px;background:linear-gradient(150deg,rgba(60,38,8,.45),rgba(30,12,52,.45))}
+.tpparh{font-weight:700;color:#f5c542;letter-spacing:.03em}
+.tpbadges{display:flex;flex-wrap:wrap;gap:4px;margin-top:2px}
+.tpad{font-family:var(--f-mono);font-size:.66rem;letter-spacing:.04em;color:#0b0f17;background:#e9eef7;border-radius:3px;padding:1px 6px}
+.tptest{font-family:var(--f-mono);font-size:.66rem;color:#c98bff;border:1px dashed #c98bff;border-radius:3px;padding:0 5px}
+.tpind{margin:0 0 8px;line-height:1.45;border-left:3px solid #c98bff;padding-left:8px}
 /* código curto da Guilda (tools/codigo.js) */
 .kdbox{margin-top:10px;padding-top:10px;border-top:1px dashed rgba(255,255,255,.14);display:flex;flex-direction:column;gap:6px}
 .kdrow{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
@@ -1739,43 +1747,6 @@ body.asc-fresh #mqPanel{display:none!important}
 .artx.twg b{color:var(--rk,#f2c14e);letter-spacing:.02em}
 .artx.twm b{color:#ffd166}
 .twnext{margin:4px 0 8px}
-/* ---- Missões de Parceiros (tools/lendaria.*): moldura de raridade lendária, ouro + violeta; brilho some com reduce-motion ---- */
-.lnpanel{display:grid;gap:12px;position:relative;border:1px solid rgba(255,200,87,.55);background:linear-gradient(160deg,rgba(40,24,6,.85),rgba(18,8,34,.88) 55%,rgba(6,20,30,.85));box-shadow:0 0 0 1px rgba(170,110,255,.25) inset,0 0 22px rgba(255,190,70,.18)}
-.lnpanel::before,.lnpanel::after{content:"";position:absolute;width:16px;height:16px;border:2px solid var(--gold);pointer-events:none}
-.lnpanel::before{top:-1px;left:-1px;border-right:0;border-bottom:0}
-.lnpanel::after{bottom:-1px;right:-1px;border-left:0;border-top:0}
-.lnhd h2{color:var(--gold);text-shadow:0 0 10px rgba(255,200,87,.45);letter-spacing:.04em}
-.lnintro{color:#f3e3c0;line-height:1.45}
-.lnrar{display:inline-flex;align-items:center;font-family:var(--f-mono);font-size:.68rem;font-weight:700;letter-spacing:.14em;color:#1a0f00;padding:2px 8px;border-radius:3px;background:linear-gradient(90deg,#ffd77a,#ffb340 45%,#c98bff);clip-path:polygon(6px 0,100% 0,calc(100% - 6px) 100%,0 100%)}
-.lnad{font-family:var(--f-mono);font-size:.68rem;letter-spacing:.05em;color:#0b0f17;background:#e9eef7;border-radius:3px;padding:2px 6px}
-.lntest{font-family:var(--f-mono);font-size:.68rem;color:#c98bff;border:1px dashed #c98bff;border-radius:3px;padding:1px 6px}
-.lncard{position:relative;overflow:hidden;display:grid;gap:8px;padding:12px;border-radius:10px;border:1px solid rgba(255,200,87,.6);background:linear-gradient(150deg,rgba(60,38,8,.55),rgba(30,12,52,.6));box-shadow:0 0 14px rgba(255,190,70,.15)}
-.lncard::after{content:"";position:absolute;inset:0;pointer-events:none;background:linear-gradient(110deg,transparent 35%,rgba(255,236,180,.16) 50%,transparent 65%);transform:translateX(-120%);animation:lnshine 4.5s ease-in-out infinite}
-@keyframes lnshine{0%,55%{transform:translateX(-120%)}85%,100%{transform:translateX(120%)}}
-.lncard.ok{border-color:rgba(53,212,154,.6);box-shadow:none}
-.lncard.ok::after{display:none}
-.lntop{display:flex;flex-wrap:wrap;gap:6px;align-items:center}
-.lnt{font-size:1.1rem;color:#fff3d6}
-.lnp{color:var(--gold);margin-top:-6px}
-.lncard p{margin:0;line-height:1.45}
-.lng{color:#f3e3c0}
-.lnind{color:#e9eef7;border-left:3px solid #c98bff;padding-left:8px}
-.lnbar{height:6px;border-radius:3px;background:rgba(255,255,255,.1);overflow:hidden}
-.lnbar i{display:block;height:100%;background:linear-gradient(90deg,#ffb340,#c98bff);transition:width .3s}
-.lnsteps summary{cursor:pointer;min-height:44px;display:flex;align-items:center;font-weight:600;color:var(--gold)}
-.lnsteps ol{margin:0 0 4px;padding-left:20px;display:grid;gap:6px}
-.lnbtn{min-height:44px;width:100%;text-align:left;white-space:normal;line-height:1.35;padding:8px 10px}
-.lnrow{display:flex;flex-wrap:wrap;gap:8px;align-items:center;position:relative;z-index:1}
-a.lnlink{min-height:44px;display:inline-flex;align-items:center;padding:0 16px;border-radius:8px;text-decoration:none;font-weight:700;color:#1a0f00;background:linear-gradient(90deg,#ffd77a,#ffb340)}
-a.lnlink:focus-visible,.lnreg:focus-visible,.lntbtn:focus-visible{outline:2px solid #fff;outline-offset:3px}
-.lnreg{min-height:44px;display:inline-flex;align-items:center;color:var(--gold);padding:0 6px}
-.lnlaw{line-height:1.45}
-.lntease{padding:0;border:0;background:none;box-shadow:none}
-.lntbtn{width:100%;min-height:52px;display:flex;align-items:center;gap:10px;padding:8px 14px;border-radius:10px;cursor:pointer;text-align:left;color:#fff3d6;font:inherit;font-weight:600;border:1px solid rgba(255,200,87,.7);background:linear-gradient(100deg,rgba(70,44,8,.9),rgba(34,14,60,.9));box-shadow:0 0 16px rgba(255,190,70,.22);animation:lnpulse 3s ease-in-out infinite}
-.lntt{flex:1 1 auto;min-width:0}
-.lntgo{flex:none;color:var(--gold)}
-@keyframes lnpulse{0%,100%{box-shadow:0 0 10px rgba(255,190,70,.18)}50%{box-shadow:0 0 22px rgba(255,190,70,.4)}}
-@media (prefers-reduced-motion:reduce){.lncard::after{animation:none;display:none}.lntbtn{animation:none}.lnbar i{transition:none}}
 /* ---- Missões do Mestre 18+ (tools/mestre.*) ---- */
 .mmpanel{display:grid;gap:10px}
 .mmcard{display:grid;gap:6px;padding:10px 12px;border:1px solid var(--line);border-radius:10px;background:#0a1222}
@@ -1817,7 +1788,7 @@ a.inlink{min-height:44px;display:inline-flex;align-items:center;padding:0 14px;b
 .inhint,.inlaw{margin:0}
 /* ---- Acabamento visual (tools/visual.css): só aparência, entra por último no CSS dos dois geradores ---- */
 /* 1. Painéis dourados (Forja, Comece por aqui, Lendárias, chamada "???"): cantos da moldura na mesma cor da borda */
-.panel:is(.gd,.fjhome,.gthero,.tpline,.tppanel,#lnPanel,#lnTease)::before,.panel:is(.gd,.fjhome,.gthero,.tpline,.tppanel,#lnPanel,#lnTease)::after{border-color:var(--gold)}
+.panel:is(.gd,.fjhome,.gthero,.tpline,.tppanel)::before,.panel:is(.gd,.fjhome,.gthero,.tpline,.tppanel)::after{border-color:var(--gold)}
 /* 2. Aba Lendárias: ativa fica dourada (antes virava azul e perdia a identidade) */
 .tabbar button[data-go=lenda].on{color:#ffd76a;text-shadow:0 0 8px rgba(245,197,66,.55)}
 .tabbar button[data-go=lenda].on svg{stroke:#ffd76a;filter:drop-shadow(0 0 5px rgba(245,197,66,.7))}
@@ -8125,6 +8096,9 @@ setTimeout(()=>{try{rdRender();}catch(e){}},60);
 // Trava de idade: só 18+ (ad18); sem idade no /comecar/, 14-17, até 13 e autorização de responsável = a aba nem aparece.
 // Mistério: a aba abre na 1ª missão concluída; as tasks se revelam uma a uma (3 à vista + 1 a cada task concluída);
 // a 1ª Task Lendária concluída desbloqueia a Carteira e a meta do dia.
+// Missões de parceiros (antes tools/lendaria.*, #189): vêm de missoes-lendarias.json para trocar sem trem; sem o arquivo, fica só a lista fixa.
+// Entram no topo da aba (fora da revelação 1 a 1), com selo "Publicidade · parceiro". "teste": true = só o Modo Criador vê.
+// "compra": true = não dá Ouro (#196). "indicacao": true = link de indicação do criador: o card avisa a comissão, sem letra miúda.
 // Dados conferidos em 27/11/2026: /mnt/project-files/ascensao/receita/plataformas-que-pagam-27nov.md (valores mudam: vale o app de cada plataforma).
 const TP_META=50,TP_SHOW=3;
 const TP_TIER={c:["Comum",20],r:["Rara",30],l:["Lendária",50]};
@@ -8224,10 +8198,33 @@ const TP_L=[
   s:["Criar a conta de colaborador.",
      "Enviar 10 fotos ou vídeos seus, com título e palavras-chave em inglês.",
      "Aprovados: acompanhar as vendas no painel."]}];
+// ---- missões de parceiros (JSON) ----
+const TP_PK=(location.pathname.indexOf("/comecar/")>=0?"asc-u":"ascensao")+"-lend-cfg";
+let TP_PL=null,tpPTry=0;
+const tpHttps=u=>{try{const x=new URL(String(u||""));return x.protocol==="https:"?x.href:"";}catch(e){return "";}};
+function tpPClean(j){const L=j&&Array.isArray(j.missoes)?j.missoes:[];const out=[];
+  for(const m of L.slice(0,12)){if(!m||typeof m!=="object")continue;
+    const id=String(m.id||"").replace(/[^a-z0-9_-]/gi,"").slice(0,24),par=String(m.parceiro||"").trim().slice(0,40),tit=String(m.titulo||"").trim().slice(0,70),
+      pay=String(m.ganho||"").trim().slice(0,200),st=(Array.isArray(m.passos)?m.passos:[]).map(x=>String(x||"").trim().slice(0,160)).filter(Boolean).slice(0,6),link=tpHttps(m.link),reg=tpHttps(m.regras);
+    if(!(id&&par&&tit&&pay&&st.length&&link))continue;
+    const links=[[par,link]];if(reg)links.push(["Regras",reg]);
+    out.push({id:"p_"+id,pid:id,p:true,par,tier:"l",t:"🏷️ "+tit,pay,when:"⏳ Prazo e valor: pelas regras do parceiro.",warn:TP_WREF,links,s:st,
+      buy:m.compra===true,teste:m.teste===true,ind:m.indicacao===true});}
+  return out;}
+function tpPUrl(){return (location.pathname.indexOf("/comecar/")>=0?"../":"")+"missoes-lendarias.json";}
+function tpPLoad(){if(TP_PL||tpPTry>2)return;tpPTry++;
+  try{const c=JSON.parse(localStorage.getItem(TP_PK)||"null");if(c)TP_PL=tpPClean(c);}catch(e){}
+  try{fetch(tpPUrl(),{cache:"no-cache"}).then(r=>r.ok?r.json():null).then(j=>{if(!j)return;TP_PL=tpPClean(j);try{localStorage.setItem(TP_PK,JSON.stringify(j));}catch(e){}try{tpRender();}catch(e){}}).catch(()=>{});}catch(e){}}
+function tpCr(){try{return typeof crOn==="function"&&crOn();}catch(e){return false;}}
+function tpP(){if(!TP_PL)tpPLoad();const cr=tpCr();return (TP_PL||[]).filter(T=>!T.teste||cr);}
+function tpAll(){return TP_L.concat(tpP());}
+// progresso antigo das Missões de Parceiros (prog.lend, #189): copia para prog.tp uma vez, sem apagar prog.lend
+function tpLendMig(r){try{const L=prog.lend;if(!L||typeof L!=="object"||Array.isArray(L))return;for(const id in L){const k="p_"+String(id).replace(/[^a-z0-9_-]/gi,"").slice(0,24),x=L[id];
+    if(r[k]||!x||typeof x!=="object"||!x.s||typeof x.s!=="object")continue;r[k]={s:Object.assign({},x.s)};if(x.f)r[k].f=x.f;}}catch(e){}}
 function tpEl(t,c,x){const e=document.createElement(t);if(c)e.className=c;if(x!=null)e.textContent=x;return e;}
 function tpName(T){return T.t.replace(/^\S+\s/,"");}
 function tpOn(){try{return !!(cfg&&!cfg.blank&&cfg.quests&&cfg.quests.length)&&typeof ad18==="function"&&ad18();}catch(e){return false;}}
-function tpSt(){let r=prog.tp;if(!r||typeof r!=="object"||Array.isArray(r))r=prog.tp={};for(const T of TP_L){if(!r[T.id]||typeof r[T.id]!=="object"||Array.isArray(r[T.id]))r[T.id]={};if(!r[T.id].s||typeof r[T.id].s!=="object"||Array.isArray(r[T.id].s))r[T.id].s={};}return r;}
+function tpSt(){let r=prog.tp;if(!r||typeof r!=="object"||Array.isArray(r))r=prog.tp={};if(!r._lm&&prog.lend){tpLendMig(r);r._lm=1;}for(const T of tpAll()){if(!r[T.id]||typeof r[T.id]!=="object"||Array.isArray(r[T.id]))r[T.id]={};if(!r[T.id].s||typeof r[T.id].s!=="object"||Array.isArray(r[T.id].s))r[T.id].s={};}return r;}
 function tpN(T){const s=tpSt()[T.id].s;return T.s.filter((x,i)=>s[i]).length;}
 function tpDone(){const r=tpSt();return TP_L.filter(T=>r[T.id].f).length;}
 // a aba abre na 1ª missão concluída (qualquer dia); conquistas automáticas e check-in não contam
@@ -8251,7 +8248,7 @@ function tpStep(T,i){const r=tpSt(),s=r[T.id].s;
     if(!T.buy)try{if(typeof orGive==="function")g=orGive("tp:"+T.id,tier[1],"Task "+tier[0]);}catch(e){}
     const first=!prog.tpwal;if(first)prog.tpwal=todayKey();
     try{haptic([10,30,10]);}catch(e){}save();
-    const nx=tpVis()>before?TP_L[tpVis()-1]:null;
+    const nx=!T.p&&tpVis()>before?TP_L[tpVis()-1]:null;
     const msg=(first?"A Carteira foi desbloqueada: anote ali o que você receber. ":"")+(nx?"Uma nova task se revelou: "+TP_TIER[nx.tier][0]+". ":"")+"O dinheiro, quando vier, vem direto de quem paga."+(g?" +"+g+" 🪙 de Ouro.":"");
     try{sysPop(first?"CARTEIRA DESBLOQUEADA":"TASK "+tier[0].toUpperCase()+" CONCLUÍDA",tpName(T),msg,null,"Fechar");}catch(e){toast("✓ Task concluída"+(g?" · +"+g+" 🪙":""));}}
   else{if(!all&&r[T.id].f)delete r[T.id].f;save();}
@@ -8262,12 +8259,13 @@ function tpGot(T){const f=tpEl("form","tpwf tpgot");const inp=tpEl("input");inp.
   f.addEventListener("submit",ev=>{ev.preventDefault();if(tpAdd(T.id,inp.value)){tpOpen=T.id;const w=$("tpPanel")&&$("tpPanel").querySelector(".tpwallet");if(w){tpCoins(w);}setTimeout(()=>{tpRender();try{tpLine();}catch(e){}},w?400:0);}});return f;}
 function tpCard(T){const r=tpSt(),s=r[T.id].s,n=tpN(T),done=n===T.s.length,tier=TP_TIER[T.tier];
   const c=tpEl("details","tpm t-"+T.tier+(done?" ok":""));c.dataset.tp=T.id;c.open=tpOpen===T.id;c.addEventListener("toggle",()=>{if(c.open)tpOpen=T.id;else if(tpOpen===T.id)tpOpen=null;});
-  const sm=tpEl("summary","tpt");const nm=tpEl("span","tpnm");nm.append(tpEl("span","tptier",tier[0]),tpEl("span",null,(done?"✓ ":"")+T.t));sm.append(nm,tpEl("span","sm mono",n+"/"+T.s.length));c.append(sm);
+  const sm=tpEl("summary","tpt");const nm=tpEl("span","tpnm");nm.append(tpEl("span","tptier",tier[0]),tpEl("span",null,(done?"✓ ":"")+T.t));if(T.p){const bd=tpEl("span","tpbadges");bd.append(tpEl("span","tpad","Publicidade · parceiro"));if(T.teste)bd.append(tpEl("span","tptest","TESTE · só você vê"));nm.append(bd);}sm.append(nm,tpEl("span","sm mono",n+"/"+T.s.length));c.append(sm);
   c.append(tpEl("p","tpwhen",T.when),tpEl("p","tpsub","💰 "+T.pay));
   if(T.ja)c.append(tpEl("p","sm tpja","🔁 "+T.ja));
+  if(T.ind)c.append(tpEl("p","sm tpind","Transparência: este é o link de indicação do criador do app. Se você se cadastrar por ele, o criador ganha uma comissão da "+T.par+". Para você não muda nada."));
   const ol=tpEl("ol","tpsteps");T.s.forEach((x,i)=>{const li=tpEl("li");const b=tpEl("button",(s[i]?"ghost":"go")+" tpbtn",(s[i]?"✓ ":"")+x);b.type="button";b.dataset.i=i;
     b.setAttribute("aria-pressed",s[i]?"true":"false");b.addEventListener("click",()=>tpStep(T,i));li.append(b);ol.append(li);});c.append(ol);
-  const lk=tpEl("div","tplinks");lk.append(tpEl("span","sm muted","Páginas oficiais:"));for(const [nm2,u] of T.links){const a=tpEl("a","tplink",nm2+" ↗");a.href=u;a.target="_blank";a.rel="noopener noreferrer";lk.append(a);}c.append(lk);
+  const lk=tpEl("div","tplinks");lk.append(tpEl("span","sm muted",T.p?"Link do parceiro:":"Páginas oficiais:"));T.links.forEach(([nm2,u],k)=>{const a=tpEl("a","tplink",nm2+" ↗");a.href=u;a.target="_blank";a.rel=(T.p&&k===0?"sponsored ":"")+"noopener noreferrer";lk.append(a);});c.append(lk);
   c.append(tpEl("p","sm tpwarn","⚠️ "+T.warn));
   if(tpWal())c.append(tpGot(T));
   c.append(tpEl("p","sm muted",T.buy?"Esta task não dá Ouro: o app nunca premia compra. O ganho é só o cashback da plataforma.":done?"✓ Concluída. +"+tier[1]+" 🪙 já entrou (uma vez só).":"Ao marcar os "+T.s.length+" passos: +"+tier[1]+" 🪙 de Ouro (uma vez só)."));
@@ -8297,13 +8295,13 @@ function tpWallet(){const a=tpW(),rec=a.filter(x=>x.st!=="p"),pen=a.filter(x=>x.
       r.append(b,x);sh.append(r);d.append(sh);}}
   // registrar ganho em 2 toques
   const rg=tpEl("details","tpwreg");rg.append(tpEl("summary",null,"＋ Registrar ganho"));
-  const f=tpEl("form","tpwf");const sel=tpEl("select");sel.setAttribute("aria-label","De onde veio");for(const T of TP_L.slice(0,tpVis()))sel.append(new Option(tpName(T),T.id));sel.append(new Option("Outro","outro"));
+  const f=tpEl("form","tpwf");const sel=tpEl("select");sel.setAttribute("aria-label","De onde veio");for(const T of TP_L.slice(0,tpVis()).concat(tpP()))sel.append(new Option(tpName(T),T.id));sel.append(new Option("Outro","outro"));
   const stt=tpEl("select","tpwst");stt.setAttribute("aria-label","Situação");stt.append(new Option("Recebido","r"),new Option("Pendente","p"));
   const inp=tpEl("input");inp.type="text";inp.inputMode="decimal";inp.maxLength=12;inp.autocomplete="off";inp.placeholder="Valor em R$";inp.setAttribute("aria-label","Valor em reais");
   const add=tpEl("button","go tpwadd","Anotar");add.type="submit";f.append(sel,stt,inp,add);
   f.addEventListener("submit",ev=>{ev.preventDefault();if(tpAdd(sel.value,inp.value,stt.value)){if(stt.value!=="p")tpCoins(d);setTimeout(()=>tpRender(true),stt.value!=="p"?500:0);}});
   rg.append(f);d.append(rg);
-  if(a.length){const ul=tpEl("ul","tpwl");a.slice(0,12).forEach((x,k)=>{const T=TP_L.find(t=>t.id===x.src);const li=tpEl("li","sm"+(x.st==="p"?" pen":""));
+  if(a.length){const ul=tpEl("ul","tpwl");a.slice(0,12).forEach((x,k)=>{const T=tpAll().find(t=>t.id===x.src);const li=tpEl("li","sm"+(x.st==="p"?" pen":""));
       li.append(tpEl("span","tpwi",(T?T.t.split(" ")[0]:"✨")),tpEl("span","tpwn",(T?tpName(T):"Outro")+" · "+x.d.slice(8,10)+"/"+x.d.slice(5,7)),tpEl("span","mono tpwv",(x.st==="p"?"⏳ ":"✓ ")+tpBRL(x.v)));
       if(x.st==="p"){const ok=tpEl("button","ghost tpwok","Caiu ✓");ok.type="button";ok.setAttribute("aria-label","Marcar "+tpBRL(x.v)+" como recebido");
         ok.addEventListener("click",()=>{const b=tpW();const y=b.find(z=>z.d===x.d&&z.src===x.src&&+z.v===+x.v&&z.st==="p");if(y){delete y.st;tpWSave(b);}toast("Recebido: "+tpBRL(x.v));tpCoins(d);setTimeout(()=>tpRender(true),500);});li.append(ok);}
@@ -8337,6 +8335,7 @@ function tpRender(keepW){try{tpTab();}catch(e){}let p=$("tpPanel");if(!tpOn()){i
     p.append(mt);}
   else p.append(tpEl("div","tpmeta tpwlock","🔒 Conclua 1 Task Lendária para abrir a Carteira e a meta do dia."));
   p.append(tpEl("div","sm muted tpintro","Quem paga é o comprador ou a plataforma, direto para você. Comece pelo Desapega: é o único que cai hoje."));
+  const PP=tpP();if(PP.length){const pb=tpEl("div","tppar");pb.id="tpParc";pb.append(tpEl("div","tpparh","🏷️ Missões de parceiros"));for(const T of PP)pb.append(tpCard(T));p.append(pb);}
   const fl=tpEl("div","tpfil");fl.setAttribute("role","group");fl.setAttribute("aria-label","Filtrar por raridade");
   for(const [k,lb] of [["all","Todas"],["l","Lendária"],["r","Rara"],["c","Comum"]]){const b=tpEl("button","tpchip"+(k!=="all"?" t-"+k:"")+(tpF===k?" on":""),lb);b.type="button";b.setAttribute("aria-pressed",tpF===k?"true":"false");b.addEventListener("click",()=>{tpF=k;tpRender();});fl.append(b);}
   p.append(fl);
@@ -8676,85 +8675,6 @@ function twCatchUp(){const a=arSt();if(!a.best)return;const had=a.mk&&typeof a.m
   p.style.setProperty("--rk",bd[3]);for(const r of "EDCBAS")p.classList.toggle("tbrk-"+r,r===bd[1]);
   const mo=$("arModal");if(mo){mo.style.setProperty("--rk",bd[3]);for(const r of "EDCBAS")mo.classList.toggle("tbrk-"+r,r===bd[1]);}}catch(e){}};}
 setTimeout(()=>{try{twCatchUp();}catch(e){}},1500);
-
-// ---------- Missões de Parceiros: missões lendárias patrocinadas (só 18+, no topo da aba Lendárias; sem a aba, na aba Foco; chamada em Hoje) ----------
-// Lista em missoes-lendarias.json (raiz do site), para trocar parceiro, texto ou link sem trem novo. Missão sem os campos
-// obrigatórios (ou link que não é https) não aparece; lista vazia = a área some.
-// "teste": true = só o Modo Criador vê (o JV testa antes de abrir a todos). O resto só para 18+ pela trava de tools/idade.js.
-// Conteúdo de parceiro: selo "Publicidade · parceiro" sempre visível e link com rel="sponsored". Nada é sorteado nem comprável.
-// "indicacao": true = o link é de indicação do criador: o card diz, sem letra miúda, que o criador ganha se a pessoa entrar por ele.
-// O app não guarda, recebe nem repassa dinheiro: quem paga é o parceiro, direto ao jogador. Ouro é do jogo e não vale dinheiro.
-// Jogador marca cada passo; ao fechar todos: +80 de Ouro uma vez por missão (travado nos 3 primeiros dias de conta).
-// Só ADICIONA prog.lend = {id:{s:{passo:dia}, f:dia}}.
-const LN_G=80,LN_KEY=(location.pathname.indexOf("/comecar/")>=0?"asc-u":"ascensao")+"-lend-cfg";
-let lnList=null,lnTry=0,lnOpen=null;
-function lnEl(t,c,x){const e=document.createElement(t);if(c)e.className=c;if(x!=null)e.textContent=x;return e;}
-const lnHttps=u=>{try{const x=new URL(String(u||""));return x.protocol==="https:"?x.href:"";}catch(e){return "";}};
-function lnClean(j){const L=j&&Array.isArray(j.missoes)?j.missoes:[];const out=[];
-  for(const m of L.slice(0,12)){if(!m||typeof m!=="object")continue;
-    const id=String(m.id||"").replace(/[^a-z0-9_-]/gi,"").slice(0,24),parceiro=String(m.parceiro||"").trim().slice(0,40),titulo=String(m.titulo||"").trim().slice(0,70),
-      ganho=String(m.ganho||"").trim().slice(0,200),passos=(Array.isArray(m.passos)?m.passos:[]).map(x=>String(x||"").trim().slice(0,160)).filter(Boolean).slice(0,6),
-      link=lnHttps(m.link),regras=lnHttps(m.regras),teste=m.teste===true,ind=m.indicacao===true;
-    if(id&&parceiro&&titulo&&ganho&&passos.length&&link)out.push({id,parceiro,titulo,ganho,passos,link,regras,teste,ind});}
-  return out;}
-function lnUrl(){return (location.pathname.indexOf("/comecar/")>=0?"../":"")+"missoes-lendarias.json";}
-function lnLoad(){if(lnList||lnTry>2)return;lnTry++;
-  try{const c=JSON.parse(localStorage.getItem(LN_KEY)||"null");if(c)lnList=lnClean(c);}catch(e){}
-  try{fetch(lnUrl(),{cache:"no-cache"}).then(r=>r.ok?r.json():null).then(j=>{if(!j)return;lnList=lnClean(j);try{localStorage.setItem(LN_KEY,JSON.stringify(j));}catch(e){}lnRender();}).catch(()=>{});}catch(e){}}
-function lnCreator(){try{return typeof crOn==="function"&&crOn();}catch(e){return false;}}
-function lnAdult(){try{return typeof ad18==="function"&&ad18();}catch(e){return false;}}
-function lnReady(){try{return !!(cfg&&!cfg.blank&&cfg.quests&&cfg.quests.length);}catch(e){return false;}}
-function lnVis(){if(!lnReady())return [];if(!lnList)lnLoad();const L=lnList||[];const ad=lnAdult(),cr=lnCreator();return L.filter(m=>m.teste?cr:ad);}
-function lnSt(){let r=prog.lend;if(!r||typeof r!=="object"||Array.isArray(r))r=prog.lend={};return r;}
-function lnM(m){const r=lnSt();let x=r[m.id];if(!x||typeof x!=="object"||Array.isArray(x))x=r[m.id]={};if(!x.s||typeof x.s!=="object"||Array.isArray(x.s))x.s={};return x;}
-function lnN(m){const s=lnM(m).s;return m.passos.filter((p,i)=>s[i]).length;}
-function lnStep(m,i){const x=lnM(m),s=x.s;
-  if(s[i])delete s[i];else s[i]=todayKey();
-  const all=m.passos.every((p,k)=>s[k]);let g=0;
-  if(all&&!x.f){x.f=todayKey();
-    if(typeof adGoldOk==="function"&&adGoldOk()){try{if(typeof orGive==="function")g=orGive("ln:"+m.id,LN_G,"Missão Lendária");}catch(e){}}
-    try{haptic([10,30,10,30,20]);}catch(e){}save();
-    try{sysPop("MISSÃO LENDÁRIA CONCLUÍDA",m.titulo,"Você fechou todos os passos. Se tiver ganho, ele vem direto da "+m.parceiro+", não do app."+(g?" +"+g+" 🪙 de Ouro.":""),null,"Fechar");}catch(e){toast("⚜️ Missão Lendária concluída"+(g?" · +"+g+" 🪙":""));}}
-  else{if(!all&&x.f)delete x.f;save();}
-  lnOpen=m.id;lnRender();}
-function lnCard(m){const x=lnM(m),s=x.s,n=lnN(m),done=!!x.f;
-  const c=lnEl("article","lncard"+(done?" ok":""));c.dataset.ln=m.id;
-  const top=lnEl("div","lntop");top.append(lnEl("span","lnrar","LENDÁRIA"),lnEl("span","lnad","Publicidade · parceiro"));if(m.teste)top.append(lnEl("span","lntest","TESTE · só você vê"));c.append(top);
-  c.append(lnEl("b","lnt",(done?"✓ ":"")+m.titulo),lnEl("span","sm lnp",m.parceiro));
-  c.append(lnEl("p","lng","💰 "+m.ganho));
-  if(m.ind)c.append(lnEl("p","sm lnind","Transparência: este é o link de indicação do criador do app. Se você se cadastrar por ele, o criador ganha uma comissão da "+m.parceiro+". Para você não muda nada."));
-  const bar=lnEl("div","lnbar");bar.setAttribute("role","progressbar");bar.setAttribute("aria-label","Passos feitos");bar.setAttribute("aria-valuemin","0");bar.setAttribute("aria-valuemax",String(m.passos.length));bar.setAttribute("aria-valuenow",String(n));
-  const fill=lnEl("i");fill.style.width=Math.round(n/m.passos.length*100)+"%";bar.append(fill);c.append(bar);
-  const d=lnEl("details","lnsteps");d.open=lnOpen===m.id;d.addEventListener("toggle",()=>{if(d.open)lnOpen=m.id;else if(lnOpen===m.id)lnOpen=null;});
-  d.append(lnEl("summary",null,done?"Ver os passos ("+n+"/"+m.passos.length+")":"Começar a missão · "+n+"/"+m.passos.length+" passos"));
-  const ol=lnEl("ol");m.passos.forEach((p,i)=>{const li=lnEl("li");const b=lnEl("button",(s[i]?"ghost":"go")+" lnbtn",(s[i]?"✓ ":"")+p);b.type="button";b.dataset.i=i;
-    b.setAttribute("aria-pressed",s[i]?"true":"false");b.addEventListener("click",()=>lnStep(m,i));li.append(b);ol.append(li);});d.append(ol);c.append(d);
-  const row=lnEl("div","lnrow");const a=lnEl("a","lnlink","Abrir a "+m.parceiro+" ↗");a.href=m.link;a.target="_blank";a.rel="sponsored noopener noreferrer";row.append(a);
-  if(m.regras){const r=lnEl("a","lnreg","Regras ↗");r.href=m.regras;r.target="_blank";r.rel="noopener noreferrer";row.append(r);}c.append(row);
-  c.append(lnEl("p","sm muted lnrew",done?"✓ Concluída. O Ouro desta missão já entrou (uma vez só).":(typeof adGoldOk==="function"&&adGoldOk()?"Fechou todos os passos: +"+LN_G+" 🪙 de Ouro (uma vez só).":"O Ouro desta missão libera no 4º dia de conta.")));
-  return c;}
-function lnRender(){const L=lnVis();let p=$("lnPanel"),t=$("lnTease");
-  if(!L.length){if(p)p.hidden=true;if(t)t.hidden=true;return;}
-  // casa: no topo da aba Lendárias quando ela existe para a pessoa; senão, na aba Foco (ex.: Modo Criador sem idade no perfil)
-  const lb=document.querySelector('#tabbar [data-go="lenda"]'),tp=$("tpPanel"),inL=!!(lb&&!lb.hidden&&tp&&!tp.hidden);
-  if(!p){p=lnEl("section","panel lnpanel");p.id="lnPanel";p.dataset.sf="1";}
-  if(inL){p.dataset.tab="lenda";if(p.nextElementSibling!==tp)tp.before(p);}
-  else{p.dataset.tab="foco";const f=$("focusPanel");if(!f)return;if(f.nextElementSibling!==p)f.after(p);}
-  p.hidden=false;p.textContent="";const r=lnSt();const n=L.filter(m=>r[m.id]&&r[m.id].f).length;
-  const hd=lnEl("div","qhead lnhd");hd.append(lnEl("h2",null,"🏷️ Missões de Parceiros"),lnEl("span","sm mono","18+ · "+n+"/"+L.length));p.append(hd);
-  p.append(lnEl("div","sm lnintro","Missões de parceiros em que quem paga é o parceiro, direto para você. Opcionais: quem não faz não perde nada."));
-  for(const m of L)p.append(lnCard(m));
-  p.append(lnEl("p","sm muted lnlaw","Sem promessa de ganho: cada parceiro tem as próprias regras e exige 18+ no cadastro. O app não guarda seu link nem dinheiro nenhum. "+(typeof OR_LAW==="string"?OR_LAW:"")));
-  // chamada em Hoje: 1 toque leva para a área
-  const left=L.filter(m=>!(r[m.id]&&r[m.id].f));
-  if(!t){const q=$("quests");const sec=q&&q.closest("section");if(!sec)return;t=lnEl("section","panel lntease");t.id="lnTease";t.dataset.tab="hoje";t.dataset.sf="1";
-    const b=lnEl("button","lntbtn");b.type="button";b.addEventListener("click",()=>{const pp0=$("lnPanel");try{goTab(pp0&&pp0.dataset.tab||"foco");}catch(e){}const pp=$("lnPanel");if(pp)setTimeout(()=>pp.scrollIntoView({block:"start"}),60);});t.append(b);sec.after(t);}
-  if(!left.length){t.hidden=true;return;}
-  t.hidden=false;const b=t.firstElementChild;b.textContent="";
-  b.append(lnEl("span","lnrar","LENDÁRIA"),lnEl("span","lntt",left.length===1?"1 missão que paga te espera":left.length+" missões que pagam te esperam"),lnEl("span","lntgo","Ver ›"));
-  b.setAttribute("aria-label","Missões de parceiros: "+left.length+(left.length>1?" disponíveis":" disponível")+". Abrir.");}
-{const _r=render;render=function(){_r.apply(this,arguments);try{lnRender();}catch(e){}};}
-setTimeout(()=>{try{lnRender();}catch(e){}},90);
 
 // ---------- Missões do Mestre (só 18+): spec da EVA 7205176627, trava de idade de 7216423824 ----------
 // Cartões de parceiros com regulamento próprio. A lista vem de missoes-mestre.json (na raiz do site), para trocar parceiro,

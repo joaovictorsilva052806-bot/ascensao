@@ -8,6 +8,9 @@
 // Trava de idade: só 18+ (ad18); sem idade no /comecar/, 14-17, até 13 e autorização de responsável = a aba nem aparece.
 // Mistério: a aba abre na 1ª missão concluída; as tasks se revelam uma a uma (3 à vista + 1 a cada task concluída);
 // a 1ª Task Lendária concluída desbloqueia a Carteira e a meta do dia.
+// Missões de parceiros (antes tools/lendaria.*, #189): vêm de missoes-lendarias.json para trocar sem trem; sem o arquivo, fica só a lista fixa.
+// Entram no topo da aba (fora da revelação 1 a 1), com selo "Publicidade · parceiro". "teste": true = só o Modo Criador vê.
+// "compra": true = não dá Ouro (#196). "indicacao": true = link de indicação do criador: o card avisa a comissão, sem letra miúda.
 // Dados conferidos em 27/11/2026: /mnt/project-files/ascensao/receita/plataformas-que-pagam-27nov.md (valores mudam: vale o app de cada plataforma).
 const TP_META=50,TP_SHOW=3;
 const TP_TIER={c:["Comum",20],r:["Rara",30],l:["Lendária",50]};
@@ -107,10 +110,33 @@ const TP_L=[
   s:["Criar a conta de colaborador.",
      "Enviar 10 fotos ou vídeos seus, com título e palavras-chave em inglês.",
      "Aprovados: acompanhar as vendas no painel."]}];
+// ---- missões de parceiros (JSON) ----
+const TP_PK=(location.pathname.indexOf("/comecar/")>=0?"asc-u":"ascensao")+"-lend-cfg";
+let TP_PL=null,tpPTry=0;
+const tpHttps=u=>{try{const x=new URL(String(u||""));return x.protocol==="https:"?x.href:"";}catch(e){return "";}};
+function tpPClean(j){const L=j&&Array.isArray(j.missoes)?j.missoes:[];const out=[];
+  for(const m of L.slice(0,12)){if(!m||typeof m!=="object")continue;
+    const id=String(m.id||"").replace(/[^a-z0-9_-]/gi,"").slice(0,24),par=String(m.parceiro||"").trim().slice(0,40),tit=String(m.titulo||"").trim().slice(0,70),
+      pay=String(m.ganho||"").trim().slice(0,200),st=(Array.isArray(m.passos)?m.passos:[]).map(x=>String(x||"").trim().slice(0,160)).filter(Boolean).slice(0,6),link=tpHttps(m.link),reg=tpHttps(m.regras);
+    if(!(id&&par&&tit&&pay&&st.length&&link))continue;
+    const links=[[par,link]];if(reg)links.push(["Regras",reg]);
+    out.push({id:"p_"+id,pid:id,p:true,par,tier:"l",t:"🏷️ "+tit,pay,when:"⏳ Prazo e valor: pelas regras do parceiro.",warn:TP_WREF,links,s:st,
+      buy:m.compra===true,teste:m.teste===true,ind:m.indicacao===true});}
+  return out;}
+function tpPUrl(){return (location.pathname.indexOf("/comecar/")>=0?"../":"")+"missoes-lendarias.json";}
+function tpPLoad(){if(TP_PL||tpPTry>2)return;tpPTry++;
+  try{const c=JSON.parse(localStorage.getItem(TP_PK)||"null");if(c)TP_PL=tpPClean(c);}catch(e){}
+  try{fetch(tpPUrl(),{cache:"no-cache"}).then(r=>r.ok?r.json():null).then(j=>{if(!j)return;TP_PL=tpPClean(j);try{localStorage.setItem(TP_PK,JSON.stringify(j));}catch(e){}try{tpRender();}catch(e){}}).catch(()=>{});}catch(e){}}
+function tpCr(){try{return typeof crOn==="function"&&crOn();}catch(e){return false;}}
+function tpP(){if(!TP_PL)tpPLoad();const cr=tpCr();return (TP_PL||[]).filter(T=>!T.teste||cr);}
+function tpAll(){return TP_L.concat(tpP());}
+// progresso antigo das Missões de Parceiros (prog.lend, #189): copia para prog.tp uma vez, sem apagar prog.lend
+function tpLendMig(r){try{const L=prog.lend;if(!L||typeof L!=="object"||Array.isArray(L))return;for(const id in L){const k="p_"+String(id).replace(/[^a-z0-9_-]/gi,"").slice(0,24),x=L[id];
+    if(r[k]||!x||typeof x!=="object"||!x.s||typeof x.s!=="object")continue;r[k]={s:Object.assign({},x.s)};if(x.f)r[k].f=x.f;}}catch(e){}}
 function tpEl(t,c,x){const e=document.createElement(t);if(c)e.className=c;if(x!=null)e.textContent=x;return e;}
 function tpName(T){return T.t.replace(/^\S+\s/,"");}
 function tpOn(){try{return !!(cfg&&!cfg.blank&&cfg.quests&&cfg.quests.length)&&typeof ad18==="function"&&ad18();}catch(e){return false;}}
-function tpSt(){let r=prog.tp;if(!r||typeof r!=="object"||Array.isArray(r))r=prog.tp={};for(const T of TP_L){if(!r[T.id]||typeof r[T.id]!=="object"||Array.isArray(r[T.id]))r[T.id]={};if(!r[T.id].s||typeof r[T.id].s!=="object"||Array.isArray(r[T.id].s))r[T.id].s={};}return r;}
+function tpSt(){let r=prog.tp;if(!r||typeof r!=="object"||Array.isArray(r))r=prog.tp={};if(!r._lm&&prog.lend){tpLendMig(r);r._lm=1;}for(const T of tpAll()){if(!r[T.id]||typeof r[T.id]!=="object"||Array.isArray(r[T.id]))r[T.id]={};if(!r[T.id].s||typeof r[T.id].s!=="object"||Array.isArray(r[T.id].s))r[T.id].s={};}return r;}
 function tpN(T){const s=tpSt()[T.id].s;return T.s.filter((x,i)=>s[i]).length;}
 function tpDone(){const r=tpSt();return TP_L.filter(T=>r[T.id].f).length;}
 // a aba abre na 1ª missão concluída (qualquer dia); conquistas automáticas e check-in não contam
@@ -134,7 +160,7 @@ function tpStep(T,i){const r=tpSt(),s=r[T.id].s;
     if(!T.buy)try{if(typeof orGive==="function")g=orGive("tp:"+T.id,tier[1],"Task "+tier[0]);}catch(e){}
     const first=!prog.tpwal;if(first)prog.tpwal=todayKey();
     try{haptic([10,30,10]);}catch(e){}save();
-    const nx=tpVis()>before?TP_L[tpVis()-1]:null;
+    const nx=!T.p&&tpVis()>before?TP_L[tpVis()-1]:null;
     const msg=(first?"A Carteira foi desbloqueada: anote ali o que você receber. ":"")+(nx?"Uma nova task se revelou: "+TP_TIER[nx.tier][0]+". ":"")+"O dinheiro, quando vier, vem direto de quem paga."+(g?" +"+g+" 🪙 de Ouro.":"");
     try{sysPop(first?"CARTEIRA DESBLOQUEADA":"TASK "+tier[0].toUpperCase()+" CONCLUÍDA",tpName(T),msg,null,"Fechar");}catch(e){toast("✓ Task concluída"+(g?" · +"+g+" 🪙":""));}}
   else{if(!all&&r[T.id].f)delete r[T.id].f;save();}
@@ -145,12 +171,13 @@ function tpGot(T){const f=tpEl("form","tpwf tpgot");const inp=tpEl("input");inp.
   f.addEventListener("submit",ev=>{ev.preventDefault();if(tpAdd(T.id,inp.value)){tpOpen=T.id;const w=$("tpPanel")&&$("tpPanel").querySelector(".tpwallet");if(w){tpCoins(w);}setTimeout(()=>{tpRender();try{tpLine();}catch(e){}},w?400:0);}});return f;}
 function tpCard(T){const r=tpSt(),s=r[T.id].s,n=tpN(T),done=n===T.s.length,tier=TP_TIER[T.tier];
   const c=tpEl("details","tpm t-"+T.tier+(done?" ok":""));c.dataset.tp=T.id;c.open=tpOpen===T.id;c.addEventListener("toggle",()=>{if(c.open)tpOpen=T.id;else if(tpOpen===T.id)tpOpen=null;});
-  const sm=tpEl("summary","tpt");const nm=tpEl("span","tpnm");nm.append(tpEl("span","tptier",tier[0]),tpEl("span",null,(done?"✓ ":"")+T.t));sm.append(nm,tpEl("span","sm mono",n+"/"+T.s.length));c.append(sm);
+  const sm=tpEl("summary","tpt");const nm=tpEl("span","tpnm");nm.append(tpEl("span","tptier",tier[0]),tpEl("span",null,(done?"✓ ":"")+T.t));if(T.p){const bd=tpEl("span","tpbadges");bd.append(tpEl("span","tpad","Publicidade · parceiro"));if(T.teste)bd.append(tpEl("span","tptest","TESTE · só você vê"));nm.append(bd);}sm.append(nm,tpEl("span","sm mono",n+"/"+T.s.length));c.append(sm);
   c.append(tpEl("p","tpwhen",T.when),tpEl("p","tpsub","💰 "+T.pay));
   if(T.ja)c.append(tpEl("p","sm tpja","🔁 "+T.ja));
+  if(T.ind)c.append(tpEl("p","sm tpind","Transparência: este é o link de indicação do criador do app. Se você se cadastrar por ele, o criador ganha uma comissão da "+T.par+". Para você não muda nada."));
   const ol=tpEl("ol","tpsteps");T.s.forEach((x,i)=>{const li=tpEl("li");const b=tpEl("button",(s[i]?"ghost":"go")+" tpbtn",(s[i]?"✓ ":"")+x);b.type="button";b.dataset.i=i;
     b.setAttribute("aria-pressed",s[i]?"true":"false");b.addEventListener("click",()=>tpStep(T,i));li.append(b);ol.append(li);});c.append(ol);
-  const lk=tpEl("div","tplinks");lk.append(tpEl("span","sm muted","Páginas oficiais:"));for(const [nm2,u] of T.links){const a=tpEl("a","tplink",nm2+" ↗");a.href=u;a.target="_blank";a.rel="noopener noreferrer";lk.append(a);}c.append(lk);
+  const lk=tpEl("div","tplinks");lk.append(tpEl("span","sm muted",T.p?"Link do parceiro:":"Páginas oficiais:"));T.links.forEach(([nm2,u],k)=>{const a=tpEl("a","tplink",nm2+" ↗");a.href=u;a.target="_blank";a.rel=(T.p&&k===0?"sponsored ":"")+"noopener noreferrer";lk.append(a);});c.append(lk);
   c.append(tpEl("p","sm tpwarn","⚠️ "+T.warn));
   if(tpWal())c.append(tpGot(T));
   c.append(tpEl("p","sm muted",T.buy?"Esta task não dá Ouro: o app nunca premia compra. O ganho é só o cashback da plataforma.":done?"✓ Concluída. +"+tier[1]+" 🪙 já entrou (uma vez só).":"Ao marcar os "+T.s.length+" passos: +"+tier[1]+" 🪙 de Ouro (uma vez só)."));
@@ -180,13 +207,13 @@ function tpWallet(){const a=tpW(),rec=a.filter(x=>x.st!=="p"),pen=a.filter(x=>x.
       r.append(b,x);sh.append(r);d.append(sh);}}
   // registrar ganho em 2 toques
   const rg=tpEl("details","tpwreg");rg.append(tpEl("summary",null,"＋ Registrar ganho"));
-  const f=tpEl("form","tpwf");const sel=tpEl("select");sel.setAttribute("aria-label","De onde veio");for(const T of TP_L.slice(0,tpVis()))sel.append(new Option(tpName(T),T.id));sel.append(new Option("Outro","outro"));
+  const f=tpEl("form","tpwf");const sel=tpEl("select");sel.setAttribute("aria-label","De onde veio");for(const T of TP_L.slice(0,tpVis()).concat(tpP()))sel.append(new Option(tpName(T),T.id));sel.append(new Option("Outro","outro"));
   const stt=tpEl("select","tpwst");stt.setAttribute("aria-label","Situação");stt.append(new Option("Recebido","r"),new Option("Pendente","p"));
   const inp=tpEl("input");inp.type="text";inp.inputMode="decimal";inp.maxLength=12;inp.autocomplete="off";inp.placeholder="Valor em R$";inp.setAttribute("aria-label","Valor em reais");
   const add=tpEl("button","go tpwadd","Anotar");add.type="submit";f.append(sel,stt,inp,add);
   f.addEventListener("submit",ev=>{ev.preventDefault();if(tpAdd(sel.value,inp.value,stt.value)){if(stt.value!=="p")tpCoins(d);setTimeout(()=>tpRender(true),stt.value!=="p"?500:0);}});
   rg.append(f);d.append(rg);
-  if(a.length){const ul=tpEl("ul","tpwl");a.slice(0,12).forEach((x,k)=>{const T=TP_L.find(t=>t.id===x.src);const li=tpEl("li","sm"+(x.st==="p"?" pen":""));
+  if(a.length){const ul=tpEl("ul","tpwl");a.slice(0,12).forEach((x,k)=>{const T=tpAll().find(t=>t.id===x.src);const li=tpEl("li","sm"+(x.st==="p"?" pen":""));
       li.append(tpEl("span","tpwi",(T?T.t.split(" ")[0]:"✨")),tpEl("span","tpwn",(T?tpName(T):"Outro")+" · "+x.d.slice(8,10)+"/"+x.d.slice(5,7)),tpEl("span","mono tpwv",(x.st==="p"?"⏳ ":"✓ ")+tpBRL(x.v)));
       if(x.st==="p"){const ok=tpEl("button","ghost tpwok","Caiu ✓");ok.type="button";ok.setAttribute("aria-label","Marcar "+tpBRL(x.v)+" como recebido");
         ok.addEventListener("click",()=>{const b=tpW();const y=b.find(z=>z.d===x.d&&z.src===x.src&&+z.v===+x.v&&z.st==="p");if(y){delete y.st;tpWSave(b);}toast("Recebido: "+tpBRL(x.v));tpCoins(d);setTimeout(()=>tpRender(true),500);});li.append(ok);}
@@ -220,6 +247,7 @@ function tpRender(keepW){try{tpTab();}catch(e){}let p=$("tpPanel");if(!tpOn()){i
     p.append(mt);}
   else p.append(tpEl("div","tpmeta tpwlock","🔒 Conclua 1 Task Lendária para abrir a Carteira e a meta do dia."));
   p.append(tpEl("div","sm muted tpintro","Quem paga é o comprador ou a plataforma, direto para você. Comece pelo Desapega: é o único que cai hoje."));
+  const PP=tpP();if(PP.length){const pb=tpEl("div","tppar");pb.id="tpParc";pb.append(tpEl("div","tpparh","🏷️ Missões de parceiros"));for(const T of PP)pb.append(tpCard(T));p.append(pb);}
   const fl=tpEl("div","tpfil");fl.setAttribute("role","group");fl.setAttribute("aria-label","Filtrar por raridade");
   for(const [k,lb] of [["all","Todas"],["l","Lendária"],["r","Rara"],["c","Comum"]]){const b=tpEl("button","tpchip"+(k!=="all"?" t-"+k:"")+(tpF===k?" on":""),lb);b.type="button";b.setAttribute("aria-pressed",tpF===k?"true":"false");b.addEventListener("click",()=>{tpF=k;tpRender();});fl.append(b);}
   p.append(fl);
