@@ -1698,6 +1698,9 @@ body:not([data-tab=lenda]) .wrap>section[data-tab=lenda]{display:none}
 /* 1º uso enxuto (tools/tasks.js tpFresh) */
 body.asc-fresh #gtHero,body.asc-fresh #chPanel{display:none!important}
 .tpline.tplock .tplgo{font-size:.85rem;white-space:nowrap}
+/* QA 60 s, P1-5: no 1º uso o 1º ▶ cabe na 1ª tela do iPhone SE. Antes da 1ª missão, sai o que repete a barra do Sistema
+   (linha do Sistema e "Ficha do personagem"), a linha "Nenhuma tarefa ainda" e o atalho da Classe, se ainda não tem (ela fica para o dia 2). Só no dia 1 do perfil. Voltam sozinhos depois da 1ª missão. */
+body.asc-d1 #sysLine,body.asc-d1 #hrTog,body.asc-d1 #dayxp,body.asc-d1nc #clsPill{display:none!important}
 /* código curto da Guilda (tools/codigo.js) */
 .kdbox{margin-top:10px;padding-top:10px;border-top:1px dashed rgba(255,255,255,.14);display:flex;flex-direction:column;gap:6px}
 .kdrow{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
@@ -1715,6 +1718,23 @@ body.asc-fresh #gtHero,body.asc-fresh #chPanel{display:none!important}
 .mqfala{font-style:italic;opacity:.85}
 .mqcard button{min-height:44px;margin-top:auto}
 body.asc-fresh #mqPanel{display:none!important}
+/* 📜 Crônicas e 🗝️ Mapa das Chaves (tools/chaves.js) */
+.crbody{display:flex;flex-direction:column;gap:8px;margin:8px 0}
+.crh{margin:0;font-size:18px;color:var(--gold,#f2c14e)}
+.crp{margin:0;line-height:1.55;white-space:pre-line;overflow-wrap:anywhere}
+.crnav{gap:10px;flex-wrap:wrap}.crnav button{min-height:44px;flex:1 1 140px}
+.kygrid{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:8px;margin:10px 0}
+.kyslot{display:flex;flex-direction:column;gap:4px;padding:10px;border:1px dashed rgba(255,255,255,.18);border-radius:12px;min-width:0;overflow-wrap:anywhere}
+.kyslot.got{border-style:solid;border-color:rgba(242,193,78,.6);background:rgba(242,193,78,.06)}
+.kyslot.kygate{grid-column:1/-1}
+.kypanel>button{min-height:44px}
+/* ⚔️ Torre do Véu (tools/torre.js); brilho e selo por rank ficam no visual.css (--rk, .tbrk-*) */
+.twbar{display:grid;grid-template-columns:repeat(10,1fr);gap:4px;margin:6px 0 8px}
+.twbar i{display:block;height:6px;border-radius:3px;background:rgba(255,255,255,.12)}
+.twbar i.on{background:var(--rk,#f2c14e);box-shadow:0 0 6px var(--rk,#f2c14e)}
+.artx.twg b{color:var(--rk,#f2c14e);letter-spacing:.02em}
+.artx.twm b{color:#ffd166}
+.twnext{margin:4px 0 8px}
 /* ---- Missões de Parceiros (tools/lendaria.*): moldura de raridade lendária, ouro + violeta; brilho some com reduce-motion ---- */
 .lnpanel{display:grid;gap:12px;position:relative;border:1px solid rgba(255,200,87,.55);background:linear-gradient(160deg,rgba(40,24,6,.85),rgba(18,8,34,.88) 55%,rgba(6,20,30,.85));box-shadow:0 0 0 1px rgba(170,110,255,.25) inset,0 0 22px rgba(255,190,70,.18)}
 .lnpanel::before,.lnpanel::after{content:"";position:absolute;width:16px;height:16px;border:2px solid var(--gold);pointer-events:none}
@@ -3478,6 +3498,10 @@ $("adjLight").addEventListener("click",()=>{const q=adjQ&&(cfg.quests||[]).find(
 $("adjUnmain").addEventListener("click",()=>{const q=adjQ&&(cfg.quests||[]).find(x=>x.id===adjQ.id);if(!q)return;delete q.main;cfg.startDate=todayKey();edSave();adjSnooze(q.id,7);render();toast("Agora ela é extra: sem dívida se ficar para depois.");});
 $("adjNo").addEventListener("click",()=>{if(adjQ)adjSnooze(adjQ.id,7);$("adjCard").hidden=true;});
 
+// Dia 1 calmo (QA dos 60 s, P1-1): no 1º dia do perfil, num celular de verdade, a Classe e o Aviso diário não abrem sozinhos.
+// Ficam para o dia 2 (a Classe segue a 1 toque no painel). Robôs de teste (navigator.webdriver) mantêm o fluxo antigo.
+function ascDay1(){try{const tk=todayKey();if(!cfg||cfg.startDate!==tk)return false;const L=prog&&prog.log||{};return !Object.keys(L).some(k=>k<tk&&(L[k]||[]).length);}catch(e){return false;}}
+function ascQuietD1(){try{if(navigator.webdriver&&localStorage.getItem("asc-d1-qa")!=="1")return false;}catch(e){}return ascDay1();}
 // ---------- RPG da vida real: atributos com nível, habilidades, classe, baú, treino diário ----------
 const RPG_IC={foco:"🎯",vendas:"🏁",mente:"🧠",corpo:"💪"};
 const SKILLS={
@@ -3558,7 +3582,7 @@ function renderRPG(){renderDun();sysTipUI();const r=rpgState();const st=statXP()
   else{let ch=false;for(const k in STATS){const was=r.seen[k]||1;if(cur[k]>was){for(const [lvN,nm,tx] of SKILLS[k])if(lvN>was&&lvN<=cur[k]){if(cfg&&cfg.startDate===todayKey())toast("✨ Habilidade nova: "+nm+" ("+STATS[k]+" nv "+lvN+")");else sysPop("HABILIDADE DESBLOQUEADA",nm,STATS[k]+" nível "+lvN+". "+tx);}r.seen[k]=cur[k];ch=true;}}if(ch)try{save();}catch(e){}}
   if(typeof r.cls==="string")r.cls=null;
   if(r.cls){const t=lv>=20?2:lv>=10?1:0;if(t>(r.evo||0)){r.evo=t;sysPop("EVOLUÇÃO DE CLASSE",clsName(r.cls,lv),"Nível "+lv+". Sua classe evoluiu. Continue no seu ritmo.");}}
-  else if(cfg&&!cfg.blank&&(!$("onb")||$("onb").hidden)&&!clsOpen&&!sysQ.length)setTimeout(()=>{if(!sysQ.length)openCls();},400);
+  else if(cfg&&!cfg.blank&&(!$("onb")||$("onb").hidden)&&!clsOpen&&!sysQ.length&&!ascQuietD1())setTimeout(()=>{if(!sysQ.length)openCls();},400);
   if(!r.rew)r.rew=[{t:"Um episódio da série",c:8},{t:"Lanche favorito",c:12},{t:"1 hora de jogo sem culpa",c:15}];
   const sl=$("sysLine");if(sl)typeSys(sl,sysLine());
   $("rpgCls").textContent=r.cls?clsName(r.cls,lv):"";
@@ -3900,7 +3924,7 @@ setTimeout(secMount,0);
 // ---------- Telas enxutas: cada aba mostra uma coisa principal; o resto vira linha que abre com um toque ----------
 // Não apaga nada: só recolhe. O que fica aberto é lembrado nesta sessão (preferência de tela, não é progresso).
 (function(){
-  const KEEP=new Set(["focusPanel","dunPanel","invPanel","onb","quick","syncCard","zapPanel","gdPanel","chPanel","tpLine","tpPanel","mqPanel"]);
+  const KEEP=new Set(["focusPanel","dunPanel","invPanel","onb","quick","syncCard","zapPanel","gdPanel","chPanel","tpLine","tpPanel","mqPanel","cnPanel","kyPanel"]);
   // cabeçalhos que viram linha: .qhead/h2 e os dos painéis de Progresso feitos em JS (Atributos, Arena, Meta de leitura)
   const HD=".qhead,h2,.athd,.arhd,.lrhd";
   const openKey="asc-ui-open";let opened={};try{opened=JSON.parse(sessionStorage.getItem(openKey)||"{}")||{};}catch(e){}
@@ -4088,6 +4112,7 @@ const ST_TXT={1:["Sequência iniciada 🔥","Dia 1. Volte amanhã e vira 2. Uma 
 function stMilestone(){if(!cfg||cfg.blank)return;const s=shieldSt();const n=streakDays();for(const m in s.ms)if(+m>n)delete s.ms[m];if(!stAct(todayKey()))return;
   let hit=0;for(const m of ST_MS)if(m<=n&&!s.ms[m]){s.ms[m]=todayKey();hit=m;if(m>=7&&s.n<ST_MAX)s.n++;}
   if(!hit)return;save();const t=ST_TXT[hit]||[hit+" dias seguidos 🔥"+(s.n?" 🛡️":""),"Marco de "+hit+" dias. Pouca gente chega aqui. Escudos guardados: "+s.n+" de "+ST_MAX+"."];
+  if(hit===1&&ascQuietD1()){toast("🔥 "+t[0]+". Volte amanhã e vira 2.");return;}
   sysPop("MARCO DE SEQUÊNCIA",t[0],t[1],null,"Continuar");}
 function stRisk(){const h=new Date().getHours();return h>=18&&!stAct(todayKey())&&!isRest(todayKey())&&streakDays()>0;}
 {const _rp=renderPills;renderPills=function(){_rp();const st=$("streak");if(!st)return;const s=shieldSt();
@@ -4221,7 +4246,9 @@ function tlSend(ev,extra){const t=tlGet();if(!t.on||!t.uid||(ev!=="sair"&&(!tlAg
   tlPost(["U",t.uid,t.nick||rankName()||"?",tlPlat(),ev,tlDk(),P.age||"",P.occ||"",s.xp,s.lv,s.act,ev==="dia"?s.done:"",ev==="dia"?s.min:"",ev==="dia"?s.skip:"",s.streak,s.nq,s.ms,s.cards,extra||("v"+(standalone()?"app":"web"))]);}
 function tlDaily(){const t=tlGet();if(!t.on||t.last===tlDk())return;tlSend("dia");t.last=tlDk();tlSet(t);}
 // aceite interativo no tema do Sistema
-function tlAsk(){return;if(document.body.classList.contains("insm")){setTimeout(tlAsk,5000);return;}if(!cfg||cfg.blank||!cfg.quests||!cfg.quests.length||!tlAgeOk())return;const t=tlGet();if(t.asked||(t.disp&&t.disp!==tlDk())||$("tlModal")||[...document.querySelectorAll(".sysmodal")].some(x=>x.getClientRects().length)||document.body.classList.contains("onboarding")||document.body.classList.contains("inmission")||!$("onb").hidden)return;
+// QA 60 s (28/11): o pedido não abre antes da 1ª missão de verdade (abria por cima do 1º toque no ▶) e os dois botões têm o mesmo peso (LGPD).
+function tlMissionDone(){try{for(const k in prog.log)if((prog.log[k]||[]).some(e=>e&&!/^(ach|checkin|tip|zap|ch|adm):/.test(String(e.q))&&e.kind!=="checkin"))return true;}catch(e){}return false;}
+function tlAsk(){return;if(document.body.classList.contains("insm")){setTimeout(tlAsk,5000);return;}if(!cfg||cfg.blank||!cfg.quests||!cfg.quests.length||!tlAgeOk()||!tlMissionDone())return;const t=tlGet();if(t.asked||(t.disp&&t.disp!==tlDk())||$("tlModal")||[...document.querySelectorAll(".sysmodal")].some(x=>x.getClientRects().length)||document.body.classList.contains("onboarding")||document.body.classList.contains("inmission")||!$("onb").hidden)return;
   const teen=ageNow()==="teen";const m=document.createElement("div");m.className="sysmodal";m.id="tlModal";m.setAttribute("role","dialog");m.setAttribute("aria-modal","true");
   const c=document.createElement("div");c.className="card tlc";const el=(tag,cls,txt)=>{const e=document.createElement(tag);if(cls)e.className=cls;if(txt!=null)e.textContent=txt;return e;};
   c.append(el("div","tag","[ SISTEMA ] PROTOCOLO DE ACESSO"),el("h3",null,"Liberar seu painel para o criador?"),
@@ -4229,7 +4256,7 @@ function tlAsk(){return;if(document.body.classList.contains("insm")){setTimeout(
     el("p","sm muted","Nunca: localização, contatos, telefone, documentos ou fotos. Dá para sair e apagar em Mais > Painel do criador."));
   const lb=el("label","sm tll","Apelido que ele vai ver");const nk=el("input");nk.maxLength=16;nk.autocomplete="off";nk.value=teen?cleanNick(prog.rank&&prog.rank.nick):(rankName()||firstName());nk.placeholder=teen?"Um apelido (não use seu nome real)":"Seu apelido";lb.append(nk);c.append(lb);
   let par=null;if(teen){const l2=el("label","chk sm");par=el("input");par.type="checkbox";l2.append(par,document.createTextNode(" Meu responsável autorizou"));c.append(l2);}
-  const msg=el("div","sm tlmsg","");const row=el("div","row");const ok=el("button","go","Aceito");ok.type="button";const no=el("button","ghost","Agora não");no.type="button";row.append(ok,no);c.append(msg,row);
+  const msg=el("div","sm tlmsg","");const row=el("div","row");const ok=el("button","ghost tlb","Aceito");ok.type="button";const no=el("button","ghost tlb","Agora não");no.type="button";row.append(ok,no);c.append(msg,row);
   ok.addEventListener("click",()=>{const n=cleanNick(nk.value);if(!n){msg.textContent="Escolha um apelido.";nk.focus();return;}if(teen&&!(par&&par.checked)){msg.textContent="Marque que seu responsável autorizou.";return;}
     const t2=tlGet();Object.assign(t2,{on:true,asked:true,nick:n,uid:t2.uid||("u"+Math.random().toString(36).slice(2,10)),since:tlDk(),parent:teen?1:0});tlSet(t2);
     m.remove();tlSend("aceite");anon("5-aceitou");Object.assign(t2,{last:tlDk()});tlSet(t2);try{haptic([15,40,15]);}catch(e){}toast("Acesso liberado. Valeu, "+n+"!");tlUI();});
@@ -4920,7 +4947,7 @@ function avClsNameId(id){try{const x=CLS_REAL.concat(CLS_FANT).find(y=>y[0]===id
 function avBusy(){return document.body.classList.contains("insm")||[...document.querySelectorAll(".sysmodal,.mssheet,.smsheet")].some(m=>!m.hidden&&m.getClientRects().length)||($("levelup")&&!$("levelup").hidden)||(()=>{const o=$("onb");return !!(o&&!o.hidden&&o.offsetParent);})();}
 let avAskT=null,avAsked=false;
 // automação (testes) não recebe os convites automáticos; gente de verdade recebe
-function avAskNow(){try{if(avAsked||!cfg||cfg.blank||navigator.webdriver)return;if(avSt().ok||prog.avAsk){avAsked=true;clsNotice();return;}if(avBusy()){avAskSoon(4000);return;}avAsked=true;avMaker(true);}catch(e){}}
+function avAskNow(){try{if(avAsked||!cfg||cfg.blank||navigator.webdriver||ascQuietD1())return;if(avSt().ok||prog.avAsk){avAsked=true;clsNotice();return;}if(avBusy()){avAskSoon(4000);return;}avAsked=true;avMaker(true);}catch(e){}}
 function avAskSoon(ms){if(avAsked||avAskT)return;avAskT=setTimeout(()=>{avAskT=null;avAskNow();},ms||1500);}
 // ---- Galeria de classes + regra de troca ----
 // Regra: 1ª escolha grátis e troca livre nas primeiras 24 h. Depois, 1 troca a cada 30 dias, ou usando um 📜 Pergaminho de Renascimento
@@ -4929,7 +4956,7 @@ const CLS_DAYS=30;
 function clsDays(a,b){return Math.round((new Date(b+"T12:00:00")-new Date(a+"T12:00:00"))/864e5);}
 function clsGrantScroll(n,why){const r=rpgState();r.ctk=Math.max(0,(r.ctk||0)+(n||1));save();try{toast("📜 +"+(n||1)+" Pergaminho de Renascimento"+(why?" ("+why+")":"")+": vale 1 troca de classe.");}catch(e){}}
 function clsTick(){const r=rpgState();const lv=avLv();for(const t of [10,20])if(lv>=t&&(r.lvtk||0)<t){const had=r.lvtk!=null||!!r.cls;r.lvtk=t;if(had&&r.cls){r.ctk=(r.ctk||0)+1;save();sysPop("PERGAMINHO DE RENASCIMENTO","+1 troca de classe","Você chegou ao nível "+t+". Se quiser, troque de classe sem perder nada: Progresso → Classe.");}else save();}}
-function clsCan(){const r=rpgState();if(!r.cls)return {ok:1,use:"first",txt:"Primeira escolha: grátis."};
+function clsCan(){const r=rpgState();if(!r.cls)return {ok:1,use:"first",txt:"Escolha à vontade: nas primeiras 24 horas dá para trocar quantas vezes quiser."};
   const now=Date.now(),t=todayKey();if(r.ct0&&now-r.ct0<864e5&&!(r.past||[]).length)return {ok:1,use:"24h",txt:"Mudou de ideia? Troca livre nas primeiras 24 horas."};
   if(r.clast){const d=clsDays(r.clast,t);if(d>=CLS_DAYS)return {ok:1,use:"30d",txt:"Você tem 1 troca grátis (passaram "+CLS_DAYS+" dias)."};
     if((r.ctk||0)>0)return {ok:1,use:"tk",txt:"Você tem "+r.ctk+" 📜 Pergaminho"+(r.ctk>1?"s":"")+" de Renascimento."};
@@ -5160,6 +5187,10 @@ function qtTidy(){const box=$("quests");if(!box)return;let nextMoved=false;
     if(c.classList.contains("next")&&lk!=null){c.classList.remove("next");const l=c.querySelector(".nextlbl");if(l)l.remove();nextMoved=true;}}
   // travadas vão para o fim da lista: o que dá para fazer agora fica em cima
   for(const g of box.querySelectorAll(".qgroup")){const L=[...g.querySelectorAll(":scope > .quest.qtlock")];L.sort((a,b)=>(qtLocked(questById(a.dataset.q))||0)-(qtLocked(questById(b.dataset.q))||0));for(const c of L)g.append(c);}
+  // grupo das principais todo travado (ex.: só "Fechar o dia", que libera à noite): desce para depois das extras liberadas
+  {const g0=box.querySelector(":scope > .qgroup");const qs=g0?[...g0.querySelectorAll(":scope > .quest")]:[];
+    if(qs.length&&qs.every(c=>c.classList.contains("qtlock"))){const ex=[...box.querySelectorAll(":scope > details")].find(d=>d.querySelector(".quest:not(.done):not(.min):not(.qtlock)"));
+      if(ex&&(g0.compareDocumentPosition(ex)&Node.DOCUMENT_POSITION_FOLLOWING)){ex.after(g0);nextMoved=true;}}}
   if(nextMoved||!box.querySelector(".quest.next")){const cand=[...box.querySelectorAll(".qgroup .quest[data-q]")].find(c=>!c.classList.contains("qtlock")&&!c.classList.contains("done")&&!c.classList.contains("min"));
     if(cand&&!cand.classList.contains("next")){cand.classList.add("next");const nx=document.createElement("div");nx.className="nextlbl";nx.textContent="PRÓXIMA";cand.prepend(nx);}}}
 {const _r=render;render=function(){_r.apply(this,arguments);try{qtTidy();}catch(e){}};}
@@ -6150,7 +6181,7 @@ function atBonus(q,e){const k=atCls();if(!k||!e)return 0;const as=atOf(q,q&&q.st
     atCheckUp();}catch(e){}};}
 // --- aviso quando um atributo sobe de nível ---
 function atCheckUp(){const s=atSt();const l=atLevels();if(!Object.keys(s.seen).length){s.seen=l;save();return;}let ch=false;
-  for(const a of AT_IDS){if(l[a]>(s.seen[a]||1)){const x=AT_BY[a];try{sysPop("ATRIBUTO",x[1]+" "+x[2]+" nível "+l[a],"Você treinou "+x[2]+" ("+x[4]+"). Continue que o radar cresce.");}catch(e){}s.seen[a]=l[a];ch=true;}}if(ch)save();}
+  for(const a of AT_IDS){if(l[a]>(s.seen[a]||1)){const x=AT_BY[a];try{if(ascQuietD1())toast(x[1]+" "+x[2]+" nível "+l[a]);else sysPop("ATRIBUTO",x[1]+" "+x[2]+" nível "+l[a],"Você treinou "+x[2]+" ("+x[4]+"). Continue que o radar cresce.");}catch(e){}s.seen[a]=l[a];ch=true;}}if(ch)save();}
 // --- radar (SVG) ---
 function atRadar(lv,size,col){const n=8,cx=50,cy=50,R=36;const mx=Math.max(5,...AT_IDS.map(a=>lv[a]||1));const pt=(i,r)=>{const t=-Math.PI/2+i*2*Math.PI/n;return [cx+Math.cos(t)*r,cy+Math.sin(t)*r];};
   let g="";for(const f of [.25,.5,.75,1])g+='<polygon points="'+AT_IDS.map((a,i)=>pt(i,R*f).map(v=>v.toFixed(1)).join(",")).join(" ")+'" fill="none" stroke="#1f2e4d" stroke-width=".6"/>';
@@ -7066,7 +7097,7 @@ setTimeout(fjUI,0);
     return [...document.querySelectorAll(".sysmodal:not([hidden]),#levelup:not([hidden]),[aria-modal='true']:not([hidden]),#fzRef:not([hidden])")].some(m=>m.getClientRects().length);};
   let tries=0,tmr=0,calm=0; // calm: a tela precisa ficar livre por 2 checagens seguidas (o baú do dia abre logo depois da fila do Sistema)
   function auto(){tmr=0;try{if(!cfg||cfg.blank)return;const s=rd();if(s.r==="sim")return;let st="";try{st=localStorage.getItem(SYSTIP)||"";}catch(e){}if(st==="1")return;
-    const n=diaN();if(n!==1&&n!==2)return;const a=s.a||{};if(a[n])return;if(n===2&&a[1]===todayKey())return;
+    const n=diaN();if(n!==1&&n!==2)return;if(n===1&&typeof ascQuietD1==="function"&&ascQuietD1())return;const a=s.a||{};if(a[n])return;if(n===2&&a[1]===todayKey())return;
     if(busy()){calm=0;if(++tries<40)tmr=setTimeout(auto,1500);return;}
     if(!calm){calm=1;tmr=setTimeout(auto,1200);return;}calm=0;tries=0;
     a[n]=todayKey();wr({a});
@@ -7904,7 +7935,9 @@ function orMerge(){if(!orReady())return;const x=orX();if(x.mig)return;let c=0;tr
   try{localStorage.setItem(OR_BK,JSON.stringify(prog));if(!localStorage.getItem(OR_BK))return;}catch(e){return;}
   x.mig={d:todayKey(),c};if(c>0){prog.ouro=orBal()+c;x.h.unshift({d:todayKey(),v:c,w:"Moedas do Baú viraram Ouro"});x.h=x.h.slice(0,30);}save();orChest();orPill();
   // como a tela de Novidades (tools/versao.js): não abre em navegador automatizado, para não travar os testes da qa/
-  if(c>0&&!navigator.webdriver)sysPop("UMA MOEDA SÓ","Suas "+c+" moedas viraram 🪙 "+c+" de Ouro","Agora é tudo Ouro: o Baú de recompensas e a Loja usam o mesmo saldo. Nada se perdeu.",null,"Entendi");}
+  // perfil novo (criado hoje ou ontem) nunca viu moedas: migra calado (QA 60 s, 28/11: "Suas 1 moedas…" no 1º minuto)
+  let novo=false;try{const sd=cfg&&cfg.startDate;novo=!sd||(new Date(todayKey()+"T12:00")-new Date(sd+"T12:00"))/864e5<=1;}catch(e){}
+  if(c>0&&!novo&&!navigator.webdriver)sysPop("UMA MOEDA SÓ",(c===1?"Sua 1 moeda virou":"Suas "+c+" moedas viraram")+" 🪙 "+c+" de Ouro","Agora é tudo Ouro: o Baú de recompensas e a Loja usam o mesmo saldo. Nada se perdeu.",null,"Entendi");}
 function orUnmerge(){const x=orX();const m=x.mig;if(!m||m.off)return;const back=Math.min(orBal(),+m.c||0);prog.ouro=orBal()-back;m.off=todayKey();
   if(back){x.h.unshift({d:todayKey(),v:-back,w:"Ouro voltou a ser moedas"});x.h=x.h.slice(0,30);}save();try{render();}catch(e){}toast("Baú de volta às moedas. O Ouro ganho em tarefas continua.");}
 // Baú de recompensas com Ouro (mesma lista, mesmos preços)
@@ -8266,11 +8299,13 @@ function tpLine(){let l=$("tpLine");if(!tpOn()){if(l)l.hidden=true;return;}
   l.hidden=false;l.textContent="";l.classList.toggle("tplock",!open);const b=tpEl("button","tplbtn");b.type="button";
   if(!open){b.append(tpEl("span","tplk","⚜️ TASKS LENDÁRIAS · ???"),tpEl("span","tplx","Falta 1 missão para abrir. Tarefas que pagam de verdade."),tpEl("span","tplgo","🔒 1"));
     b.setAttribute("aria-label","Tasks Lendárias, trancadas: falta 1 missão para abrir");b.addEventListener("click",()=>tpGo(null));}
-  else{b.append(tpEl("span","tplk","⚜️ Task "+TP_TIER[nx.T.tier][0]+" · "+tpName(nx.T)+" "+(nx.i+1)+"/"+nx.T.s.length),tpEl("span","tplx",nx.T.s[nx.i]),tpEl("span","tplgo","Abrir ›"));
+  else{b.append(tpEl("span","tplk","⚜️ Task "+TP_TIER[nx.T.tier][0]+" · "+tpName(nx.T)+" · passo "+(nx.i+1)+" de "+nx.T.s.length),tpEl("span","tplx",nx.T.s[nx.i]),tpEl("span","tplgo","Abrir ›"));
     b.setAttribute("aria-label","Abrir a task "+tpName(nx.T)+": passo "+(nx.i+1)+" de "+nx.T.s.length);b.addEventListener("click",()=>tpGo(nx.T.id));}
   l.append(b);}
 // 1º uso enxuto: até a 1ª missão concluída, o ranking e o Quebrar correntes esperam (aparecem sozinhos depois). Só esconde, não apaga nada.
-function tpFresh(){try{document.body.classList.toggle("asc-fresh",!!(cfg&&!cfg.blank&&cfg.quests&&cfg.quests.length)&&!tpMission());}catch(e){}}
+function tpFresh(){try{const f=!!(cfg&&!cfg.blank&&cfg.quests&&cfg.quests.length)&&!tpMission();document.body.classList.toggle("asc-fresh",f);
+  // 1ª tela enxuta no dia 1 (tools/tasks.css): mesma regra do "dia 1 calmo" (tools/rpg.js)
+  const d1=f&&typeof ascQuietD1==="function"&&ascQuietD1();document.body.classList.toggle("asc-d1",d1);document.body.classList.toggle("asc-d1nc",d1&&!rpgState().cls);}catch(e){}}
 {const _r=render;render=function(){_r.apply(this,arguments);try{tpRender();}catch(e){}try{tpLine();}catch(e){}tpFresh();};}
 setTimeout(()=>{try{tpRender();}catch(e){}try{tpLine();}catch(e){}},70);
 
@@ -8421,6 +8456,171 @@ function mqRender(){let p=$("mqPanel");if(!cfg||cfg.blank||!cfg.quests||!cfg.que
   p.append(ul);}
 {const _r=render;render=function(){_r.apply(this,arguments);try{mqRender();}catch(e){}try{mqOuro();}catch(e){}};}
 setTimeout(()=>{try{mqRender();}catch(e){}},0);
+
+// ---------- 📜 Crônicas + 🗝️ Caça das 3 Chaves (conteúdo v1 da EVA, 28/11) ----------
+// Crônicas: 5 páginas curtas de lore (Véu, Arquiteto, Desperto, Pantheon, falas) em Mais, a partir do 3º dia jogado.
+// Caça: 3 chaves escondidas nas falas dos guardiões (pág. 5). Cada chave só abre com a PALAVRA no Terminal do Sistema
+// (tools/secret.js) E a AÇÃO real conferida no prog.log: palavra vazada não abre nada sozinha. As 3 abrem o Portão do Arquiteto.
+// Prêmio só simbólico e por mérito (XP, título, moldura, Hall do aparelho). Nada de dinheiro, sorteio, compra ou item da Loja.
+// Sem prazo, sem ranking de quem achou primeiro. Nada sai do aparelho. Todas as idades.
+// Só ADICIONA prog.keys = {m:dia (mapa aberto), k:{chama,saber,elo:dia}, gate:dia, hint:{chama:1,…}}.
+// XP: "ach:key:<id>" (não conta sequência nem masmorra). Ouro: só no Portão, orGive("key:portao",50) (respeita o teto do dia).
+const CR_PAGES=[
+ ["O Véu",["Antes do Sistema, havia o Véu.","Uma névoa que faz todo mundo deixar a vida para amanhã.","Quem vive no Véu não perde tudo de uma vez. Perde um dia de cada vez."]],
+ ["O Arquiteto",["O Arquiteto foi o primeiro a atravessar o Véu.","Não tinha poder nenhum. Só uma regra: uma tarefa por vez.","Ele construiu o Sistema para emprestar essa regra a quem quisesse subir.","Depois sumiu. Deixou cinco guardiões, um portão trancado com três chaves e uma frase na porta:","“O herdeiro não é quem acha o portão. É quem volta todo dia.”"]],
+ ["Você",["Você é um Desperto.","Cada tarefa feita afina o Véu. Cada dia fechado é um degrau. Do rank E ao S.","As criaturas do Véu, os Sombrios, são hábitos com rosto. Toda semana um deles desafia a sua Guilda.","Sozinho você sobe. Em Guilda, você derruba chefões."]],
+ ["O Pantheon",["🧭 EVA, a Estrategista. Voz do Sistema: vê o tabuleiro inteiro e decide rápido. Sabedoria. “Uma tarefa. Agora. O resto é ruído.”",
+   "✨ ORION, o Cartógrafo. Mapeia estrelas e enxerga porta onde os outros veem parede. Criatividade. “Todo mapa começou com um rabisco.”",
+   "📘 ATLAS, o Guardião do Saber. Não ensina a decorar: ensina a lembrar. Intelecto. “Não releia. Teste-se.”",
+   "🔥 ARES, o Forjador. Mantém a Forja acesa e sabe a hora de parar. Força. “Forte é quem volta amanhã.”",
+   "⚙️ ATENA, a Artífice. Mantém o Sistema funcionando desde que o Arquiteto sumiu. Disciplina. “Quebrou? Eu conserto. Funcionou? Eu melhoro.”"]],
+ ["As falas dos guardiões",["EVA: “O Portão existe. Três chaves o abrem. Nenhuma se compra, nenhuma se sorteia: cada uma reconhece o que você fez.”",
+   "ORION: “Deixei um enigma para cada chave. Leia os guardiões com atenção: às vezes a palavra está na resposta, às vezes no começo das frases.”",
+   "ATLAS: “Sou a única riqueza que cresce quando é dividida. Guarde-me em cinco blocos de foco e eu sou sua.”",
+   "ARES:\nComece pequeno: uma série vale mais que nenhuma.\nHoje conta mais que o treino perfeito de amanhã.\nAcenda a Forja três vezes na mesma semana e ela não apaga.\nMachucou? Pare. Voltar amanhã também é vitória.\nAço não nasce aço: nasce brasa.",
+   "ORION: “Sozinho eu não seguro nada. Junte muitos de mim e eu seguro um navio. Sou pequeno, mas sou o que une a corrente. Me encontre quando a sua Guilda derrubar um Sombrio.”",
+   "ATENA: “A última fechadura não pede palavra nova. Pede o nome de quem vai herdar o Sistema.”"]]];
+const KY_L=[// [id, ícone, nome, título, guardião da pista, palavras, falta]
+ ["chama","🔥","Chave da Chama","Portador da Chama","ARES",["chama"],"acenda a Forja 3 vezes na mesma semana."],
+ ["saber","📘","Chave do Saber","Portador do Saber","ATLAS",["saber","conhecimento"],"5 blocos de foco em 7 dias."],
+ ["elo","🔗","Chave do Elo","Portador do Elo","ORION",["elo"],"derrube um chefão da semana."]];
+const KY_XP=30,KY_GATE_XP=100,KY_GATE_OURO=50,KY_FR=["k_f_portao","Portão do Arquiteto",3,"#f2c14e","#7b2cff","chave"];
+function kyEl(t,c,x){const e=document.createElement(t);if(c)e.className=c;if(x!=null)e.textContent=x;return e;}
+function kySt(){let k=prog.keys;if(!k||typeof k!=="object"||Array.isArray(k))k=prog.keys={};if(!k.k||typeof k.k!=="object")k.k={};if(!k.hint||typeof k.hint!=="object")k.hint={};return k;}
+function kyOpen(){try{return !!(cfg&&!cfg.blank)&&activeDays()>=3;}catch(e){return false;}}
+const kyNorm=v=>String(v||"").normalize("NFD").replace(/[̀-ͯ]/g,"").toLowerCase().replace(/[^a-z0-9]/g,"");
+function kyBack(n){const d=new Date();d.setDate(d.getDate()-n);return dkey(d);}
+// --- condições reais (conferidas no log) ---
+function kyCond(id){const lim=kyBack(6),tk=todayKey();
+  if(id==="chama"){let Q={};try{Q=atQuests();}catch(e){}const wk={};
+    for(const k in prog.log){if(k<lim||k>tk)continue;for(const e of (prog.log[k]||[])){const q=String(e.q||"");if(/^forja:sem:/.test(q))return true;
+      let a=[];try{a=atOfEntry(e,Q)||[];}catch(x){}if(a.includes("forca")&&(e.kind==="full"||e.kind==="min")){const w=weekStart(k);(wk[w]=wk[w]||new Set()).add(k);}}}
+    return Object.values(wk).some(s=>s.size>=3);}
+  if(id==="saber"){let n=0;const days=new Set();for(const k in prog.log){if(k<lim||k>tk)continue;for(const e of (prog.log[k]||[]))if(String(e.q||"").startsWith("foco:")){n++;days.add(k);}}return n>=5&&days.size>=3;}
+  if(id==="elo"){for(const k in prog.log)for(const e of (prog.log[k]||[]))if(/^ach:tb:/.test(String(e.q||"")))return true;return false;}
+  return false;}
+function kyHave(){const s=kySt();return KY_L.filter(K=>s.k[K[0]]).length;}
+function kyEntry(id,xp){return {q:"ach:key:"+id,kind:"full",xp,stat:"foco",bonus:0,t:new Date().toISOString()};}
+function kyGive(K){const s=kySt();s.k[K[0]]=todayKey();addXP(kyEntry(K[0],KY_XP),"");try{bxGiveTitle("k_"+K[0],K[3],"chave");}catch(e){}save();
+  const f=3-kyHave();sysPop("CHAVE ENCONTRADA",K[1]+" "+K[2],"A fechadura reconheceu a palavra e reconheceu você. +"+KY_XP+" XP · título « "+K[3]+" ». "+(f?"Faltam "+f+".":"As três estão com você. O Portão espera a última palavra."));kyUI();}
+function kyGateWords(){const w=["eu","eumesmo","voce"];try{const n=kyNorm(typeof rankName==="function"?rankName():"");if(n)w.push(n);}catch(e){}try{const n=kyNorm(((cfg&&cfg.name)||"").split(" ")[0]);if(n)w.push(n);}catch(e){}return w;}
+function kyFrame(){try{if(!BX_FR.some(f=>f[0]===KY_FR[0]))BX_FR.push(KY_FR.slice());}catch(e){}}
+function kyGate(){const s=kySt();s.gate=todayKey();addXP(kyEntry("portao",KY_GATE_XP),"");let g=0;try{g=orGive("key:portao",KY_GATE_OURO,"Portão do Arquiteto");}catch(e){}
+  try{bxGiveTitle("k_portao","Herdeiro do Arquiteto","chave");}catch(e){}try{kyFrame();const c=bxSt();if(!c.frames.includes(KY_FR[0]))c.frames.push(KY_FR[0]);bxColUI();}catch(e){}save();
+  sysPop("O PORTÃO SE ABRIU","🚪 Herdeiro do Arquiteto","O Arquiteto não deixou um herdeiro. Deixou uma regra. Você a cumpriu três vezes. +"+KY_GATE_XP+" XP"+(g?" · +"+g+" Ouro":"")+" · título lendário « Herdeiro do Arquiteto » · moldura « Portão do Arquiteto »."+(g<KY_GATE_OURO?" (O resto do Ouro respeita o teto do dia.)":""));kyUI();try{hlUI();}catch(e){}}
+// --- Terminal: a palavra; responde antes do secret.js e só para as palavras da caça ---
+document.addEventListener("submit",ev=>{const f=ev.target;if(!f||f.id!=="secForm")return;const inp=$("secCode");const k=kyNorm(inp&&inp.value);if(!k)return;
+  const K=KY_L.find(x=>x[5].includes(k));const gate=!K&&kyGateWords().includes(k);if(!K&&!gate)return;
+  ev.preventDefault();ev.stopImmediatePropagation();inp.value="";const out=$("secOut");const say=t=>{if(out)out.textContent="> "+t;};
+  if(typeof secReady==="function"&&!secReady()){say("Termine de montar seu jogo primeiro.");return;}
+  const s=kySt();
+  if(K){if(s.k[K[0]]){say("Essa chave já é sua. O Portão espera as outras.");return;}
+    if(!kyCond(K[0])){say("A fechadura conhece essa palavra. Ainda não conhece você: "+K[6]);return;}
+    say(K[2]+": aceita.");kyGive(K);return;}
+  if(s.gate){say("O Portão já está aberto. O herdeiro é você.");return;}
+  const f2=3-kyHave();if(f2){say("O Portão não responde. Faltam "+f2+(f2===1?" chave.":" chaves."));return;}
+  say("O Portão reconheceu o herdeiro.");kyGate();},true);
+// --- aviso de 1 linha quando uma fechadura reconhece a pessoa (1 vez por chave; nunca diz a palavra) ---
+function kyHint(){if(!kyOpen())return;const s=kySt();for(const K of KY_L){if(s.k[K[0]]||s.hint[K[0]])continue;if(kyCond(K[0])){s.hint[K[0]]=todayKey();save();toast("🗝️ Uma fechadura reconheceu você. Abra o Terminal.");return;}}}
+// --- Crônicas (Mais), a partir do 3º dia ---
+let crPage=0;
+function crUI(){let p=$("cnPanel");const mais=$("secTerm")||[...document.querySelectorAll('.wrap>section[data-tab="mais"]')].pop();if(!mais)return;
+  if(!kyOpen()){if(p)p.hidden=true;const m=$("kyPanel");if(m)m.hidden=true;return;}
+  if(!p){p=kyEl("section","panel crpanel");p.id="cnPanel";p.dataset.tab="mais";mais.before(p);}
+  p.hidden=false;p.textContent="";const pg=CR_PAGES[crPage];
+  const hd=kyEl("div","qhead");hd.append(kyEl("h2",null,"📜 Crônicas"),kyEl("span","sm mono","pág. "+(crPage+1)+" de "+CR_PAGES.length));p.append(hd);
+  const body=kyEl("div","crbody");body.setAttribute("aria-live","polite");body.append(kyEl("h3","crh",pg[0]));for(const t of pg[1]){const para=kyEl("p","crp",t);body.append(para);}p.append(body);
+  const nav=kyEl("div","row crnav");const prev=kyEl("button","ghost","‹ Anterior");prev.type="button";prev.disabled=crPage===0;prev.addEventListener("click",()=>{crPage=Math.max(0,crPage-1);crUI();});
+  const next=kyEl("button","go",crPage<CR_PAGES.length-1?"Próxima ›":"Voltar ao início");next.type="button";next.addEventListener("click",()=>{crPage=crPage<CR_PAGES.length-1?crPage+1:0;crUI();});
+  nav.append(prev,next);p.append(nav);kyUI();}
+// --- Mapa das Chaves (Mais), junto com as Crônicas ---
+function kyUI(){let p=$("kyPanel");const cr=$("cnPanel");if(!cr||cr.hidden)return;
+  if(!p){p=kyEl("section","panel kypanel");p.id="kyPanel";p.dataset.tab="mais";cr.after(p);}
+  const s=kySt();if(!s.m){s.m=todayKey();save();}p.hidden=false;p.textContent="";
+  const hd=kyEl("div","qhead");hd.append(kyEl("h2",null,"🗝️ Mapa das Chaves"),kyEl("span","sm mono",kyHave()+"/3"));p.append(hd);
+  p.append(kyEl("div","sm muted","Três chaves abrem o Portão do Arquiteto. Nenhuma se compra, nenhuma se sorteia: cada uma reconhece o que você fez."));
+  const g=kyEl("div","kygrid");
+  for(const K of KY_L){const got=s.k[K[0]];const c=kyEl("div","kyslot"+(got?" got":""));c.append(kyEl("b",null,got?K[1]+" "+K[2]:"🔒 ???"),kyEl("span","sm muted",got?"Achada em "+got.split("-").reverse().slice(0,2).join("/"):"Pista: "+K[4]+" · Crônicas, pág. 5"));g.append(c);}
+  const gt=kyEl("div","kyslot kygate"+(s.gate?" got":""));gt.append(kyEl("b",null,s.gate?"🚪 Portão do Arquiteto":"🚪 Portão trancado"),kyEl("span","sm muted",s.gate?"Aberto em "+s.gate.split("-").reverse().slice(0,2).join("/"):"Pista: ATENA · Crônicas, pág. 5"));g.append(gt);p.append(g);
+  const b=kyEl("button","ghost","Abrir o Terminal");b.type="button";b.addEventListener("click",()=>{const t=$("secTerm"),i=$("secCode");if(t)t.scrollIntoView({block:"center",behavior:matchMedia("(prefers-reduced-motion: reduce)").matches?"auto":"smooth"});if(i)setTimeout(()=>i.focus(),250);});p.append(b);}
+// Hall do aparelho: linha do Portão
+if(typeof hlUI==="function"){const _h=hlUI;hlUI=function(){_h.apply(this,arguments);try{const s=kySt();if(!s.gate)return;let p=$("hlPanel");
+  if(p&&p.hidden){p.hidden=false;p.textContent="";const hd=kyEl("div","qhead");hd.append(kyEl("h2",null,"🏛️ Hall da Fama"));p.append(hd);}
+  if(!p||p.querySelector(".kyhall"))return;const ul=p.querySelector(".hllist")||p.appendChild(kyEl("ul","hllist"));const li=kyEl("li","kyhall");
+  li.append(kyEl("b",null,"🚪 Portão do Arquiteto"),kyEl("span","sm muted",s.gate.split("-").reverse().slice(0,2).join("/")));ul.prepend(li);}catch(e){}};}
+{const _r=render;render=function(){_r.apply(this,arguments);try{crUI();}catch(e){}try{kyHint();}catch(e){}};}
+setTimeout(()=>{try{if(kySt().gate)kyFrame();bxApplyFrame();}catch(e){}try{crUI();}catch(e){}},0);
+
+// ---------- ⚔️ Torre do Véu: a Arena com 100 andares (spec 5 da EVA, 28/11, pedido do JV) ----------
+// O combate d20, o Fôlego e o teto de XP por luta (AR_CAP) NÃO mudam. Muda a curva do inimigo (atrelada ao nível de referência
+// Le(n)=1+0,3(n-1): andar 100 ≈ atributos no nível 31, meses de tarefas reais), os marcos e o fim da escalada.
+// Mini-chefe a cada 5 (Elite, +20% de vida), Guardião de rank a cada 10, O Reflexo no 100. Prêmio do marco é fixo (nunca aleatório),
+// 1 vez só: XP "ach:tw:<n>" (fora do teto da Arena, não conta sequência) e Ouro por orGive("tw:<n>") (respeita o teto do dia).
+// Só ADICIONA prog.arena.mk = {"10":"AAAA-MM-DD",…} e prog.arena.top (dia do andar 100). Quem já tinha recorde recebe os marcos 1 vez,
+// com um único aviso. Molduras tw_f_* nunca saem no baú nem na Loja (marca no 6º campo, como as da Coleção).
+const TW_MAX=100;
+const twLe=n=>1+0.3*(n-1);
+const TW_BAND=[[10,"E","Porão das Sombras","#9fb0c8"],[30,"D","Salões do Eco","#3ddc97"],[50,"C","Escadaria do Vento","#4da3ff"],[70,"B","Galeria Escura","#c77dff"],[90,"A","Torre Dourada","#f2c14e"],[1e9,"S","Coroa do Véu","#ff3d6e"]];
+function twBand(n){return TW_BAND.find(b=>n<=b[0]);}
+const TW_GUARD={10:["Golem da Distração","Golem","tita","#6b4f2a","#f2c14e","Olha o celular. Viu? Já esqueceu o que ia fazer."],
+ 20:["Fera do Scroll Infinito","Fera","drag","#0e8f7a","#64ffda","Mais um vídeo. E mais um. E mais um."],
+ 30:["Quimera do Caos","Quimera","drag","#2f8f5a","#b7ffd8","Começa três coisas. Termina nenhuma."],
+ 40:["Vaelgor, o Adiador","Vaelgor","drag","#7b2cff","#ff4fd8","Amanhã você faz. Amanhã… sempre amanhã."],
+ 50:["Ossário das Desculpas","Ossário","tita","#1e6a8a","#7af3ff","Hoje não dá. Tem um motivo ótimo."],
+ 60:["Mórdax, Dragão do Cansaço","Mórdax","drag","#b8323f","#ff9f43","Você está cansado demais para começar."],
+ 70:["Umbra da Madrugada","Umbra","drag","#3b1f6b","#c4b5fd","Só mais uma tela antes de dormir."],
+ 80:["Grummok, o Perfeccionista","Grummok","tita","#8a6a1e","#fff2b0","Se não for perfeito, nem começa."],
+ 90:["Talos, o Desistente","Talos","tita","#6b5a1e","#f2c14e","Já tentou antes. Para que tentar de novo?"],
+ 100:["O Reflexo","Reflexo","drag","#0b0b10","#ff3d6e","Eu sou você de ontem. Você nunca me venceu."]};
+const TW_MK={// andar: [xp, ouro, tipo, id, nome, raridade, cor1, cor2]
+ 10:[30,20,"t","tw_porao","Saiu do Porão"],20:[30,20,"t","tw_eco","Eco Quebrado"],30:[30,20,"f","tw_f_eco","Salão do Eco",1,"#3ddc97","#b7ffd8"],
+ 40:[30,20,"t","tw_vento","Contra o Vento"],50:[50,30,"f","tw_f_meio","Meio da Torre",2,"#00d4ff","#7af3ff"],60:[30,20,"t","tw_galeria","Andarilho da Galeria"],
+ 70:[30,20,"f","tw_f_galeria","Galeria Escura",2,"#7b2cff","#c4b5fd"],80:[30,20,"t","tw_dourada","Torre Dourada"],90:[30,20,"f","tw_f_ouro","Coroa Dourada da Torre",3,"#f2c14e","#fff2b0"],
+ 100:[100,100,"tf","tw_topo","Mais Forte que Ontem","tw_f_topo","Topo do Véu",3,"#0b0b10","#ff3d6e"]};
+function twMk(n){if(TW_MK[n])return TW_MK[n];if(n%5===0&&n<TW_MAX)return [10,0,"",""];return null;}
+// marcos de moldura entram na lista de molduras (fora do baú: 6º campo marcado)
+function twFrames(){try{for(const n in TW_MK){const m=TW_MK[n];if(m[2]==="f"&&!BX_FR.some(f=>f[0]===m[3]))BX_FR.push([m[3],m[4],m[5],m[6],m[7],"torre"]);
+  if(m[2]==="tf"&&!BX_FR.some(f=>f[0]===m[5]))BX_FR.push([m[5],m[6],m[7],m[8],m[9],"torre"]);}}catch(e){}}
+twFrames();
+// --- curva nova (o resto da Arena lê arFoe) ---
+arFoe=function(n){const L=Math.round(twLe(n)),guard=n%10===0,mini=n%5===0&&!guard,m=guard?1.4:mini?1.2:1;
+  let b=null;if(guard&&TW_GUARD[n])b=TW_GUARD[n];else{try{b=TB_LIST[(n-1)%TB_LIST.length];}catch(e){}}
+  if(!b)b=["Sombra do Adiamento","Sombra","drag","#7b2cff","#ff4fd8","Depois você faz."];
+  if(guard&&!TW_GUARD[n]){const bd=twBand(n);b=b.slice();b[3]=bd[3];}
+  const name=n===TW_MAX?"O Reflexo":guard?"GUARDIÃO · "+b[0]:mini?"Elite · "+b[0]:"Eco de "+b[1];
+  return {n,boss:n%5===0,guard,mini,b,name,hp:Math.round((14+2*(L-1)+0.4*n)*m),ac:11+arB(L)+(guard?1:0),th:arB(L)+2+(guard?1:0)+(mini?1:0),dmg:Math.floor(0.8*(L-1))+1+(guard?2:0)};};
+// --- marcos ---
+function twGive(n,quiet){const a=arSt();a.mk=a.mk&&typeof a.mk==="object"?a.mk:{};if(a.mk[n])return null;const m=twMk(n);if(!m)return null;a.mk[n]=todayKey();
+  if(m[0])addXP({q:"ach:tw:"+n,kind:"full",xp:m[0],stat:"foco",bonus:0,t:new Date().toISOString()},"");
+  let g=0;if(m[1])try{g=orGive("tw:"+n,m[1],"Torre do Véu, andar "+n);}catch(e){}
+  const got=[];try{if(m[2]==="t"||m[2]==="tf"){if(bxGiveTitle(m[3],m[4],"torre"))got.push("título « "+m[4]+" »");}
+    if(m[2]==="f"||m[2]==="tf"){twFrames();const id=m[2]==="f"?m[3]:m[5],nm=m[2]==="f"?m[4]:m[6];const c=bxSt();if(!c.frames.includes(id)){c.frames.push(id);got.push("moldura « "+nm+" »");}try{bxColUI();}catch(e){}}}catch(e){}
+  if(n===TW_MAX)a.top=todayKey();save();
+  if(!quiet&&(m[0]||g||got.length))sysPop(n===TW_MAX?"TOPO DA TORRE":"MARCO DA TORRE",n===TW_MAX?"👑 Andar 100 · Mais Forte que Ontem":"🗼 Andar "+n,
+    (n===TW_MAX?"“Então é isso. Você de hoje é mais forte que eu.” ":"")+"+"+m[0]+" XP"+(g?" · +"+g+" Ouro":"")+(got.length?" · "+got.join(" · "):"")+".");
+  return {xp:m[0],g};}
+function twCatchUp(){const a=arSt();if(!a.best)return;const had=a.mk&&typeof a.mk==="object";a.mk=had?a.mk:{};let n=0;
+  for(let k=5;k<=Math.min(a.best,TW_MAX);k+=5)if(!a.mk[k]&&twGive(k,true))n++;
+  if(n&&!had){save();toast("🗼 Marcos da Torre reconhecidos: "+n+".");}}
+{const _e=arEnd;arEnd=function(win){const B=arB_;const n=B&&B.foe?B.foe.n:0;const r=_e.apply(this,arguments);
+  try{if(win&&n){const a=arSt();if(a.best>=n){const res=twGive(n);if(res){const m=$("arModal");const p=m&&m.querySelector(".arres p");if(p)p.textContent+=" Marco do andar "+n+": +"+res.xp+" XP"+(res.g?" e +"+res.g+" Ouro":"")+".";}}}}catch(e){}
+  try{arUI();}catch(e){}return r;};}
+// --- painel: Torre do Véu ---
+{const _u=arUI;arUI=function(){_u.apply(this,arguments);try{const p=$("arPanel");if(!p||p.hidden)return;const a=arSt(),n=a.fl,bd=twBand(n),foe=arFoe(n);
+  const h2=p.querySelector(".arhd h2"),sm=p.querySelector(".arhd .mono");if(h2)h2.textContent="⚔️ Torre do Véu";
+  if(sm)sm.textContent="andar "+n+(n<=TW_MAX?" de "+TW_MAX:" · Infinito")+" · rank "+bd[1]+(a.best?" · recorde "+a.best:"");
+  let bar=p.querySelector(".twbar");if(!bar){bar=arEl("div","twbar");bar.setAttribute("role","img");p.querySelector(".arhd").after(bar);}
+  bar.textContent="";const mk=a.mk||{};let lit=0;for(let k=10;k<=TW_MAX;k+=10){const on=!!mk[k];if(on)lit++;const i=arEl("i",on?"on":"");i.title="Andar "+k;bar.append(i);}
+  bar.setAttribute("aria-label","Guardiões vencidos: "+lit+" de 10");
+  const tx=p.querySelector(".arnext .artx b");if(tx){tx.textContent=foe.name;tx.parentNode.classList.toggle("twg",!!foe.guard);tx.parentNode.classList.toggle("twm",!!foe.mini);}
+  let nm=p.querySelector(".twnext");if(!nm){nm=arEl("div","sm muted twnext");const nx=p.querySelector(".arnext");if(nx)nx.after(nm);}
+  if(a.top){nm.textContent="👑 Topo alcançado em "+a.top.split("-").reverse().slice(0,2).join("/")+". Os Andares do Infinito seguem.";}
+  else{let k=Math.ceil(n/10)*10;if(k<n)k+=10;for(;k<=TW_MAX&&mk[k];k+=10);const m=TW_MK[k];
+    nm.textContent=m?"Próximo marco: andar "+k+", "+(m[2]==="t"?"título « "+m[4]+" »":m[2]==="f"?"moldura « "+m[4]+" »":"título « "+m[4]+" » e moldura « "+m[6]+" »")+".":"";}
+  // cor do rank (régua do visual.css): --rk + classe tbrk-E…tbrk-S no painel e na janela da luta
+  p.style.setProperty("--rk",bd[3]);for(const r of "EDCBAS")p.classList.toggle("tbrk-"+r,r===bd[1]);
+  const mo=$("arModal");if(mo){mo.style.setProperty("--rk",bd[3]);for(const r of "EDCBAS")mo.classList.toggle("tbrk-"+r,r===bd[1]);}}catch(e){}};}
+setTimeout(()=>{try{twCatchUp();}catch(e){}},1500);
 
 // ---------- Missões de Parceiros: missões lendárias patrocinadas (só 18+, no topo da aba Lendárias; sem a aba, na aba Foco; chamada em Hoje) ----------
 // Lista em missoes-lendarias.json (raiz do site), para trocar parceiro, texto ou link sem trem novo. Missão sem os campos

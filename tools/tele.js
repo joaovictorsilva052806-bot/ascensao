@@ -29,7 +29,9 @@ function tlSend(ev,extra){const t=tlGet();if(!t.on||!t.uid||(ev!=="sair"&&(!tlAg
   tlPost(["U",t.uid,t.nick||rankName()||"?",tlPlat(),ev,tlDk(),P.age||"",P.occ||"",s.xp,s.lv,s.act,ev==="dia"?s.done:"",ev==="dia"?s.min:"",ev==="dia"?s.skip:"",s.streak,s.nq,s.ms,s.cards,extra||("v"+(standalone()?"app":"web"))]);}
 function tlDaily(){const t=tlGet();if(!t.on||t.last===tlDk())return;tlSend("dia");t.last=tlDk();tlSet(t);}
 // aceite interativo no tema do Sistema
-function tlAsk(){if(document.body.classList.contains("insm")){setTimeout(tlAsk,5000);return;}if(!cfg||cfg.blank||!cfg.quests||!cfg.quests.length||!tlAgeOk())return;const t=tlGet();if(t.asked||(t.disp&&t.disp!==tlDk())||$("tlModal")||[...document.querySelectorAll(".sysmodal")].some(x=>x.getClientRects().length)||document.body.classList.contains("onboarding")||document.body.classList.contains("inmission")||!$("onb").hidden)return;
+// QA 60 s (28/11): o pedido não abre antes da 1ª missão de verdade (abria por cima do 1º toque no ▶) e os dois botões têm o mesmo peso (LGPD).
+function tlMissionDone(){try{for(const k in prog.log)if((prog.log[k]||[]).some(e=>e&&!/^(ach|checkin|tip|zap|ch|adm):/.test(String(e.q))&&e.kind!=="checkin"))return true;}catch(e){}return false;}
+function tlAsk(){if(document.body.classList.contains("insm")){setTimeout(tlAsk,5000);return;}if(!cfg||cfg.blank||!cfg.quests||!cfg.quests.length||!tlAgeOk()||!tlMissionDone())return;const t=tlGet();if(t.asked||(t.disp&&t.disp!==tlDk())||$("tlModal")||[...document.querySelectorAll(".sysmodal")].some(x=>x.getClientRects().length)||document.body.classList.contains("onboarding")||document.body.classList.contains("inmission")||!$("onb").hidden)return;
   const teen=ageNow()==="teen";const m=document.createElement("div");m.className="sysmodal";m.id="tlModal";m.setAttribute("role","dialog");m.setAttribute("aria-modal","true");
   const c=document.createElement("div");c.className="card tlc";const el=(tag,cls,txt)=>{const e=document.createElement(tag);if(cls)e.className=cls;if(txt!=null)e.textContent=txt;return e;};
   c.append(el("div","tag","[ SISTEMA ] PROTOCOLO DE ACESSO"),el("h3",null,"Liberar seu painel para o criador?"),
@@ -37,7 +39,7 @@ function tlAsk(){if(document.body.classList.contains("insm")){setTimeout(tlAsk,5
     el("p","sm muted","Nunca: localização, contatos, telefone, documentos ou fotos. Dá para sair e apagar em Mais > Painel do criador."));
   const lb=el("label","sm tll","Apelido que ele vai ver");const nk=el("input");nk.maxLength=16;nk.autocomplete="off";nk.value=teen?cleanNick(prog.rank&&prog.rank.nick):(rankName()||firstName());nk.placeholder=teen?"Um apelido (não use seu nome real)":"Seu apelido";lb.append(nk);c.append(lb);
   let par=null;if(teen){const l2=el("label","chk sm");par=el("input");par.type="checkbox";l2.append(par,document.createTextNode(" Meu responsável autorizou"));c.append(l2);}
-  const msg=el("div","sm tlmsg","");const row=el("div","row");const ok=el("button","go","Aceito");ok.type="button";const no=el("button","ghost","Agora não");no.type="button";row.append(ok,no);c.append(msg,row);
+  const msg=el("div","sm tlmsg","");const row=el("div","row");const ok=el("button","ghost tlb","Aceito");ok.type="button";const no=el("button","ghost tlb","Agora não");no.type="button";row.append(ok,no);c.append(msg,row);
   ok.addEventListener("click",()=>{const n=cleanNick(nk.value);if(!n){msg.textContent="Escolha um apelido.";nk.focus();return;}if(teen&&!(par&&par.checked)){msg.textContent="Marque que seu responsável autorizou.";return;}
     const t2=tlGet();Object.assign(t2,{on:true,asked:true,nick:n,uid:t2.uid||("u"+Math.random().toString(36).slice(2,10)),since:tlDk(),parent:teen?1:0});tlSet(t2);
     m.remove();tlSend("aceite");anon("5-aceitou");Object.assign(t2,{last:tlDk()});tlSet(t2);try{haptic([15,40,15]);}catch(e){}toast("Acesso liberado. Valeu, "+n+"!");tlUI();});

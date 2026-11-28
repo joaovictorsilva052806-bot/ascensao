@@ -317,7 +317,7 @@ function avClsNameId(id){try{const x=CLS_REAL.concat(CLS_FANT).find(y=>y[0]===id
 function avBusy(){return document.body.classList.contains("insm")||[...document.querySelectorAll(".sysmodal,.mssheet,.smsheet")].some(m=>!m.hidden&&m.getClientRects().length)||($("levelup")&&!$("levelup").hidden)||(()=>{const o=$("onb");return !!(o&&!o.hidden&&o.offsetParent);})();}
 let avAskT=null,avAsked=false;
 // automação (testes) não recebe os convites automáticos; gente de verdade recebe
-function avAskNow(){try{if(avAsked||!cfg||cfg.blank||navigator.webdriver)return;if(avSt().ok||prog.avAsk){avAsked=true;clsNotice();return;}if(avBusy()){avAskSoon(4000);return;}avAsked=true;avMaker(true);}catch(e){}}
+function avAskNow(){try{if(avAsked||!cfg||cfg.blank||navigator.webdriver||ascQuietD1())return;if(avSt().ok||prog.avAsk){avAsked=true;clsNotice();return;}if(avBusy()){avAskSoon(4000);return;}avAsked=true;avMaker(true);}catch(e){}}
 function avAskSoon(ms){if(avAsked||avAskT)return;avAskT=setTimeout(()=>{avAskT=null;avAskNow();},ms||1500);}
 // ---- Galeria de classes + regra de troca ----
 // Regra: 1ª escolha grátis e troca livre nas primeiras 24 h. Depois, 1 troca a cada 30 dias, ou usando um 📜 Pergaminho de Renascimento
@@ -326,7 +326,7 @@ const CLS_DAYS=30;
 function clsDays(a,b){return Math.round((new Date(b+"T12:00:00")-new Date(a+"T12:00:00"))/864e5);}
 function clsGrantScroll(n,why){const r=rpgState();r.ctk=Math.max(0,(r.ctk||0)+(n||1));save();try{toast("📜 +"+(n||1)+" Pergaminho de Renascimento"+(why?" ("+why+")":"")+": vale 1 troca de classe.");}catch(e){}}
 function clsTick(){const r=rpgState();const lv=avLv();for(const t of [10,20])if(lv>=t&&(r.lvtk||0)<t){const had=r.lvtk!=null||!!r.cls;r.lvtk=t;if(had&&r.cls){r.ctk=(r.ctk||0)+1;save();sysPop("PERGAMINHO DE RENASCIMENTO","+1 troca de classe","Você chegou ao nível "+t+". Se quiser, troque de classe sem perder nada: Progresso → Classe.");}else save();}}
-function clsCan(){const r=rpgState();if(!r.cls)return {ok:1,use:"first",txt:"Primeira escolha: grátis."};
+function clsCan(){const r=rpgState();if(!r.cls)return {ok:1,use:"first",txt:"Escolha à vontade: nas primeiras 24 horas dá para trocar quantas vezes quiser."};
   const now=Date.now(),t=todayKey();if(r.ct0&&now-r.ct0<864e5&&!(r.past||[]).length)return {ok:1,use:"24h",txt:"Mudou de ideia? Troca livre nas primeiras 24 horas."};
   if(r.clast){const d=clsDays(r.clast,t);if(d>=CLS_DAYS)return {ok:1,use:"30d",txt:"Você tem 1 troca grátis (passaram "+CLS_DAYS+" dias)."};
     if((r.ctk||0)>0)return {ok:1,use:"tk",txt:"Você tem "+r.ctk+" 📜 Pergaminho"+(r.ctk>1?"s":"")+" de Renascimento."};

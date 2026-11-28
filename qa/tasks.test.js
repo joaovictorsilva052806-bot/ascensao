@@ -52,7 +52,7 @@ for(const [route,pre] of [['comecar/','asc-u'],['','ascensao']]){const tag=route
   await p.click('#tpPanel .tpchip:not([class*="t-"])');await p.waitForTimeout(150);
   // Hoje: linha com o próximo passo; tocar abre a task
   await p.evaluate(()=>document.querySelector('#tabbar [data-go="hoje"]').click());await p.waitForTimeout(250);
-  ok(tag+' Hoje: 1 linha com o próximo passo que paga',await p.evaluate(()=>{const l=document.getElementById('tpLine');return !!l&&!l.hidden&&l.getClientRects().length>0&&/Lendária · Desapega 1\/3/.test(l.textContent)&&!l.classList.contains('fold')&&l.getBoundingClientRect().height>=44;}));
+  ok(tag+' Hoje: 1 linha com o próximo passo que paga',await p.evaluate(()=>{const l=document.getElementById('tpLine');return !!l&&!l.hidden&&l.getClientRects().length>0&&/Lendária · Desapega · passo 1 de 3/.test(l.textContent)&&!l.classList.contains('fold')&&l.getBoundingClientRect().height>=44;}));
   await p.click('#tpLine button');await p.waitForTimeout(400);
   ok(tag+' tocar na linha abre a aba com Desapega aberta',await p.evaluate(()=>{const c=document.querySelector('#tpPanel .tpm[data-tp="desapega"]');return document.body.dataset.tab==='lenda'&&!!c&&c.open&&c.getClientRects().length>0;}));
   // 2 de 3 passos: sem Ouro; 3º: +50 (Lendária), Carteira abre, nova task se revela

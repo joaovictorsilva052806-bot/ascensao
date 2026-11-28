@@ -17,7 +17,7 @@ let r=await run('adult',{on:true,asked:true,uid:'u1',nick:'Fulano'});
 ok('opt-in: 1 linha sobre ontem com 2/3, dupla, sensor e uso',r.first.length===1&&/^A\|a\w+\|6-desafios\|20261124\|\w+\|(app|navegador)\|2\/3\|1\|1\|1$/.test(r.first[0]),r.first.join(' / '));
 ok('opt-in: linha anônima (sem apelido nem uid)',r.first.every(v=>!v.includes('Fulano')&&!v.includes('|u1|')));
 ok('recarregar no mesmo dia não manda de novo',r.all.length===1,String(r.all.length));
-ok('progresso intacto',r.st.velho==='fica'&&r.st.zap['2026-11-24'].abd===1);ok('console limpo',!r.errs.length,r.errs.join(' | '));
+ok("progresso intacto",r.st.velho==="fica"&&r.st.zap["2026-11-24"].abd===1,JSON.stringify(r.st).slice(0,600));ok('console limpo',!r.errs.length,r.errs.join(' | '));
 r=await run('adult',{asked:true,on:false});ok('sem opt-in: nada sai',r.all.length===0,r.all.join(' / '));
 r=await run('kid',{on:true,asked:true,uid:'u2',nick:'Kid'});ok('até 13 anos: nada sai, mesmo com aceite gravado',r.all.length===0,r.all.join(' / '));
 await b.close();console.log(R.join('\n'));const f=R.filter(x=>x.startsWith('FAIL')).length;console.log((R.length-f)+'/'+R.length);process.exit(f?1:0);})();

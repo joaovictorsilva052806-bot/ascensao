@@ -254,7 +254,9 @@ function orMerge(){if(!orReady())return;const x=orX();if(x.mig)return;let c=0;tr
   try{localStorage.setItem(OR_BK,JSON.stringify(prog));if(!localStorage.getItem(OR_BK))return;}catch(e){return;}
   x.mig={d:todayKey(),c};if(c>0){prog.ouro=orBal()+c;x.h.unshift({d:todayKey(),v:c,w:"Moedas do Baú viraram Ouro"});x.h=x.h.slice(0,30);}save();orChest();orPill();
   // como a tela de Novidades (tools/versao.js): não abre em navegador automatizado, para não travar os testes da qa/
-  if(c>0&&!navigator.webdriver)sysPop("UMA MOEDA SÓ","Suas "+c+" moedas viraram 🪙 "+c+" de Ouro","Agora é tudo Ouro: o Baú de recompensas e a Loja usam o mesmo saldo. Nada se perdeu.",null,"Entendi");}
+  // perfil novo (criado hoje ou ontem) nunca viu moedas: migra calado (QA 60 s, 28/11: "Suas 1 moedas…" no 1º minuto)
+  let novo=false;try{const sd=cfg&&cfg.startDate;novo=!sd||(new Date(todayKey()+"T12:00")-new Date(sd+"T12:00"))/864e5<=1;}catch(e){}
+  if(c>0&&!novo&&!navigator.webdriver)sysPop("UMA MOEDA SÓ",(c===1?"Sua 1 moeda virou":"Suas "+c+" moedas viraram")+" 🪙 "+c+" de Ouro","Agora é tudo Ouro: o Baú de recompensas e a Loja usam o mesmo saldo. Nada se perdeu.",null,"Entendi");}
 function orUnmerge(){const x=orX();const m=x.mig;if(!m||m.off)return;const back=Math.min(orBal(),+m.c||0);prog.ouro=orBal()-back;m.off=todayKey();
   if(back){x.h.unshift({d:todayKey(),v:-back,w:"Ouro voltou a ser moedas"});x.h=x.h.slice(0,30);}save();try{render();}catch(e){}toast("Baú de volta às moedas. O Ouro ganho em tarefas continua.");}
 // Baú de recompensas com Ouro (mesma lista, mesmos preços)

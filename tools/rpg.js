@@ -1,3 +1,7 @@
+// Dia 1 calmo (QA dos 60 s, P1-1): no 1º dia do perfil, num celular de verdade, a Classe e o Aviso diário não abrem sozinhos.
+// Ficam para o dia 2 (a Classe segue a 1 toque no painel). Robôs de teste (navigator.webdriver) mantêm o fluxo antigo.
+function ascDay1(){try{const tk=todayKey();if(!cfg||cfg.startDate!==tk)return false;const L=prog&&prog.log||{};return !Object.keys(L).some(k=>k<tk&&(L[k]||[]).length);}catch(e){return false;}}
+function ascQuietD1(){try{if(navigator.webdriver&&localStorage.getItem("asc-d1-qa")!=="1")return false;}catch(e){}return ascDay1();}
 // ---------- RPG da vida real: atributos com nível, habilidades, classe, baú, treino diário ----------
 const RPG_IC={foco:"🎯",vendas:"🏁",mente:"🧠",corpo:"💪"};
 const SKILLS={
@@ -78,7 +82,7 @@ function renderRPG(){renderDun();sysTipUI();const r=rpgState();const st=statXP()
   else{let ch=false;for(const k in STATS){const was=r.seen[k]||1;if(cur[k]>was){for(const [lvN,nm,tx] of SKILLS[k])if(lvN>was&&lvN<=cur[k]){if(cfg&&cfg.startDate===todayKey())toast("✨ Habilidade nova: "+nm+" ("+STATS[k]+" nv "+lvN+")");else sysPop("HABILIDADE DESBLOQUEADA",nm,STATS[k]+" nível "+lvN+". "+tx);}r.seen[k]=cur[k];ch=true;}}if(ch)try{save();}catch(e){}}
   if(typeof r.cls==="string")r.cls=null;
   if(r.cls){const t=lv>=20?2:lv>=10?1:0;if(t>(r.evo||0)){r.evo=t;sysPop("EVOLUÇÃO DE CLASSE",clsName(r.cls,lv),"Nível "+lv+". Sua classe evoluiu. Continue no seu ritmo.");}}
-  else if(cfg&&!cfg.blank&&(!$("onb")||$("onb").hidden)&&!clsOpen&&!sysQ.length)setTimeout(()=>{if(!sysQ.length)openCls();},400);
+  else if(cfg&&!cfg.blank&&(!$("onb")||$("onb").hidden)&&!clsOpen&&!sysQ.length&&!ascQuietD1())setTimeout(()=>{if(!sysQ.length)openCls();},400);
   if(!r.rew)r.rew=[{t:"Um episódio da série",c:8},{t:"Lanche favorito",c:12},{t:"1 hora de jogo sem culpa",c:15}];
   const sl=$("sysLine");if(sl)typeSys(sl,sysLine());
   $("rpgCls").textContent=r.cls?clsName(r.cls,lv):"";
