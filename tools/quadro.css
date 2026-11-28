@@ -1,0 +1,11 @@
+/* 📜 Quadro de Missões (tools/quadro.js) */
+.mqpanel .mqpill{font-size:12px}
+.mqlist{display:grid;gap:10px;margin-top:8px}
+@media (min-width:760px){.mqlist{grid-template-columns:repeat(3,1fr)}}
+.mqcard{display:flex;flex-direction:column;gap:6px;padding:12px;border:1px solid rgba(255,255,255,.12);border-radius:12px;background:rgba(255,255,255,.03);min-width:0}
+.mqcard.mqe{border-left:3px solid #6fb1ff}.mqcard.mqt{border-left:3px solid #ff8a5c}
+.mqtag{font-size:11px;letter-spacing:.08em;text-transform:uppercase;opacity:.8}
+.mqt1{line-height:1.35;overflow-wrap:anywhere}
+.mqfala{font-style:italic;opacity:.85}
+.mqcard button{min-height:44px;margin-top:auto}
+body.asc-fresh #mqPanel{display:none!important}
