@@ -49,9 +49,10 @@ for(const [route,pre] of [['comecar/','asc-u'],['','ascensao']]){const ctx=await
   await ctx.route('https://docs.google.com/**',r=>r.fulfill({status:200,body:''}));await ctx.route('https://script.google.com/**',r=>r.fulfill({status:200,body:'{}'}));
   const CFG={version:1,name:'Velho',startDate:'2026-10-01',profile:{age:'adult',occ:'clt',focus:['sono']},quests:[{id:'q1',title:'Ler 10 min',xp:10,stat:'mente',main:true}]};
   const PROG={log:{'2026-11-24':[{q:'q1',kind:'full',xp:10,stat:'mente',bonus:0,t:'2026-11-24T12:00:00Z'},{q:'checkin:2026-11-24',kind:'checkin',xp:10,stat:'foco',bonus:0,t:'2026-11-24T12:00:00Z'}]},extra:{},faith:{},energy:{},mit:{},reviews:{},money:[],rest:{},ach:{},campoVelho:'fica'};
-  await p.goto('http://localhost:8000/'+route);
+  // semente gravada fora do app (__seed__, mesma origem): o salvamento atrasado do app vazio não a sobrescreve
+  await p.goto('http://localhost:8000/qa/__seed__');
   await p.evaluate(([c,o,pre])=>{localStorage.setItem(pre+'-cfg',JSON.stringify(c));localStorage.setItem(pre+'-prog',JSON.stringify(o));localStorage.setItem(pre+'-season','2');localStorage.setItem('asc-u-perm','1');localStorage.setItem('asc-u-intro','1');},[CFG,PROG,pre]);
-  await p.reload();await p.waitForTimeout(1200);
+  await p.goto('http://localhost:8000/'+route);await p.waitForTimeout(1200);
   let ci='';for(let i=0;i<8&&!ci;i++){const g=p.locator('.sysmodal button.go:visible');if(!(await g.count())){await p.waitForTimeout(700);continue;}const t=await p.locator('.sysmodal:visible').first().innerText();if(/CHECK-IN/.test(t))ci=t;await g.first().dispatchEvent('click');await p.waitForTimeout(300);}
   const st=await p.evaluate(k=>JSON.parse(localStorage.getItem(k)),pre+'-prog');
   ok((route||'/')+' dado antigo: log e campo antigo intactos',st.campoVelho==='fica'&&(st.log['2026-11-24']||[]).length===2,JSON.stringify(st.log['2026-11-24']));
